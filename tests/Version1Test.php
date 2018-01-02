@@ -168,4 +168,54 @@ class Version1Test extends TestCase
             $this->assertSame($message, $decode);
         }
     }
+    public function testAlterations()
+    {
+        $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
+        $footer = \json_encode(['key-id' => 'gandalf0']);
+
+        $this->assertSame(
+            'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hHAIS4KV4dbi2kvBjiUEapFTCN6SZYdZpv-u40HYsIvH32u0mu1_DN224We-oQBu.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            Version1::auth($messsage, $key, $footer)
+        );
+        try {
+            Version1::authVerify(
+                'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hHAIS4KV4dbi2kvBjiUEapFTCN6SZYdZpv-u40HYsIvH32u0mu1_DN224We-oQBu.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Incorrect version number was accepted');
+        } catch (\Exception $ex) {
+        }
+
+        try {
+            Version1::authVerify(
+                'v1.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hHAIS4KV4dbi2kvBjiUEapFTCN6SZYdZpv-u40HYsIvH32u0mu1_DN224We-oQBu.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Invalid MAC was accepted');
+        } catch (\Exception $ex) {
+        }
+
+        try {
+            Version1::authVerify(
+                'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hHAIS4KV4dbi2kvBjiUEapFTCN6SZYdZpv-u40HYsIvH32u0mu1_EN224We-oQBu.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Invalid MAC was accepted');
+        } catch (\Exception $ex) {
+        }
+
+        try {
+            Version1::authVerify(
+                'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hHAIS4KV4dbi2kvBjiUEapFTCN6SZYdZpv-u40HYsIvH32u0mu1_DN224We-oQBu.fyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Invalid MAC was accepted');
+        } catch (\Exception $ex) {
+        }
+    }
 }

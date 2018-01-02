@@ -11,6 +11,22 @@ PAST is everything you love about JOSE (JWT, JWE, JWS) without any of the
 
 What follows is a reference implementation. **Requires PHP 7 or newer.**
 
+## Example
+
+```php
+<?php
+use ParagonIE\PAST\Keys\SymmetricEncryptionKey;
+use ParagonIE\Past\Version2;
+
+$key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+$messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
+$footer = \json_encode(['key-id' => 'gandalf0']);
+
+$token = Version2::auth($messsage, $key, $footer);
+var_dump($token);
+// string(165) "v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9"
+```
+
 # Implementation Details
 
 ## PAST Message Format:

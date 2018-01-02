@@ -49,6 +49,57 @@ class Version2Test extends TestCase
         }
     }
 
+    public function testAlterations()
+    {
+        $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
+        $footer = \json_encode(['key-id' => 'gandalf0']);
+
+        $this->assertSame(
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            Version2::auth($messsage, $key, $footer)
+        );
+        try {
+            Version2::authVerify(
+                'v1.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Incorrect version number was accepted');
+        } catch (\Exception $ex) {
+        }
+
+        try {
+            Version2::authVerify(
+                'v2.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Invalid MAC was accepted');
+        } catch (\Exception $ex) {
+        }
+
+        try {
+            Version2::authVerify(
+                'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-8wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Invalid MAC was accepted');
+        } catch (\Exception $ex) {
+        }
+
+        try {
+            Version2::authVerify(
+                'v2.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.fyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                $key,
+                $footer
+            );
+            $this->fail('Invalid MAC was accepted');
+        } catch (\Exception $ex) {
+        }
+    }
+
     /**
      * @covers Version2::decrypt()
      * @covers Version2::encrypt()
