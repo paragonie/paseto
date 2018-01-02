@@ -32,6 +32,19 @@ class Version1Test extends TestCase
             $decode = Version1::authVerify($auth, $key);
             $this->assertTrue(\is_string($decode));
             $this->assertSame($message, $decode);
+
+            // Now with a footer
+            $auth = Version1::auth($message, $key, 'footer');
+            $this->assertTrue(\is_string($auth));
+            $this->assertSame('v1.auth.', Binary::safeSubstr($auth, 0, 8));
+            try {
+                Version1::authVerify($auth, $key);
+                $this->fail('Missing footer');
+            } catch (\Exception $ex) {
+            }
+            $decode = Version1::authVerify($auth, $key, 'footer');
+            $this->assertTrue(\is_string($decode));
+            $this->assertSame($message, $decode);
         }
     }
 
@@ -54,6 +67,20 @@ class Version1Test extends TestCase
             $this->assertSame('v1.enc.', Binary::safeSubstr($encrypted, 0, 7));
 
             $decode = Version1::decrypt($encrypted, $key);
+            $this->assertTrue(\is_string($decode));
+            $this->assertSame($message, $decode);
+
+            // Now with a footer
+            try {
+                Version1::decrypt($message, $key);
+                $this->fail('Missing footer');
+            } catch (\Exception $ex) {
+            }
+            $encrypted = Version1::encrypt($message, $key, 'footer');
+            $this->assertTrue(\is_string($encrypted));
+            $this->assertSame('v1.enc.', Binary::safeSubstr($encrypted, 0, 7));
+
+            $decode = Version1::decrypt($encrypted, $key, 'footer');
             $this->assertTrue(\is_string($decode));
             $this->assertSame($message, $decode);
         }
@@ -84,6 +111,20 @@ class Version1Test extends TestCase
             $decode = Version1::unseal($sealed, $privateKey);
             $this->assertTrue(\is_string($decode));
             $this->assertSame($message, $decode);
+
+            // Now with a footer
+            $sealed = Version1::seal($message, $publicKey, 'footer');
+            $this->assertTrue(\is_string($sealed));
+            $this->assertSame('v1.seal.', Binary::safeSubstr($sealed, 0, 8));
+
+            try {
+                Version1::unseal($sealed, $privateKey);
+                $this->fail('Missing footer');
+            } catch (\Exception $ex) {
+            }
+            $decode = Version1::unseal($sealed, $privateKey, 'footer');
+            $this->assertTrue(\is_string($decode));
+            $this->assertSame($message, $decode);
         }
     }
 
@@ -110,6 +151,19 @@ class Version1Test extends TestCase
             $this->assertSame('v1.sign.', Binary::safeSubstr($signed, 0, 8));
 
             $decode = Version1::signVerify($signed, $publicKey);
+            $this->assertTrue(\is_string($decode));
+            $this->assertSame($message, $decode);
+
+            // Now with a footer
+            $signed = Version1::sign($message, $privateKey, 'footer');
+            $this->assertTrue(\is_string($signed));
+            $this->assertSame('v1.sign.', Binary::safeSubstr($signed, 0, 8));
+            try {
+                Version1::signVerify($signed, $publicKey);
+                $this->fail('Missing footer');
+            } catch (\Exception $ex) {
+            }
+            $decode = Version1::signVerify($signed, $publicKey, 'footer');
             $this->assertTrue(\is_string($decode));
             $this->assertSame($message, $decode);
         }

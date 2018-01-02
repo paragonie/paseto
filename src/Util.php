@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\PAST;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 
 /**
@@ -86,5 +87,28 @@ class Util
             throw new \TypeError('Could not get a substring at the end of HKDF processing.');
         }
         return (string) $orm;
+    }
+
+    /**
+     * @param string $payload
+     * @param string $footer
+     * @return string
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function validateAndRemoveFooter(string $payload, string $footer = ''): string
+    {
+        if (empty($footer)) {
+            return $payload;
+        }
+        $footer = Base64UrlSafe::encode($footer);
+        $payload_len = Binary::safeStrlen($payload);
+        $footer_len = Binary::safeStrlen($footer) + 1;
+
+        $trailing = Binary::safeSubstr($payload, $payload_len - $footer_len, $footer_len);
+        if (!\hash_equals('.' . $footer, $trailing)) {
+            throw new \Exception('Invalid message footer');
+        }
+        return Binary::safeSubstr($payload, 0, $payload_len - $footer_len);
     }
 }
