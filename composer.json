@@ -1,0 +1,40 @@
+{
+  "name": "paragonie/past",
+  "description": "Platform-Agnostic Security Tokens",
+  "license": "ISC",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Paragon Initiative Enterprises",
+      "email": "security@paragonie.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "ParagonIE\\PAST\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ParagonIE\\PAST\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7",
+    "paragonie/constant_time_encoding": "^2",
+    "paragonie/sodium_compat": "^1",
+    "phpseclib/phpseclib": "^2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6|^7",
+    "vimeo/psalm": "^0.3"
+  },
+  "scripts": {
+    "full-test": [
+      "@static-analysis",
+      "@test"
+    ],
+    "static-analysis": "psalm",
+    "test": "phpunit"
+  }
+}
