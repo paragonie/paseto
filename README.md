@@ -1,5 +1,11 @@
 # PAST: Platform-Agnostic Security Tokens
 
+[![Build Status](https://travis-ci.org/paragonie/past.svg?branch=master)](https://travis-ci.org/paragonie/past)
+[![Latest Stable Version](https://poser.pugx.org/paragonie/past/v/stable)](https://packagist.org/packages/paragonie/past)
+[![Latest Unstable Version](https://poser.pugx.org/paragonie/past/v/unstable)](https://packagist.org/packages/paragonie/past)
+[![License](https://poser.pugx.org/paragonie/past/license)](https://packagist.org/packages/paragonie/past)
+[![Downloads](https://img.shields.io/packagist/dt/paragonie/past.svg)](https://packagist.org/packages/paragonie/past)
+
 PAST is everything you love about JOSE (JWT, JWE, JWS) without any of the
 [many design deficits that plague the JOSE standards](https://paragonie.com/blog/2017/03/jwt-json-web-tokens-is-bad-standard-that-everyone-should-avoid).
 
