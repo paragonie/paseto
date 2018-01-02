@@ -276,6 +276,7 @@ class JsonToken
      */
     public function getFooterArray(): array
     {
+        /** @var array $decoded */
         $decoded = \json_decode($this->footer, true);
         if (!\is_array($decoded)) {
             throw new PastException('Footer is not a valid JSON document');

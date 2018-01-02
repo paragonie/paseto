@@ -116,6 +116,7 @@ class Builder
      */
     public function setFooterArray(array $footer = []): self
     {
+        /** @var array $encoded */
         $encoded = \json_encode($footer);
         if (!\is_string($encoded)) {
             throw new PastException('Could not encode array into JSON');
