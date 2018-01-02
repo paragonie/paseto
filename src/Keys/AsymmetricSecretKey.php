@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\PAST\Keys;
 
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\PAST\Protocol\Version1;
 
 /**
@@ -21,11 +22,23 @@ class AsymmetricSecretKey
 
     /**
      * AsymmetricSecretKey constructor.
+     *
      * @param string $keyData
      * @param string $protocol
+     * @throws \Exception
      */
     public function __construct(string $keyData, string $protocol = self::VERSION2)
     {
+        if ($protocol === self::VERSION2) {
+            $len = Binary::safeStrlen($keyData);
+            if ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
+                if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
+                    throw new \Exception('Secret keys must be 32 or 64 bytes long; ' . $len . ' given.');
+                }
+                $keypair = \sodium_crypto_sign_seed_keypair($keyData);
+                $keyData = Binary::safeSubstr($keypair, 0, 64);
+            }
+        }
         $this->key = $keyData;
         $this->version = $protocol;
     }
@@ -57,7 +70,8 @@ class AsymmetricSecretKey
         switch ($this->version) {
             case self::VERSION1:
                 return new AsymmetricPublicKey(
-                    Version1::RsaGetPublicKey($this->key)
+                    Version1::RsaGetPublicKey($this->key),
+                    self::VERSION1
                 );
             default:
                 return new AsymmetricPublicKey(

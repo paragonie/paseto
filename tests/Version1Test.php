@@ -94,8 +94,8 @@ class Version1Test extends TestCase
     {
         $rsa = Version1::getRsa(false);
         $keypair = $rsa->createKey(2048);
-        $privateKey = new AsymmetricSecretKey($keypair['privatekey']);
-        $publicKey = new AsymmetricPublicKey($keypair['publickey']);
+        $privateKey = new AsymmetricSecretKey($keypair['privatekey'], 'v1');
+        $publicKey = new AsymmetricPublicKey($keypair['publickey'], 'v1');
 
         $year = (int) (\date('Y')) + 1;
         $messages = [
@@ -136,8 +136,8 @@ class Version1Test extends TestCase
     {
         $rsa = Version1::getRsa(false);
         $keypair = $rsa->createKey(2048);
-        $privateKey = new AsymmetricSecretKey($keypair['privatekey']);
-        $publicKey = new AsymmetricPublicKey($keypair['publickey']);
+        $privateKey = new AsymmetricSecretKey($keypair['privatekey'], 'v1');
+        $publicKey = new AsymmetricPublicKey($keypair['publickey'], 'v1');
 
         $year = (int) (\date('Y')) + 1;
         $messages = [

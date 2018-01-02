@@ -1,6 +1,7 @@
 <?php
 namespace ParagonIE\PAST\Tests;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\PAST\Keys\AsymmetricPublicKey;
 use ParagonIE\PAST\Keys\AsymmetricSecretKey;
@@ -165,5 +166,28 @@ class Version2Test extends TestCase
             $this->assertTrue(\is_string($decode));
             $this->assertSame($message, $decode);
         }
+    }
+
+    /**
+     * @covers AsymmetricSecretKey for version 2
+     */
+    public function testWeirdKeypairs()
+    {
+        $keypair = sodium_crypto_sign_keypair();
+        $privateKey = new AsymmetricSecretKey(sodium_crypto_sign_secretkey($keypair));
+        $publicKey = new AsymmetricPublicKey(sodium_crypto_sign_publickey($keypair));
+
+        $seed = Binary::safeSubstr($keypair, 0, 32);
+        $privateAlt = new AsymmetricSecretKey($seed);
+        $publicKeyAlt = $privateAlt->getPublicKey();
+
+        $this->assertSame(
+            Base64UrlSafe::encode($privateAlt->raw()),
+            Base64UrlSafe::encode($privateKey->raw())
+        );
+        $this->assertSame(
+            Base64UrlSafe::encode($publicKeyAlt->raw()),
+            Base64UrlSafe::encode($publicKey->raw())
+        );
     }
 }
