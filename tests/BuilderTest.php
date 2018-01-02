@@ -65,4 +65,28 @@ class BuilderTest extends TestCase
             'Sign, removed footer'
         );
     }
+
+    /**
+     * @throws PastException
+     */
+    public function testAuthTokenCustomFooter()
+    {
+        $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $footerArray = ['key-id' => 'gandalf0'];
+        $builder = (new Builder())
+            ->setPurpose('auth')
+            ->setKey($key)
+            ->set('data', 'this is a signed message')
+            ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
+            ->setFooterArray($footerArray);
+        $this->assertSame(
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9X7CSuUFMklmXhHsu4bXvx_wiH_OyxpMijfNCjHiklXk=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            (string) $builder->getToken(),
+            'Auth, footer'
+        );
+        $this->assertEquals(
+            $footerArray,
+            $builder->getToken()->getFooterArray()
+        );
+    }
 }

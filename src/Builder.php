@@ -110,6 +110,20 @@ class Builder
     }
 
     /**
+     * @param array $footer
+     * @return self
+     * @throws PastException
+     */
+    public function setFooterArray(array $footer = []): self
+    {
+        $encoded = \json_encode($footer);
+        if (!\is_string($encoded)) {
+            throw new PastException('Could not encode array into JSON');
+        }
+        return $this->setFooter($encoded);
+    }
+
+    /**
      * @param \DateTime|null $time
      * @return self
      */

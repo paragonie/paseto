@@ -62,6 +62,20 @@ class JsonToken
     }
 
     /**
+     * @param array $footer
+     * @return self
+     * @throws PastException
+     */
+    public function setFooterArray(array $footer = []): self
+    {
+        $encoded = \json_encode($footer);
+        if (!\is_string($encoded)) {
+            throw new PastException('Could not encode array into JSON');
+        }
+        return $this->setFooter($encoded);
+    }
+
+    /**
      * @param KeyInterface $key
      * @param bool $checkPurpose
      * @return self
@@ -254,6 +268,19 @@ class JsonToken
     public function getFooter(): string
     {
         return $this->footer;
+    }
+
+    /**
+     * @return array
+     * @throws PastException
+     */
+    public function getFooterArray(): array
+    {
+        $decoded = \json_decode($this->footer, true);
+        if (!\is_array($decoded)) {
+            throw new PastException('Footer is not a valid JSON document');
+        }
+        return $decoded;
     }
 
     /**
