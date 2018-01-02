@@ -35,6 +35,7 @@ class Util
             $nativeHKDF = \is_callable('\\hash_hkdf');
         }
         if ($nativeHKDF) {
+            /** @psalm-suppress UndefinedFunction This is wrapped in an is_callable() check. */
             return (string) \hash_hkdf($hash, $ikm, $length, $info, $salt);
         }
 
