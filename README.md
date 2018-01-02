@@ -59,7 +59,7 @@ a message using PAST implicitly authenticates it.
 
 ```
 version.purpose.payload.optional
-version.purpose.publickey.ciphertext.optional (sealing only)
+version.purpose.one-time-key.ciphertext.optional (sealing only)
 ```
 
 Any `optional` data can be appended to the end. This information is public (unencrypted), even
