@@ -27,9 +27,15 @@ class Util
      * @return string
      * @throws \Error
      * @throws \TypeError
+     * @psalm-suppress MixedInferredReturnType This always returns a string!
      */
-    public static function HKDF(string $hash, string $ikm, int $length, string $info = '', string $salt = null): string
-    {
+    public static function HKDF(
+        string $hash,
+        string $ikm,
+        int $length,
+        string $info = '',
+        string $salt = null
+    ): string {
         static $nativeHKDF = null;
         if ($nativeHKDF === null) {
             $nativeHKDF = \is_callable('\\hash_hkdf');
