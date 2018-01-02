@@ -1,13 +1,16 @@
 <?php
 declare(strict_types=1);
 namespace ParagonIE\PAST\Keys;
-use ParagonIE\PAST\Util;
+
+use ParagonIE\PAST\{
+    KeyInterface, Protocol\Version2, Util
+};
 
 /**
  * Class SymmetricEncryptionKey
  * @package ParagonIE\PAST\Keys
  */
-class SymmetricEncryptionKey
+class SymmetricEncryptionKey implements KeyInterface
 {
     const INFO_ENCRYPTION = 'past-encryption-key';
     const INFO_AUTHENTICATION = 'past-auth-key-for-aead';
@@ -15,13 +18,26 @@ class SymmetricEncryptionKey
     /** @var string $key */
     protected $key = '';
 
+    /** @var string $protocol */
+    protected $protocol = Version2::HEADER;
+
     /**
      * SymmetricEncryptionKey constructor.
+     *
      * @param string $keyMaterial
+     * @param string $protocol
      */
-    public function __construct(string $keyMaterial)
+    public function __construct(string $keyMaterial, string $protocol = Version2::HEADER)
     {
         $this->key = $keyMaterial;
+        $this->protocol = $protocol;
+    }
+    /**
+     * @return string
+     */
+    public function getProtocol(): string
+    {
+        return $this->protocol;
     }
 
     /**

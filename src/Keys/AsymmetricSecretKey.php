@@ -3,22 +3,23 @@ declare(strict_types=1);
 namespace ParagonIE\PAST\Keys;
 
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\PAST\Protocol\Version1;
+use ParagonIE\PAST\KeyInterface;
+use ParagonIE\PAST\Protocol\{
+    Version1,
+    Version2
+};
 
 /**
  * Class AsymmetricSecretKey
  * @package ParagonIE\PAST\Keys
  */
-class AsymmetricSecretKey
+class AsymmetricSecretKey implements KeyInterface
 {
-    const VERSION1 = 'v1';
-    const VERSION2 = 'v2';
-
     /** @var string $key */
     protected $key;
 
-    /** @var string $version */
-    protected $version;
+    /** @var string $protocol */
+    protected $protocol;
 
     /**
      * AsymmetricSecretKey constructor.
@@ -27,9 +28,9 @@ class AsymmetricSecretKey
      * @param string $protocol
      * @throws \Exception
      */
-    public function __construct(string $keyData, string $protocol = self::VERSION2)
+    public function __construct(string $keyData, string $protocol = Version2::HEADER)
     {
-        if ($protocol === self::VERSION2) {
+        if (\hash_equals($protocol, Version2::HEADER)) {
             $len = Binary::safeStrlen($keyData);
             if ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
                 if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
@@ -40,16 +41,16 @@ class AsymmetricSecretKey
             }
         }
         $this->key = $keyData;
-        $this->version = $protocol;
+        $this->protocol = $protocol;
     }
 
     /**
      * @param string $protocol
      * @return self
      */
-    public static function generate(string $protocol = self::VERSION2): self
+    public static function generate(string $protocol = Version2::HEADER): self
     {
-        if ($protocol === self::VERSION1) {
+        if (\hash_equals($protocol, Version1::HEADER)) {
             $rsa = Version1::getRsa(false);
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
@@ -61,17 +62,24 @@ class AsymmetricSecretKey
             )
         );
     }
+    /**
+     * @return string
+     */
+    public function getProtocol(): string
+    {
+        return $this->protocol;
+    }
 
     /**
      * @return AsymmetricPublicKey
      */
     public function getPublicKey(): AsymmetricPublicKey
     {
-        switch ($this->version) {
-            case self::VERSION1:
+        switch ($this->protocol) {
+            case Version1::HEADER:
                 return new AsymmetricPublicKey(
                     Version1::RsaGetPublicKey($this->key),
-                    self::VERSION1
+                    Version1::HEADER
                 );
             default:
                 return new AsymmetricPublicKey(
