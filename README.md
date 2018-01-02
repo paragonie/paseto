@@ -15,12 +15,16 @@ What follows is a reference implementation. **Requires PHP 7 or newer.**
 
 ```php
 <?php
-use ParagonIE\PAST\Keys\SymmetricEncryptionKey;
-use ParagonIE\Past\Version2;
+use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
+use ParagonIE\Past\{Version1, Version2};
 
 $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
 $messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
 $footer = \json_encode(['key-id' => 'gandalf0']);
+
+$v1Token = Version1::auth($messsage, $key);
+var_dump($v1Token);
+// string(156) "v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9tHUXb9BcoicC_kXc3fxkd_jpm2Laowv7OZ4sIH0ZlKRYcO2ez_zVtp_r94dfmh3W"
 
 $token = Version2::auth($messsage, $key, $footer);
 var_dump($token);
