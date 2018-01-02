@@ -108,7 +108,7 @@ class Version2 implements ProtocolInterface
     {
         $header = self::HEADER . '.seal.';
 
-        $recipPublic = \sodium_crypto_sign_ed25519_pk_to_curve25519($key->raw());
+        $recipPublic = \ParagonIE_Sodium_Compat::crypto_sign_ed25519_pk_to_curve25519($key->raw());
 
         // Ephemeral keypairs
         $ephKeypair = \sodium_crypto_box_keypair();
