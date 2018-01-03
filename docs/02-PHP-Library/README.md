@@ -102,7 +102,7 @@ usage, of course.
 ```php
 <?php
 use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
-use ParagonIE\Past\{Version1, Version2};
+use ParagonIE\Past\Protocol\{Version1, Version2};
 
 $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
 $messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
