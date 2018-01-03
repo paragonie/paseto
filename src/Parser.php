@@ -4,8 +4,7 @@ namespace ParagonIE\PAST;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\PAST\Exception\{
-    InvalidKeyException,
-    PastException
+    InvalidKeyException, PastException, RuleViolation
 };
 use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
@@ -33,13 +32,14 @@ class Parser
     /** @var array<int, string> */
     protected $allowedVersions;
 
-    /**
-     * @var KeyInterface $key
-     */
+    /** @var KeyInterface $key */
     protected $key;
 
     /** @var string $purpose */
     protected $purpose;
+
+    /** @var array<int, ValidationRuleInterface> */
+    protected $rules = [];
 
     /**
      * Parser constructor.
@@ -47,26 +47,46 @@ class Parser
      * @param array<int, string> $allowedVersions
      * @param string $purpose
      * @param KeyInterface|null $key
+     * @param array<int, ValidationRuleInterface> $parserRules
      * @throws PastException
      */
     public function __construct(
         array $allowedVersions = self::DEFAULT_VERSION_ALLOW,
         string $purpose = '',
-        KeyInterface $key = null
+        KeyInterface $key = null,
+        array $parserRules = []
     ) {
         $this->allowedVersions = $allowedVersions;
         $this->purpose = $purpose;
         if (!\is_null($key)) {
             $this->setKey($key, true);
         }
+        if (!empty($parserRules)) {
+            foreach ($parserRules as $rule) {
+                if ($rule instanceof ValidationRuleInterface) {
+                    $this->addRule($rule);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param ValidationRuleInterface $rule
+     * @return self
+     */
+    public function addRule(ValidationRuleInterface $rule): self
+    {
+        $this->rules[] = $rule;
+        return $this;
     }
 
     /**
      * @param string $tainted
+     * @param bool $skipValidation
      * @return JsonToken
      * @throws PastException
      */
-    public function parse(string $tainted): JsonToken
+    public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
         /** @var array<int, string> $pieces */
         $pieces = \explode('.', $tainted);
@@ -163,13 +183,18 @@ class Parser
         if (!\is_array($claims)) {
             throw new PastException('Not a JSON token.');
         }
-        return (new JsonToken())
+        $token = (new JsonToken())
             ->setVersion($header)
             ->setPurpose($purpose)
             ->setKey($this->key)
             ->setFooter($footer)
             ->setClaims($claims);
+        if (!$skipValidation && !empty($this->rules)) {
+            $this->validate($token, true);
+        }
+        return $token;
     }
+
     /**
      * @param KeyInterface $key
      * @param bool $checkPurpose
@@ -262,5 +287,28 @@ class Parser
 
         $this->purpose = $purpose;
         return $this;
+    }
+
+    /**
+     * @param JsonToken $token
+     * @param bool $throwOnFailure
+     * @return bool
+     * @throws RuleViolation
+     */
+    public function validate(JsonToken $token, bool $throwOnFailure = false): bool
+    {
+        if (empty($this->rules)) {
+            return true;
+        }
+        /** @var ValidationRuleInterface $rule */
+        foreach ($this->rules as $rule) {
+            if (!$rule->isValid($token)) {
+                if ($throwOnFailure) {
+                    throw new RuleViolation('Token failed the ' . \get_class($rule) . ' rule.');
+                }
+                return false;
+            }
+        }
+        return true;
     }
 }
