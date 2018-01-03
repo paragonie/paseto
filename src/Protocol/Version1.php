@@ -45,7 +45,7 @@ class Version1 implements ProtocolInterface
         $header = self::HEADER . '.auth.';
         $mac = \hash_hmac(
             self::HASH_ALGO,
-            $header . $data . $footer,
+            Util::prepareAad([$header, $data, $footer]),
             $key->raw(),
             true
         );
@@ -85,7 +85,7 @@ class Version1 implements ProtocolInterface
         $mac = Binary::safeSubstr($decoded, $len - 48);
         $calc = \hash_hmac(
             self::HASH_ALGO,
-            $givenHeader . $message . $footer,
+            Util::prepareAad([$givenHeader, $message, $footer]),
             $key->raw(),
             true
         );
@@ -222,7 +222,9 @@ class Version1 implements ProtocolInterface
         $header = self::HEADER . '.sign.';
         $rsa = self::getRsa(true);
         $rsa->loadKey($key->raw());
-        $signature = $rsa->sign($header . $data . $footer);
+        $signature = $rsa->sign(
+            Util::prepareAad([$header, $data, $footer])
+        );
         if ($footer) {
             return $header .
                 Base64UrlSafe::encode($data . $signature) .
@@ -258,7 +260,7 @@ class Version1 implements ProtocolInterface
         $rsa = self::getRsa(true);
         $rsa->loadKey($key->raw());
         $valid = $rsa->verify(
-            $givenHeader . $message . $footer,
+            Util::prepareAad([$givenHeader, $message, $footer]),
             $signature
         );
         if (!$valid) {
@@ -299,7 +301,7 @@ class Version1 implements ProtocolInterface
         }
         $mac = \hash_hmac(
             self::HASH_ALGO,
-            $header . $nonce . $ciphertext . $footer,
+            Util::prepareAad([$header, $nonce, $ciphertext, $footer]),
             $authKey,
             true
         );
@@ -349,7 +351,7 @@ class Version1 implements ProtocolInterface
 
         $calc = \hash_hmac(
             self::HASH_ALGO,
-            $header . $nonce . $ciphertext . $footer,
+            Util::prepareAad([$header, $nonce, $ciphertext, $footer]),
             $authKey,
             true
         );

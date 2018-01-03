@@ -56,11 +56,11 @@ class Version2Test extends TestCase
         $footer = \json_encode(['key-id' => 'gandalf0']);
 
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9beB6mWxZjVDSujqYVzw8c1V7bWNGeDbyl93P4oqUPbM=',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9RlncOC5ppeg9qraMSSfXlDC-XzpBWDrZEt_F8rpXpbo=',
             Version2::auth($messsage, $key)
         );
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9u6yxLBfkMyQ6v5NGQPDuE9tM3IXHIKyawRz8qUFCP-Q=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             Version2::auth($messsage, $key, $footer)
         );
         try {

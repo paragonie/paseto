@@ -25,7 +25,7 @@ class ParserTest extends TestCase
     {
         $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
 
-        $serialized = 'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9pBzDGiV6cmCX8Wxuj09xmNYiVOcD9yuE0TntviAEWvs=';
+        $serialized = 'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9RlncOC5ppeg9qraMSSfXlDC-XzpBWDrZEt_F8rpXpbo=';
         $parser = (new Parser())
             ->setPurpose('auth')
             ->setKey($key);
@@ -61,7 +61,7 @@ class ParserTest extends TestCase
         $token->setPurpose('sign')
             ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9J_YYSKaRss60fvAT5jR0KzGXRrgAT9hSPbJ8O5w1F_EgTTU4Zbjms_ngcM_gEtUlvDIFs1QFv3GWkU4Ya6z9CQ==',
+            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9UErJWp-gsQiZcJpN_dEfUo3D7OQWBuG6wEjywHpyx1xZd-8KjzDtayi22lfW7gRuKAPf_pxdQE04_X4OulWHCQ==',
             (string) $token,
             'Switching to signing caused a different signature'
         );

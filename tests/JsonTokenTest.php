@@ -30,18 +30,18 @@ class JsonTokenTest extends TestCase
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
 
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9pBzDGiV6cmCX8Wxuj09xmNYiVOcD9yuE0TntviAEWvs=',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9tDsPOV3V0FyU3p2whkyGrjnvl9ViUooDjfBkRg7AUn8=',
             (string) $builder,
             'Auth, no footer'
         );
         $footer = (string) \json_encode(['key-id' => 'gandalf0']);
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9X7CSuUFMklmXhHsu4bXvx_wiH_OyxpMijfNCjHiklXk=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9eRS5hqdrfbWwGba6CieXQ7Z5_YUPg2lD66W9DsHlkzs=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Auth, footer'
         );
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9pBzDGiV6cmCX8Wxuj09xmNYiVOcD9yuE0TntviAEWvs=',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9tDsPOV3V0FyU3p2whkyGrjnvl9ViUooDjfBkRg7AUn8=',
             (string) $builder->setFooter(''),
             'Auth, removed footer'
         );
@@ -50,17 +50,17 @@ class JsonTokenTest extends TestCase
         $builder->setPurpose('sign')
                 ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9J_YYSKaRss60fvAT5jR0KzGXRrgAT9hSPbJ8O5w1F_EgTTU4Zbjms_ngcM_gEtUlvDIFs1QFv3GWkU4Ya6z9CQ==',
+            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9GS-ZKUvi69Ye9R4PL5S5I1Sii1K6t9GDrWGnOalp_yuh35rcssWYhUSaSzmJ6XknXmIlCDje-y6TXxu6LOefDQ==',
             (string) $builder,
             'Sign, no footer'
         );
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ97mfQNGcQvr0ygbUO4XwAgTtb0NDlSLQpbG0hQRIr1JAo3XwUIq1HgSy84iA1h5fds-ZqwFkn1baN0WapHLwIAQ==.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9s-ypX1ibvpvi4y50xVOWH_0dZXkCzNP-jUzJbyr0ahiPz0wiOxwm2w2FvCv_Y5byVzmTJvpLUa8OmJGHe-JcAQ==.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Sign, footer'
         );
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9J_YYSKaRss60fvAT5jR0KzGXRrgAT9hSPbJ8O5w1F_EgTTU4Zbjms_ngcM_gEtUlvDIFs1QFv3GWkU4Ya6z9CQ==',
+            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9GS-ZKUvi69Ye9R4PL5S5I1Sii1K6t9GDrWGnOalp_yuh35rcssWYhUSaSzmJ6XknXmIlCDje-y6TXxu6LOefDQ==',
             (string) $builder->setFooter(''),
             'Sign, removed footer'
         );
@@ -80,7 +80,7 @@ class JsonTokenTest extends TestCase
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9X7CSuUFMklmXhHsu4bXvx_wiH_OyxpMijfNCjHiklXk=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9eRS5hqdrfbWwGba6CieXQ7Z5_YUPg2lD66W9DsHlkzs=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder,
             'Auth, footer'
         );
