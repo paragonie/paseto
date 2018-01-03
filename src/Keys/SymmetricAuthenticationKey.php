@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\PAST\Keys;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\PAST\KeyInterface;
 use ParagonIE\PAST\Protocol\Version2;
 
@@ -26,6 +27,24 @@ class SymmetricAuthenticationKey implements KeyInterface
     {
         $this->key = $keyMaterial;
         $this->protocol = $protocol;
+    }
+
+    /**
+     * @return string
+     */
+    public function encode(): string
+    {
+        return Base64UrlSafe::encode($this->key);
+    }
+
+    /**
+     * @param string $encoded
+     * @return self
+     */
+    public static function fromEncodedString(string $encoded): self
+    {
+        $decoded = Base64UrlSafe::decode($encoded);
+        return new self($decoded);
     }
 
     /**

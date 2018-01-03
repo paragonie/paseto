@@ -4,7 +4,9 @@ namespace ParagonIE\PAST;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\PAST\Exception\{
-    InvalidKeyException, PastException, RuleViolation
+    InvalidKeyException,
+    PastException,
+    RuleViolation
 };
 use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
@@ -27,7 +29,10 @@ class Parser
 {
     use RegisteredClaims;
 
-    const DEFAULT_VERSION_ALLOW = [Version1::HEADER, Version2::HEADER];
+    const DEFAULT_VERSION_ALLOW = [
+        Version1::HEADER,
+        Version2::HEADER
+    ];
 
     /** @var array<int, string> */
     protected $allowedVersions;
@@ -71,6 +76,8 @@ class Parser
     }
 
     /**
+     * Add a validation rule to be invoked by parse().
+     *
      * @param ValidationRuleInterface $rule
      * @return self
      */
@@ -81,8 +88,11 @@ class Parser
     }
 
     /**
-     * @param string $tainted
-     * @param bool $skipValidation
+     * Parse a string into a JsonToken object.
+     *
+     * @param string $tainted      Tainted user-provided string.
+     * @param bool $skipValidation Don't validate according to the Rules.
+     *                             (Does not disable cryptographic security.)
      * @return JsonToken
      * @throws PastException
      */
@@ -93,11 +103,14 @@ class Parser
         if (\count($pieces) < 3) {
             throw new PastException('Truncated or invalid token');
         }
+
+        // First, check against the user's specified list of allowed versions.
         $header = $pieces[0];
         if (!\in_array($header, $this->allowedVersions, true)) {
             throw new PastException('Disallowed or unsupported version');
         }
 
+        // Our parser's built-in whitelist of headers is defined here.
         switch ($header) {
             case Version1::HEADER:
                 $protocol = Version1::class;
@@ -112,11 +125,15 @@ class Parser
         /** @var string $purpose */
         $footer = '';
         $purpose = $pieces[1];
+
+        // $this->purpose is not mandatory, but if it's set, verify against it.
         if (!empty($this->purpose)) {
             if (!\hash_equals($this->purpose, $purpose)) {
                 throw new PastException('Disallowed or unsupported purpose');
             }
         }
+
+        // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
             case 'auth':
                 if (!($this->key instanceof SymmetricAuthenticationKey)) {
@@ -175,6 +192,8 @@ class Parser
                 }
                 break;
         }
+
+        // Did we get data?
         if (!isset($decoded)) {
             throw new PastException('Unsupported purpose or version.');
         }
@@ -183,6 +202,8 @@ class Parser
         if (!\is_array($claims)) {
             throw new PastException('Not a JSON token.');
         }
+
+        // Let's build the token object.
         $token = (new JsonToken())
             ->setVersion($header)
             ->setPurpose($purpose)
@@ -190,12 +211,15 @@ class Parser
             ->setFooter($footer)
             ->setClaims($claims);
         if (!$skipValidation && !empty($this->rules)) {
+            // Validate all of the rules that were specified:
             $this->validate($token, true);
         }
         return $token;
     }
 
     /**
+     * Which protocol versions to permit.
+     *
      * @param array<int, string> $whitelist
      * @return self
      */
@@ -206,6 +230,8 @@ class Parser
     }
 
     /**
+     * Specify the key for the token we are going to parse.
+     *
      * @param KeyInterface $key
      * @param bool $checkPurpose
      * @return self
@@ -252,6 +278,8 @@ class Parser
     }
 
     /**
+     * Specify the allowed 'purpose' for the token we are going to parse.
+     *
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
@@ -300,6 +328,8 @@ class Parser
     }
 
     /**
+     * Does this token pass all of the rules defined?
+     *
      * @param JsonToken $token
      * @param bool $throwOnFailure
      * @return bool
@@ -314,7 +344,7 @@ class Parser
         foreach ($this->rules as $rule) {
             if (!$rule->isValid($token)) {
                 if ($throwOnFailure) {
-                    throw new RuleViolation('Token failed the ' . \get_class($rule) . ' rule.');
+                    throw new RuleViolation($rule->getFailureMessage());
                 }
                 return false;
             }

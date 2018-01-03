@@ -42,6 +42,8 @@ class JsonToken
     protected $version = Version2::HEADER;
 
     /**
+     * Get any arbitrary claim.
+     *
      * @param string $claim
      * @return mixed
      * @throws PastException
@@ -55,6 +57,8 @@ class JsonToken
     }
 
     /**
+     * Get the 'exp' claim.
+     *
      * @return string
      * @throws PastException
      */
@@ -64,6 +68,18 @@ class JsonToken
     }
 
     /**
+     * Get all of the claims stored in this PAST.
+     *
+     * @return array
+     */
+    public function getClaims(): array
+    {
+        return $this->claims;
+    }
+
+    /**
+     * Get the 'exp' claim.
+     *
      * @return \DateTime
      * @throws PastException
      */
@@ -73,6 +89,8 @@ class JsonToken
     }
 
     /**
+     * Get the footer as a string.
+     *
      * @return string
      */
     public function getFooter(): string
@@ -81,6 +99,8 @@ class JsonToken
     }
 
     /**
+     * Get the footer as an array. Assumes JSON.
+     *
      * @return array
      * @throws PastException
      */
@@ -95,6 +115,8 @@ class JsonToken
     }
 
     /**
+     * Get the 'iat' claim.
+     *
      * @return \DateTime
      * @throws PastException
      */
@@ -104,6 +126,8 @@ class JsonToken
     }
 
     /**
+     * Get the 'iss' claim.
+     *
      * @return string
      * @throws PastException
      */
@@ -113,6 +137,8 @@ class JsonToken
     }
 
     /**
+     * Get the 'jti' claim.
+     *
      * @return string
      * @throws PastException
      */
@@ -122,6 +148,8 @@ class JsonToken
     }
 
     /**
+     * Get the 'nbf' claim.
+     *
      * @return \DateTime
      * @throws PastException
      */
@@ -131,6 +159,8 @@ class JsonToken
     }
 
     /**
+     * Get the 'sub' claim.
+     *
      * @return string
      * @throws PastException
      */
@@ -140,6 +170,8 @@ class JsonToken
     }
 
     /**
+     * Set a claim to an arbitrary value.
+     *
      * @param string $claim
      * @param string $value
      * @return self
@@ -151,6 +183,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'aud' claim.
+     *
      * @param string $aud
      * @return self
      */
@@ -161,6 +195,8 @@ class JsonToken
     }
 
     /**
+     * Set an array of claims in one go.
+     *
      * @param array $claims
      * @return self
      */
@@ -171,6 +207,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'exp' claim.
+     *
      * @param \DateTime|null $time
      * @return self
      */
@@ -184,6 +222,8 @@ class JsonToken
     }
 
     /**
+     * Set the footer.
+     *
      * @param string $footer
      * @return self
      */
@@ -194,6 +234,8 @@ class JsonToken
     }
 
     /**
+     * Set the footer, given an array of data. Converts to JSON.
+     *
      * @param array $footer
      * @return self
      * @throws PastException
@@ -208,6 +250,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'iat' claim.
+     *
      * @param \DateTime|null $time
      * @return self
      */
@@ -221,6 +265,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'iss' claim.
+     *
      * @param string $iss
      * @return self
      */
@@ -231,6 +277,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'jti' claim.
+     *
      * @param string $id
      * @return self
      */
@@ -241,6 +289,9 @@ class JsonToken
     }
 
     /**
+     * Set the cryptographic key used to authenticate (and possibly encrypt)
+     * the serialized token.
+     *
      * @param KeyInterface $key
      * @param bool $checkPurpose
      * @return self
@@ -297,6 +348,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'nbf' claim.
+     *
      * @param \DateTime|null $time
      * @return self
      */
@@ -310,6 +363,9 @@ class JsonToken
     }
 
     /**
+     * Set the purpose for this token. Allowed values:
+     * 'auth', 'enc', 'seal', 'sign'.
+     *
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
@@ -358,6 +414,8 @@ class JsonToken
     }
 
     /**
+     * Set the 'sub' claim.
+     *
      * @param string $sub
      * @return self
      */
@@ -368,6 +426,8 @@ class JsonToken
     }
 
     /**
+     * Set the version for the protocol.
+     *
      * @param string $version
      * @return self
      */
@@ -378,6 +438,8 @@ class JsonToken
     }
 
     /**
+     * Get the token as a string.
+     *
      * @return string
      * @throws PastException
      * @psalm-suppress MixedInferredReturnType

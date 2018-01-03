@@ -97,6 +97,10 @@ class Util
     }
 
     /**
+     * If a footer was included with the message, first verify that
+     * it's equivalent to the one we expect, then remove it from the
+     * token payload.
+     *
      * @param string $payload
      * @param string $footer
      * @return string

@@ -33,6 +33,8 @@ class Version1 implements ProtocolInterface
     const SIGN_SIZE = 256; // 2048-bit RSA = 256 byte signature
 
     /**
+     * Authenticate a message with a shared key.
+     *
      * @param string $data
      * @param SymmetricAuthenticationKey $key
      * @param string $footer
@@ -57,6 +59,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Verify a message with a shared key.
+     *
      * @param string $authMsg
      * @param SymmetricAuthenticationKey $key
      * @param string $footer
@@ -92,6 +96,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Encrypt a message using a shared key.
+     *
      * @param string $data
      * @param SymmetricEncryptionKey $key
      * @param string $footer
@@ -110,6 +116,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Decrypt a message using a shared key.
+     *
      * @param string $data
      * @param SymmetricEncryptionKey $key
      * @param string $footer
@@ -130,6 +138,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Encrypt a message using a recipient's public key.
+     *
      * @param string $data
      * @param AsymmetricPublicKey $key
      * @param string $footer
@@ -161,6 +171,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Decrypt a message using your private key.
+     *
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
@@ -198,6 +210,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Sign a message. Public-key digital signatures.
+     *
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
@@ -219,6 +233,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Verify a signed message. Public-key digital signatures.
+     *
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
      * @param string $footer

@@ -43,3 +43,14 @@ if the payload is encrypted. However, it is always authenticated. It's always ba
 ## Versions and their Respective Purposes
 
 See [Protocol Versions](01-Protocol-Versions) for specifics.
+
+## How should we pronounce PAST?
+
+Like the English word "pasta" without the final "a". It rhymes with "frost"
+and the first syllable in "roster".
+
+Pronouncing it like the English word "past" is acceptable, but
+politely discouraged.
+
+Implementations in other languages are encouraged, but not required,
+to make pasta puns in their naming convention.

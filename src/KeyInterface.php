@@ -9,6 +9,9 @@ namespace ParagonIE\PAST;
 interface KeyInterface
 {
     /**
+     * The intended version for this protocol. Currently only meaningful
+     * in asymmetric cryptography.
+     *
      * @return string
      */
     public function getProtocol(): string;
