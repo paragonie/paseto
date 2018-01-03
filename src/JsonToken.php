@@ -133,7 +133,7 @@ class JsonToken
     /**
      * @param string $claim
      * @param string $value
-     * @return JsonToken
+     * @return self
      */
     public function set(string $claim, $value): self
     {
