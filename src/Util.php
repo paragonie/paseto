@@ -122,4 +122,25 @@ class Util
         }
         return Binary::safeSubstr($payload, 0, $payload_len - $footer_len);
     }
+
+    /**
+     * Format the Additional Associated Data.
+     *
+     * Prefix with the length (64-bit unsigned little-endian integer)
+     * followed by each message. This provides a more explicit domain
+     * separation between each piece of the message.
+     *
+     * @param array<int, string> $pieces
+     * @return string
+     */
+    public static function prepareAad(array $pieces): string
+    {
+        $accumulator = \pack('P', \count($pieces));
+        foreach ($pieces as $piece) {
+            $len = Binary::safeStrlen($piece);
+            $accumulator .= \pack('P', $len);
+            $accumulator .= $piece;
+        }
+        return $accumulator;
+    }
 }

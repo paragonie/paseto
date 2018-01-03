@@ -26,7 +26,7 @@ use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in
 ### PAST
 
 ```
-v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9beB6mWxZjVDSujqYVzw8c1V7bWNGeDbyl93P4oqUPbM=
+v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8=
 ```
 
 This decodes to:
@@ -42,7 +42,7 @@ This decodes to:
   ```
 * Authentication tag:
   ```
-  beB6mWxZjVDSujqYVzw8c1V7bWNGeDbyl93P4oqUPbM=
+  VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8=
   ```
 
 ### JWT
