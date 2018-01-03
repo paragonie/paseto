@@ -73,4 +73,22 @@ interface ProtocolInterface
      * @throws \TypeError
      */
     public static function unseal(string $data, AsymmetricSecretKey $key, string $footer = ''): string;
+
+    /**
+     * @param string $data
+     * @param AsymmetricSecretKey $key
+     * @param string $footer
+     * @return string
+     */
+    public static function sign(string $data, AsymmetricSecretKey $key, string $footer = ''): string;
+
+    /**
+     * @param string $signMsg
+     * @param AsymmetricPublicKey $key
+     * @param string $footer
+     * @return string
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function signVerify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string;
 }

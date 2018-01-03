@@ -270,6 +270,7 @@ class Version1 implements ProtocolInterface
         list($encKey, $authKey) = $key->split(
             Binary::safeSubstr($nonce, 0, 16)
         );
+        /** @var string $ciphertext */
         $ciphertext = \openssl_encrypt(
             $plaintext,
             self::CIPHER_MODE,
@@ -277,6 +278,9 @@ class Version1 implements ProtocolInterface
             OPENSSL_RAW_DATA,
             Binary::safeSubstr($nonce, 16, 16)
         );
+        if (!\is_string($ciphertext)) {
+            throw new \Error('Encryption failed.');
+        }
         $mac = \hash_hmac(
             self::HASH_ALGO,
             $header . $nonce . $ciphertext . $footer,
@@ -337,6 +341,7 @@ class Version1 implements ProtocolInterface
             throw new \Exception('Invalid MAC');
         }
 
+        /** @var string $plaintext */
         $plaintext = \openssl_decrypt(
             $ciphertext,
             self::CIPHER_MODE,
@@ -344,6 +349,9 @@ class Version1 implements ProtocolInterface
             OPENSSL_RAW_DATA,
             Binary::safeSubstr($nonce, 16, 16)
         );
+        if (!\is_string($plaintext)) {
+            throw new \Error('Encryption failed.');
+        }
 
         return $plaintext;
     }
