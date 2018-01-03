@@ -9,28 +9,26 @@ use ParagonIE\PAST\{
 };
 
 /**
- * Class NotExpired
+ * Class Subject
  * @package ParagonIE\PAST\Rules
  */
-class NotExpired implements ValidationRuleInterface
+class Subject implements ValidationRuleInterface
 {
     /** @var string $failure */
     protected $failure = 'OK';
 
-    /** @var \DateTime $now */
-    protected $now;
+    /** @var string $subject */
+    protected $subject;
 
     /**
-     * NotExpired constructor.
-     * @param \DateTime|null $now Allows "now" to be overwritten for unit testing
+     * Subject constructor.
+     * @param string $subject
      */
-    public function __construct(\DateTime $now = null)
+    public function __construct(string $subject)
     {
-        if (!$now) {
-            $now = new \DateTime();
-        }
-        $this->now = $now;
+        $this->subject = $subject;
     }
+
     /**
      * @return string
      */
@@ -46,9 +44,11 @@ class NotExpired implements ValidationRuleInterface
     public function isValid(JsonToken $token): bool
     {
         try {
-            $expires = $token->getExpiration();
-            if ($expires < $this->now) {
-                $this->failure = 'This token has expired.';
+            $subject = $token->getSubject();
+            if (!\hash_equals($this->subject, $subject)) {
+                $this->failure = 'This token was not related to ' .
+                    $this->subject . ' (expected); its subject is ' .
+                    $subject . ' instead.';
                 return false;
             }
         } catch (PastException $ex) {

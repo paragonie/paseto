@@ -102,6 +102,7 @@ class JsonToken
     {
         return new \DateTime((string) $this->get('iat'));
     }
+
     /**
      * @return string
      * @throws PastException
@@ -110,7 +111,6 @@ class JsonToken
     {
         return (string) $this->get('iss');
     }
-
 
     /**
      * @return string
@@ -128,6 +128,15 @@ class JsonToken
     public function getNotBefore(): \DateTime
     {
         return new \DateTime((string) $this->get('nbf'));
+    }
+
+    /**
+     * @return string
+     * @throws PastException
+     */
+    public function getSubject(): string
+    {
+        return (string) $this->get('sub');
     }
 
     /**

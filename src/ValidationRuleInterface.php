@@ -9,6 +9,11 @@ namespace ParagonIE\PAST;
 interface ValidationRuleInterface
 {
     /**
+     * @return string
+     */
+    public function getFailureMessage(): string;
+
+    /**
      * @param JsonToken $token
      * @return bool
      */
