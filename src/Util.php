@@ -135,7 +135,7 @@ class Util
      */
     public static function prepareAad(array $pieces): string
     {
-        $accumulator = '';
+        $accumulator = \pack('P', \count($pieces));
         foreach ($pieces as $piece) {
             $len = Binary::safeStrlen($piece);
             $accumulator .= \pack('P', $len);

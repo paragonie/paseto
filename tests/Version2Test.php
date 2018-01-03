@@ -56,16 +56,16 @@ class Version2Test extends TestCase
         $footer = \json_encode(['key-id' => 'gandalf0']);
 
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9RlncOC5ppeg9qraMSSfXlDC-XzpBWDrZEt_F8rpXpbo=',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8=',
             Version2::auth($messsage, $key)
         );
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9u6yxLBfkMyQ6v5NGQPDuE9tM3IXHIKyawRz8qUFCP-Q=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwfxAg=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             Version2::auth($messsage, $key, $footer)
         );
         try {
             Version2::authVerify(
-                'v1.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwfxAg=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
                 $key,
                 $footer
             );
@@ -75,7 +75,7 @@ class Version2Test extends TestCase
 
         try {
             Version2::authVerify(
-                'v2.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                'v2.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwfxAg=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
                 $key,
                 $footer
             );
@@ -85,7 +85,7 @@ class Version2Test extends TestCase
 
         try {
             Version2::authVerify(
-                'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-8wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwgxAg=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
                 $key,
                 $footer
             );
@@ -95,7 +95,7 @@ class Version2Test extends TestCase
 
         try {
             Version2::authVerify(
-                'v2.auth.fyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.fyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+                'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwfxAg=.fyJrZXktaWQiOiJnYW5kYWxmMCJ9',
                 $key,
                 $footer
             );

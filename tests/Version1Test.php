@@ -175,12 +175,12 @@ class Version1Test extends TestCase
         $footer = \json_encode(['key-id' => 'gandalf0']);
 
         $this->assertSame(
-            'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9wj4GSG8cdwtxLeB_IH3y2elilkoyCoAN-ASQHDmAaEN5i6iYvLOJk0LSDbzPcs7y',
+            'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9oneoWrZWNIceku3gc3mxky87q171X2AaPG1yXkluTTuEf0O2vJSSxnzXZKLm5tHq',
             Version1::auth($messsage, $key)
         );
 
         $this->assertSame(
-            'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9qZPBGAN5fQWuJIKaeVzQv1_PYrYSCdmpouqsNU7kKiZkVOfsYE7dIUBFWvz6arlz.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9wCeZ4vYcmi6EdjT3W0UYpniF8S37SDRyYVDD8JQbk6tvxQyH2sip8TnMwU3sN8SK.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             Version1::auth($messsage, $key, $footer)
         );
         try {
