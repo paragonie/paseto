@@ -41,6 +41,17 @@ class JsonToken
     /** @var string $version */
     protected $version = Version2::HEADER;
 
+
+    /**
+     * @param string $aud
+     * @return self
+     */
+    public function setAudience(string $aud): self
+    {
+        $this->claims['aud'] = $aud;
+        return $this;
+    }
+
     /**
      * @param array $claims
      * @return self
@@ -48,6 +59,19 @@ class JsonToken
     public function setClaims(array $claims): self
     {
         $this->claims = $claims;
+        return $this;
+    }
+
+    /**
+     * @param \DateTime|null $time
+     * @return self
+     */
+    public function setExpiration(\DateTime $time = null): self
+    {
+        if (!$time) {
+            $time = new \DateTime('NOW');
+        }
+        $this->claims['exp'] = $time->format(\DateTime::ATOM);
         return $this;
     }
 
@@ -73,6 +97,39 @@ class JsonToken
             throw new PastException('Could not encode array into JSON');
         }
         return $this->setFooter($encoded);
+    }
+
+    /**
+     * @param \DateTime|null $time
+     * @return self
+     */
+    public function setIssuedAt(\DateTime $time = null): self
+    {
+        if (!$time) {
+            $time = new \DateTime('NOW');
+        }
+        $this->claims['iat'] = $time->format(\DateTime::ATOM);
+        return $this;
+    }
+
+    /**
+     * @param string $iss
+     * @return self
+     */
+    public function setIssuer(string $iss): self
+    {
+        $this->claims['iss'] = $iss;
+        return $this;
+    }
+
+    /**
+     * @param string $id
+     * @return self
+     */
+    public function setJti(string $id): self
+    {
+        $this->claims['jti'] = $id;
+        return $this;
     }
 
     /**
@@ -132,6 +189,19 @@ class JsonToken
     }
 
     /**
+     * @param \DateTime|null $time
+     * @return self
+     */
+    public function setNotBefore(\DateTime $time = null): self
+    {
+        if (!$time) {
+            $time = new \DateTime('NOW');
+        }
+        $this->claims['nbf'] = $time->format(\DateTime::ATOM);
+        return $this;
+    }
+
+    /**
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
@@ -178,6 +248,17 @@ class JsonToken
         $this->purpose = $purpose;
         return $this;
     }
+
+    /**
+     * @param string $sub
+     * @return self
+     */
+    public function setSubject(string $sub): self
+    {
+        $this->claims['sub'] = $sub;
+        return $this;
+    }
+
     /**
      * @param string $version
      * @return self
@@ -248,7 +329,7 @@ class JsonToken
      * @return string
      * @throws PastException
      */
-    public function setAudience(): string
+    public function getAudience(): string
     {
         return (string) $this->get('aud');
     }
@@ -331,6 +412,17 @@ class JsonToken
             return $this->claims[$claim];
         }
         throw new PastException('Claim not found: ' . $claim);
+    }
+
+    /**
+     * @param string $claim
+     * @param string $value
+     * @return JsonToken
+     */
+    public function set(string $claim, $value): self
+    {
+        $this->claims[$claim] = $value;
+        return $this;
     }
 
     /**
