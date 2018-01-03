@@ -42,7 +42,7 @@ This decodes to:
   ```
 * Authentication tag:
   ```
-  RlncOC5ppeg9qraMSSfXlDC-XzpBWDrZEt_F8rpXpbo=
+  VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8=
   ```
 
 ### JWT

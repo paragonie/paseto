@@ -105,14 +105,14 @@ use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
 use ParagonIE\Past\Protocol\{Version1, Version2};
 
 $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
-$messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
+$message = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
 $footer = \json_encode(['key-id' => 'gandalf0']);
 
-$v1Token = Version1::auth($messsage, $key);
-var_dump($v1Token);
-// string(156) "v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9tHUXb9BcoicC_kXc3fxkd_jpm2Laowv7OZ4sIH0ZlKRYcO2ez_zVtp_r94dfmh3W"
+$v1Token = Version1::auth($message, $key);
+var_dump((string) $v1Token);
+// string(156) "v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9oneoWrZWNIceku3gc3mxky87q171X2AaPG1yXkluTTuEf0O2vJSSxnzXZKLm5tHq"
 
-$token = Version2::auth($messsage, $key, $footer);
-var_dump($token);
-// string(165) "v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9"
+$token = Version2::auth($message, $key, $footer);
+var_dump((string) $token);
+// string(165) "v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwfxAg=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9"
 ```
