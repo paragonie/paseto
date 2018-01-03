@@ -41,6 +41,105 @@ class JsonToken
     /** @var string $version */
     protected $version = Version2::HEADER;
 
+    /**
+     * @param string $claim
+     * @return mixed
+     * @throws PastException
+     */
+    public function get(string $claim)
+    {
+        if (\array_key_exists($claim, $this->claims)) {
+            return $this->claims[$claim];
+        }
+        throw new PastException('Claim not found: ' . $claim);
+    }
+
+    /**
+     * @return string
+     * @throws PastException
+     */
+    public function getAudience(): string
+    {
+        return (string) $this->get('aud');
+    }
+
+    /**
+     * @return \DateTime
+     * @throws PastException
+     */
+    public function getExpiration(): \DateTime
+    {
+        return new \DateTime((string) $this->get('exp'));
+    }
+
+    /**
+     * @return string
+     */
+    public function getFooter(): string
+    {
+        return $this->footer;
+    }
+
+    /**
+     * @return array
+     * @throws PastException
+     */
+    public function getFooterArray(): array
+    {
+        /** @var array $decoded */
+        $decoded = \json_decode($this->footer, true);
+        if (!\is_array($decoded)) {
+            throw new PastException('Footer is not a valid JSON document');
+        }
+        return $decoded;
+    }
+
+    /**
+     * @return \DateTime
+     * @throws PastException
+     */
+    public function getIssuedAt(): \DateTime
+    {
+        return new \DateTime((string) $this->get('iat'));
+    }
+    /**
+     * @return string
+     * @throws PastException
+     */
+    public function getIssuer(): string
+    {
+        return (string) $this->get('iss');
+    }
+
+
+    /**
+     * @return string
+     * @throws PastException
+     */
+    public function getJti(): string
+    {
+        return (string) $this->get('jti');
+    }
+
+    /**
+     * @return \DateTime
+     * @throws PastException
+     */
+    public function getNotBefore(): \DateTime
+    {
+        return new \DateTime((string) $this->get('nbf'));
+    }
+
+    /**
+     * @param string $claim
+     * @param string $value
+     * @return JsonToken
+     */
+    public function set(string $claim, $value): self
+    {
+        $this->claims[$claim] = $value;
+        return $this;
+    }
 
     /**
      * @param string $aud
@@ -323,106 +422,6 @@ class JsonToken
                 break;
         }
         throw new PastException('Unsupported key/purpose pairing.');
-    }
-
-    /**
-     * @return string
-     * @throws PastException
-     */
-    public function getAudience(): string
-    {
-        return (string) $this->get('aud');
-    }
-
-    /**
-     * @return \DateTime
-     * @throws PastException
-     */
-    public function getExpiration(): \DateTime
-    {
-        return new \DateTime((string) $this->get('exp'));
-    }
-
-    /**
-     * @return string
-     */
-    public function getFooter(): string
-    {
-        return $this->footer;
-    }
-
-    /**
-     * @return array
-     * @throws PastException
-     */
-    public function getFooterArray(): array
-    {
-        /** @var array $decoded */
-        $decoded = \json_decode($this->footer, true);
-        if (!\is_array($decoded)) {
-            throw new PastException('Footer is not a valid JSON document');
-        }
-        return $decoded;
-    }
-
-    /**
-     * @return \DateTime
-     * @throws PastException
-     */
-    public function getIssuedAt(): \DateTime
-    {
-        return new \DateTime((string) $this->get('iat'));
-    }
-    /**
-     * @return string
-     * @throws PastException
-     */
-    public function getIssuer(): string
-    {
-        return (string) $this->get('iss');
-    }
-
-
-    /**
-     * @return string
-     * @throws PastException
-     */
-    public function getJti(): string
-    {
-        return (string) $this->get('jti');
-    }
-
-    /**
-     * @return \DateTime
-     * @throws PastException
-     */
-    public function getNotBefore(): \DateTime
-    {
-        return new \DateTime((string) $this->get('nbf'));
-    }
-
-    /**
-     * @param string $claim
-     * @return mixed
-     * @throws PastException
-     */
-    public function get(string $claim)
-    {
-        if (\array_key_exists($claim, $this->claims)) {
-            return $this->claims[$claim];
-        }
-        throw new PastException('Claim not found: ' . $claim);
-    }
-
-    /**
-     * @param string $claim
-     * @param string $value
-     * @return JsonToken
-     */
-    public function set(string $claim, $value): self
-    {
-        $this->claims[$claim] = $value;
-        return $this;
     }
 
     /**
