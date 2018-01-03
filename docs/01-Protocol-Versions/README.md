@@ -3,6 +3,20 @@
 This document describes the cryptography and encoding rules for PAST protocol versions,
 to assist in cross-platform library development.
 
+# Rules for Current and Future Protocol Versions
+
+1. Everything must be authenticated. Attackers should never be allowed the opportunity
+   to alter messages freely.
+   * If encryption is specified, unauthenticated modes (e.g. AES-CBC) are forbidden.
+   * The nonce or initialization vector must be covered by the authentication
+     tag, not just the ciphertext.
+2. Non-deterministic and stateful signature schemes (e.g. ECDSA without RFC 6979, XMSS) 
+   are forbidden.
+3. Public-key cryptography must be IND-CCA2 secure to be considered for inclusion.
+   * This means no RSA with PKCS1v1.5 padding, textbook RSA, etc.
+
+# Versions
+
 ## Version 1: Compatibility Mode
 
 * **`v1.auth`**: Symmetric Authentication:
@@ -39,35 +53,22 @@ Version 1 is recommended only for legacy systems that cannot use modern cryptogr
 
 ## Version 2: Recommended
 
-* **`v2.auth`**: Symmetric Authentication: 
-  * Authenticating: `sodium_crypto_auth()`
+* **`v2.auth`**: Symmetric Authentication:
+  * HMAC-SHA512 truncated to 256 characters 
+  * Authenticating: `sodium_crypto_auth()` 
   * Verifying: `sodium_crypto_auth_verify()`
 * **`v2.enc`**: Symmetric Encryption:
+  * XChaCha20-Poly1305 (192-bit nonce, 256-bit key, 128-bit authentication tag)
   * Encrypting: `sodium_crypto_aead_xchacha20poly1305_ietf_encrypt()`
   * Decrypting: `sodium_crypto_aead_xchacha20poly1305_ietf_decrypt()`
 * **`v2.sign`**: Asymmetric Authentication (Public-Key Signatures): 
+  * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
   * Verifying: `sodium_crypto_sign_verify_detached()`
 * **`v2.seal`**: Asymmetric Encryption (Public-Key Encryption):
   * Key exchange (`sodium_crypto_kx()`) with an ephemeral keypair,
     followed by symmetric encryption
+  * `sodium_crypto_kx()` is a BLAKE2 hash of the X25519 shared secret,
+    followed by the sender's ephemeral public key, followed by the
+    recipient's long-term public key.
 
-## Example
-
-```php
-<?php
-use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
-use ParagonIE\Past\{Version1, Version2};
-
-$key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
-$messsage = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
-$footer = \json_encode(['key-id' => 'gandalf0']);
-
-$v1Token = Version1::auth($messsage, $key);
-var_dump($v1Token);
-// string(156) "v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9tHUXb9BcoicC_kXc3fxkd_jpm2Laowv7OZ4sIH0ZlKRYcO2ez_zVtp_r94dfmh3W"
-
-$token = Version2::auth($messsage, $key, $footer);
-var_dump($token);
-// string(165) "v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9hClJIR0hw-ULW0zU0023NYqpdOFmUB7-7wBP8TzILYA=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9"
-```
