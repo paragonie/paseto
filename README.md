@@ -101,3 +101,6 @@ cleartext but base64url-encoded) is included in the signature or authentication 
 ## How to Use this Library
 
 See [the documentation](https://github.com/paragonie/past/tree/master/docs).
+
+The section dedicated to [this PHP implementation](https://github.com/paragonie/past/tree/master/docs/02-PHP-Library)
+may be more relevant.
