@@ -1,5 +1,14 @@
 # Common Implementation Details
 
+## Base64 Encoding
+
+Nearly every component in a PAST (except for the version, purpose, and the `.`
+separators) will be encoded using [Base64url](https://tools.ietf.org/html/rfc4648#page-8),
+without `=` padding.
+
+This is implemented in our [constant-time RFC 4648 library](https://github.com/paragonie/constant_time_encoding)
+as `Base64UrlSafe::encodeUnpadded()`.
+
 ## Authentication Padding
 
 Multi-part messages (e.g. header, content, footer) are encoded

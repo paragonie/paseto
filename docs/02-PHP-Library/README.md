@@ -115,26 +115,26 @@ $footer = 'key-id:gandalf0';
 # Version 1:
 $v1Token = Version1::auth($message, $key);
 var_dump((string) $v1Token);
-// string(120) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7oOqvKH5vRLbtFUt9aCpj07IQ0xep-XyaUitfocuZHI4KTE2XvvPxxFwpprODHu48="
+// string(119) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7oOqvKH5vRLbtFUt9aCpj07IQ0xep-XyaUitfocuZHI4KTE2XvvPxxFwpprODHu48"
 var_dump(Version1::authVerify($v1Token, $key));
 // string(35) "This is a signed, non-JSON message."
 
 $v1Token = Version1::auth($message, $key, $footer);
 var_dump((string) $v1Token);
-// string(141) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS4-OUI1gPNfKbXnlri80cOL09sAeDPufbFZPtDJtBYJHvw-paFOJB7c_idufcwFxYs=.a2V5LWlkOmdhbmRhbGYw"
+// string(140) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS4-OUI1gPNfKbXnlri80cOL09sAeDPufbFZPtDJtBYJHvw-paFOJB7c_idufcwFxYs.a2V5LWlkOmdhbmRhbGYw"
 var_dump(Version1::authVerify($v1Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
 
 # Version 2:
 $v2Token = Version2::auth($message, $key);
 var_dump((string) $v2Token);
-// string(100) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS6oHEOlDwiHeyJ2gKEISXF24i2ZraSPyNXUTYQX-V3siA=="
+// string(98) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS6oHEOlDwiHeyJ2gKEISXF24i2ZraSPyNXUTYQX-V3siA"
 var_dump(Version2::authVerify($v2Token, $key));
 // string(35) "This is a signed, non-JSON message."
 
 $v2Token = Version2::auth($message, $key, $footer);
 var_dump((string) $v2Token);
-// string(121) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7NoNXmf0CVrTmfso33FW1FCXOevPgWvvZoAvyu1d07wA==.a2V5LWlkOmdhbmRhbGYw"
+// string(119) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7NoNXmf0CVrTmfso33FW1FCXOevPgWvvZoAvyu1d07wA.a2V5LWlkOmdhbmRhbGYw"
 var_dump(Version2::authVerify($v2Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
 ```
