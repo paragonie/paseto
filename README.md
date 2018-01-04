@@ -45,6 +45,8 @@ This decodes to:
   VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8=
   ```
 
+To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/past/tree/master/docs/01-Protocol-Versions).
+
 ### JWT
 
 An example JWT ([taken from JWT.io](https://jwt.io)) might look like this:
