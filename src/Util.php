@@ -133,7 +133,7 @@ class Util
      * @param array<int, string> $pieces
      * @return string
      */
-    public static function prepareAad(array $pieces): string
+    public static function preAuthEncode(array $pieces): string
     {
         $accumulator = \pack('P', \count($pieces));
         foreach ($pieces as $piece) {

@@ -45,7 +45,7 @@ class Version1 implements ProtocolInterface
         $header = self::HEADER . '.auth.';
         $mac = \hash_hmac(
             self::HASH_ALGO,
-            Util::prepareAad([$header, $data, $footer]),
+            Util::preAuthEncode([$header, $data, $footer]),
             $key->raw(),
             true
         );
@@ -85,7 +85,7 @@ class Version1 implements ProtocolInterface
         $mac = Binary::safeSubstr($decoded, $len - 48);
         $calc = \hash_hmac(
             self::HASH_ALGO,
-            Util::prepareAad([$givenHeader, $message, $footer]),
+            Util::preAuthEncode([$givenHeader, $message, $footer]),
             $key->raw(),
             true
         );
@@ -223,7 +223,7 @@ class Version1 implements ProtocolInterface
         $rsa = self::getRsa(true);
         $rsa->loadKey($key->raw());
         $signature = $rsa->sign(
-            Util::prepareAad([$header, $data, $footer])
+            Util::preAuthEncode([$header, $data, $footer])
         );
         if ($footer) {
             return $header .
@@ -260,7 +260,7 @@ class Version1 implements ProtocolInterface
         $rsa = self::getRsa(true);
         $rsa->loadKey($key->raw());
         $valid = $rsa->verify(
-            Util::prepareAad([$givenHeader, $message, $footer]),
+            Util::preAuthEncode([$givenHeader, $message, $footer]),
             $signature
         );
         if (!$valid) {
@@ -301,7 +301,7 @@ class Version1 implements ProtocolInterface
         }
         $mac = \hash_hmac(
             self::HASH_ALGO,
-            Util::prepareAad([$header, $nonce, $ciphertext, $footer]),
+            Util::preAuthEncode([$header, $nonce, $ciphertext, $footer]),
             $authKey,
             true
         );
@@ -351,7 +351,7 @@ class Version1 implements ProtocolInterface
 
         $calc = \hash_hmac(
             self::HASH_ALGO,
-            Util::prepareAad([$header, $nonce, $ciphertext, $footer]),
+            Util::preAuthEncode([$header, $nonce, $ciphertext, $footer]),
             $authKey,
             true
         );

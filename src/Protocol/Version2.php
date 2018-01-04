@@ -41,7 +41,7 @@ class Version2 implements ProtocolInterface
     ): string {
         $header = self::HEADER . '.auth.';
         $mac = \sodium_crypto_auth(
-            Util::prepareAad([$header, $data, $footer]),
+            Util::preAuthEncode([$header, $data, $footer]),
             $key->raw()
         );
         if ($footer) {
@@ -83,7 +83,7 @@ class Version2 implements ProtocolInterface
         $mac = Binary::safeSubstr($decoded, $len - 32);
         $valid = \sodium_crypto_auth_verify(
             $mac,
-            Util::prepareAad([$givenHeader, $message, $footer]),
+            Util::preAuthEncode([$givenHeader, $message, $footer]),
             $key->raw()
         );
         if (!$valid) {
@@ -237,7 +237,7 @@ class Version2 implements ProtocolInterface
     {
         $header = self::HEADER . '.sign.';
         $signature = \sodium_crypto_sign_detached(
-            Util::prepareAad([$header, $data, $footer]),
+            Util::preAuthEncode([$header, $data, $footer]),
             $key->raw()
         );
         if ($footer) {
@@ -274,7 +274,7 @@ class Version2 implements ProtocolInterface
 
         $valid = \sodium_crypto_sign_verify_detached(
             $signature,
-            Util::prepareAad([$givenHeader, $message, $footer]),
+            Util::preAuthEncode([$givenHeader, $message, $footer]),
             $key->raw()
         );
         if (!$valid) {
@@ -301,7 +301,7 @@ class Version2 implements ProtocolInterface
         $nonce = \random_bytes(\ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
         $ciphertext = \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
-            Util::prepareAad([$header, $nonce, $footer]),
+            Util::preAuthEncode([$header, $nonce, $footer]),
             $nonce,
             $key->raw()
         );
@@ -349,7 +349,7 @@ class Version2 implements ProtocolInterface
         );
         return \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_decrypt(
             $ciphertext,
-            Util::prepareAad([$header, $nonce, $footer]),
+            Util::preAuthEncode([$header, $nonce, $footer]),
             $nonce,
             $key->raw()
         );

@@ -51,6 +51,8 @@ OAEP and PSS for RSA encryption and RSA signatures (respectively), never PKCS1v1
 
 Version 1 is recommended only for legacy systems that cannot use modern cryptography.
 
+See also: [Common implementation details for all versions](Common.md).
+
 ## Version 2: Recommended
 
 * **`v2.auth`**: Symmetric Authentication:
@@ -72,3 +74,4 @@ Version 1 is recommended only for legacy systems that cannot use modern cryptogr
     followed by the sender's ephemeral public key, followed by the
     recipient's long-term public key.
 
+See also: [Common implementation details for all versions](Common.md).
