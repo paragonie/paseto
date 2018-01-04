@@ -30,6 +30,9 @@ class JsonToken
 {
     use RegisteredClaims;
 
+    /** @var string $cached */
+    protected $cached = '';
+
     /** @var array<string, string> */
     protected $claims = [];
 
@@ -182,6 +185,7 @@ class JsonToken
      */
     public function set(string $claim, $value): self
     {
+        $this->cached = '';
         $this->claims[$claim] = $value;
         return $this;
     }
@@ -194,6 +198,7 @@ class JsonToken
      */
     public function setAudience(string $aud): self
     {
+        $this->cached = '';
         $this->claims['aud'] = $aud;
         return $this;
     }
@@ -206,6 +211,7 @@ class JsonToken
      */
     public function setClaims(array $claims): self
     {
+        $this->cached = '';
         $this->claims = $claims;
         return $this;
     }
@@ -221,6 +227,7 @@ class JsonToken
         if (!$time) {
             $time = new \DateTime('NOW');
         }
+        $this->cached = '';
         $this->claims['exp'] = $time->format(\DateTime::ATOM);
         return $this;
     }
@@ -233,6 +240,7 @@ class JsonToken
      */
     public function setFooter(string $footer = ''): self
     {
+        $this->cached = '';
         $this->footer = $footer;
         return $this;
     }
@@ -264,6 +272,7 @@ class JsonToken
         if (!$time) {
             $time = new \DateTime('NOW');
         }
+        $this->cached = '';
         $this->claims['iat'] = $time->format(\DateTime::ATOM);
         return $this;
     }
@@ -276,6 +285,7 @@ class JsonToken
      */
     public function setIssuer(string $iss): self
     {
+        $this->cached = '';
         $this->claims['iss'] = $iss;
         return $this;
     }
@@ -288,6 +298,7 @@ class JsonToken
      */
     public function setJti(string $id): self
     {
+        $this->cached = '';
         $this->claims['jti'] = $id;
         return $this;
     }
@@ -335,6 +346,8 @@ class JsonToken
                     throw new InvalidKeyException('Unknown purpose');
             }
         }
+
+        $this->cached = '';
         $this->key = $key;
         return $this;
     }
@@ -350,6 +363,7 @@ class JsonToken
         if (!$time) {
             $time = new \DateTime('NOW');
         }
+        $this->cached = '';
         $this->claims['nbf'] = $time->format(\DateTime::ATOM);
         return $this;
     }
@@ -394,6 +408,7 @@ class JsonToken
             }
         }
 
+        $this->cached = '';
         $this->purpose = $purpose;
         return $this;
     }
@@ -406,6 +421,7 @@ class JsonToken
      */
     public function setSubject(string $sub): self
     {
+        $this->cached = '';
         $this->claims['sub'] = $sub;
         return $this;
     }
@@ -418,6 +434,7 @@ class JsonToken
      */
     public function setVersion(string $version): self
     {
+        $this->cached = '';
         $this->version = $version;
         return $this;
     }
@@ -431,6 +448,9 @@ class JsonToken
      */
     public function toString(): string
     {
+        if (!empty($this->cached)) {
+            return $this->cached;
+        }
         // Mutual sanity checks
         $this->setKey($this->key, true);
         $this->setPurpose($this->purpose, true);
@@ -450,18 +470,21 @@ class JsonToken
         switch ($this->purpose) {
             case 'auth':
                 if ($this->key instanceof SymmetricAuthenticationKey) {
-                    return $protocol::auth($claims, $this->key, $this->footer);
+                    $this->cached = $protocol::auth($claims, $this->key, $this->footer);
+                    return $this->cached;
                 }
                 break;
             case 'enc':
                 if ($this->key instanceof SymmetricEncryptionKey) {
-                    return $protocol::encrypt($claims, $this->key, $this->footer);
+                    $this->cached = $protocol::encrypt($claims, $this->key, $this->footer);
+                    return $this->cached;
                 }
                 break;
             case 'sign':
                 if ($this->key instanceof AsymmetricSecretKey) {
                     try {
-                        return $protocol::sign($claims, $this->key, $this->footer);
+                        $this->cached = $protocol::sign($claims, $this->key, $this->footer);
+                        return $this->cached;
                     } catch (\Throwable $ex) {
                         throw new PastException('Signing failed.', 0, $ex);
                     }
