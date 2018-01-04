@@ -86,7 +86,7 @@ $parser = (new Parser())
     ->setKey($sharedAuthKey)
     ->setPurpose('auth')
     // Only allow version 2
-    ->setAllowedVarsions(['v2']);
+    ->setAllowedVersions(['v2']);
 
 try {
     $token = $parser->parse($providedToken);
