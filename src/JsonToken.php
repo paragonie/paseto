@@ -11,7 +11,6 @@ use ParagonIE\PAST\Exception\{
     PastException
 };
 use ParagonIE\PAST\Keys\{
-    AsymmetricPublicKey,
     AsymmetricSecretKey,
     SymmetricAuthenticationKey,
     SymmetricEncryptionKey
