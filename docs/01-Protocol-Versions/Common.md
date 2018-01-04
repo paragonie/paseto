@@ -18,8 +18,9 @@ Pre-Authentication Encoding).
 ### PAE Definition
 
 **PAE()** accepts an array of strings (usually denoted as
-`array<int, string>` to signify integer keys, but in other languages
-`string[]` is preferred; in PHP they're synonymous).
+`array<int, string>` in docblocks to signify integer keys, but in
+other languages, `string[]` is preferred; in the PHP community
+they're synonymous).
 
 **LE64()** encodes a 64-bit unsigned integer into a little-endian
 binary string.
