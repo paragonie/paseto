@@ -26,16 +26,16 @@ class Version1Test extends TestCase
 
         foreach ($messages as $message) {
             $auth = Version1::auth($message, $key);
-            $this->assertTrue(\is_string($auth));
+            $this->assertInternalType('string', $auth);
             $this->assertSame('v1.auth.', Binary::safeSubstr($auth, 0, 8));
 
             $decode = Version1::authVerify($auth, $key);
-            $this->assertTrue(\is_string($decode));
+            $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
 
             // Now with a footer
             $auth = Version1::auth($message, $key, 'footer');
-            $this->assertTrue(\is_string($auth));
+            $this->assertInternalType('string', $auth);
             $this->assertSame('v1.auth.', Binary::safeSubstr($auth, 0, 8));
             try {
                 Version1::authVerify($auth, $key);
@@ -43,7 +43,7 @@ class Version1Test extends TestCase
             } catch (\Exception $ex) {
             }
             $decode = Version1::authVerify($auth, $key, 'footer');
-            $this->assertTrue(\is_string($decode));
+            $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }
     }
@@ -63,11 +63,11 @@ class Version1Test extends TestCase
 
         foreach ($messages as $message) {
             $encrypted = Version1::encrypt($message, $key);
-            $this->assertTrue(\is_string($encrypted));
+            $this->assertInternalType('string', $encrypted);
             $this->assertSame('v1.enc.', Binary::safeSubstr($encrypted, 0, 7));
 
             $decode = Version1::decrypt($encrypted, $key);
-            $this->assertTrue(\is_string($decode));
+            $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
 
             // Now with a footer
@@ -77,11 +77,11 @@ class Version1Test extends TestCase
             } catch (\Exception $ex) {
             }
             $encrypted = Version1::encrypt($message, $key, 'footer');
-            $this->assertTrue(\is_string($encrypted));
+            $this->assertInternalType('string', $encrypted);
             $this->assertSame('v1.enc.', Binary::safeSubstr($encrypted, 0, 7));
 
             $decode = Version1::decrypt($encrypted, $key, 'footer');
-            $this->assertTrue(\is_string($decode));
+            $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }
     }
@@ -105,16 +105,16 @@ class Version1Test extends TestCase
 
         foreach ($messages as $message) {
             $signed = Version1::sign($message, $privateKey);
-            $this->assertTrue(\is_string($signed));
+            $this->assertInternalType('string', $signed);
             $this->assertSame('v1.sign.', Binary::safeSubstr($signed, 0, 8));
 
             $decode = Version1::signVerify($signed, $publicKey);
-            $this->assertTrue(\is_string($decode));
+            $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
 
             // Now with a footer
             $signed = Version1::sign($message, $privateKey, 'footer');
-            $this->assertTrue(\is_string($signed));
+            $this->assertInternalType('string', $signed);
             $this->assertSame('v1.sign.', Binary::safeSubstr($signed, 0, 8));
             try {
                 Version1::signVerify($signed, $publicKey);
@@ -122,7 +122,7 @@ class Version1Test extends TestCase
             } catch (\Exception $ex) {
             }
             $decode = Version1::signVerify($signed, $publicKey, 'footer');
-            $this->assertTrue(\is_string($decode));
+            $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }
     }
