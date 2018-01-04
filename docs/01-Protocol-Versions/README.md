@@ -10,8 +10,8 @@ to assist in cross-platform library development.
    * If encryption is specified, unauthenticated modes (e.g. AES-CBC) are forbidden.
    * The nonce or initialization vector must be covered by the authentication
      tag, not just the ciphertext.
-2. Non-deterministic and stateful signature schemes (e.g. ECDSA without RFC 6979, XMSS) 
-   are forbidden.
+2. Non-deterministic, stateful, and otherwise dangerous signature schemes (e.g. ECDSA
+   without RFC 6979, XMSS) are forbidden.
 3. Public-key cryptography must be IND-CCA2 secure to be considered for inclusion.
    * This means no RSA with PKCS1v1.5 padding, textbook RSA, etc.
 
