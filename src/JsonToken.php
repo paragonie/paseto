@@ -3,7 +3,11 @@ declare(strict_types=1);
 namespace ParagonIE\PAST;
 
 use ParagonIE\PAST\Exception\{
+    EncodingException,
     InvalidKeyException,
+    InvalidPurposeException,
+    InvalidVersionException,
+    NotFoundException,
     PastException
 };
 use ParagonIE\PAST\Keys\{
@@ -53,7 +57,7 @@ class JsonToken
         if (\array_key_exists($claim, $this->claims)) {
             return $this->claims[$claim];
         }
-        throw new PastException('Claim not found: ' . $claim);
+        throw new NotFoundException('Claim not found: ' . $claim);
     }
 
     /**
@@ -109,7 +113,7 @@ class JsonToken
         /** @var array $decoded */
         $decoded = \json_decode($this->footer, true);
         if (!\is_array($decoded)) {
-            throw new PastException('Footer is not a valid JSON document');
+            throw new EncodingException('Footer is not a valid JSON document');
         }
         return $decoded;
     }
@@ -244,7 +248,7 @@ class JsonToken
     {
         $encoded = \json_encode($footer);
         if (!\is_string($encoded)) {
-            throw new PastException('Could not encode array into JSON');
+            throw new EncodingException('Could not encode array into JSON');
         }
         return $this->setFooter($encoded);
     }
@@ -369,7 +373,7 @@ class JsonToken
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
-     * @throws PastException
+     * @throws InvalidPurposeException
      */
     public function setPurpose(string $purpose, bool $checkKeyType = false): self
     {
@@ -378,34 +382,34 @@ class JsonToken
             switch ($keyType) {
                 case SymmetricAuthenticationKey::class:
                     if (!\hash_equals('auth', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected auth, got ' . $purpose
                         );
                     }
                     break;
                 case SymmetricEncryptionKey::class:
                     if (!\hash_equals('enc', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected enc, got ' . $purpose
                         );
                     }
                     break;
                 case AsymmetricPublicKey::class:
                     if (!\hash_equals('seal', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected seal, got ' . $purpose
                         );
                     }
                     break;
                 case AsymmetricSecretKey::class:
                     if (!\hash_equals('sign', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected sign, got ' . $purpose
                         );
                     }
                     break;
                 default:
-                    throw new PastException('Unknown purpose: ' . $purpose);
+                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
             }
         }
 
@@ -459,7 +463,7 @@ class JsonToken
                 $protocol = Version2::class;
                 break;
             default:
-                throw new PastException('Unsupported version: ' . $this->version);
+                throw new InvalidVersionException('Unsupported version: ' . $this->version);
         }
         /** @var ProtocolInterface $protocol */
         switch ($this->purpose) {

@@ -4,9 +4,13 @@ namespace ParagonIE\PAST;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\PAST\Exception\{
+    EncodingException,
     InvalidKeyException,
+    InvalidPurposeException,
+    InvalidVersionException,
     PastException,
-    RuleViolation
+    RuleViolation,
+    SecurityException
 };
 use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
@@ -101,13 +105,13 @@ class Parser
         /** @var array<int, string> $pieces */
         $pieces = \explode('.', $tainted);
         if (\count($pieces) < 3) {
-            throw new PastException('Truncated or invalid token');
+            throw new SecurityException('Truncated or invalid token');
         }
 
         // First, check against the user's specified list of allowed versions.
         $header = $pieces[0];
         if (!\in_array($header, $this->allowedVersions, true)) {
-            throw new PastException('Disallowed or unsupported version');
+            throw new InvalidVersionException('Disallowed or unsupported version');
         }
 
         // Our parser's built-in whitelist of headers is defined here.
@@ -119,7 +123,7 @@ class Parser
                 $protocol = Version2::class;
                 break;
             default:
-                throw new PastException('Disallowed or unsupported version');
+                throw new InvalidVersionException('Disallowed or unsupported version');
         }
         /** @var ProtocolInterface $protocol */
         /** @var string $purpose */
@@ -129,7 +133,7 @@ class Parser
         // $this->purpose is not mandatory, but if it's set, verify against it.
         if (!empty($this->purpose)) {
             if (!\hash_equals($this->purpose, $purpose)) {
-                throw new PastException('Disallowed or unsupported purpose');
+                throw new InvalidPurposeException('Disallowed or unsupported purpose');
             }
         }
 
@@ -137,7 +141,7 @@ class Parser
         switch ($purpose) {
             case 'auth':
                 if (!($this->key instanceof SymmetricAuthenticationKey)) {
-                    throw new PastException('Invalid key type');
+                    throw new InvalidKeyException('Invalid key type');
                 }
                 $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
@@ -151,7 +155,7 @@ class Parser
                 break;
             case 'enc':
                 if (!($this->key instanceof SymmetricEncryptionKey)) {
-                    throw new PastException('Invalid key type');
+                    throw new InvalidKeyException('Invalid key type');
                 }
                 $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
@@ -165,7 +169,7 @@ class Parser
                 break;
             case 'seal':
                 if (!($this->key instanceof AsymmetricSecretKey)) {
-                    throw new PastException('Invalid key type');
+                    throw new InvalidKeyException('Invalid key type');
                 }
                 $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
@@ -179,7 +183,7 @@ class Parser
                 break;
             case 'sign':
                 if (!($this->key instanceof AsymmetricPublicKey)) {
-                    throw new PastException('Invalid key type');
+                    throw new InvalidKeyException('Invalid key type');
                 }
                 $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
@@ -200,7 +204,7 @@ class Parser
         /** @var array $claims */
         $claims = \json_decode((string) $decoded, true);
         if (!\is_array($claims)) {
-            throw new PastException('Not a JSON token.');
+            throw new EncodingException('Not a JSON token.');
         }
 
         // Let's build the token object.
@@ -292,34 +296,34 @@ class Parser
             switch ($keyType) {
                 case SymmetricAuthenticationKey::class:
                     if (!\hash_equals('auth', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected auth, got ' . $purpose
                         );
                     }
                     break;
                 case SymmetricEncryptionKey::class:
                     if (!\hash_equals('enc', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected enc, got ' . $purpose
                         );
                     }
                     break;
                 case AsymmetricSecretKey::class:
                     if (!\hash_equals('seal', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected seal, got ' . $purpose
                         );
                     }
                     break;
                 case AsymmetricPublicKey::class:
                     if (!\hash_equals('sign', $purpose)) {
-                        throw new PastException(
+                        throw new InvalidPurposeException(
                             'Invalid purpose. Expected sign, got ' . $purpose
                         );
                     }
                     break;
                 default:
-                    throw new PastException('Unknown purpose: ' . $purpose);
+                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
             }
         }
 
