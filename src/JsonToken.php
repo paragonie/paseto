@@ -469,20 +469,20 @@ class JsonToken
         switch ($this->purpose) {
             case 'auth':
                 if ($this->key instanceof SymmetricAuthenticationKey) {
-                    $this->cached = $protocol::auth($claims, $this->key, $this->footer);
+                    $this->cached = (string) $protocol::auth($claims, $this->key, $this->footer);
                     return $this->cached;
                 }
                 break;
             case 'enc':
                 if ($this->key instanceof SymmetricEncryptionKey) {
-                    $this->cached = $protocol::encrypt($claims, $this->key, $this->footer);
+                    $this->cached = (string) $protocol::encrypt($claims, $this->key, $this->footer);
                     return $this->cached;
                 }
                 break;
             case 'sign':
                 if ($this->key instanceof AsymmetricSecretKey) {
                     try {
-                        $this->cached = $protocol::sign($claims, $this->key, $this->footer);
+                        $this->cached = (string) $protocol::sign($claims, $this->key, $this->footer);
                         return $this->cached;
                     } catch (\Throwable $ex) {
                         throw new PastException('Signing failed.', 0, $ex);
