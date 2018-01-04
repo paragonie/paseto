@@ -49,10 +49,8 @@ use ParagonIE\PAST\Protocol\Version2;
 /**
  * @var SymmetricAuthenticationKey $sharedAuthKey
  */
-$token = (new JsonToken())
-    ->setKey($sharedAuthKey)
+$token = JsonToken::authenticated($sharedAuthKey)
     ->setVersion(Version2::HEADER)
-    ->setPurpose('auth')
     // Set it to expire in one day
     ->setExpiration(
         (new DateTime())->add(new DateInterval('P01D'))
