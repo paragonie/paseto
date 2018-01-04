@@ -36,6 +36,9 @@ An implementation may look like this:
 
 ```javascript
 function PAE(pieces) {
+    if (!Array.isArray(pieces)) {
+        throw TypeError('Expected an array.');
+    }
     var count = pieces.length;
     var output = LE64(count);
     for (var i = 0; i < count; i++) {

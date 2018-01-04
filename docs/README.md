@@ -2,7 +2,7 @@
 
 ## PAST Message Format:
 
-### Without the Optinal Footer
+### Without the Optional Footer
 
 ```
 version.purpose.payload

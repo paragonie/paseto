@@ -139,7 +139,7 @@ class Parser
                 if (!($this->key instanceof SymmetricAuthenticationKey)) {
                     throw new PastException('Invalid key type');
                 }
-                $footer = (count($pieces) > 3)
+                $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
                     : '';
                 try {
@@ -153,7 +153,7 @@ class Parser
                 if (!($this->key instanceof SymmetricEncryptionKey)) {
                     throw new PastException('Invalid key type');
                 }
-                $footer = (count($pieces) > 3)
+                $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
                     : '';
                 try {
@@ -167,7 +167,7 @@ class Parser
                 if (!($this->key instanceof AsymmetricSecretKey)) {
                     throw new PastException('Invalid key type');
                 }
-                $footer = (count($pieces) > 4)
+                $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
                     : '';
                 try {
@@ -181,7 +181,7 @@ class Parser
                 if (!($this->key instanceof AsymmetricPublicKey)) {
                     throw new PastException('Invalid key type');
                 }
-                $footer = (count($pieces) > 4)
+                $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
                     : '';
                 try {

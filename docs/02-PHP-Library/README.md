@@ -26,8 +26,12 @@ This will generate a `TypeError`:
 ```php
 <?php
 use ParagonIE\PAST\Protocol\Version2;
+use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
 
-$token = Version2::encrypt('some arbitrary data', $sharedAuthkey); 
+/**
+ * @var SymmetricAuthenticationKey $sharedAuthKey
+ */
+$token = Version2::encrypt('some arbitrary data', $sharedAuthKey); 
 // TypeError: Expected SymmetricEncryptionKey, got SymmetricAuthenticationKey.
 ```
 
@@ -102,17 +106,35 @@ usage, of course.
 ```php
 <?php
 use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
-use ParagonIE\Past\Protocol\{Version1, Version2};
+use ParagonIE\PAST\Protocol\{Version1, Version2};
 
 $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
-$message = \json_encode(['data' => 'this is a signed message', 'exp' => '2039-01-01T00:00:00']);
-$footer = \json_encode(['key-id' => 'gandalf0']);
+$message = 'This is a signed, non-JSON message.';
+$footer = 'key-id:gandalf0';
 
+# Version 1:
 $v1Token = Version1::auth($message, $key);
 var_dump((string) $v1Token);
-// string(156) "v1.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9oneoWrZWNIceku3gc3mxky87q171X2AaPG1yXkluTTuEf0O2vJSSxnzXZKLm5tHq"
+// string(120) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7oOqvKH5vRLbtFUt9aCpj07IQ0xep-XyaUitfocuZHI4KTE2XvvPxxFwpprODHu48="
+var_dump(Version1::authVerify($v1Token, $key));
+// string(35) "This is a signed, non-JSON message."
 
-$token = Version2::auth($message, $key, $footer);
-var_dump((string) $token);
-// string(165) "v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9W9kUi7Z0QzuNSaIKQ-xlPQc3SsRXpWl4CkfwOBwfxAg=.eyJrZXktaWQiOiJnYW5kYWxmMCJ9"
+$v1Token = Version1::auth($message, $key, $footer);
+var_dump((string) $v1Token);
+// string(141) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS4-OUI1gPNfKbXnlri80cOL09sAeDPufbFZPtDJtBYJHvw-paFOJB7c_idufcwFxYs=.a2V5LWlkOmdhbmRhbGYw"
+var_dump(Version1::authVerify($v1Token, $key, $footer));
+// string(35) "This is a signed, non-JSON message."
+
+# Version 2:
+$v2Token = Version2::auth($message, $key);
+var_dump((string) $v2Token);
+// string(100) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS6oHEOlDwiHeyJ2gKEISXF24i2ZraSPyNXUTYQX-V3siA=="
+var_dump(Version2::authVerify($v2Token, $key));
+// string(35) "This is a signed, non-JSON message."
+
+$v2Token = Version2::auth($message, $key, $footer);
+var_dump((string) $v2Token);
+// string(121) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7NoNXmf0CVrTmfso33FW1FCXOevPgWvvZoAvyu1d07wA==.a2V5LWlkOmdhbmRhbGYw"
+var_dump(Version2::authVerify($v2Token, $key, $footer));
+// string(35) "This is a signed, non-JSON message."
 ```
