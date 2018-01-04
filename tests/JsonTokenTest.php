@@ -84,7 +84,7 @@ class JsonTokenTest extends TestCase
             (string) $builder,
             'Auth, footer'
         );
-        $this->assertEquals(
+        $this->assertSame(
             $footerArray,
             $builder->getFooterArray()
         );
