@@ -112,7 +112,7 @@ class Util
         if (empty($footer)) {
             return $payload;
         }
-        $footer = Base64UrlSafe::encode($footer);
+        $footer = Base64UrlSafe::encodeUnpadded($footer);
         $payload_len = Binary::safeStrlen($payload);
         $footer_len = Binary::safeStrlen($footer) + 1;
 

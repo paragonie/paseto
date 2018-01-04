@@ -59,35 +59,35 @@ class Version2VectorTest extends TestCase
 
         // Empty string, 32-character NUL byte key.
         $this->assertSame(
-            'v2.auth.xnXx4GERjFlWU-nLJO-UJlQ7XKU74mOvBV-u5UymqKg=',
+            'v2.auth.xnXx4GERjFlWU-nLJO-UJlQ7XKU74mOvBV-u5UymqKg',
             Version2::auth('', $nullAuthKey),
             'Test Vector A-1'
         );
 
         // Empty string, 32-character NUL byte key, non-empty footer.
         $this->assertSame(
-            'v2.auth.s9S77tR3hP7KgflCquKbYPPQlsOJrquQgGrU4za-jog=.Q3VvbiBBbHBpbnVz',
+            'v2.auth.s9S77tR3hP7KgflCquKbYPPQlsOJrquQgGrU4za-jog.Q3VvbiBBbHBpbnVz',
             Version2::auth('', $nullAuthKey, 'Cuon Alpinus'),
             'Test Vector A-2'
         );
 
         // Non-empty string, 32-character 0xFF byte key.
         $this->assertSame(
-            'v2.auth.RnJhbmsgRGVuaXMgcm9ja3OlPWwML5vX9jz8eWMxZY0J6pvcheSEXJl4cWaGzyGQ6w==',
+            'v2.auth.RnJhbmsgRGVuaXMgcm9ja3OlPWwML5vX9jz8eWMxZY0J6pvcheSEXJl4cWaGzyGQ6w',
             Version2::auth('Frank Denis rocks', $fullAuthKey),
             'Test Vector A-3'
         );
 
         // Non-empty string, 32-character 0xFF byte key. (One character difference)
         $this->assertSame(
-            'v2.auth.RnJhbmsgRGVuaXMgcm9ja3qtXffI1R5G4KJuLWjKmF6L84REbNNOtcsqr-3z7zfxyw==',
+            'v2.auth.RnJhbmsgRGVuaXMgcm9ja3qtXffI1R5G4KJuLWjKmF6L84REbNNOtcsqr-3z7zfxyw',
             Version2::auth('Frank Denis rockz', $fullAuthKey),
             'Test Vector A-4'
         );
 
         // Non-empty string, 32-character 0xFF byte key, non-empty footer.
         $this->assertSame(
-            'v2.auth.RnJhbmsgRGVuaXMgcm9ja3N0ncPqYRX7SWTwgwS_MK65vnFPVHq_ciVqpO8MvlZiaA==.Q3VvbiBBbHBpbnVz',
+            'v2.auth.RnJhbmsgRGVuaXMgcm9ja3N0ncPqYRX7SWTwgwS_MK65vnFPVHq_ciVqpO8MvlZiaA.Q3VvbiBBbHBpbnVz',
             Version2::auth('Frank Denis rocks', $fullAuthKey, 'Cuon Alpinus'),
             'Test Vector A-5'
         );
@@ -100,14 +100,14 @@ class Version2VectorTest extends TestCase
     {
         // Empty string, 32-character NUL byte key.
         $this->assertSame(
-            'v2.sign.uSe9owhGweXNMjH2NrUQNuUqLa8WB7i49txhXYESYOyuPyvUwczk12uSIgH1ju9esybqXIY13tRUv3KIMXGdCg==',
+            'v2.sign.uSe9owhGweXNMjH2NrUQNuUqLa8WB7i49txhXYESYOyuPyvUwczk12uSIgH1ju9esybqXIY13tRUv3KIMXGdCg',
             Version2::sign('', $this->privateKey),
             'Test Vector S-1'
         );
 
         // Empty string, 32-character NUL byte key, non-empty footer.
         $this->assertSame(
-            'v2.sign.rvZMDKWEur7JGgrJ4p6d5S4ymHunVg80ymzl8Gi9eCM3ZDlqBht-1koKxdyW834xm4JdXcqu9v6gUetNyBGmDA==.Q3VvbiBBbHBpbnVz',
+            'v2.sign.rvZMDKWEur7JGgrJ4p6d5S4ymHunVg80ymzl8Gi9eCM3ZDlqBht-1koKxdyW834xm4JdXcqu9v6gUetNyBGmDA.Q3VvbiBBbHBpbnVz',
             Version2::sign('', $this->privateKey, 'Cuon Alpinus'),
             'Test Vector S-2'
         );

@@ -41,7 +41,7 @@ class SymmetricEncryptionKey implements KeyInterface
      */
     public function encode(): string
     {
-        return Base64UrlSafe::encode($this->key);
+        return Base64UrlSafe::encodeUnpadded($this->key);
     }
 
     /**

@@ -115,7 +115,7 @@ class UtilTest extends TestCase
     {
         $token = Base64UrlSafe::encode(random_bytes(30));
         $footer = random_bytes(10);
-        $combined = $token . '.' . Base64UrlSafe::encode($footer);
+        $combined = $token . '.' . Base64UrlSafe::encodeUnpadded($footer);
 
         $this->assertSame(
             $token,

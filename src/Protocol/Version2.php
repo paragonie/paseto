@@ -46,11 +46,11 @@ class Version2 implements ProtocolInterface
         );
         if ($footer) {
             return $header .
-                Base64UrlSafe::encode($data . $mac) .
+                Base64UrlSafe::encodeUnpadded($data . $mac) .
                 '.' .
-                Base64UrlSafe::encode($footer);
+                Base64UrlSafe::encodeUnpadded($footer);
         }
-        return $header . Base64UrlSafe::encode($data . $mac);
+        return $header . Base64UrlSafe::encodeUnpadded($data . $mac);
     }
 
     /**
@@ -155,11 +155,11 @@ class Version2 implements ProtocolInterface
         );
         if ($footer) {
             return $header .
-                Base64UrlSafe::encode($data . $signature) .
+                Base64UrlSafe::encodeUnpadded($data . $signature) .
                 '.' .
-                Base64UrlSafe::encode($footer);
+                Base64UrlSafe::encodeUnpadded($footer);
         }
-        return $header . Base64UrlSafe::encode($data . $signature);
+        return $header . Base64UrlSafe::encodeUnpadded($data . $signature);
     }
 
     /**
@@ -220,11 +220,11 @@ class Version2 implements ProtocolInterface
         );
         if ($footer) {
             return $header .
-                Base64UrlSafe::encode($nonce . $ciphertext) .
+                Base64UrlSafe::encodeUnpadded($nonce . $ciphertext) .
                 '.' .
-                Base64UrlSafe::encode($footer);
+                Base64UrlSafe::encodeUnpadded($footer);
         }
-        return $header . Base64UrlSafe::encode($nonce . $ciphertext);
+        return $header . Base64UrlSafe::encodeUnpadded($nonce . $ciphertext);
     }
 
     /**

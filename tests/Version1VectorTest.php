@@ -2,8 +2,6 @@
 declare(strict_types=1);
 namespace ParagonIE\PAST\Tests;
 
-use ParagonIE\PAST\Keys\AsymmetricPublicKey;
-use ParagonIE\PAST\Keys\AsymmetricSecretKey;
 use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
 use ParagonIE\PAST\Protocol\Version1;
 use PHPUnit\Framework\TestCase;
@@ -41,21 +39,21 @@ class Version1VectorTest extends TestCase
 
         // Non-empty string, 32-character 0xFF byte key.
         $this->assertSame(
-            'v1.auth.RnJhbmsgRGVuaXMgcm9ja3OvktwlGNM0U3P2mAbLVKRcHWC33xXQwVN-IlE8M3idKitswqz33kA5q2ThfOT4uqU=',
+            'v1.auth.RnJhbmsgRGVuaXMgcm9ja3OvktwlGNM0U3P2mAbLVKRcHWC33xXQwVN-IlE8M3idKitswqz33kA5q2ThfOT4uqU',
             Version1::auth('Frank Denis rocks', $fullAuthKey),
             'Test Vector A-3'
         );
 
         // Non-empty string, 32-character 0xFF byte key. (One character difference)
         $this->assertSame(
-            'v1.auth.RnJhbmsgRGVuaXMgcm9ja3qoKuUpOSkEDafLOA9FDz8zYCX18f6ILDXjbgOwxsfD_HxRo6Jnz5xFN236X_1IdrQ=',
+            'v1.auth.RnJhbmsgRGVuaXMgcm9ja3qoKuUpOSkEDafLOA9FDz8zYCX18f6ILDXjbgOwxsfD_HxRo6Jnz5xFN236X_1IdrQ',
             Version1::auth('Frank Denis rockz', $fullAuthKey),
             'Test Vector A-4'
         );
 
         // Non-empty string, 32-character 0xFF byte key, non-empty footer.
         $this->assertSame(
-            'v1.auth.RnJhbmsgRGVuaXMgcm9ja3N_vl77CqDA-VdqmjEs6ugayZRK7Fl20OviMWGefxRDbeMtNsuhosEfDU0CeJPodSM=.Q3VvbiBBbHBpbnVz',
+            'v1.auth.RnJhbmsgRGVuaXMgcm9ja3N_vl77CqDA-VdqmjEs6ugayZRK7Fl20OviMWGefxRDbeMtNsuhosEfDU0CeJPodSM.Q3VvbiBBbHBpbnVz',
             Version1::auth('Frank Denis rocks', $fullAuthKey, 'Cuon Alpinus'),
             'Test Vector A-5'
         );
