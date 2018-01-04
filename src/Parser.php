@@ -227,7 +227,7 @@ class Parser
      * @param array<int, string> $whitelist
      * @return self
      */
-    public function setAllowedVarsions(array $whitelist): self
+    public function setAllowedVersions(array $whitelist): self
     {
         $this->allowedVersions = $whitelist;
         return $this;
