@@ -167,20 +167,6 @@ class Parser
                     throw new PastException('An error occurred', 0, $ex);
                 }
                 break;
-            case 'seal':
-                if (!($this->key instanceof AsymmetricSecretKey)) {
-                    throw new InvalidKeyException('Invalid key type');
-                }
-                $footer = (\count($pieces) > 4)
-                    ? Base64UrlSafe::decode($pieces[4])
-                    : '';
-                try {
-                    /** @var string $decoded */
-                    $decoded = $protocol::unseal($tainted, $this->key, $footer);
-                } catch (\Throwable $ex) {
-                    throw new PastException('An error occurred', 0, $ex);
-                }
-                break;
             case 'sign':
                 if (!($this->key instanceof AsymmetricPublicKey)) {
                     throw new InvalidKeyException('Invalid key type');
@@ -259,13 +245,6 @@ class Parser
                         );
                     }
                     break;
-                case 'seal':
-                    if (!($key instanceof AsymmetricSecretKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . AsymmetricSecretKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    break;
                 case 'sign':
                     if (!($key instanceof AsymmetricPublicKey)) {
                         throw new InvalidKeyException(
@@ -305,13 +284,6 @@ class Parser
                     if (!\hash_equals('enc', $purpose)) {
                         throw new InvalidPurposeException(
                             'Invalid purpose. Expected enc, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricSecretKey::class:
-                    if (!\hash_equals('seal', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected seal, got ' . $purpose
                         );
                     }
                     break;
