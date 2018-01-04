@@ -319,18 +319,6 @@ class JsonToken
                         );
                     }
                     break;
-                case 'seal':
-                    if (!($key instanceof AsymmetricPublicKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . AsymmetricPublicKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    if (!\hash_equals($this->version, $key->getProtocol())) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' . $key->getProtocol() . ', not ' . $this->version
-                        );
-                    }
-                    break;
                 case 'sign':
                     if (!($key instanceof AsymmetricSecretKey)) {
                         throw new InvalidKeyException(
@@ -391,13 +379,6 @@ class JsonToken
                     if (!\hash_equals('enc', $purpose)) {
                         throw new InvalidPurposeException(
                             'Invalid purpose. Expected enc, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricPublicKey::class:
-                    if (!\hash_equals('seal', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected seal, got ' . $purpose
                         );
                     }
                     break;
@@ -475,15 +456,6 @@ class JsonToken
             case 'enc':
                 if ($this->key instanceof SymmetricEncryptionKey) {
                     return $protocol::encrypt($claims, $this->key, $this->footer);
-                }
-                break;
-            case 'seal':
-                if ($this->key instanceof AsymmetricPublicKey) {
-                    try {
-                        return $protocol::seal($claims, $this->key, $this->footer);
-                    } catch (\Throwable $ex) {
-                        throw new PastException('Sealing failed.', 0, $ex);
-                    }
                 }
                 break;
             case 'sign':

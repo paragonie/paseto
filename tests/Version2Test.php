@@ -143,47 +143,6 @@ class Version2Test extends TestCase
     }
 
     /**
-     * @covers Version2::seal()
-     * @covers Version2::unseal()
-     */
-    public function testSeal()
-    {
-        $keypair = sodium_crypto_sign_keypair();
-        $privateKey = new AsymmetricSecretKey(sodium_crypto_sign_secretkey($keypair));
-        $publicKey = new AsymmetricPublicKey(sodium_crypto_sign_publickey($keypair));
-
-        $year = (int) (\date('Y')) + 1;
-        $messages = [
-            'test',
-            \json_encode(['data' => 'this is a signed message', 'expires' => $year . '-01-01T00:00:00'])
-        ];
-
-        foreach ($messages as $message) {
-            $sealed = Version2::seal($message, $publicKey);
-            $this->assertTrue(\is_string($sealed));
-            $this->assertSame('v2.seal.', Binary::safeSubstr($sealed, 0, 8));
-
-            $decode = Version2::unseal($sealed, $privateKey);
-            $this->assertTrue(\is_string($decode));
-            $this->assertSame($message, $decode);
-
-            // Now with a footer
-            $sealed = Version2::seal($message, $publicKey, 'footer');
-            $this->assertTrue(\is_string($sealed));
-            $this->assertSame('v2.seal.', Binary::safeSubstr($sealed, 0, 8));
-
-            try {
-                Version2::unseal($sealed, $privateKey);
-                $this->fail('Missing footer');
-            } catch (\Exception $ex) {
-            }
-            $decode = Version2::unseal($sealed, $privateKey, 'footer');
-            $this->assertTrue(\is_string($decode));
-            $this->assertSame($message, $decode);
-        }
-    }
-
-    /**
      * @covers Version2::sign()
      * @covers Version2::signVerify()
      */

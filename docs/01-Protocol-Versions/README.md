@@ -32,19 +32,6 @@ to assist in cross-platform library development.
     * Hash function: SHA384 as the hash function
     * Mask generation function: MGF1+SHA384
     * Public exponent: 65537
-* **`v1.seal`**: Asymmetric Encryption (Public-Key Encryption):
-  * 2048-bit RSA keys
-  * RSAES-OAEP with
-    * Hash function: SHA384 as the hash function
-    * Mask generation function: MGF1+SHA384
-    * Public exponent: 65537
-  * KEM+DEM approach:
-    1. Generate a random 32-byte key
-    2. Encrypt the output of step 1 with the RSA public key
-    3. Calculate HKDF-SHA384 of the output of step 2, using the output of
-       step 1 (the random key) as the salt
-    4. Use the output of step3 as a key to perform symmetric encryption
-       (i.e. AES-CTR + HMAC-SHA2)
 
 Version 1 implements the best possible RSA + AES + SHA2 ciphersuite. We only use
 OAEP and PSS for RSA encryption and RSA signatures (respectively), never PKCS1v1.5.
@@ -67,11 +54,5 @@ See also: [Common implementation details for all versions](Common.md).
   * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
   * Verifying: `sodium_crypto_sign_verify_detached()`
-* **`v2.seal`**: Asymmetric Encryption (Public-Key Encryption):
-  * Key exchange (`sodium_crypto_kx()`) with an ephemeral keypair,
-    followed by symmetric encryption
-  * `sodium_crypto_kx()` is a BLAKE2 hash of the X25519 shared secret,
-    followed by the sender's ephemeral public key, followed by the
-    recipient's long-term public key.
 
 See also: [Common implementation details for all versions](Common.md).

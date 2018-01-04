@@ -87,12 +87,11 @@ choose from (including `none`).
 There have been ways to exploit JWT libraries by replacing RS256 with HS256 and using
 the known public key as the HMAC-SHA256 key, thereby allowing arbitrary token forgery. 
 
-With PAST, your options are `version` and a `purpose`. There are four possible
+With PAST, your options are `version` and a `purpose`. There are three possible
 values for `purpose`:
 
 * `auth` -- shared-key authentication
 * `enc`  -- shared-key encryption
-* `seal` -- public-key encryption
 * `sign` -- public-key authentication (a.k.a. digital signatures)
 
 All encryption modes use [authenticated modes](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken).

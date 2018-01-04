@@ -6,7 +6,7 @@ Multi-part messages (e.g. header, content, footer) are encoded
 in a specific manner before being passed to the respective
 cryptographic function.
 
-For encrypted modes (`enc` and `seal`), this encoding is applied
+For encryption modes (`enc`), this encoding is applied
 to the additional associated data (AAD). For unencrypted modes,
 this encoding is applied to the components of the token, with
 respect to the protocol version being followed.

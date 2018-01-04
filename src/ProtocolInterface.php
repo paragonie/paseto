@@ -62,31 +62,6 @@ interface ProtocolInterface
     public static function decrypt(string $data, SymmetricEncryptionKey $key, string $footer = ''): string;
 
     /**
-     * Encrypt a message using a recipient's public key.
-     *
-     * @param string $data
-     * @param AsymmetricPublicKey $key
-     * @param string $footer
-     * @return string
-     * @throws \Error
-     * @throws \TypeError
-     */
-    public static function seal(string $data, AsymmetricPublicKey $key, string $footer = ''): string;
-
-    /**
-     * Decrypt a message using your private key.
-     *
-     * @param string $data
-     * @param AsymmetricSecretKey $key
-     * @param string $footer
-     * @return string
-     * @throws \Error
-     * @throws \Exception
-     * @throws \TypeError
-     */
-    public static function unseal(string $data, AsymmetricSecretKey $key, string $footer = ''): string;
-
-    /**
      * Sign a message. Public-key digital signatures.
      *
      * @param string $data

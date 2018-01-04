@@ -87,48 +87,6 @@ class Version1Test extends TestCase
     }
 
     /**
-     * @covers Version1::seal()
-     * @covers Version1::unseal()
-     */
-    public function testSeal()
-    {
-        $rsa = Version1::getRsa(false);
-        $keypair = $rsa->createKey(2048);
-        $privateKey = new AsymmetricSecretKey($keypair['privatekey'], 'v1');
-        $publicKey = new AsymmetricPublicKey($keypair['publickey'], 'v1');
-
-        $year = (int) (\date('Y')) + 1;
-        $messages = [
-            'test',
-            \json_encode(['data' => 'this is a signed message', 'expires' => $year . '-01-01T00:00:00'])
-        ];
-
-        foreach ($messages as $message) {
-            $sealed = Version1::seal($message, $publicKey);
-            $this->assertTrue(\is_string($sealed));
-            $this->assertSame('v1.seal.', Binary::safeSubstr($sealed, 0, 8));
-
-            $decode = Version1::unseal($sealed, $privateKey);
-            $this->assertTrue(\is_string($decode));
-            $this->assertSame($message, $decode);
-
-            // Now with a footer
-            $sealed = Version1::seal($message, $publicKey, 'footer');
-            $this->assertTrue(\is_string($sealed));
-            $this->assertSame('v1.seal.', Binary::safeSubstr($sealed, 0, 8));
-
-            try {
-                Version1::unseal($sealed, $privateKey);
-                $this->fail('Missing footer');
-            } catch (\Exception $ex) {
-            }
-            $decode = Version1::unseal($sealed, $privateKey, 'footer');
-            $this->assertTrue(\is_string($decode));
-            $this->assertSame($message, $decode);
-        }
-    }
-
-    /**
      * @covers Version1::sign()
      * @covers Version1::signVerify()
      */
