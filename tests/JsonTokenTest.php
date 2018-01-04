@@ -23,9 +23,7 @@ class JsonTokenTest extends TestCase
     public function testAuthDeterminism()
     {
         $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
-        $builder = (new JsonToken())
-            ->setPurpose('auth')
-            ->setKey($key)
+        $builder = (JsonToken::authenticated($key))
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
 
@@ -47,8 +45,11 @@ class JsonTokenTest extends TestCase
         );
 
         // Now let's switch gears to asymmetric crypto:
-        $builder->setPurpose('sign')
-                ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
+        $key = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $builder = (JsonToken::signed($key))
+            ->set('data', 'this is a signed message')
+            ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
+
         $this->assertSame(
             'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9HUL-xbk0NkbdgAkFVt75Cm2N01fb30V79xSMrCnkAha2iS3cqc-cJnTEyRiD5hazSXqwU3gV4QsZw2AEgFy2Dw',
             (string) $builder,
@@ -73,9 +74,7 @@ class JsonTokenTest extends TestCase
     {
         $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
         $footerArray = ['key-id' => 'gandalf0'];
-        $builder = (new JsonToken())
-            ->setPurpose('auth')
-            ->setKey($key)
+        $builder = JsonToken::authenticated($key)
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);

@@ -27,6 +27,10 @@ use ParagonIE\PAST\Traits\RegisteredClaims;
  */
 class JsonToken
 {
+    const PURPOSE_AUTH = 'auth';
+    const PURPOSE_ENC = 'enc';
+    const PURPOSE_SIGN = 'sign';
+
     use RegisteredClaims;
 
     /** @var string $cached */
@@ -46,6 +50,35 @@ class JsonToken
 
     /** @var string $version */
     protected $version = Version2::HEADER;
+
+    private function __construct() {}
+
+    public static function authenticated(SymmetricAuthenticationKey $key)
+    {
+        $instance = new static();
+        $instance->key = $key;
+        $instance->purpose = self::PURPOSE_AUTH;
+
+        return $instance;
+    }
+
+    public static function encrypted(SymmetricEncryptionKey $key)
+    {
+        $instance = new static();
+        $instance->key = $key;
+        $instance->purpose = self::PURPOSE_ENC;
+
+        return $instance;
+    }
+
+    public static function signed(AsymmetricSecretKey $key)
+    {
+        $instance = new static();
+        $instance->key = $key;
+        $instance->purpose = self::PURPOSE_SIGN;
+
+        return $instance;
+    }
 
     /**
      * Get any arbitrary claim.
@@ -303,55 +336,6 @@ class JsonToken
     }
 
     /**
-     * Set the cryptographic key used to authenticate (and possibly encrypt)
-     * the serialized token.
-     *
-     * @param KeyInterface $key
-     * @param bool $checkPurpose
-     * @return self
-     * @throws PastException
-     */
-    public function setKey(KeyInterface $key, bool $checkPurpose = false): self
-    {
-        if ($checkPurpose) {
-            switch ($this->purpose) {
-                case 'auth':
-                    if (!($key instanceof SymmetricAuthenticationKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricAuthenticationKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    break;
-                case 'enc':
-                    if (!($key instanceof SymmetricEncryptionKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricEncryptionKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    break;
-                case 'sign':
-                    if (!($key instanceof AsymmetricSecretKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . AsymmetricSecretKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    if (!\hash_equals($this->version, $key->getProtocol())) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' . $key->getProtocol() . ', not ' . $this->version
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidKeyException('Unknown purpose');
-            }
-        }
-
-        $this->cached = '';
-        $this->key = $key;
-        return $this;
-    }
-
-    /**
      * Set the 'nbf' claim.
      *
      * @param \DateTime|null $time
@@ -364,51 +348,6 @@ class JsonToken
         }
         $this->cached = '';
         $this->claims['nbf'] = $time->format(\DateTime::ATOM);
-        return $this;
-    }
-
-    /**
-     * Set the purpose for this token. Allowed values:
-     * 'auth', 'enc', 'seal', 'sign'.
-     *
-     * @param string $purpose
-     * @param bool $checkKeyType
-     * @return self
-     * @throws InvalidPurposeException
-     */
-    public function setPurpose(string $purpose, bool $checkKeyType = false): self
-    {
-        if ($checkKeyType) {
-            $keyType = \get_class($this->key);
-            switch ($keyType) {
-                case SymmetricAuthenticationKey::class:
-                    if (!\hash_equals('auth', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected auth, got ' . $purpose
-                        );
-                    }
-                    break;
-                case SymmetricEncryptionKey::class:
-                    if (!\hash_equals('enc', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected enc, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricSecretKey::class:
-                    if (!\hash_equals('sign', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected sign, got ' . $purpose
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
-            }
-        }
-
-        $this->cached = '';
-        $this->purpose = $purpose;
         return $this;
     }
 
@@ -450,10 +389,6 @@ class JsonToken
         if (!empty($this->cached)) {
             return $this->cached;
         }
-        // Mutual sanity checks
-        $this->setKey($this->key, true);
-        $this->setPurpose($this->purpose, true);
-
         $claims = \json_encode($this->claims);
         switch ($this->version) {
             case Version1::HEADER:
@@ -465,30 +400,25 @@ class JsonToken
             default:
                 throw new InvalidVersionException('Unsupported version: ' . $this->version);
         }
+        $key = $this->key;
         /** @var ProtocolInterface $protocol */
         switch ($this->purpose) {
-            case 'auth':
-                if ($this->key instanceof SymmetricAuthenticationKey) {
-                    $this->cached = (string) $protocol::auth($claims, $this->key, $this->footer);
+            case self::PURPOSE_AUTH:
+                /** @var SymmetricAuthenticationKey $key */
+                $this->cached = (string) $protocol::auth($claims, $key, $this->footer);
+		        return $this->cached;
+            case self::PURPOSE_ENC:
+                /** @var SymmetricEncryptionKey $key */
+                $this->cached = (string) $protocol::encrypt($claims, $key, $this->footer);
+		        return $this->cached;
+            case self::PURPOSE_SIGN:
+                try {
+                    /** @var AsymmetricSecretKey $key */
+                    $this->cached = (string) $protocol::sign($claims, $key, $this->footer);
                     return $this->cached;
+                } catch (\Throwable $ex) {
+                    throw new PastException('Signing failed.', 0, $ex);
                 }
-                break;
-            case 'enc':
-                if ($this->key instanceof SymmetricEncryptionKey) {
-                    $this->cached = (string) $protocol::encrypt($claims, $this->key, $this->footer);
-                    return $this->cached;
-                }
-                break;
-            case 'sign':
-                if ($this->key instanceof AsymmetricSecretKey) {
-                    try {
-                        $this->cached = (string) $protocol::sign($claims, $this->key, $this->footer);
-                        return $this->cached;
-                    } catch (\Throwable $ex) {
-                        throw new PastException('Signing failed.', 0, $ex);
-                    }
-                }
-                break;
         }
         throw new PastException('Unsupported key/purpose pairing.');
     }

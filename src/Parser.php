@@ -193,11 +193,22 @@ class Parser
             throw new EncodingException('Not a JSON token.');
         }
 
+        switch ($purpose) {
+            case JsonToken::PURPOSE_AUTH:
+                $token = JsonToken::authenticated($this->key);
+                break;
+            case JsonToken::PURPOSE_ENC:
+                $token = JsonToken::encrypted($this->key);
+                break;
+            case JsonToken::PURPOSE_SIGN:
+                $token = JsonToken::signed($this->key);
+                break;
+            default:
+                throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
+        }
+
         // Let's build the token object.
-        $token = (new JsonToken())
-            ->setVersion($header)
-            ->setPurpose($purpose)
-            ->setKey($this->key)
+        $token->setVersion($header)
             ->setFooter($footer)
             ->setClaims($claims);
         if (!$skipValidation && !empty($this->rules)) {

@@ -56,14 +56,5 @@ class ParserTest extends TestCase
         } catch (PastException $ex) {
         }
         $parser->parse($serialized);
-
-        // Switch to asymmetric-key crypto:
-        $token->setPurpose('sign')
-            ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
-        $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9weCkPrvT6Ay-8pPpyplaGT4NwVI1zXfoDi7Mg6xkhbsGSR4yOfzoAOJAG9MRbJDm3bPcAVttJbZPnox_EwtwAg',
-            (string) $token,
-            'Switching to signing caused a different signature'
-        );
     }
 }
