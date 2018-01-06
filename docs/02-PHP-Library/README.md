@@ -7,15 +7,13 @@ type-safety by wrapping cryptographic keys inside of objects. For example:
 <?php
 use ParagonIE\PAST\Keys\{
     AsymmetricSecretKey,
-    SymmetricAuthenticationKey,
-    SymmetricEncryptionKey    
+    SymmetricKey    
 };
 
 $privateKey = new AsymmetricSecretKey(sodium_crypto_sign_keypair());
 $publicKey = $privateKey->getPublicKey();
 
-$sharedEncKey = new SymmetricEncryptionKey(random_bytes(32));
-$sharedAuthKey = new SymmetricAuthenticationKey(random_bytes(32));
+$sharedKey = new SymmetricKey(random_bytes(32));
 ```
 
 You can access the key's internal strings by invoking `$key->raw()`. 
@@ -26,13 +24,12 @@ This will generate a `TypeError`:
 ```php
 <?php
 use ParagonIE\PAST\Protocol\Version2;
-use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
+use ParagonIE\PAST\Keys\SymmetricKey;
 
 /**
- * @var SymmetricAuthenticationKey $sharedAuthKey
+ * @var SymmetricKey $sharedAuthKey
  */
-$token = Version2::encrypt('some arbitrary data', $sharedAuthKey); 
-SymmetricKey
+$token = Version2::sign('some arbitrary data', $sharedAuthKey);
 ```
 
 ## Building and Verifying PASTs
@@ -43,16 +40,16 @@ to achieve tamper-resistant tokens:
 ```php
 <?php
 use ParagonIE\PAST\JsonToken;
-use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
+use ParagonIE\PAST\Keys\SymmetricKey;
 use ParagonIE\PAST\Protocol\Version2;
 
 /**
- * @var SymmetricAuthenticationKey $sharedAuthKey
+ * @var SymmetricKey $sharedAuthKey
  */
 $token = (new JsonToken())
     ->setKey($sharedAuthKey)
     ->setVersion(Version2::HEADER)
-    ->setPurpose('auth')
+    ->setPurpose('local')
     // Set it to expire in one day
     ->setExpiration(
         (new DateTime())->add(new DateInterval('P01D'))
@@ -75,16 +72,16 @@ First, you need to define your `Parser` rules.
 ```php
 <?php
 use ParagonIE\PAST\Exception\PastException;
-use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
+use ParagonIE\PAST\Keys\SymmetricKey;
 use ParagonIE\PAST\Parser;
 
 /**
  * @var string $providedToken
- * @var SymmetricAuthenticationKey $sharedAuthKey
+ * @var SymmetricKey $sharedAuthKey
  */
 $parser = (new Parser())
     ->setKey($sharedAuthKey)
-    ->setPurpose('auth')
+    ->setPurpose('local')
     // Only allow version 2
     ->setAllowedVersions(['v2']);
 
@@ -105,36 +102,42 @@ usage, of course.
 
 ```php
 <?php
-use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
+use ParagonIE\PAST\Keys\SymmetricKey;
 use ParagonIE\PAST\Protocol\{Version1, Version2};
 
-$key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+$key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
 $message = 'This is a signed, non-JSON message.';
 $footer = 'key-id:gandalf0';
 
 # Version 1:
-$v1Token = Version1::auth($message, $key);
+$v1Token = Version1::encrypt($message, $key);
 var_dump((string) $v1Token);
-// string(119) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7oOqvKH5vRLbtFUt9aCpj07IQ0xep-XyaUitfocuZHI4KTE2XvvPxxFwpprODHu48"
-var_dump(Version1::authVerify($v1Token, $key));
+// string(163) "v1.local.WeSsfqWpfg5jyqQoL088HOGTL4YrcA3JInC4C8HGalnHUtQfdV1YjT8HGgZJbKS4tlXFoA0Z8zifikuTAbZDVI1Psr7LbQL5IXoFgLwsH8Map0iy1WedX-RgfpGZAyQsY03kVLmmW6J2-S4I4FC0821rOQ"
+var_dump(Version1::decrypt($v1Token, $key));
 // string(35) "This is a signed, non-JSON message."
 
-$v1Token = Version1::auth($message, $key, $footer);
+$v1Token = Version1::encrypt($message, $key, $footer);
 var_dump((string) $v1Token);
-// string(140) "v1.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS4-OUI1gPNfKbXnlri80cOL09sAeDPufbFZPtDJtBYJHvw-paFOJB7c_idufcwFxYs.a2V5LWlkOmdhbmRhbGYw"
-var_dump(Version1::authVerify($v1Token, $key, $footer));
+// string(184) "v1.local.8I9kDLv3gNd7WGyp55wCnswLY0ur0Fd0qOI10VTmCDopehilRF_qejheQFSxyb0nu5Jkc45RmCnMbkcHSqEBYwqPMFnE2N94lbKsR8jtRFD6MgYOebPZAKrhlnLsZz_G7gD88ntX7OgXDAxbcrnKKZPeeQ.a2V5LWlkOmdhbmRhbGYw"
+var_dump(Version1::decrypt($v1Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
 
 # Version 2:
-$v2Token = Version2::auth($message, $key);
+$v2Token = Version2::encrypt($message, $key);
 var_dump((string) $v2Token);
-// string(98) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS6oHEOlDwiHeyJ2gKEISXF24i2ZraSPyNXUTYQX-V3siA"
-var_dump(Version2::authVerify($v2Token, $key));
+// string(109) "v2.local.-p1d4Ja8DVNMLwOkK77zrlkj2q2loIdo4ypd26AKgqUrrzei4LwAeGXF3ivpTrluSMEBLf04F8mSFO00tU_FOgCLHWTGz_3oYF67"
+var_dump(Version2::decrypt($v2Token, $key));
 // string(35) "This is a signed, non-JSON message."
 
-$v2Token = Version2::auth($message, $key, $footer);
+$v2Token = Version2::encrypt($message, $key, $footer);
 var_dump((string) $v2Token);
-// string(119) "v2.auth.VGhpcyBpcyBhIHNpZ25lZCwgbm9uLUpTT04gbWVzc2FnZS7NoNXmf0CVrTmfso33FW1FCXOevPgWvvZoAvyu1d07wA.a2V5LWlkOmdhbmRhbGYw"
-var_dump(Version2::authVerify($v2Token, $key, $footer));
+// string(130) "v2.local.37Q1fN7K0t_EUOtqhvES1WHkJw8eIex2m-5vP0JQeAWZ-1gMBPm6GMFVSnGIq0zK2eApeHSoxyj1bymI8OOjpFD8NkqheUuY0QSJ.a2V5LWlkOmdhbmRhbGYw"
+var_dump(Version2::decrypt($v2Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
+
+// Explicit nonces (for unit testing):
+$nonce = str_repeat("\0", 24);
+$v2Token = ParagonIE\PAST\Protocol\Version2::encrypt($message, $key, $footer, $nonce);
+var_dump((string) $v2Token);
+// string(130) "v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9E5lZQlE2rYJH6S-N1z-jnKpXy1hd6BDNEnjProJ6HFZPY_6AtK3ldQrOzHvVZzqiqK2.a2V5LWlkOmdhbmRhbGYw"
 ```

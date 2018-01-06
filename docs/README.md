@@ -13,7 +13,7 @@ two versions are specified, which each possess their own ciphersuites. Accepted 
 `v1`, `v2`.
 
 The `purpose` is a short string describing the purpose of the token. Accepted values:
-`enc`, `auth`, `sign`.
+`local`, `public`.
 
 The `payload` is a base64url-encoded string that contains the data that is secured. It may be
 encrypted. It may use public-key cryptography. It MUST be authenticated or signed. Encrypting
@@ -29,9 +29,9 @@ version.purpose.one-time-key.ciphertext.optional (sealing only)
 Any `optional` data can be appended to the end. This information is public (unencrypted), even
 if the payload is encrypted. However, it is always authenticated. It's always base64url-encoded.
 
- * For encrypted tokens, it's included in the associated data alongside the nonce.
- * For authenticated/signed tokens, it's appended to the message during the actual
-   authentication/signing step.
+ * For local tokens, it's included in the associated data alongside the nonce.
+ * For public tokens, it's appended to the message during the actual
+   authentication/signing step, in accordance to [our standard format](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
 
 ## Versions and their Respective Purposes
 
