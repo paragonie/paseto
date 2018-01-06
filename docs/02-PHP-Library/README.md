@@ -32,7 +32,7 @@ use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
  * @var SymmetricAuthenticationKey $sharedAuthKey
  */
 $token = Version2::encrypt('some arbitrary data', $sharedAuthKey); 
-// TypeError: Expected SymmetricEncryptionKey, got SymmetricAuthenticationKey.
+SymmetricKey
 ```
 
 ## Building and Verifying PASTs

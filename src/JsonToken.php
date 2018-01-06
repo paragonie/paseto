@@ -12,8 +12,7 @@ use ParagonIE\PAST\Exception\{
 };
 use ParagonIE\PAST\Keys\{
     AsymmetricSecretKey,
-    SymmetricAuthenticationKey,
-    SymmetricEncryptionKey
+    SymmetricKey
 };
 use ParagonIE\PAST\Protocol\{
     Version1,
@@ -34,6 +33,9 @@ class JsonToken
 
     /** @var array<string, string> */
     protected $claims = [];
+
+    /** @var string $explicitNonce -- Do not use this. It's for unit testing! */
+    protected $explicitNonce = '';
 
     /** @var string $footer */
     protected $footer = '';
@@ -232,6 +234,18 @@ class JsonToken
     }
 
     /**
+     * Do not use this.
+     *
+     * @param string $nonce
+     * @return self
+     */
+    public function setExplicitNonce(string $nonce = ''): self
+    {
+        $this->explicitNonce = $nonce;
+        return $this;
+    }
+
+    /**
      * Set the footer.
      *
      * @param string $footer
@@ -315,21 +329,14 @@ class JsonToken
     {
         if ($checkPurpose) {
             switch ($this->purpose) {
-                case 'auth':
-                    if (!($key instanceof SymmetricAuthenticationKey)) {
+                case 'local':
+                    if (!($key instanceof SymmetricKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricAuthenticationKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' . SymmetricKey::class . ', got ' . \get_class($key)
                         );
                     }
                     break;
-                case 'enc':
-                    if (!($key instanceof SymmetricEncryptionKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricEncryptionKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    break;
-                case 'sign':
+                case 'public':
                     if (!($key instanceof AsymmetricSecretKey)) {
                         throw new InvalidKeyException(
                             'Invalid key type. Expected ' . AsymmetricSecretKey::class . ', got ' . \get_class($key)
@@ -381,24 +388,17 @@ class JsonToken
         if ($checkKeyType) {
             $keyType = \get_class($this->key);
             switch ($keyType) {
-                case SymmetricAuthenticationKey::class:
-                    if (!\hash_equals('auth', $purpose)) {
+                case SymmetricKey::class:
+                    if (!\hash_equals('local', $purpose)) {
                         throw new InvalidPurposeException(
-                            'Invalid purpose. Expected auth, got ' . $purpose
-                        );
-                    }
-                    break;
-                case SymmetricEncryptionKey::class:
-                    if (!\hash_equals('enc', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected enc, got ' . $purpose
+                            'Invalid purpose. Expected local, got ' . $purpose
                         );
                     }
                     break;
                 case AsymmetricSecretKey::class:
-                    if (!\hash_equals('sign', $purpose)) {
+                    if (!\hash_equals('public', $purpose)) {
                         throw new InvalidPurposeException(
-                            'Invalid purpose. Expected sign, got ' . $purpose
+                            'Invalid purpose. Expected public, got ' . $purpose
                         );
                     }
                     break;
@@ -467,19 +467,18 @@ class JsonToken
         }
         /** @var ProtocolInterface $protocol */
         switch ($this->purpose) {
-            case 'auth':
-                if ($this->key instanceof SymmetricAuthenticationKey) {
-                    $this->cached = (string) $protocol::auth($claims, $this->key, $this->footer);
+            case 'local':
+                if ($this->key instanceof SymmetricKey) {
+                    $this->cached = (string) $protocol::encrypt(
+                        $claims,
+                        $this->key,
+                        $this->footer,
+                        $this->explicitNonce
+                    );
                     return $this->cached;
                 }
                 break;
-            case 'enc':
-                if ($this->key instanceof SymmetricEncryptionKey) {
-                    $this->cached = (string) $protocol::encrypt($claims, $this->key, $this->footer);
-                    return $this->cached;
-                }
-                break;
-            case 'sign':
+            case 'public':
                 if ($this->key instanceof AsymmetricSecretKey) {
                     try {
                         $this->cached = (string) $protocol::sign($claims, $this->key, $this->footer);

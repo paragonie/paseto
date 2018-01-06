@@ -15,8 +15,8 @@ Multi-part messages (e.g. header, content, footer) are encoded
 in a specific manner before being passed to the respective
 cryptographic function.
 
-For encryption modes (`enc`), this encoding is applied
-to the additional associated data (AAD). For unencrypted modes,
+In `local` mode, this encoding is applied to the additional
+associated data (AAD). In `remote` mode, which is not encrypted,
 this encoding is applied to the components of the token, with
 respect to the protocol version being followed.
 
@@ -44,6 +44,14 @@ Next, for each piece provided, the length of the piece is encoded via
 An implementation may look like this:
 
 ```javascript
+function LE64(n) {
+    var str = '';
+    for (var i = 0; i < 8; ++i) {
+        str += String.fromCharCode(n & 255);
+        n = n >>> 8;
+    }
+    return string;
+}
 function PAE(pieces) {
     if (!Array.isArray(pieces)) {
         throw TypeError('Expected an array.');
@@ -65,6 +73,7 @@ As a consequence:
   `"\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"`
 * `PAE(['test'])` will always return 
   `"\x01\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00test"`
+* `PAE('test')` will throw a `TypeError`
 
 As a result, you cannot create a collision with only a partially controlled
 plaintext. Either the number of pieces will differ, or the length of one

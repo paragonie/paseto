@@ -2,11 +2,12 @@
 declare(strict_types=1);
 namespace ParagonIE\PAST\Tests;
 
+use ParagonIE\ConstantTime\Hex;
 use ParagonIE\PAST\JsonToken;
 use ParagonIE\PAST\Exception\PastException;
 use ParagonIE\PAST\Keys\{
     AsymmetricSecretKey,
-    SymmetricAuthenticationKey
+    SymmetricKey
 };
 use PHPUnit\Framework\TestCase;
 
@@ -22,45 +23,48 @@ class JsonTokenTest extends TestCase
      */
     public function testAuthDeterminism()
     {
-        $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
+        $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $builder = (new JsonToken())
-            ->setPurpose('auth')
+            ->setPurpose('local')
+            ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
 
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ93f3nsnVwKRNLECMSi0_vhOUzXLj62UvCfPBGx4Nva9M',
+            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5T8BuVXOfwRQCgS2tFj6o2Q',
             (string) $builder,
             'Auth, no footer'
         );
         $footer = (string) \json_encode(['key-id' => 'gandalf0']);
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9V5lr8_gYa6yH3ZAKMcqnv_Deuow7TPCMtGBPLC6ZVbU.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5A6LJpmVnHWq6_KdZ2lSEpA.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Auth, footer'
         );
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ93f3nsnVwKRNLECMSi0_vhOUzXLj62UvCfPBGx4Nva9M',
+            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5T8BuVXOfwRQCgS2tFj6o2Q',
             (string) $builder->setFooter(''),
             'Auth, removed footer'
         );
 
         // Now let's switch gears to asymmetric crypto:
-        $builder->setPurpose('sign')
+        $builder->setPurpose('public')
                 ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9HUL-xbk0NkbdgAkFVt75Cm2N01fb30V79xSMrCnkAha2iS3cqc-cJnTEyRiD5hazSXqwU3gV4QsZw2AEgFy2Dw',
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
             (string) $builder,
             'Sign, no footer'
         );
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9VJyhiHv4L-EalZB4FVqBPmfx5MlgZg305gJT1dUULR8ll_tFYIX8OmFt_ZZmn1bYrkJ9Mla24cz4_trbwAyGDA.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9Hzr4d37ny_OVLHxKACtO3tgVACqE2VHMR0InSWhaVC8-aw-Po1oVtPUeMoLUzPTr3qRQiuzl44WTGR8nfGiQBw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Sign, footer'
         );
         $this->assertSame(
-            'v2.sign.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9HUL-xbk0NkbdgAkFVt75Cm2N01fb30V79xSMrCnkAha2iS3cqc-cJnTEyRiD5hazSXqwU3gV4QsZw2AEgFy2Dw',
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
             (string) $builder->setFooter(''),
             'Sign, removed footer'
         );
@@ -71,16 +75,19 @@ class JsonTokenTest extends TestCase
      */
     public function testAuthTokenCustomFooter()
     {
-        $key = new SymmetricAuthenticationKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
+        $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $footerArray = ['key-id' => 'gandalf0'];
         $builder = (new JsonToken())
-            ->setPurpose('auth')
+            ->setPurpose('local')
+            ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
         $this->assertSame(
-            'v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9V5lr8_gYa6yH3ZAKMcqnv_Deuow7TPCMtGBPLC6ZVbU.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5A6LJpmVnHWq6_KdZ2lSEpA.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder,
             'Auth, footer'
         );
