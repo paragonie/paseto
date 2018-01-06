@@ -26,13 +26,13 @@ use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in
 ### PAST
 
 ```
-v2.auth.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCJ9VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8
+v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifQDJO3uvrYlMXf2oQQ-48M0n0qqgK4Z1SCBjqChP5RFnoSXumjp2JaPJ-2MmaDXm6aKOu-Y_5c3ZNkFpY-vEqgw
 ```
 
 This decodes to:
 
 * Version: `v2`
-* Purpose: `auth` (shared-key authentication)
+* Purpose: `public` (public-key digital signature)
 * Payload:
   ```json
   {
@@ -40,9 +40,9 @@ This decodes to:
     "exp": "2039-01-01T00:00:00"
   }
   ```
-* Authentication tag:
+* Signature:
   ```
-  VpWy4KU60YnKUzTkixFi9foXhXKTHbcDBtpg7oWllm8=
+  ifQDJO3uvrYlMXf2oQQ-48M0n0qqgK4Z1SCBjqChP5RFnoSXumjp2JaPJ-2MmaDXm6aKOu-Y_5c3ZNkFpY-vEqgw
   ```
 
 To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/past/tree/master/docs/01-Protocol-Versions).
@@ -87,14 +87,13 @@ choose from (including `none`).
 There have been ways to exploit JWT libraries by replacing RS256 with HS256 and using
 the known public key as the HMAC-SHA256 key, thereby allowing arbitrary token forgery. 
 
-With PAST, your options are `version` and a `purpose`. There are three possible
+With PAST, your options are `version` and a `purpose`. There are two possible
 values for `purpose`:
 
-* `auth` -- shared-key authentication
-* `enc`  -- shared-key encryption
-* `sign` -- public-key authentication (a.k.a. digital signatures)
+* `local` -- shared-key authenticated encrypted
+* `public` -- public-key authentication (a.k.a. digital signatures)
 
-All encryption modes use [authenticated modes](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken).
+PAST only allows you to use [authenticated modes](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken).
 
 Regardless of the purpose selected, the header (and an optional footer, which is always
 cleartext but base64url-encoded) is included in the signature or authentication tag.

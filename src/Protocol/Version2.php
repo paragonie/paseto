@@ -10,7 +10,7 @@ use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
     SymmetricAuthenticationKey,
-    SymmetricEncryptionKey
+    SymmetricKey
 };
 use ParagonIE\PAST\{
     ProtocolInterface,
@@ -27,92 +27,28 @@ class Version2 implements ProtocolInterface
     const HEADER = 'v2';
 
     /**
-     * Authenticate a message with a shared key.
-     *
-     * @param string $data
-     * @param SymmetricAuthenticationKey $key
-     * @param string $footer
-     * @return string
-     */
-    public static function auth(
-        string $data,
-        SymmetricAuthenticationKey $key,
-        string $footer = ''
-    ): string {
-        $header = self::HEADER . '.auth.';
-        $mac = \sodium_crypto_auth(
-            Util::preAuthEncode([$header, $data, $footer]),
-            $key->raw()
-        );
-        if ($footer) {
-            return $header .
-                Base64UrlSafe::encodeUnpadded($data . $mac) .
-                '.' .
-                Base64UrlSafe::encodeUnpadded($footer);
-        }
-        return $header . Base64UrlSafe::encodeUnpadded($data . $mac);
-    }
-
-    /**
-     * Verify a message with a shared key.
-     *
-     * @param string $authMsg
-     * @param SymmetricAuthenticationKey $key
-     * @param string $footer
-     * @return string
-     * @throws \Exception
-     * @throws \TypeError
-     */
-    public static function authVerify(
-        string $authMsg,
-        SymmetricAuthenticationKey $key,
-        string $footer = ''
-    ): string {
-        $authMsg = Util::validateAndRemoveFooter($authMsg, $footer);
-        $expectHeader = self::HEADER . '.auth.';
-        $givenHeader = Binary::safeSubstr($authMsg, 0, 8);
-        if (!\hash_equals($expectHeader, $givenHeader)) {
-            throw new \Exception('Invalid message header.');
-        }
-
-        $body = Binary::safeSubstr($authMsg, 8);
-        $decoded = Base64UrlSafe::decode($body);
-        $len = Binary::safeStrlen($decoded);
-
-        $message = Binary::safeSubstr($decoded, 0, $len - 32);
-        $mac = Binary::safeSubstr($decoded, $len - 32);
-        $valid = \sodium_crypto_auth_verify(
-            $mac,
-            Util::preAuthEncode([$givenHeader, $message, $footer]),
-            $key->raw()
-        );
-        if (!$valid) {
-            throw new \Exception('Invalid MAC');
-        }
-        return $message;
-    }
-
-    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data
-     * @param SymmetricEncryptionKey $key
+     * @param SymmetricKey $key
      * @param string $footer
+     * @param string $nonceForUnitTesting
      * @return string
      * @throws \SodiumException
      * @throws \TypeError
      */
     public static function encrypt(
         string $data,
-        SymmetricEncryptionKey $key,
-        string $footer = ''
-    ): string
-    {
+        SymmetricKey $key,
+        string $footer = '',
+        string $nonceForUnitTesting = ''
+    ): string {
         return self::aeadEncrypt(
             $data,
-            self::HEADER . '.enc.',
+            self::HEADER . '.local.',
             $key,
-            $footer
+            $footer,
+            $nonceForUnitTesting
         );
     }
 
@@ -120,7 +56,7 @@ class Version2 implements ProtocolInterface
      * Decrypt a message using a shared key.
      *
      * @param string $data
-     * @param SymmetricEncryptionKey $key
+     * @param SymmetricKey $key
      * @param string $footer
      * @return string
      * @throws \Exception
@@ -128,11 +64,11 @@ class Version2 implements ProtocolInterface
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function decrypt(string $data, SymmetricEncryptionKey $key, string $footer = ''): string
+    public static function decrypt(string $data, SymmetricKey $key, string $footer = ''): string
     {
         return self::aeadDecrypt(
             Util::validateAndRemoveFooter($data, $footer),
-            self::HEADER . '.enc.',
+            self::HEADER . '.local.',
             $key,
             $footer
         );
@@ -148,7 +84,7 @@ class Version2 implements ProtocolInterface
      */
     public static function sign(string $data, AsymmetricSecretKey $key, string $footer = ''): string
     {
-        $header = self::HEADER . '.sign.';
+        $header = self::HEADER . '.public.';
         $signature = \sodium_crypto_sign_detached(
             Util::preAuthEncode([$header, $data, $footer]),
             $key->raw()
@@ -175,12 +111,12 @@ class Version2 implements ProtocolInterface
     public static function signVerify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string
     {
         $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
-        $expectHeader = self::HEADER . '.sign.';
-        $givenHeader = Binary::safeSubstr($signMsg, 0, 8);
+        $expectHeader = self::HEADER . '.public.';
+        $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {
             throw new \Exception('Invalid message header.');
         }
-        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 8));
+        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
         $message = Binary::safeSubstr($decoded, 0, $len - SODIUM_CRYPTO_SIGN_BYTES);
         $signature = Binary::safeSubstr($decoded, $len - SODIUM_CRYPTO_SIGN_BYTES);
@@ -199,8 +135,9 @@ class Version2 implements ProtocolInterface
     /**
      * @param string $plaintext
      * @param string $header
-     * @param SymmetricEncryptionKey $key
+     * @param SymmetricKey $key
      * @param string $footer
+     * @param string $nonceForUnitTesting
      * @return string
      * @throws \SodiumException
      * @throws \TypeError
@@ -208,10 +145,15 @@ class Version2 implements ProtocolInterface
     public static function aeadEncrypt(
         string $plaintext,
         string $header,
-        SymmetricEncryptionKey $key,
-        string $footer = ''
+        SymmetricKey $key,
+        string $footer = '',
+        string $nonceForUnitTesting = ''
     ): string {
-        $nonce = \random_bytes(\ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
+        if ($nonceForUnitTesting) {
+            $nonce = $nonceForUnitTesting;
+        } else {
+            $nonce = \random_bytes(\ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
+        }
         $ciphertext = \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
             Util::preAuthEncode([$header, $nonce, $footer]),
@@ -230,7 +172,7 @@ class Version2 implements ProtocolInterface
     /**
      * @param string $message
      * @param string $header
-     * @param SymmetricEncryptionKey $key
+     * @param SymmetricKey $key
      * @param string $footer
      * @return string
      * @throws \Error
@@ -240,7 +182,7 @@ class Version2 implements ProtocolInterface
     public static function aeadDecrypt(
         string $message,
         string $header,
-        SymmetricEncryptionKey $key,
+        SymmetricKey $key,
         string $footer = ''
     ): string {
         $expectedLen = Binary::safeStrlen($header);

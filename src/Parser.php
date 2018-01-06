@@ -14,9 +14,7 @@ use ParagonIE\PAST\Exception\{
 };
 use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
-    AsymmetricSecretKey,
-    SymmetricAuthenticationKey,
-    SymmetricEncryptionKey
+    SymmetricKey
 };
 use ParagonIE\PAST\Protocol\{
     Version1,
@@ -139,22 +137,8 @@ class Parser
 
         // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
-            case 'auth':
-                if (!($this->key instanceof SymmetricAuthenticationKey)) {
-                    throw new InvalidKeyException('Invalid key type');
-                }
-                $footer = (\count($pieces) > 3)
-                    ? Base64UrlSafe::decode($pieces[3])
-                    : '';
-                try {
-                    /** @var string $decoded */
-                    $decoded = $protocol::authVerify($tainted, $this->key, $footer);
-                } catch (\Throwable $ex) {
-                    throw new PastException('An error occurred', 0, $ex);
-                }
-                break;
-            case 'enc':
-                if (!($this->key instanceof SymmetricEncryptionKey)) {
+            case 'local':
+                if (!($this->key instanceof SymmetricKey)) {
                     throw new InvalidKeyException('Invalid key type');
                 }
                 $footer = (\count($pieces) > 3)
@@ -167,7 +151,7 @@ class Parser
                     throw new PastException('An error occurred', 0, $ex);
                 }
                 break;
-            case 'sign':
+            case 'public':
                 if (!($this->key instanceof AsymmetricPublicKey)) {
                     throw new InvalidKeyException('Invalid key type');
                 }
@@ -231,21 +215,14 @@ class Parser
     {
         if ($checkPurpose) {
             switch ($this->purpose) {
-                case 'auth':
-                    if (!($key instanceof SymmetricAuthenticationKey)) {
+                case 'local':
+                    if (!($key instanceof SymmetricKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricAuthenticationKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' . SymmetricKey::class . ', got ' . \get_class($key)
                         );
                     }
                     break;
-                case 'enc':
-                    if (!($key instanceof SymmetricEncryptionKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricEncryptionKey::class . ', got ' . \get_class($key)
-                        );
-                    }
-                    break;
-                case 'sign':
+                case 'public':
                     if (!($key instanceof AsymmetricPublicKey)) {
                         throw new InvalidKeyException(
                             'Invalid key type. Expected ' . AsymmetricPublicKey::class . ', got ' . \get_class($key)
@@ -273,14 +250,7 @@ class Parser
         if ($checkKeyType) {
             $keyType = \get_class($this->key);
             switch ($keyType) {
-                case SymmetricAuthenticationKey::class:
-                    if (!\hash_equals('auth', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected auth, got ' . $purpose
-                        );
-                    }
-                    break;
-                case SymmetricEncryptionKey::class:
+                case SymmetricKey::class:
                     if (!\hash_equals('enc', $purpose)) {
                         throw new InvalidPurposeException(
                             'Invalid purpose. Expected enc, got ' . $purpose

@@ -52,7 +52,7 @@ class AsymmetricSecretKey implements KeyInterface
     public static function generate(string $protocol = Version2::HEADER): self
     {
         if (\hash_equals($protocol, Version1::HEADER)) {
-            $rsa = Version1::getRsa(false);
+            $rsa = Version1::getRsa();
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
             return new self($keypair['privatekey']);
