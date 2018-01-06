@@ -160,7 +160,7 @@ class Parser
                     : '';
                 try {
                     /** @var string $decoded */
-                    $decoded = $protocol::signVerify($tainted, $this->key, $footer);
+                    $decoded = $protocol::verify($tainted, $this->key, $footer);
                 } catch (\Throwable $ex) {
                     throw new PastException('An error occurred', 0, $ex);
                 }

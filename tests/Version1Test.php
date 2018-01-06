@@ -51,7 +51,7 @@ class Version1Test extends TestCase
 
     /**
      * @covers Version1::sign()
-     * @covers Version1::signVerify()
+     * @covers Version1::verify()
      */
     public function testSign()
     {
@@ -71,7 +71,7 @@ class Version1Test extends TestCase
             $this->assertInternalType('string', $signed);
             $this->assertSame('v1.public.', Binary::safeSubstr($signed, 0, 10));
 
-            $decode = Version1::signVerify($signed, $publicKey);
+            $decode = Version1::verify($signed, $publicKey);
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
 
@@ -80,11 +80,11 @@ class Version1Test extends TestCase
             $this->assertInternalType('string', $signed);
             $this->assertSame('v1.public.', Binary::safeSubstr($signed, 0, 10));
             try {
-                Version1::signVerify($signed, $publicKey);
+                Version1::verify($signed, $publicKey);
                 $this->fail('Missing footer');
             } catch (\Exception $ex) {
             }
-            $decode = Version1::signVerify($signed, $publicKey, 'footer');
+            $decode = Version1::verify($signed, $publicKey, 'footer');
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }

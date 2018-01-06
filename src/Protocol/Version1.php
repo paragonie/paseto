@@ -114,7 +114,7 @@ class Version1 implements ProtocolInterface
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function signVerify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string
+    public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string
     {
         $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         $expectHeader = self::HEADER . '.public.';

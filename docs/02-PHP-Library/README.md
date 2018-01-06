@@ -27,9 +27,9 @@ use ParagonIE\PAST\Protocol\Version2;
 use ParagonIE\PAST\Keys\SymmetricKey;
 
 /**
- * @var SymmetricKey $sharedAuthKey
+ * @var SymmetricKey $sharedKey
  */
-$token = Version2::sign('some arbitrary data', $sharedAuthKey);
+$token = Version2::sign('some arbitrary data', $sharedKey);
 ```
 
 ## Building and Verifying PASTs
