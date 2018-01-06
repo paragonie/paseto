@@ -78,6 +78,42 @@ class Parser
     }
 
     /**
+     * @param SymmetricKey $key
+     * @param array<int, string> $allowedVersions
+     * @return self
+     */
+    public static function getLocal(
+        SymmetricKey $key,
+        array $allowedVersions = self::DEFAULT_VERSION_ALLOW
+    ): self {
+        /** @var Parser $instance */
+        $instance = new static(
+            $allowedVersions,
+            'local',
+            $key
+        );
+        return $instance;
+    }
+
+    /**
+     * @param AsymmetricPublicKey $key
+     * @param array<int, string> $allowedVersions
+     * @return self
+     */
+    public static function getPublic(
+        AsymmetricPublicKey $key,
+        array $allowedVersions = self::DEFAULT_VERSION_ALLOW
+    ): self {
+        /** @var Parser $instance */
+        $instance = new static(
+            $allowedVersions,
+            'public',
+            $key
+        );
+        return $instance;
+    }
+
+    /**
      * Add a validation rule to be invoked by parse().
      *
      * @param ValidationRuleInterface $rule
