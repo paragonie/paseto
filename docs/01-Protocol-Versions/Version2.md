@@ -28,6 +28,29 @@ Given a message `m`, key `k`, and optional footer `f`.
 
 ## Decrypt
 
+Given a message `m`, key `k`, and optional footer `f`.
+
+1. If `f` is not empty, verify that the value appended to the token matches `f`,
+   using a constant-time string compare function. If it does not, throw an exception. 
+2. Verify that the message begins with `v2.local.`, otherwise throw an exception.
+   This constant will be referred to as `h`.
+3. Decode the payload from base64url to raw binary. Set:
+   * `n` to the leftmost 24 bytes
+   * `c` to the middle remainder of the payload, excluding `n`.
+5. Pack `h`, `n`, and `f` together using
+   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   (pre-authentication encoding). We'll call this `preAuth`
+8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
+   ```
+   p = crypto_aead_xchacha20poly1305_decrypt(
+      ciphertext = c
+      aad = preAuth
+      nonce = n
+      key = k
+   );
+   ```
+9. If decryption failed, throw an exception. Otherwise, return `p`. 
+
 ## Sign
 
 ## Verify
