@@ -50,6 +50,11 @@ This decodes to:
     "data": "this is a signed message",
     "exp": "2039-01-01T00:00:00"
   }
+  ```
+  * Key used in this example (hex-encoded):
+    ```
+    707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f  
+    ``` 
 * Footer:
   ```
   Paragon Initiative Enterprises
