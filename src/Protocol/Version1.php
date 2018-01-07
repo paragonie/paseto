@@ -31,6 +31,9 @@ class Version1 implements ProtocolInterface
     const MAC_SIZE = 48;
     const SIGN_SIZE = 256; // 2048-bit RSA = 256 byte signature
 
+    /** @var RSA */
+    protected static $rsa;
+
     /**
      * Encrypt a message using a shared key.
      *
@@ -157,9 +160,9 @@ class Version1 implements ProtocolInterface
         string $nonceForUnitTesting = ''
     ): string {
         if ($nonceForUnitTesting) {
-            $nonce = $nonceForUnitTesting;
+            $nonce = self::getNonce($plaintext, $nonceForUnitTesting);
         } else {
-            $nonce = \random_bytes(self::NONCE_SIZE);
+            $nonce = self::getNonce($plaintext, \random_bytes(self::NONCE_SIZE));
         }
         list($encKey, $authKey) = $key->split(
             Binary::safeSubstr($nonce, 0, 16)
@@ -250,8 +253,20 @@ class Version1 implements ProtocolInterface
         return $plaintext;
     }
 
-    /** @var RSA */
-    protected static $rsa;
+    /**
+     * Calculate a nonce from the message and a random nonce.
+     * Mitigation against nonce-misuse.
+     *
+     * @param string $m
+     * @param string $n
+     * @return string
+     * @throws \TypeError
+     */
+    public static function getNonce(string $m, string $n): string
+    {
+        $nonce = \hash_hmac(self::HASH_ALGO, $m, $n, true);
+        return Binary::safeSubstr($nonce, 0, 32);
+    }
 
     /**
      * Get the PHPSecLib RSA provider for signing

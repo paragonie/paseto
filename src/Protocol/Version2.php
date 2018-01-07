@@ -154,6 +154,11 @@ class Version2 implements ProtocolInterface
         } else {
             $nonce = \random_bytes(\ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
         }
+        $nonce = \sodium_crypto_generichash(
+            $plaintext,
+            $nonce,
+            \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+        );
         $ciphertext = \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
             Util::preAuthEncode([$header, $nonce, $footer]),
