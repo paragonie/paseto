@@ -41,11 +41,16 @@ class Util
             $nativeHKDF = \is_callable('\\hash_hkdf');
         }
         if ($nativeHKDF) {
-            /** @psalm-suppress UndefinedFunction This is wrapped in an is_callable() check. */
+            /**
+             * @psalm-suppress UndefinedFunction
+             * This is wrapped in an is_callable() check.
+             */
             return (string) \hash_hkdf($hash, $ikm, $length, $info, $salt);
         }
 
-        $digest_length = Binary::safeStrlen(\hash_hmac($hash, '', '', true));
+        $digest_length = Binary::safeStrlen(
+            \hash_hmac($hash, '', '', true)
+        );
 
         // Sanity-check the desired output length.
         if (empty($length) || ! \is_int($length) ||
@@ -69,7 +74,9 @@ class Util
 
         // This check is useless, but it serves as a reminder to the spec.
         if (Binary::safeStrlen($prk) < $digest_length) {
-            throw new \Error('An unexpected condition occurred in the HKDF internals');
+            throw new \Error(
+                'An unexpected condition occurred in the HKDF internals'
+            );
         }
 
         // T(0) = ''
@@ -91,7 +98,9 @@ class Util
         /** @var string $orm */
         $orm = Binary::safeSubstr($t, 0, $length);
         if (!\is_string($orm)) {
-            throw new \TypeError('Could not get a substring at the end of HKDF processing.');
+            throw new \TypeError(
+                'Could not get a substring at the end of HKDF processing.'
+            );
         }
         return (string) $orm;
     }
@@ -128,8 +137,10 @@ class Util
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function validateAndRemoveFooter(string $payload, string $footer = ''): string
-    {
+    public static function validateAndRemoveFooter(
+        string $payload,
+        string $footer = ''
+    ): string {
         if (empty($footer)) {
             return $payload;
         }
@@ -137,7 +148,11 @@ class Util
         $payload_len = Binary::safeStrlen($payload);
         $footer_len = Binary::safeStrlen($footer) + 1;
 
-        $trailing = Binary::safeSubstr($payload, $payload_len - $footer_len, $footer_len);
+        $trailing = Binary::safeSubstr(
+            $payload,
+            $payload_len - $footer_len,
+            $footer_len
+        );
         if (!\hash_equals('.' . $footer, $trailing)) {
             throw new \Exception('Invalid message footer');
         }

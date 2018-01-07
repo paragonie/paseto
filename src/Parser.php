@@ -254,14 +254,20 @@ class Parser
                 case 'local':
                     if (!($key instanceof SymmetricKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' .
+                                SymmetricKey::class .
+                                ', got ' .
+                                \get_class($key)
                         );
                     }
                     break;
                 case 'public':
                     if (!($key instanceof AsymmetricPublicKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . AsymmetricPublicKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' .
+                                AsymmetricPublicKey::class .
+                                ', got ' .
+                                \get_class($key)
                         );
                     }
                     break;
@@ -287,16 +293,16 @@ class Parser
             $keyType = \get_class($this->key);
             switch ($keyType) {
                 case SymmetricKey::class:
-                    if (!\hash_equals('enc', $purpose)) {
+                    if (!\hash_equals('local', $purpose)) {
                         throw new InvalidPurposeException(
-                            'Invalid purpose. Expected enc, got ' . $purpose
+                            'Invalid purpose. Expected local, got ' . $purpose
                         );
                     }
                     break;
                 case AsymmetricPublicKey::class:
-                    if (!\hash_equals('sign', $purpose)) {
+                    if (!\hash_equals('public', $purpose)) {
                         throw new InvalidPurposeException(
-                            'Invalid purpose. Expected sign, got ' . $purpose
+                            'Invalid purpose. Expected public, got ' . $purpose
                         );
                     }
                     break;

@@ -30,8 +30,10 @@ class SymmetricKey implements KeyInterface
      * @param string $keyMaterial
      * @param string $protocol
      */
-    public function __construct(string $keyMaterial, string $protocol = Version2::HEADER)
-    {
+    public function __construct(
+        string $keyMaterial,
+        string $protocol = Version2::HEADER
+    ) {
         $this->key = $keyMaterial;
         $this->protocol = $protocol;
     }
@@ -71,6 +73,9 @@ class SymmetricKey implements KeyInterface
     }
 
     /**
+     * Split this key into two 256-bit keys, using HKDF-SHA384
+     * (with the given salt)
+     *
      * @param string|null $salt
      * @return array<int, string>
      *
@@ -79,8 +84,20 @@ class SymmetricKey implements KeyInterface
      */
     public function split(string $salt = null): array
     {
-        $encKey = Util::HKDF('sha384', $this->key, 32, self::INFO_ENCRYPTION, $salt);
-        $authKey = Util::HKDF('sha384', $this->key, 32, self::INFO_AUTHENTICATION, $salt);
+        $encKey = Util::HKDF(
+            'sha384',
+            $this->key,
+            32,
+            self::INFO_ENCRYPTION,
+            $salt
+        );
+        $authKey = Util::HKDF(
+            'sha384',
+            $this->key,
+            32,
+            self::INFO_AUTHENTICATION,
+            $salt
+        );
         return [$encKey, $authKey];
     }
 

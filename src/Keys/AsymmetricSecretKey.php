@@ -29,13 +29,17 @@ class AsymmetricSecretKey implements KeyInterface
      * @param string $protocol
      * @throws \Exception
      */
-    public function __construct(string $keyData, string $protocol = Version2::HEADER)
-    {
+    public function __construct(
+        string $keyData,
+        string $protocol = Version2::HEADER
+    ) {
         if (\hash_equals($protocol, Version2::HEADER)) {
             $len = Binary::safeStrlen($keyData);
             if ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
                 if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
-                    throw new \Exception('Secret keys must be 32 or 64 bytes long; ' . $len . ' given.');
+                    throw new \Exception(
+                        'Secret keys must be 32 or 64 bytes long; ' . $len . ' given.'
+                    );
                 }
                 $keypair = \sodium_crypto_sign_seed_keypair($keyData);
                 $keyData = Binary::safeSubstr($keypair, 0, 64);

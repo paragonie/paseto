@@ -25,12 +25,16 @@ class AsymmetricPublicKey implements KeyInterface
      * @param string $protocol
      * @throws \Exception
      */
-    public function __construct(string $keyMaterial, string $protocol = Version2::HEADER)
-    {
+    public function __construct(
+        string $keyMaterial,
+        string $protocol = Version2::HEADER
+    ) {
         if (\hash_equals($protocol, Version2::HEADER)) {
             $len = Binary::safeStrlen($keyMaterial);
             if ($len !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
-                throw new \Exception('Public keys must be 32 bytes long; ' . $len . ' given.');
+                throw new \Exception(
+                    'Public keys must be 32 bytes long; ' . $len . ' given.'
+                );
             }
         }
         $this->key = $keyMaterial;

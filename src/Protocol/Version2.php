@@ -9,7 +9,6 @@ use ParagonIE\ConstantTime\{
 use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
-    SymmetricAuthenticationKey,
     SymmetricKey
 };
 use ParagonIE\PAST\{
@@ -64,8 +63,11 @@ class Version2 implements ProtocolInterface
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function decrypt(string $data, SymmetricKey $key, string $footer = ''): string
-    {
+    public static function decrypt(
+        string $data,
+        SymmetricKey $key,
+        string $footer = ''
+    ): string {
         return self::aeadDecrypt(
             Util::validateAndRemoveFooter($data, $footer),
             self::HEADER . '.local.',
@@ -82,8 +84,11 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @return string
      */
-    public static function sign(string $data, AsymmetricSecretKey $key, string $footer = ''): string
-    {
+    public static function sign(
+        string $data,
+        AsymmetricSecretKey $key,
+        string $footer = ''
+    ): string {
         $header = self::HEADER . '.public.';
         $signature = \sodium_crypto_sign_detached(
             Util::preAuthEncode([$header, $data, $footer]),
@@ -108,8 +113,11 @@ class Version2 implements ProtocolInterface
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string
-    {
+    public static function verify(
+        string $signMsg,
+        AsymmetricPublicKey $key,
+        string $footer = ''
+    ): string {
         $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
@@ -118,8 +126,17 @@ class Version2 implements ProtocolInterface
         }
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
-        $message = Binary::safeSubstr($decoded, 0, $len - SODIUM_CRYPTO_SIGN_BYTES);
-        $signature = Binary::safeSubstr($decoded, $len - SODIUM_CRYPTO_SIGN_BYTES);
+
+        // Separate the decoded bundle into the message and signature.
+        $message = Binary::safeSubstr(
+            $decoded,
+            0,
+            $len - SODIUM_CRYPTO_SIGN_BYTES
+        );
+        $signature = Binary::safeSubstr(
+            $decoded,
+            $len - SODIUM_CRYPTO_SIGN_BYTES
+        );
 
         $valid = \sodium_crypto_sign_verify_detached(
             $signature,
@@ -133,6 +150,10 @@ class Version2 implements ProtocolInterface
     }
 
     /**
+     * Authenticated Encryption with Associated Data -- Encryption
+     *
+     * Algorithm: XChaCha20-Poly1305
+     *
      * @param string $plaintext
      * @param string $header
      * @param SymmetricKey $key
@@ -152,7 +173,9 @@ class Version2 implements ProtocolInterface
         if ($nonceForUnitTesting) {
             $nonce = $nonceForUnitTesting;
         } else {
-            $nonce = \random_bytes(\ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES);
+            $nonce = \random_bytes(
+                \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            );
         }
         $nonce = \sodium_crypto_generichash(
             $plaintext,
@@ -175,6 +198,8 @@ class Version2 implements ProtocolInterface
     }
 
     /**
+     * Authenticated Encryption with Associated Data -- Decryption
+     *
      * @param string $message
      * @param string $header
      * @param SymmetricKey $key

@@ -143,6 +143,10 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Authenticated Encryption with Associated Data -- Encryption
+     *
+     * Algorithm: AES-256-CTR + HMAC-SHA384 (Encrypt then MAC)
+     *
      * @param string $plaintext
      * @param string $header
      * @param SymmetricKey $key
@@ -194,6 +198,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Authenticated Encryption with Associated Data -- Decryption
+     *
      * @param string $message
      * @param string $header
      * @param SymmetricKey $key

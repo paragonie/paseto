@@ -54,8 +54,10 @@ class JsonToken
      * @param string $version
      * @return self
      */
-    public static function getLocal(SymmetricKey $key, string $version = Version2::HEADER): self
-    {
+    public static function getLocal(
+        SymmetricKey $key,
+        string $version = Version2::HEADER
+    ): self {
         $instance = new static();
         $instance->key = $key;
         $instance->version = $version;
@@ -68,8 +70,10 @@ class JsonToken
      * @param string $version
      * @return self
      */
-    public static function getPublic(AsymmetricSecretKey $key, string $version = Version2::HEADER): self
-    {
+    public static function getPublic(
+        AsymmetricSecretKey $key,
+        string $version = Version2::HEADER
+    ): self {
         $instance = new static();
         $instance->key = $key;
         $instance->version = $version;
@@ -360,19 +364,28 @@ class JsonToken
                 case 'local':
                     if (!($key instanceof SymmetricKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' .
+                                SymmetricKey::class .
+                                ', got ' .
+                                \get_class($key)
                         );
                     }
                     break;
                 case 'public':
                     if (!($key instanceof AsymmetricSecretKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . AsymmetricSecretKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' .
+                                AsymmetricSecretKey::class .
+                                ', got ' .
+                                \get_class($key)
                         );
                     }
                     if (!\hash_equals($this->version, $key->getProtocol())) {
                         throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' . $key->getProtocol() . ', not ' . $this->version
+                            'Invalid key type. This key is for ' .
+                                $key->getProtocol() .
+                                ', not ' .
+                                $this->version
                         );
                     }
                     break;
@@ -491,7 +504,9 @@ class JsonToken
                 $protocol = Version2::class;
                 break;
             default:
-                throw new InvalidVersionException('Unsupported version: ' . $this->version);
+                throw new InvalidVersionException(
+                    'Unsupported version: ' . $this->version
+                );
         }
         /** @var ProtocolInterface $protocol */
         switch ($this->purpose) {
@@ -509,7 +524,11 @@ class JsonToken
             case 'public':
                 if ($this->key instanceof AsymmetricSecretKey) {
                     try {
-                        $this->cached = (string) $protocol::sign($claims, $this->key, $this->footer);
+                        $this->cached = (string) $protocol::sign(
+                            $claims,
+                            $this->key,
+                            $this->footer
+                        );
                         return $this->cached;
                     } catch (\Throwable $ex) {
                         throw new PastException('Signing failed.', 0, $ex);
@@ -664,19 +683,28 @@ class JsonToken
                 case 'local':
                     if (!($key instanceof SymmetricKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . SymmetricKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' .
+                                SymmetricKey::class .
+                                ', got ' .
+                                \get_class($key)
                         );
                     }
                     break;
                 case 'public':
                     if (!($key instanceof AsymmetricSecretKey)) {
                         throw new InvalidKeyException(
-                            'Invalid key type. Expected ' . AsymmetricSecretKey::class . ', got ' . \get_class($key)
+                            'Invalid key type. Expected ' .
+                                AsymmetricSecretKey::class .
+                                ', got ' .
+                                \get_class($key)
                         );
                     }
                     if (!\hash_equals($cloned->version, $key->getProtocol())) {
                         throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' . $key->getProtocol() . ', not ' . $cloned->version
+                            'Invalid key type. This key is for ' .
+                                $key->getProtocol() .
+                                ', not ' .
+                                $cloned->version
                         );
                     }
                     break;
