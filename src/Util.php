@@ -97,6 +97,27 @@ class Util
     }
 
     /**
+     * Format the Additional Associated Data.
+     *
+     * Prefix with the length (64-bit unsigned little-endian integer)
+     * followed by each message. This provides a more explicit domain
+     * separation between each piece of the message.
+     *
+     * @param array<int, string> $pieces
+     * @return string
+     */
+    public static function preAuthEncode(array $pieces): string
+    {
+        $accumulator = \pack('P', \count($pieces));
+        foreach ($pieces as $piece) {
+            $len = Binary::safeStrlen($piece);
+            $accumulator .= \pack('P', $len);
+            $accumulator .= $piece;
+        }
+        return $accumulator;
+    }
+
+    /**
      * If a footer was included with the message, first verify that
      * it's equivalent to the one we expect, then remove it from the
      * token payload.
@@ -121,26 +142,5 @@ class Util
             throw new \Exception('Invalid message footer');
         }
         return Binary::safeSubstr($payload, 0, $payload_len - $footer_len);
-    }
-
-    /**
-     * Format the Additional Associated Data.
-     *
-     * Prefix with the length (64-bit unsigned little-endian integer)
-     * followed by each message. This provides a more explicit domain
-     * separation between each piece of the message.
-     *
-     * @param array<int, string> $pieces
-     * @return string
-     */
-    public static function preAuthEncode(array $pieces): string
-    {
-        $accumulator = \pack('P', \count($pieces));
-        foreach ($pieces as $piece) {
-            $len = Binary::safeStrlen($piece);
-            $accumulator .= \pack('P', $len);
-            $accumulator .= $piece;
-        }
-        return $accumulator;
     }
 }
