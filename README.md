@@ -21,7 +21,12 @@ for secure stateless tokens.
 Unlike JSON Web Tokens (JWT), which gives developers more than enough rope with which to
 hang themselves, PAST only allows secure operations. JWT gives you "algorithm agility",
 PAST gives you "versioned protocols". It's incredibly unlikely that you'll be able to
-use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries). 
+use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries).
+
+> **Caution:** Neither JWT nor PAST were designed for
+> [stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/).
+> PAST is suitable for tamper-proof cookies, but cannot prevent replay attacks
+> by itself.
 
 ### PAST
 
