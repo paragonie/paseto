@@ -5,7 +5,6 @@ namespace ParagonIE\PAST;
 use ParagonIE\PAST\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
-    SymmetricAuthenticationKey,
     SymmetricKey
 };
 
