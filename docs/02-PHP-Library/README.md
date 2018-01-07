@@ -117,26 +117,26 @@ $footer = 'key-id:gandalf0';
 # Version 1:
 $v1Token = Version1::encrypt($message, $key);
 var_dump((string) $v1Token);
-// string(163) "v1.local.WeSsfqWpfg5jyqQoL088HOGTL4YrcA3JInC4C8HGalnHUtQfdV1YjT8HGgZJbKS4tlXFoA0Z8zifikuTAbZDVI1Psr7LbQL5IXoFgLwsH8Map0iy1WedX-RgfpGZAyQsY03kVLmmW6J2-S4I4FC0821rOQ"
+// string(163) "v1.local.B0VgDOyAtKza1ZCsPzlwQZGTfrpbo1vgzUwCvyxLiSM-gw3TC_KtMqX8woy8BuuE9-pRQNmnTGAru5OmVLzPDnDBHXbd8Sz5rssiTz5TZKLqSyYHsgBzfc53PqsTxLvw09QAy5KBSpKErPX_EfF0Od6-Ig"
 var_dump(Version1::decrypt($v1Token, $key));
 // string(35) "This is a signed, non-JSON message."
 
 $v1Token = Version1::encrypt($message, $key, $footer);
 var_dump((string) $v1Token);
-// string(184) "v1.local.8I9kDLv3gNd7WGyp55wCnswLY0ur0Fd0qOI10VTmCDopehilRF_qejheQFSxyb0nu5Jkc45RmCnMbkcHSqEBYwqPMFnE2N94lbKsR8jtRFD6MgYOebPZAKrhlnLsZz_G7gD88ntX7OgXDAxbcrnKKZPeeQ.a2V5LWlkOmdhbmRhbGYw"
+// string(184) "v1.local.vu2ZV_apVDvIhExdenX6rm5w13E3LraRbgN9tabtspSR6KQQt5XdGY5Hho64VRj6Pa6gd-5w5XwmRZbnrxfSVYyvXrVfyDJC7pqQDgae8-MHDg5rZul7kFiH6ExXWx-1hJupWSkRnfQy168PzwS14xiTgw.a2V5LWlkOmdhbmRhbGYw"
 var_dump(Version1::decrypt($v1Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
 
 # Version 2:
 $v2Token = Version2::encrypt($message, $key);
 var_dump((string) $v2Token);
-// string(109) "v2.local.-p1d4Ja8DVNMLwOkK77zrlkj2q2loIdo4ypd26AKgqUrrzei4LwAeGXF3ivpTrluSMEBLf04F8mSFO00tU_FOgCLHWTGz_3oYF67"
+// string(109) "v2.local.0qOisotef_M2W1gK0b6SiUrO4fkPb24Se0eNJAkALmDvS3IlVu-72birx07hIqU4MYtrCrTJTTElYaWxOyz5Wx8wXh8cQUOF6wOo"
 var_dump(Version2::decrypt($v2Token, $key));
 // string(35) "This is a signed, non-JSON message."
 
 $v2Token = Version2::encrypt($message, $key, $footer);
 var_dump((string) $v2Token);
-// string(130) "v2.local.37Q1fN7K0t_EUOtqhvES1WHkJw8eIex2m-5vP0JQeAWZ-1gMBPm6GMFVSnGIq0zK2eApeHSoxyj1bymI8OOjpFD8NkqheUuY0QSJ.a2V5LWlkOmdhbmRhbGYw"
+// string(130) "v2.local.b6ClQBYz-s8k7CC-dEYz2sf3zQFqES4xNUP6K-lzQTRnxVlZFxNnT5I6ouSwYe1d-t9OTnjM9d46MEt__GJvHbNO1wwIfnf1Ear-.a2V5LWlkOmdhbmRhbGYw"
 var_dump(Version2::decrypt($v2Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
 
@@ -144,5 +144,5 @@ var_dump(Version2::decrypt($v2Token, $key, $footer));
 $nonce = str_repeat("\0", 24);
 $v2Token = ParagonIE\PAST\Protocol\Version2::encrypt($message, $key, $footer, $nonce);
 var_dump((string) $v2Token);
-// string(130) "v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9E5lZQlE2rYJH6S-N1z-jnKpXy1hd6BDNEnjProJ6HFZPY_6AtK3ldQrOzHvVZzqiqK2.a2V5LWlkOmdhbmRhbGYw"
+// string(130) "v2.local.oFcz6G4gkzMlx3qF2-FnFeUNBwUG0TqR7aoIN8TwsJ1h3xSBKEBsKomYhDsEXHuB3_rVUpzXR45KtDvAzAMPmxZdrWU3SCO9kO_M.a2V5LWlkOmdhbmRhbGYw"
 ```
