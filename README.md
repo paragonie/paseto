@@ -16,12 +16,12 @@ What follows is a reference implementation. **Requires PHP 7 or newer.**
 PAST (Platform-Agnostic Security Tokens) is a specification and reference implementation
 for secure stateless tokens.
 
+## Key Differences between PAST and JWT
+
 Unlike JSON Web Tokens (JWT), which gives developers more than enough rope with which to
 hang themselves, PAST only allows secure operations. JWT gives you "algorithm agility",
 PAST gives you "versioned protocols". It's incredibly unlikely that you'll be able to
 use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries). 
-
-## Key Differences between PAST and JWT
 
 ### PAST
 
