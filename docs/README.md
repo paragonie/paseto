@@ -71,8 +71,8 @@ which is largely an anti-pattern.
 
 ## How should we pronounce PAST?
 
-Like the English word "pasta" without the final "a". It rhymes with "frost"
-and the first syllable in "roster".
+Like the English word "pasta" without the final "a". It rhymes with "cost",
+"frost", "lost", or the first syllable in "roster".
 
 Pronouncing it like the English word "past" is acceptable, but
 politely discouraged.
