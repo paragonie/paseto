@@ -44,10 +44,12 @@ use ParagonIE\PAST\Keys\SymmetricKey;
 use ParagonIE\PAST\Protocol\Version2;
 
 /**
- * @var SymmetricKey $sharedAuthKey
+ * @var SymmetricKey $sharedKey
  */
+$token = JsonToken::getLocal($sharedKey, Version2::HEADER);
+
 $token = (new JsonToken())
-    ->setKey($sharedAuthKey)
+    ->setKey($sharedKey)
     ->setVersion(Version2::HEADER)
     ->setPurpose('local')
     // Set it to expire in one day
@@ -74,16 +76,19 @@ First, you need to define your `Parser` rules.
 use ParagonIE\PAST\Exception\PastException;
 use ParagonIE\PAST\Keys\SymmetricKey;
 use ParagonIE\PAST\Parser;
+use ParagonIE\PAST\Protocol\Version2;
 
 /**
  * @var string $providedToken
- * @var SymmetricKey $sharedAuthKey
+ * @var SymmetricKey $sharedKey
  */
+$parser = Parser::getLocal($sharedKey, [Version2::HEADER]);
+// This is the same as:
 $parser = (new Parser())
-    ->setKey($sharedAuthKey)
+    ->setKey($sharedKey)
     ->setPurpose('local')
     // Only allow version 2
-    ->setAllowedVersions(['v2']);
+    ->setAllowedVersions([Version2::HEADER]);
 
 try {
     $token = $parser->parse($providedToken);

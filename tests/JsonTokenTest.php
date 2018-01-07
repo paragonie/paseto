@@ -71,6 +71,43 @@ class JsonTokenTest extends TestCase
     }
 
     /**
+     * @covers JsonToken::with()
+     * @throws PastException
+     */
+    public function testWith()
+    {
+        $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
+        $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
+        $footerArray = ['key-id' => 'gandalf0'];
+
+        $token = (new JsonToken())
+            ->setPurpose('local')
+            ->setExplicitNonce($nonce)
+            ->setKey($key)
+            ->set('data', 'this is a signed message')
+            ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
+            ->setFooterArray($footerArray);
+
+        $first = (string) $token;
+        $alt = $token->with('data', 'this is a different message');
+        $second = (string) $alt;
+        $third = (string) $token;
+
+        $this->assertSame($first, $third);
+        $this->assertNotSame($first, $second);
+        $this->assertNotSame($second, $third);
+
+        $mutated = $token->withAudience('example.com');
+        $mutateTwo = $mutated->withAudience('example.org');
+
+        $this->assertNotSame(
+            $mutated->getAudience(),
+            $mutateTwo->getAudience()
+        );
+    }
+
+    /**
      * @throws PastException
      */
     public function testAuthTokenCustomFooter()
