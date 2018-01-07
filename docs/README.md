@@ -77,6 +77,12 @@ suffixed:
 * **PAST-Raw** uses the cryptography features directly over raw strings
 * **PAST-XML** means PAST cryptography using XML serialization
 
+## Was "Stateless Session Tokens" one of PAST's Design Goals?
+
+No, neither PAST nor JWT were designed for
+[stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/),
+which is largely an anti-pattern. 
+
 ## How should we pronounce PAST?
 
 Like the English word "pasta" without the final "a". It rhymes with "frost"
