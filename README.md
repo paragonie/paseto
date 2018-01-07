@@ -24,7 +24,9 @@ PAST gives you "versioned protocols". It's incredibly unlikely that you'll be ab
 use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries).
 
 > **Caution:** Neither JWT nor PAST were designed for
-> [stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/). 
+> [stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/).
+> PAST is suitable for tamper-proof cookies, but cannot prevent replay attacks
+> by itself.
 
 ### PAST
 
