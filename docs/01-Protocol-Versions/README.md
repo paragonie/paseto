@@ -51,7 +51,7 @@ See also: [Common implementation details for all versions](Common.md).
   * The nonce is calculated from `sodium_crypto_generichash()` of the message,
     with a BLAKE2b key provided by `random_bytes(24)` and an output length of 24,
     during encryption only
-* **`v2.public`**: Asymmetric Authentication (Public-Key Signatures): 
+* **`v2.public`**: Asymmetric Authentication (Public-Key Signatures):
   * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
   * Verifying: `sodium_crypto_sign_verify_detached()`

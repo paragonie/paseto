@@ -5,7 +5,7 @@
 ### Without the Optional Footer
 
 ```
-version.purpose.payload
+version.purpose.payload.footer
 ```
 
 The `version` is a string that represents the current version of the protocol. Currently,
@@ -15,23 +15,19 @@ two versions are specified, which each possess their own ciphersuites. Accepted 
 The `purpose` is a short string describing the purpose of the token. Accepted values:
 `local`, `public`.
 
-The `payload` is a base64url-encoded string that contains the data that is secured. It may be
-encrypted. It may use public-key cryptography. It MUST be authenticated or signed. Encrypting
-a message using PAST implicitly authenticates it.
+* `local`: shared-key authenticated encryption
+* `public`: public-key digital signatures; **not encrypted**
 
-### With an Optional Footer
-
-```
-version.purpose.payload.optional
-version.purpose.one-time-key.ciphertext.optional (sealing only)
-```
-
-Any `optional` data can be appended to the end. This information is public (unencrypted), even
-if the payload is encrypted. However, it is always authenticated. It's always base64url-encoded.
+Any optional data can be appended to the end. This information is NOT encrypted, but it
+is used in calculating the authentication tag for the payload. It's always base64url-encoded.
 
  * For local tokens, it's included in the associated data alongside the nonce.
  * For public tokens, it's appended to the message during the actual
-   authentication/signing step, in accordance to [our standard format](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
+   authentication/signing step, in accordance to
+   [our standard format](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
+
+Thus, if you want unencrypted, but authenticated, tokens, you can simply set your payload
+to an empty string and your footer to the message you want to authenticate.
 
 ## Versions and their Respective Purposes
 
