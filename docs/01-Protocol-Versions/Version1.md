@@ -9,7 +9,8 @@ Given a message (`m`) and a nonce (`n`):
 
 ## Encrypt
 
-Given a message `m`, key `k`, and optional footer `f`.
+Given a message `m`, key `k`, and optional footer `f`
+(which defaults to empty string):
 
 1. Set header `h` to `v1.local.`
 2. Generate 32 random bytes from the OS's CSPRNG.
@@ -52,7 +53,8 @@ Given a message `m`, key `k`, and optional footer `f`.
 
 ## Decrypt
 
-Given a message `m`, key `k`, and optional footer `f`.
+Given a message `m`, key `k`, and optional footer `f`
+(which defaults to empty string):
 
 1. If `f` is not empty, verify that the value appended to the token matches `f`,
    using a constant-time string compare function. If it does not, throw an exception. 
@@ -96,5 +98,51 @@ Given a message `m`, key `k`, and optional footer `f`.
 
 ## Sign
 
+Given a message `m`, 2048-bit RSA secret key `sk`, and
+optional footer `f` (which defaults to empty string):
+
+1. Set `h` to `v1.public.`
+2. Pack `h`, `m`, and `f` together using
+   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   (pre-authentication encoding). We'll call this `m2`.
+3. Sign `m2` using RSA with the private key `sk`. We'll call this `sig`.
+   ```
+   sig = crypto_sign_rsa(
+       message = m2,
+       private_key = sk,
+       padding_mode = "pss",
+       public_exponent = 65537,
+       hash = "sha384"
+       mgf = "mgf1+sha384"
+   );
+   ```
+   Only the above parameters are supported. PKCS1v1.5 is explicitly forbidden.
+4. If `f` is:
+   * Empty: return "`h` || base64url(`m` || `sig`)"
+   * Non-empty: return "`h` || base64url(`m` || `sig`) || `.` || base64url(`f`)"
+   * ...where || means "concatenate"
+
 ## Verify
 
+Given a signed message `sm`, RSA public key `pk`, and optional
+footer `f` (which defaults to empty string):
+
+1. If `f` is not empty, verify that the value appended to the token matches `f`,
+   using a constant-time string compare function. If it does not, throw an exception. 
+2. Verify that the message begins with `v1.public.`, otherwise throw an exception.
+   This constant will be referred to as `h`.
+3. Decode the payload (`sm` sans `h` and `f`) from base64url to raw binary. Set:
+   * `s` to the rightmost 256 bytes
+   * `m` to the leftmost remainder of the payload, excluding `t`  
+4. Pack `h`, `m`, and `f` together using
+   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   (pre-authentication encoding). We'll call this `m2`.
+5. Use RSA to verify that the signature is valid for the message:
+   ```
+   valid = crypto_sign_rsa_verify(
+       signature = s,
+       message = m2,
+       public_key = pk
+   );
+   ```
+6. If the signature is valid, return `m`. Otherwise, throw an exception.
