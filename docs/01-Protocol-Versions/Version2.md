@@ -28,6 +28,7 @@ Given a message `m`, key `k`, and optional footer `f`.
    * Empty: return "`h` || base64url(`n` || `c`)"
    * Non-empty: return "`h` || base64url(`n` || `c`) || `.` || base64url(`f`)"
    * ...where || means "concatenate"
+   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
 
 ## Decrypt
 
@@ -75,6 +76,7 @@ optional footer `f` (which defaults to empty string):
    * Empty: return "`h` || base64url(`m` || `sig`)"
    * Non-empty: return "`h` || base64url(`m` || `sig`) || `.` || base64url(`f`)"
    * ...where || means "concatenate"
+   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
 
 ## Verify
 
