@@ -88,7 +88,7 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from base64url to raw binary. Set:
    * `s` to the rightmost 64 bytes
-   * `m` to the leftmost remainder of the payload, excluding `t`  
+   * `m` to the leftmost remainder of the payload, excluding `s`  
 4. Pack `h`, `m`, and `f` together using
    [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
