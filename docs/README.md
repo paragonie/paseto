@@ -63,20 +63,6 @@ Additionally, developers who are not already familiar with JWT should be able
 to pick up PAST and use it successfully without introducing security flaws
 into their application.
 
-### 3. Flexibility
-
-Although our library aims to maximize JWT compatibility, out cryptography
-protocols operate over binary strings rather than JSON objects, thereby
-allowing PAST to be used with other serialization standards.
-
-To define these other wire formats, the name of the encoding should be
-suffixed:
-
-* **PAST-JSON** is the default format for payload serialization
-* **PAST-Protobuf** means PAST cryptography using Protobuf serialization
-* **PAST-Raw** uses the cryptography features directly over raw strings
-* **PAST-XML** means PAST cryptography using XML serialization
-
 ## Was "Stateless Session Tokens" one of PAST's Design Goals?
 
 No, neither PAST nor JWT were designed for
