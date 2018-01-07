@@ -29,12 +29,18 @@ to assist in cross-platform library development.
   * The nonce calculated from HMAC-SHA384(message, `random_bytes(32)`)
     truncated to 32 bytes, during encryption only
   * The HMAC covers the header, nonce, and ciphertext
+  * Reference implementation in [Version1.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version1.php):
+    * See `aeadEncrypt()` for encryption
+    * See `aeadDncrypt()` for decryption
 * **`v1.public`**: Asymmetric Authentication (Public-Key Signatures):
   * 2048-bit RSA keys
   * RSASSA-PSS with
     * Hash function: SHA384 as the hash function
     * Mask generation function: MGF1+SHA384
     * Public exponent: 65537
+  * Reference implementation in [Version1.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version1.php):
+    * See `sign()` for signature generation
+    * See `verify()` for signature verification
 
 Version 1 implements the best possible RSA + AES + SHA2 ciphersuite. We only use
 OAEP and PSS for RSA encryption and RSA signatures (respectively), never PKCS1v1.5.
@@ -52,9 +58,15 @@ See also: [Common implementation details for all versions](Common.md).
   * The nonce is calculated from `sodium_crypto_generichash()` of the message,
     with a BLAKE2b key provided by `random_bytes(24)` and an output length of 24,
     during encryption only
+  * Reference implementation in [Version2.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version2.php):
+    * See `aeadEncrypt()` for encryption
+    * See `aeadDncrypt()` for decryption
 * **`v2.public`**: Asymmetric Authentication (Public-Key Signatures):
   * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
   * Verifying: `sodium_crypto_sign_verify_detached()`
+  * Reference implementation in [Version2.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version2.php):
+    * See `sign()` for signature generation
+    * See `verify()` for signature verification
 
 See also: [Common implementation details for all versions](Common.md).
