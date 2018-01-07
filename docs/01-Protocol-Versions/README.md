@@ -20,6 +20,8 @@ to assist in cross-platform library development.
 
 ## Version 1: Compatibility Mode
 
+See [the version 1 specification](Version1.md) for details. At a glance:
+
 * **`v1.local`**: Symmetric Authenticated Encryption:
   * AES-256-CTR + HMAC-SHA384 (Encrypt-then-MAC)
   * Key-splitting: HKDF-SHA384
@@ -50,6 +52,8 @@ Version 1 is recommended only for legacy systems that cannot use modern cryptogr
 See also: [Common implementation details for all versions](Common.md).
 
 ## Version 2: Recommended
+
+See [the version 2 specification](Version2.md) for details. At a glance:
 
 * **`v2.local`**: Symmetric Encryption:
   * XChaCha20-Poly1305 (192-bit nonce, 256-bit key, 128-bit authentication tag)

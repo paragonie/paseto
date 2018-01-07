@@ -1,0 +1,34 @@
+# PAST Version 2
+
+## Encrypt
+
+Given a message `m`, key `k`, and optional footer `f`.
+
+1. Set header `h` to `v2.local.`
+2. Generate 24 random bytes from the OS's CSPRNG.
+3. Calculate BLAKE2b of the message `m` with the output of step 2
+   as the key, with an output length of 24. This will be our nonce, `n`.
+4. Pack `h`, `n`, and `f` together using
+   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   (pre-authentication encoding). We'll call this `preAuth`.
+5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface
+   such as the one provided in libsodium.
+   ```
+   c = crypto_aead_xchacha20poly1305_encrypt(
+       message = m
+       aad = preAuth
+       nonce = n
+       key = k
+   );
+   ```
+6. If `f` is:
+   * Empty: return "`h` || base64url(`c`)"
+   * Non-empty: return "`h` || base64url(`c`) || `.` || base64url(`f`)"
+   * ...where || means "concatenate"
+
+## Decrypt
+
+## Sign
+
+## Verify
+
