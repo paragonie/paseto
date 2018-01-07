@@ -34,7 +34,8 @@ Given a message `m`, key `k`, and optional footer `f`.
    using a constant-time string compare function. If it does not, throw an exception. 
 2. Verify that the message begins with `v2.local.`, otherwise throw an exception.
    This constant will be referred to as `h`.
-3. Decode the payload from base64url to raw binary. Set:
+3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
+   between `m` and `f`) from base64url to raw binary. Set:
    * `n` to the leftmost 24 bytes
    * `c` to the middle remainder of the payload, excluding `n`.
 5. Pack `h`, `n`, and `f` together using
@@ -78,10 +79,11 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
 (which defaults to empty string):
 
 1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception. 
+   using a constant-time string compare function. If it does not, throw an exception.
 2. Verify that the message begins with `v2.public.`, otherwise throw an exception.
    This constant will be referred to as `h`.
-3. Decode the payload (`sm` sans `h` and `f`) from base64url to raw binary. Set:
+3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
+   between `m` and `f`) from base64url to raw binary. Set:
    * `s` to the rightmost 64 bytes
    * `m` to the leftmost remainder of the payload, excluding `t`  
 4. Pack `h`, `m`, and `f` together using
