@@ -25,8 +25,40 @@ use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in
 
 ### PAST
 
+#### PAST Example 1
+
 ```
-v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifSP9sWhZXlg_XlJk9EKntAK2C3GQ8KvT464avRt3tUlVglkyvKUpSMvER0DO708rdLGg0ZJPhAKU_7TPzAcisww.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
+v2.local.wvbu1sWg-Td2nDxn7vyAVAEzTGqtzn_zfzaiGjAkQzfa5-l2PaAK1QA0IZjrWdKP8Xqi7DHHlu6F8E5BXoarTSfmrgkMEOeiasRhuZ3GWDUtmD2K027gjgalkjMZJE7lNfkOSdKr65Fo0_8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
+```
+
+This decodes to:
+
+* Version: `v2`
+* Purpose: `local` (shared-key authenticated encryption)
+* Payload (hex-encoded):
+  ```
+  c2f6eed6c5a0f937769c3c67eefc805401334c6aadce7ff37f36a21a30244337
+  dae7e9763da00ad500342198eb59d28ff17aa2ec31c796ee85f04e415e86ab4d
+  27e6ae090c10e7a26ac461b99dc658352d983d8ad36ee08e06a5923319244ee5
+  35f90e49d2abeb9168d3ff
+  ```
+  * Nonce: `c2f6eed6c5a0f937769c3c67eefc805401334c6aadce7ff3`
+  * Authentication tag: `3319244ee535f90e49d2abeb9168d3ff`
+* Decrypted Payload:
+  ```json
+  {
+    "data": "this is a signed message",
+    "exp": "2039-01-01T00:00:00"
+  }
+* Footer:
+  ```
+  Paragon Initiative Enterprises
+  ```
+
+#### PAST Example 2
+
+```
+v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifTFKh7pKx_o_cq9RP2a0imXCEB8LSq5E3675v0IbDM0-pGg8pymrySBVEM_JUCj6WwB7cdsZIE0-F3cHnnFpRQU
 ```
 
 This decodes to:
@@ -42,12 +74,8 @@ This decodes to:
   ```
 * Signature (hex-encoded):
   ```
-  23fdb168595e583f5e5264f442a7b402b60b7190f0abd3e3ae1abd1b77b54955
-  825932bca52948cbc44740ceef4f2b74b1a0d1924f840294ffb4cfcc0722b30c
-  ```
-* Footer:
-  ```
-  Paragon Initiative Enterprises
+  314a87ba4ac7fa3f72af513f66b48a65c2101f0b4aae44dfaef9bf421b0ccd3e
+  a4683ca729abc9205510cfc95028fa5b007b71db19204d3e1777079e71694505
   ```
 
 To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/past/tree/master/docs/01-Protocol-Versions).

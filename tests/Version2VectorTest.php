@@ -144,6 +144,14 @@ class Version2VectorTest extends TestCase
             Version2::encrypt('Love is stronger than hate or fear', $this->symmetricKey, 'Cuon Alpinus', $nonce2),
             'Test Vector 2E-4-3'
         );
+
+        $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00']);
+        $footer = 'Paragon Initiative Enterprises';
+        $this->assertSame(
+            'v2.local.wvbu1sWg-Td2nDxn7vyAVAEzTGqtzn_zfzaiGjAkQzfa5-l2PaAK1QA0IZjrWdKP8Xqi7DHHlu6F8E5BXoarTSfmrgkMEOeiasRhuZ3GWDUtmD2K027gjgalkjMZJE7lNfkOSdKr65Fo0_8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
+            Version2::encrypt($message, $this->symmetricKey, $footer, $nonce2),
+            'Test Vector 2E-5'
+        );
     }
 
     /**
@@ -189,8 +197,8 @@ class Version2VectorTest extends TestCase
         $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00']);
         $footer = 'Paragon Initiative Enterprises';
         $this->assertSame(
-            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifSP9sWhZXlg_XlJk9EKntAK2C3GQ8KvT464avRt3tUlVglkyvKUpSMvER0DO708rdLGg0ZJPhAKU_7TPzAcisww.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
-            Version2::sign($message, $this->privateKey, $footer),
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifTFKh7pKx_o_cq9RP2a0imXCEB8LSq5E3675v0IbDM0-pGg8pymrySBVEM_JUCj6WwB7cdsZIE0-F3cHnnFpRQU',
+            Version2::sign($message, $this->privateKey),
             'Test Vector S-6'
         );
     }
