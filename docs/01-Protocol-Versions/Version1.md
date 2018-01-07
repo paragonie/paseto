@@ -16,6 +16,9 @@ Given a message `m`, key `k`, and optional footer `f`
 2. Generate 32 random bytes from the OS's CSPRNG.
 3. Calculate `GetNonce()` of `m` and the output of step 2
    to get the nonce, `n`.
+   * This step is to ensure that an RNG failure does not result
+     in a nonce-misuse condition that breaks the security of
+     our stream cipher.
 4. Split the key into an Encryption key (`Ek`) and Authentication key (`Ak`),
    using the leftmost 16 bytes of `n` as the HKDF salt:
    ```

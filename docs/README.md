@@ -81,7 +81,7 @@ suffixed:
 
 No, neither PAST nor JWT were designed for
 [stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/),
-which is largely an anti-pattern. 
+which is largely an anti-pattern.
 
 ## How should we pronounce PAST?
 

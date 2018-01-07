@@ -8,6 +8,9 @@ Given a message `m`, key `k`, and optional footer `f`.
 2. Generate 24 random bytes from the OS's CSPRNG.
 3. Calculate BLAKE2b of the message `m` with the output of step 2
    as the key, with an output length of 24. This will be our nonce, `n`.
+   * This step is to ensure that an RNG failure does not result
+     in a nonce-misuse condition that breaks the security of
+     our stream cipher.
 4. Pack `h`, `n`, and `f` together using
    [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `preAuth`.
@@ -22,8 +25,8 @@ Given a message `m`, key `k`, and optional footer `f`.
    );
    ```
 6. If `f` is:
-   * Empty: return "`h` || base64url(`c`)"
-   * Non-empty: return "`h` || base64url(`c`) || `.` || base64url(`f`)"
+   * Empty: return "`h` || base64url(`n` || `c`)"
+   * Non-empty: return "`h` || base64url(`n` || `c`) || `.` || base64url(`f`)"
    * ...where || means "concatenate"
 
 ## Decrypt
