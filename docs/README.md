@@ -33,6 +33,10 @@ to an empty string and your footer to the message you want to authenticate.
 
 See [Protocol Versions](01-Protocol-Versions) for specifics.
 
+## How to use the Reference Implementation
+
+See [the PHP library documentation](https://github.com/paragonie/past/blob/master/docs/02-PHP-Library).
+
 ## How should we pronounce PAST?
 
 Like the English word "pasta" without the final "a". It rhymes with "frost"
