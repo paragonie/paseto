@@ -2,6 +2,7 @@
 namespace ParagonIE\PAST\Tests;
 
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\ConstantTime\Hex;
 use ParagonIE\PAST\Keys\AsymmetricPublicKey;
 use ParagonIE\PAST\Keys\AsymmetricSecretKey;
 use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
@@ -11,6 +12,26 @@ use PHPUnit\Framework\TestCase;
 
 class Version1Test extends TestCase
 {
+    /**
+     * @covers Version1::getNonce()
+     */
+    public function testNonceDerivation()
+    {
+        $msgA = 'The quick brown fox jumped over the lazy dog.';
+        $msgB = 'The quick brown fox jumped over the lazy dof.';
+        $nonce = Hex::decode('808182838485868788898a8b8c8d8e8f');
+
+        $this->assertSame(
+            '5e13b4f0fc111bf0cf9de4e97310b687858b51547e125790513cc1eaaef173cc',
+            Hex::encode(Version1::getNonce($msgA, $nonce))
+        );
+
+        $this->assertSame(
+            'e1ba992f5cccd31714fd8c73adcdadabb00d0f23955a66907170c10072d66ffd',
+            Hex::encode(Version1::getNonce($msgB, $nonce))
+        );
+    }
+
     /**
      * @covers Version1::decrypt()
      * @covers Version1::encrypt()

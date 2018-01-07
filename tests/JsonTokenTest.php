@@ -34,18 +34,18 @@ class JsonTokenTest extends TestCase
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
 
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5T8BuVXOfwRQCgS2tFj6o2Q',
+            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA',
             (string) $builder,
             'Auth, no footer'
         );
         $footer = (string) \json_encode(['key-id' => 'gandalf0']);
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5A6LJpmVnHWq6_KdZ2lSEpA.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4nZ9JDgBVa-L9vW26CMc57aw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Auth, footer'
         );
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5T8BuVXOfwRQCgS2tFj6o2Q',
+            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA',
             (string) $builder->setFooter(''),
             'Auth, removed footer'
         );
@@ -124,7 +124,7 @@ class JsonTokenTest extends TestCase
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5A6LJpmVnHWq6_KdZ2lSEpA.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4nZ9JDgBVa-L9vW26CMc57aw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder,
             'Auth, footer'
         );

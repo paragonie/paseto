@@ -79,68 +79,68 @@ class Version2VectorTest extends TestCase
 
         // Empty message, empty footer, empty nonce
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8nUfSPYW3qhCbMdndcgghw',
+            'v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNUtKpdy5KXjKfpSKrOlqQvQ',
             Version2::encrypt('', $this->nullKey, '', $nonce),
             'Test Vector 2E-1-1'
         );
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATcNxU2Kfscz9HMSeRxSGng',
+            'v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNSOvpveyCsjPYfe9mtiJDVg',
             Version2::encrypt('', $this->fullKey, '', $nonce),
             'Test Vector 2E-1-2'
         );
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAV1u2CMi5yQsIfxOu82zz2Q',
+            'v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNkIWACdHuLiJiW16f2GuGYA',
             Version2::encrypt('', $this->symmetricKey, '', $nonce),
             'Test Vector 2E-1-3'
         );
 
         // Empty message, non-empty footer, empty nonce
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAb2Uo17v-1PTwI1hxEpdjlQ.Q3VvbiBBbHBpbnVz',
+            'v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNfzz6yGkE4ZxojJAJwKLfvg.Q3VvbiBBbHBpbnVz',
             Version2::encrypt('', $this->nullKey, 'Cuon Alpinus', $nonce),
             'Test Vector 2E-2-1'
         );
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEcVxT7kXPsURYvjorFG-8g.Q3VvbiBBbHBpbnVz',
+            'v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNJbTJxAGtEg4ZMXY9g2LSoQ.Q3VvbiBBbHBpbnVz',
             Version2::encrypt('', $this->fullKey, 'Cuon Alpinus', $nonce),
             'Test Vector 2E-2-2'
         );
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEWzCGD8yh5GlCNN5OF_V8Q.Q3VvbiBBbHBpbnVz',
+            'v2.local.driRNhM20GQPvlWfJCepzh6HdijAq-yNreCcZAS0iGVlzdHjTf2ilg.Q3VvbiBBbHBpbnVz',
             Version2::encrypt('', $this->symmetricKey, 'Cuon Alpinus', $nonce),
             'Test Vector 2E-2-3'
         );
 
         // Non-empty message, empty footer, empty nonce
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANPHg7MVJ_l-qlYGq21N6Os9syV8vqfDMrri3zBsa_hrv8DMgZQ022_ztdIh6CnoZ7jY',
+            'v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSvu6cB-KuR4wR9uDMjd45cPiOF0zxb7rrtOB5tRcS7dWsFwY4ONEuL5sWeunqHC9jxU0',
             Version2::encrypt('Love is stronger than hate or fear', $this->nullKey, '', $nonce),
             'Test Vector 2E-3-1'
         );
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwd-DjyBeoOKahcthIBMhlrirZYzQHBPnVUG2EjqlVNIovDOi2pTU_yFfyxYCJZ834Dc',
+            'v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSjvSia2-chHyMi4LtHA8yFr1V7iZmKBWqzg5geEyNAAaD6xSEfxoET1xXqahe1jqmmPw',
             Version2::encrypt('Love is stronger than hate or fear', $this->fullKey, '', $nonce),
             'Test Vector 2E-3-2'
         );
         $this->assertSame(
-            'v2.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhSMBt_gIsjBPup1V1H3G_wjwnaLZgXxM4MVFLgvOCutFcvjymg7Ir2CcF0c8vB3dII8',
+            'v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSXlvv8MsrNZs3vTSnGQG4qRM9ezDl880jFwknSA6JARj2qKhDHnlSHx1GSCizfcF019U',
             Version2::encrypt('Love is stronger than hate or fear', $this->symmetricKey, '', $nonce),
             'Test Vector 2E-3-3'
         );
 
         // Non-empty message, non-empty footer, non-empty nonce
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbRA5L610X9nVzdTMNRIrkpMjQ2UUP5Xi7vqOKWcQz9Bv3uRo_lBDUShbrkog5mtkf0Vs.Q3VvbiBBbHBpbnVz',
+            'v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvbcqXgWxM3vJGrJ9kWqquP61Xl7bz4ZEqN5XwH7xyzV0QqPIo0k52q5sWxUQ4LMBFFso.Q3VvbiBBbHBpbnVz',
             Version2::encrypt('Love is stronger than hate or fear', $this->nullKey, 'Cuon Alpinus', $nonce2),
             'Test Vector 2E-4-1'
         );
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb-pLK-oBK_b14xcdkl8bEkDgIwXB8AGr8lSbutuLuuczU2DdK_cjYGbXw5ja0jNRQzgo.Q3VvbiBBbHBpbnVz',
+            'v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvZMW3MgUMFplQXsxcNlg2RX8LzFxAqj4qa2FwgrUdH4vYAXtCFrlGiLnk-cHHOWSUSaw.Q3VvbiBBbHBpbnVz',
             Version2::encrypt('Love is stronger than hate or fear', $this->fullKey, 'Cuon Alpinus', $nonce2),
             'Test Vector 2E-4-2'
         );
         $this->assertSame(
-            'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbjgPFTyS8RFUJ7bnJm1BbcwJ-zJ5PjjvwtGd9Ro-VFwcy2j1-zzEtfeMzLZ7RxQO84v0.Q3VvbiBBbHBpbnVz',
+            'v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvl05z9GIX0cnol6UK94cfV77AXnShlUcNgpDR12FrQiurS8jxBRmvoIKmeMWC5wY9Y6w.Q3VvbiBBbHBpbnVz',
             Version2::encrypt('Love is stronger than hate or fear', $this->symmetricKey, 'Cuon Alpinus', $nonce2),
             'Test Vector 2E-4-3'
         );

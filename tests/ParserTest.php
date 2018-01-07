@@ -28,7 +28,7 @@ class ParserTest extends TestCase
         // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
 
-        $serialized = 'v2.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbmxeno5uZkRIFblqh_p0qQ6YNLCsynz8Y9QTfmiAh5mwBU30Hqnpq0xmYnfc07c_00NgbbpgMGtGAwbTmLgIpw1in7iv5T8BuVXOfwRQCgS2tFj6o2Q';
+        $serialized = 'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA';
         $parser = (new Parser())
             ->setPurpose('local')
             ->setKey($key);
