@@ -26,7 +26,7 @@ use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in
 ### PAST
 
 ```
-v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifQDJO3uvrYlMXf2oQQ-48M0n0qqgK4Z1SCBjqChP5RFnoSXumjp2JaPJ-2MmaDXm6aKOu-Y_5c3ZNkFpY-vEqgw
+v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifSP9sWhZXlg_XlJk9EKntAK2C3GQ8KvT464avRt3tUlVglkyvKUpSMvER0DO708rdLGg0ZJPhAKU_7TPzAcisww.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
 ```
 
 This decodes to:
@@ -40,9 +40,14 @@ This decodes to:
     "exp": "2039-01-01T00:00:00"
   }
   ```
-* Signature:
+* Signature (hex-encoded):
   ```
-  ifQDJO3uvrYlMXf2oQQ-48M0n0qqgK4Z1SCBjqChP5RFnoSXumjp2JaPJ-2MmaDXm6aKOu-Y_5c3ZNkFpY-vEqgw
+  23fdb168595e583f5e5264f442a7b402b60b7190f0abd3e3ae1abd1b77b54955
+  825932bca52948cbc44740ceef4f2b74b1a0d1924f840294ffb4cfcc0722b30c
+  ```
+* Footer:
+  ```
+  Paragon Initiative Enterprises
   ```
 
 To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/past/tree/master/docs/01-Protocol-Versions).

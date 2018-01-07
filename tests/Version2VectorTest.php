@@ -185,5 +185,13 @@ class Version2VectorTest extends TestCase
             Version2::sign('Frank Denis rocks', $this->privateKey, 'Cuon Alpinus'),
             'Test Vector S-5'
         );
+
+        $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00']);
+        $footer = 'Paragon Initiative Enterprises';
+        $this->assertSame(
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifSP9sWhZXlg_XlJk9EKntAK2C3GQ8KvT464avRt3tUlVglkyvKUpSMvER0DO708rdLGg0ZJPhAKU_7TPzAcisww.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
+            Version2::sign($message, $this->privateKey, $footer),
+            'Test Vector S-6'
+        );
     }
 }
