@@ -15,6 +15,10 @@ to assist in cross-platform library development.
    without RFC 6979, XMSS) are forbidden.
 3. Public-key cryptography must be IND-CCA2 secure to be considered for inclusion.
    * This means no RSA with PKCS1v1.5 padding, textbook RSA, etc.
+4. By default, libraries should only allow the two most recent versions to be used.
+   * If there are only two versions, that means `v1` and `v2`.
+   * If a future post-quantum `v3` is defined, `v1` should no longer be accepted.
+   * If an additional version `v4` is defined, `v2` should no longer be accepted.
 
 # Versions
 
