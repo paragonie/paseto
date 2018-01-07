@@ -25,6 +25,8 @@ to assist in cross-platform library development.
     * Info for encryption key: `past-encryption-key`
     * Info for authentication key: `past-auth-key-for-aead`
   * 32-byte nonce (first half for AES-CTR, latter half for the HKDF salt)
+  * The nonce calculated from HMAC-SHA384(message, `random_bytes(32)`)
+    truncated to 32 bytes, during encryption only
   * The HMAC covers the header, nonce, and ciphertext
 * **`v1.public`**: Asymmetric Authentication (Public-Key Signatures):
   * 2048-bit RSA keys
@@ -46,6 +48,9 @@ See also: [Common implementation details for all versions](Common.md).
   * XChaCha20-Poly1305 (192-bit nonce, 256-bit key, 128-bit authentication tag)
   * Encrypting: `sodium_crypto_aead_xchacha20poly1305_ietf_encrypt()`
   * Decrypting: `sodium_crypto_aead_xchacha20poly1305_ietf_decrypt()`
+  * The nonce is calculated from `sodium_crypto_generichash()` of the message,
+    with a BLAKE2b key provided by `random_bytes(24)` and an output length of 24,
+    during encryption only
 * **`v2.public`**: Asymmetric Authentication (Public-Key Signatures): 
   * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
