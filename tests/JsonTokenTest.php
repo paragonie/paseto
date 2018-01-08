@@ -110,6 +110,25 @@ class JsonTokenTest extends TestCase
     /**
      * @throws PastException
      */
+    public function testSetClaims()
+    {
+        $token = new JsonToken();
+
+        $token->setExpiration(new \DateTime());
+        $token->setClaims([
+            'test' => 'foo'
+        ]);
+
+        $this->assertInstanceOf(
+            \DateTime::class,
+            $token->getExpiration()
+        );
+        $this->assertSame('foo', $token->get('test'));
+    }
+
+    /**
+     * @throws PastException
+     */
     public function testAuthTokenCustomFooter()
     {
         $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');

@@ -245,7 +245,7 @@ class JsonToken
     public function setClaims(array $claims): self
     {
         $this->cached = '';
-        $this->claims = $claims;
+        $this->claims = $claims + $this->claims;
         return $this;
     }
 
