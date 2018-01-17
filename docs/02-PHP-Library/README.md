@@ -52,15 +52,14 @@ $token = (new JsonToken())
     ->setKey($sharedKey)
     ->setVersion(Version2::HEADER)
     ->setPurpose('local')
+    // Store arbitrary data
+    ->setClaim('security', 'Hello world')
+        'security' => 'Now as easy as PIE'
+    ])
     // Set it to expire in one day
     ->setExpiration(
         (new DateTime())->add(new DateInterval('P01D'))
-    )
-    // Store arbitrary data
-    ->setClaims([
-        'example' => 'Hello world',
-        'security' => 'Now as easy as PIE'
-    ]);
+    );
 echo $token; // Converts automatically to a string
 ```
 
