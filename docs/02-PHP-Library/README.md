@@ -53,7 +53,8 @@ $token = (new JsonToken())
     ->setVersion(Version2::HEADER)
     ->setPurpose('local')
     // Store arbitrary data
-    ->setClaim('security', 'Hello world')
+    ->setClaim([
+        'example' => 'Hello world',
         'security' => 'Now as easy as PIE'
     ])
     // Set it to expire in one day
