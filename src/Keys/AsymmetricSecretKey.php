@@ -28,6 +28,7 @@ class AsymmetricSecretKey implements KeyInterface
      * @param string $keyData
      * @param string $protocol
      * @throws \Exception
+     * @throws \TypeError
      */
     public function __construct(
         string $keyData,
@@ -35,7 +36,9 @@ class AsymmetricSecretKey implements KeyInterface
     ) {
         if (\hash_equals($protocol, Version2::HEADER)) {
             $len = Binary::safeStrlen($keyData);
-            if ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
+            if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
+                $keyData = Binary::safeSubstr($keyData, 0, 64);
+            } elseif ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
                 if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
                     throw new \Exception(
                         'Secret keys must be 32 or 64 bytes long; ' . $len . ' given.'
@@ -52,6 +55,8 @@ class AsymmetricSecretKey implements KeyInterface
     /**
      * @param string $protocol
      * @return self
+     * @throws \Exception
+     * @throws \TypeError
      */
     public static function generate(string $protocol = Version2::HEADER): self
     {
@@ -79,6 +84,8 @@ class AsymmetricSecretKey implements KeyInterface
     /**
      * @param string $encoded
      * @return self
+     * @throws \Exception
+     * @throws \TypeError
      */
     public static function fromEncodedString(string $encoded): self
     {
@@ -96,6 +103,8 @@ class AsymmetricSecretKey implements KeyInterface
 
     /**
      * @return AsymmetricPublicKey
+     * @throws \Exception
+     * @throws \TypeError
      */
     public function getPublicKey(): AsymmetricPublicKey
     {
