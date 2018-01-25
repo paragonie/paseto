@@ -145,10 +145,10 @@ class Version2VectorTest extends TestCase
             'Test Vector 2E-4-3'
         );
 
-        $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00']);
+        $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00+00:00']);
         $footer = 'Paragon Initiative Enterprises';
         $this->assertSame(
-            'v2.local.wvbu1sWg-Td2nDxn7vyAVAEzTGqtzn_zfzaiGjAkQzfa5-l2PaAK1QA0IZjrWdKP8Xqi7DHHlu6F8E5BXoarTSfmrgkMEOeiasRhuZ3GWDUtmD2K027gjgalkjMZJE7lNfkOSdKr65Fo0_8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
+            'v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqIIhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
             Version2::encrypt($message, $this->symmetricKey, $footer, $nonce2),
             'Test Vector 2E-5'
         );
@@ -194,11 +194,16 @@ class Version2VectorTest extends TestCase
             'Test Vector S-5'
         );
 
-        $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00']);
+        $message = \json_encode(['data' => 'this is a signed message', 'expires' => '2019-01-01T00:00:00+00:00']);
         $footer = 'Paragon Initiative Enterprises';
         $this->assertSame(
-            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifTFKh7pKx_o_cq9RP2a0imXCEB8LSq5E3675v0IbDM0-pGg8pymrySBVEM_JUCj6WwB7cdsZIE0-F3cHnnFpRQU',
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDArMDA6MDAifSUGY_L1YtOvo1JeNVAWQkOBILGSjtkX_9-g2pVPad7_SAyejb6Q2TDOvfCOpWYH5DaFeLOwwpTnaTXeg8YbUwI',
             Version2::sign($message, $this->privateKey),
+            'Test Vector S-6'
+        );
+        $this->assertSame(
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDArMDA6MDAifcMYjoUaEYXAtzTDwlcOlxdcZWIZp8qZga3jFS8JwdEjEvurZhs6AmTU3bRW5pB9fOQwm43rzmibZXcAkQ4AzQs.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
+            Version2::sign($message, $this->privateKey, $footer),
             'Test Vector S-6'
         );
     }

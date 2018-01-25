@@ -22,7 +22,7 @@ class Version2Test extends TestCase
         $year = (int) (\date('Y')) + 1;
         $messages = [
             'test',
-            \json_encode(['data' => 'this is a signed message', 'expires' => $year . '-01-01T00:00:00'])
+            \json_encode(['data' => 'this is a signed message', 'expires' => $year . '-01-01T00:00:00+00:00'])
         ];
 
         foreach ($messages as $message) {

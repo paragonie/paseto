@@ -33,7 +33,7 @@ use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in
 #### PAST Example 1
 
 ```
-v2.local.wvbu1sWg-Td2nDxn7vyAVAEzTGqtzn_zfzaiGjAkQzfa5-l2PaAK1QA0IZjrWdKP8Xqi7DHHlu6F8E5BXoarTSfmrgkMEOeiasRhuZ3GWDUtmD2K027gjgalkjMZJE7lNfkOSdKr65Fo0_8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
+v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqIIhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
 ```
 
 This decodes to:
@@ -42,18 +42,18 @@ This decodes to:
 * Purpose: `local` (shared-key authenticated encryption)
 * Payload (hex-encoded):
   ```
-  c2f6eed6c5a0f937769c3c67eefc805401334c6aadce7ff37f36a21a30244337
-  dae7e9763da00ad500342198eb59d28ff17aa2ec31c796ee85f04e415e86ab4d
-  27e6ae090c10e7a26ac461b99dc658352d983d8ad36ee08e06a5923319244ee5
-  35f90e49d2abeb9168d3ff
+  942961cd53aeb1e09661ea78e2a6c0f2b997af2eba954ba9c843628d7dfbfc8f
+  f3df81223a57f2bb0a882213a317e7bd9b627e42cd7b1acf81a63a4b961df37f
+  e277ee7ed8187a8c055e86e710f669e20aa5c93aae17f01e9185dfc2fbaf262e
+  cee51eaa63e0f17a3349f5383ee3e9f68f
   ```
-  * Nonce: `c2f6eed6c5a0f937769c3c67eefc805401334c6aadce7ff3`
-  * Authentication tag: `3319244ee535f90e49d2abeb9168d3ff`
+  * Nonce: `942961cd53aeb1e09661ea78e2a6c0f2b997af2eba954ba9`
+  * Authentication tag: `e51eaa63e0f17a3349f5383ee3e9f68f`
 * Decrypted Payload:
   ```json
   {
     "data": "this is a signed message",
-    "exp": "2039-01-01T00:00:00"
+    "exp": "2039-01-01T00:00:00+00:00"
   }
   ```
   * Key used in this example (hex-encoded):
@@ -68,7 +68,7 @@ This decodes to:
 #### PAST Example 2
 
 ```
-v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDAifTFKh7pKx_o_cq9RP2a0imXCEB8LSq5E3675v0IbDM0-pGg8pymrySBVEM_JUCj6WwB7cdsZIE0-F3cHnnFpRQU
+v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDArMDA6MDAifcMYjoUaEYXAtzTDwlcOlxdcZWIZp8qZga3jFS8JwdEjEvurZhs6AmTU3bRW5pB9fOQwm43rzmibZXcAkQ4AzQs.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
 ```
 
 This decodes to:
@@ -79,13 +79,13 @@ This decodes to:
   ```json
   {
     "data": "this is a signed message",
-    "exp": "2039-01-01T00:00:00"
+    "exp": "2039-01-01T00:00:00+00:00"
   }
   ```
 * Signature (hex-encoded):
   ```
-  314a87ba4ac7fa3f72af513f66b48a65c2101f0b4aae44dfaef9bf421b0ccd3e
-  a4683ca729abc9205510cfc95028fa5b007b71db19204d3e1777079e71694505
+  70c623a1468461702dcd30f095c3a5c5d719588669f2a6606b78c54bc2707448
+  c4beead986ce809935376d15b9a41f5f390c26e37af39a26d95dc02443803342
   ```
 
 To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/past/tree/master/docs/01-Protocol-Versions).
