@@ -239,7 +239,7 @@ class JsonToken
     /**
      * Set an array of claims in one go.
      *
-     * @param array $claims
+     * @param array<string, string> $claims
      * @return self
      */
     public function setClaims(array $claims): self
@@ -569,7 +569,7 @@ class JsonToken
     /**
      * Return a new JsonToken instance with an array of changed claims.
      *
-     * @param array $claims
+     * @param array<string, string> $claims
      * @return self
      */
     public function withClaims(array $claims): self

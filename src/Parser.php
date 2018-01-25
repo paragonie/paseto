@@ -207,7 +207,7 @@ class Parser
         if (!isset($decoded)) {
             throw new PastException('Unsupported purpose or version.');
         }
-        /** @var array $claims */
+        /** @var array<string, string> $claims */
         $claims = \json_decode((string) $decoded, true);
         if (!\is_array($claims)) {
             throw new EncodingException('Not a JSON token.');
