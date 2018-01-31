@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST;
+namespace ParagonIE\Paseto;
 
 /**
  * Interface ValidationRuleInterface
- * @package ParagonIE\PAST
+ * @package ParagonIE\Paseto
  */
 interface ValidationRuleInterface
 {

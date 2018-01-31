@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST;
+namespace ParagonIE\Paseto;
 
 /**
  * Interface KeyInterface
- * @package ParagonIE\PAST
+ * @package ParagonIE\Paseto
  */
 interface KeyInterface
 {

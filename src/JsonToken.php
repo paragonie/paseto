@@ -1,28 +1,28 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST;
+namespace ParagonIE\Paseto;
 
-use ParagonIE\PAST\Exception\{
+use ParagonIE\Paseto\Exception\{
     EncodingException,
     InvalidKeyException,
     InvalidPurposeException,
     InvalidVersionException,
     NotFoundException,
-    PastException
+    PasetoException
 };
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
-use ParagonIE\PAST\Protocol\{
+use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2
 };
-use ParagonIE\PAST\Traits\RegisteredClaims;
+use ParagonIE\Paseto\Traits\RegisteredClaims;
 
 /**
  * Class JsonToken
- * @package ParagonIE\PAST
+ * @package ParagonIE\Paseto
  */
 class JsonToken
 {
@@ -86,7 +86,7 @@ class JsonToken
      *
      * @param string $claim
      * @return mixed
-     * @throws PastException
+     * @throws PasetoException
      */
     public function get(string $claim)
     {
@@ -100,7 +100,7 @@ class JsonToken
      * Get the 'exp' claim.
      *
      * @return string
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getAudience(): string
     {
@@ -108,7 +108,7 @@ class JsonToken
     }
 
     /**
-     * Get all of the claims stored in this PAST.
+     * Get all of the claims stored in this Paseto.
      *
      * @return array
      */
@@ -121,7 +121,7 @@ class JsonToken
      * Get the 'exp' claim.
      *
      * @return \DateTime
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getExpiration(): \DateTime
     {
@@ -142,7 +142,7 @@ class JsonToken
      * Get the footer as an array. Assumes JSON.
      *
      * @return array
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getFooterArray(): array
     {
@@ -158,7 +158,7 @@ class JsonToken
      * Get the 'iat' claim.
      *
      * @return \DateTime
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getIssuedAt(): \DateTime
     {
@@ -169,7 +169,7 @@ class JsonToken
      * Get the 'iss' claim.
      *
      * @return string
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getIssuer(): string
     {
@@ -180,7 +180,7 @@ class JsonToken
      * Get the 'jti' claim.
      *
      * @return string
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getJti(): string
     {
@@ -191,7 +191,7 @@ class JsonToken
      * Get the 'nbf' claim.
      *
      * @return \DateTime
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getNotBefore(): \DateTime
     {
@@ -202,7 +202,7 @@ class JsonToken
      * Get the 'sub' claim.
      *
      * @return string
-     * @throws PastException
+     * @throws PasetoException
      */
     public function getSubject(): string
     {
@@ -295,7 +295,7 @@ class JsonToken
      *
      * @param array $footer
      * @return self
-     * @throws PastException
+     * @throws PasetoException
      */
     public function setFooterArray(array $footer = []): self
     {
@@ -355,7 +355,7 @@ class JsonToken
      * @param KeyInterface $key
      * @param bool $checkPurpose
      * @return self
-     * @throws PastException
+     * @throws PasetoException
      */
     public function setKey(KeyInterface $key, bool $checkPurpose = false): self
     {
@@ -487,7 +487,7 @@ class JsonToken
      * Get the token as a string.
      *
      * @return string
-     * @throws PastException
+     * @throws PasetoException
      * @psalm-suppress MixedInferredReturnType
      */
     public function toString(): string
@@ -538,12 +538,12 @@ class JsonToken
                         );
                         return $this->cached;
                     } catch (\Throwable $ex) {
-                        throw new PastException('Signing failed.', 0, $ex);
+                        throw new PasetoException('Signing failed.', 0, $ex);
                     }
                 }
                 break;
         }
-        throw new PastException('Unsupported key/purpose pairing.');
+        throw new PasetoException('Unsupported key/purpose pairing.');
     }
 
     /**
@@ -622,7 +622,7 @@ class JsonToken
      *
      * @param array $footer
      * @return self
-     * @throws PastException
+     * @throws PasetoException
      */
     public function withFooterArray(array $footer = []): self
     {
@@ -679,7 +679,7 @@ class JsonToken
      * @param KeyInterface $key
      * @param bool $checkPurpose
      * @return self
-     * @throws PastException
+     * @throws PasetoException
      */
     public function withKey(KeyInterface $key, bool $checkPurpose = false): self
     {

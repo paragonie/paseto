@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Exception;
+namespace ParagonIE\Paseto\Exception;
 
 /**
  * Class NotFoundException
- * @package ParagonIE\PAST\Exception
+ * @package ParagonIE\Paseto\Exception
  */
-class NotFoundException extends PastException
+class NotFoundException extends PasetoException
 {
 
 }

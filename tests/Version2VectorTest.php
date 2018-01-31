@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Tests;
+namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\PAST\Keys\AsymmetricPublicKey;
-use ParagonIE\PAST\Keys\AsymmetricSecretKey;
-use ParagonIE\PAST\Keys\SymmetricKey;
-use ParagonIE\PAST\Protocol\Version2;
+use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
+use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Protocol\Version2;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  *
  * Contains test vectors for building compatible implementations in other languages.
  *
- * @package ParagonIE\PAST\Tests
+ * @package ParagonIE\Paseto\Tests
  */
 class Version2VectorTest extends TestCase
 {

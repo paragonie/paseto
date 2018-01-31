@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST;
+namespace ParagonIE\Paseto;
 
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
     SymmetricKey
@@ -10,7 +10,7 @@ use ParagonIE\PAST\Keys\{
 
 /**
  * Interface ProtocolInterface
- * @package ParagonIE\PAST
+ * @package ParagonIE\Paseto
  */
 interface ProtocolInterface
 {

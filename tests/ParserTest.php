@@ -1,26 +1,26 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Tests;
+namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\PAST\Exception\PastException;
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
-use ParagonIE\PAST\Parser;
-use ParagonIE\PAST\Rules\NotExpired;
+use ParagonIE\Paseto\Parser;
+use ParagonIE\Paseto\Rules\NotExpired;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class ParserTest
- * @package ParagonIE\PAST\Tests
+ * @package ParagonIE\Paseto\Tests
  */
 class ParserTest extends TestCase
 {
     /**
      * @covers Parser::parse()
-     * @throws PastException
+     * @throws PasetoException
      */
     public function testAuthToken()
     {
@@ -57,7 +57,7 @@ class ParserTest extends TestCase
         try {
             $cloned->parse($serialized);
             $this->fail('Validation logic is being ignored.');
-        } catch (PastException $ex) {
+        } catch (PasetoException $ex) {
         }
         $parser->parse($serialized);
 

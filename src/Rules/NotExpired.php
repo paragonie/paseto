@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Rules;
+namespace ParagonIE\Paseto\Rules;
 
-use ParagonIE\PAST\Exception\PastException;
-use ParagonIE\PAST\{
+use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\{
     JsonToken,
     ValidationRuleInterface
 };
 
 /**
  * Class NotExpired
- * @package ParagonIE\PAST\Rules
+ * @package ParagonIE\Paseto\Rules
  */
 class NotExpired implements ValidationRuleInterface
 {
@@ -51,7 +51,7 @@ class NotExpired implements ValidationRuleInterface
                 $this->failure = 'This token has expired.';
                 return false;
             }
-        } catch (PastException $ex) {
+        } catch (PasetoException $ex) {
             $this->failure = $ex->getMessage();
             return false;
         }

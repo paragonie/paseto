@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Keys;
+namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\PAST\KeyInterface;
-use ParagonIE\PAST\Protocol\Version2;
+use ParagonIE\Paseto\KeyInterface;
+use ParagonIE\Paseto\Protocol\Version2;
 
 /**
  * Class AsymmetricPublicKey
- * @package ParagonIE\PAST\Keys
+ * @package ParagonIE\Paseto\Keys
  */
 class AsymmetricPublicKey implements KeyInterface
 {

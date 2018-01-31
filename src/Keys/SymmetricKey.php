@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Keys;
+namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use ParagonIE\PAST\{
+use ParagonIE\Paseto\{
     KeyInterface,
     Protocol\Version2,
     Util
@@ -11,12 +11,12 @@ use ParagonIE\PAST\{
 
 /**
  * Class SymmetricKey
- * @package ParagonIE\PAST\Keys
+ * @package ParagonIE\Paseto\Keys
  */
 class SymmetricKey implements KeyInterface
 {
-    const INFO_ENCRYPTION = 'past-encryption-key';
-    const INFO_AUTHENTICATION = 'past-auth-key-for-aead';
+    const INFO_ENCRYPTION = 'paseto-encryption-key';
+    const INFO_AUTHENTICATION = 'paseto-auth-key-for-aead';
 
     /** @var string $key */
     protected $key = '';

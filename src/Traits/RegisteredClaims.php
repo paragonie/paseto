@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Traits;
+namespace ParagonIE\Paseto\Traits;
 
 /**
  * Trait RegisteredClaims
- * @package ParagonIE\PAST\Traits
+ * @package ParagonIE\Paseto\Traits
  */
 trait RegisteredClaims
 {

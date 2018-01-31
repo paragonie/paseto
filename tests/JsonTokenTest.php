@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Tests;
+namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\PAST\JsonToken;
-use ParagonIE\PAST\Exception\PastException;
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\JsonToken;
+use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
@@ -13,13 +13,13 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class JsonTokenTest
- * @package ParagonIE\PAST\Tests
+ * @package ParagonIE\Paseto\Tests
  */
 class JsonTokenTest extends TestCase
 {
     /**
      * @covers Builder::getToken()
-     * @throws PastException
+     * @throws PasetoException
      */
     public function testAuthDeterminism()
     {
@@ -72,7 +72,7 @@ class JsonTokenTest extends TestCase
 
     /**
      * @covers JsonToken::with()
-     * @throws PastException
+     * @throws PasetoException
      */
     public function testWith()
     {
@@ -108,7 +108,7 @@ class JsonTokenTest extends TestCase
     }
 
     /**
-     * @throws PastException
+     * @throws PasetoException
      */
     public function testSetClaims()
     {
@@ -127,7 +127,7 @@ class JsonTokenTest extends TestCase
     }
 
     /**
-     * @throws PastException
+     * @throws PasetoException
      */
     public function testAuthTokenCustomFooter()
     {

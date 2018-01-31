@@ -1,13 +1,13 @@
 <?php
-namespace ParagonIE\PAST\Tests;
+namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\PAST\Keys\AsymmetricPublicKey;
-use ParagonIE\PAST\Keys\AsymmetricSecretKey;
-use ParagonIE\PAST\Keys\SymmetricAuthenticationKey;
-use ParagonIE\PAST\Keys\SymmetricKey;
-use ParagonIE\PAST\Protocol\Version2;
+use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
+use ParagonIE\Paseto\Keys\SymmetricAuthenticationKey;
+use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Protocol\Version2;
 use PHPUnit\Framework\TestCase;
 
 class Version2Test extends TestCase

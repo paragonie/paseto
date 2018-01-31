@@ -1,5 +1,5 @@
 {
-  "name": "paragonie/past",
+  "name": "paragonie/paseto",
   "description": "Platform-Agnostic Security Tokens",
   "license": "ISC",
   "type": "library",
@@ -11,12 +11,12 @@
   ],
   "autoload": {
     "psr-4": {
-      "ParagonIE\\PAST\\": "src/"
+      "ParagonIE\\Paseto\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "ParagonIE\\PAST\\Tests\\": "tests/"
+      "ParagonIE\\Paseto\\Tests\\": "tests/"
     }
   },
   "require": {
