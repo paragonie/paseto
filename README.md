@@ -1,4 +1,4 @@
-# PASETO: Platform-Agnostic SEcurity TOkens
+# PASETO: Platform-Agnostic Security Tokens
 
 [![Build Status](https://travis-ci.org/paragonie/paseto.svg?branch=master)](https://travis-ci.org/paragonie/paseto)
 [![Latest Stable Version](https://poser.pugx.org/paragonie/paseto/v/stable)](https://packagist.org/packages/paragonie/paseto)
