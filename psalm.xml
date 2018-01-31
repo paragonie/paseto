@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <psalm
-    name="PAST Static Analysis"
+    name="Paseto Static Analysis"
     stopOnFirstError="false"
     useDocblockTypes="true"
     totallyTyped="true"

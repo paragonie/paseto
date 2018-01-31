@@ -1,6 +1,6 @@
 <phpunit>
     <testsuites>
-        <testsuite name="PAST">
+        <testsuite name="Paseto">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

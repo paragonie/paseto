@@ -1,12 +1,12 @@
 # PASETO: Platform-Agnostic SEcurity TOkens
 
-[![Build Status](https://travis-ci.org/paragonie/past.svg?branch=master)](https://travis-ci.org/paragonie/past)
-[![Latest Stable Version](https://poser.pugx.org/paragonie/past/v/stable)](https://packagist.org/packages/paragonie/past)
-[![Latest Unstable Version](https://poser.pugx.org/paragonie/past/v/unstable)](https://packagist.org/packages/paragonie/past)
-[![License](https://poser.pugx.org/paragonie/past/license)](https://packagist.org/packages/paragonie/past)
-[![Downloads](https://img.shields.io/packagist/dt/paragonie/past.svg)](https://packagist.org/packages/paragonie/past)
+[![Build Status](https://travis-ci.org/paragonie/paseto.svg?branch=master)](https://travis-ci.org/paragonie/paseto)
+[![Latest Stable Version](https://poser.pugx.org/paragonie/paseto/v/stable)](https://packagist.org/packages/paragonie/paseto)
+[![Latest Unstable Version](https://poser.pugx.org/paragonie/paseto/v/unstable)](https://packagist.org/packages/paragonie/paseto)
+[![License](https://poser.pugx.org/paragonie/paseto/license)](https://packagist.org/packages/paragonie/paseto)
+[![Downloads](https://img.shields.io/packagist/dt/paragonie/paseto.svg)](https://packagist.org/packages/paragonie/paseto)
 
-PAST is everything you love about JOSE (JWT, JWE, JWS) without any of the
+Paseto is everything you love about JOSE (JWT, JWE, JWS) without any of the
 [many design deficits that plague the JOSE standards](https://paragonie.com/blog/2017/03/jwt-json-web-tokens-is-bad-standard-that-everyone-should-avoid).
 
 What follows is a reference implementation. **Requires PHP 7 or newer.**
@@ -20,15 +20,15 @@ for secure stateless tokens.
 
 Unlike JSON Web Tokens (JWT), which gives developers more than enough rope with which to
 hang themselves, Paseto only allows secure operations. JWT gives you "algorithm agility",
-PAST gives you "versioned protocols". It's incredibly unlikely that you'll be able to
-use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries).
+Paseto gives you "versioned protocols". It's incredibly unlikely that you'll be able to
+use Paseto in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries).
 
-> **Caution:** Neither JWT nor PAST were designed for
+> **Caution:** Neither JWT nor Paseto were designed for
 > [stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/).
-> PAST is suitable for tamper-proof cookies, but cannot prevent replay attacks
+> Paseto is suitable for tamper-proof cookies, but cannot prevent replay attacks
 > by itself.
 
-### Pasteo
+### Paseto
 
 #### Paseto Example 1
 
@@ -88,7 +88,7 @@ This decodes to:
   c4beead986ce809935376d15b9a41f5f390c26e37af39a26d95dc02443803342
   ```
 
-To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/past/tree/master/docs/01-Protocol-Versions).
+To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/paseto/tree/master/docs/01-Protocol-Versions).
 
 ### JWT
 
