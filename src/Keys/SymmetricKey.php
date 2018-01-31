@@ -40,6 +40,7 @@ class SymmetricKey implements KeyInterface
 
     /**
      * @return string
+     * @throws \TypeError
      */
     public function encode(): string
     {
@@ -49,6 +50,7 @@ class SymmetricKey implements KeyInterface
     /**
      * @param string $encoded
      * @return self
+     * @throws \TypeError
      */
     public static function fromEncodedString(string $encoded): self
     {

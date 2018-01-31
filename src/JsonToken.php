@@ -40,7 +40,7 @@ class JsonToken
     /** @var string $footer */
     protected $footer = '';
 
-    /** @var KeyInterface $key */
+    /** @var KeyInterface|null $key */
     protected $key = null;
 
     /** @var string $purpose */
@@ -422,11 +422,15 @@ class JsonToken
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
+     * @throws InvalidKeyException
      * @throws InvalidPurposeException
      */
     public function setPurpose(string $purpose, bool $checkKeyType = false): self
     {
         if ($checkKeyType) {
+            if (\is_null($this->key)) {
+                throw new InvalidKeyException('Key cannot be null');
+            }
             $keyType = \get_class($this->key);
             switch ($keyType) {
                 case SymmetricKey::class:
@@ -490,6 +494,9 @@ class JsonToken
     {
         if (!empty($this->cached)) {
             return $this->cached;
+        }
+        if (\is_null($this->key)) {
+            throw new InvalidKeyException('Key cannot be null');
         }
         // Mutual sanity checks
         $this->setKey($this->key, true);
@@ -743,12 +750,16 @@ class JsonToken
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
+     * @throws InvalidKeyException
      * @throws InvalidPurposeException
      */
     public function withPurpose(string $purpose, bool $checkKeyType = false): self
     {
         $cloned = clone $this;
         if ($checkKeyType) {
+            if (\is_null($cloned->key)) {
+                throw new InvalidKeyException('Key cannot be null');
+            }
             $keyType = \get_class($cloned->key);
             switch ($keyType) {
                 case SymmetricKey::class:

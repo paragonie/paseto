@@ -8,7 +8,6 @@ use ParagonIE\PAST\Keys\AsymmetricSecretKey;
 use ParagonIE\PAST\Keys\SymmetricKey;
 use ParagonIE\PAST\Protocol\Version2;
 use PHPUnit\Framework\TestCase;
-use function Sodium\crypto_generichash;
 
 /**
  * Class Version2VectorTest
@@ -74,7 +73,7 @@ class Version2VectorTest extends TestCase
     public function testEncrypt()
     {
         $nonce = str_repeat("\0", 24);
-        // $nonce2 = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
+        // $nonce2 = sodium_crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce2 = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
 
         // Empty message, empty footer, empty nonce

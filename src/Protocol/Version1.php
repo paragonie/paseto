@@ -89,6 +89,7 @@ class Version1 implements ProtocolInterface
      * @param AsymmetricSecretKey $key
      * @param string $footer
      * @return string
+     * @throws \TypeError
      */
     public static function sign(string $data, AsymmetricSecretKey $key, string $footer = ''): string
     {
