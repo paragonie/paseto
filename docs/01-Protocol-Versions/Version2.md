@@ -1,4 +1,4 @@
-# PAST Version 2
+# Paseto Version 2
 
 ## Encrypt
 
@@ -12,7 +12,7 @@ Given a message `m`, key `k`, and optional footer `f`.
      in a nonce-misuse condition that breaks the security of
      our stream cipher.
 4. Pack `h`, `n`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `preAuth`.
 5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface
    such as the one provided in libsodium.
@@ -43,7 +43,7 @@ Given a message `m`, key `k`, and optional footer `f`.
    * `n` to the leftmost 24 bytes
    * `c` to the middle remainder of the payload, excluding `n`.
 5. Pack `h`, `n`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `preAuth`
 8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
    ```
@@ -63,7 +63,7 @@ optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v2.public.`
 2. Pack `h`, `m`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
 3. Sign `m2` using Ed25519 `sk`. We'll call this `sig`.
    ```
@@ -92,7 +92,7 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
    * `s` to the rightmost 64 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`  
 4. Pack `h`, `m`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
 5. Use Ed25519 to verify that the signature is valid for the message:
    ```

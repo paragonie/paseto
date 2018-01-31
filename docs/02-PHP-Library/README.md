@@ -1,11 +1,11 @@
 # How to use the PHP library
 
-The first thing you should know about PAST is that it tries to accomplish
+The first thing you should know about Paseto is that it tries to accomplish
 type-safety by wrapping cryptographic keys inside of objects. For example:
 
 ```php
 <?php
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey    
 };
@@ -23,8 +23,8 @@ This will generate a `TypeError`:
 
 ```php
 <?php
-use ParagonIE\PAST\Protocol\Version2;
-use ParagonIE\PAST\Keys\SymmetricKey;
+use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\Keys\SymmetricKey;
 
 /**
  * @var SymmetricKey $sharedKey
@@ -32,16 +32,16 @@ use ParagonIE\PAST\Keys\SymmetricKey;
 $token = Version2::sign('some arbitrary data', $sharedKey);
 ```
 
-## Building and Verifying PASTs
+## Building and Verifying Pasetos
 
 The simplest use-case is to use shared-key authentication
 to achieve tamper-resistant tokens:
 
 ```php
 <?php
-use ParagonIE\PAST\JsonToken;
-use ParagonIE\PAST\Keys\SymmetricKey;
-use ParagonIE\PAST\Protocol\Version2;
+use ParagonIE\Paseto\JsonToken;
+use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Protocol\Version2;
 
 /**
  * @var SymmetricKey $sharedKey
@@ -73,10 +73,10 @@ First, you need to define your `Parser` rules.
 
 ```php
 <?php
-use ParagonIE\PAST\Exception\PastException;
-use ParagonIE\PAST\Keys\SymmetricKey;
-use ParagonIE\PAST\Parser;
-use ParagonIE\PAST\Protocol\Version2;
+use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Parser;
+use ParagonIE\Paseto\Protocol\Version2;
 
 /**
  * @var string $providedToken
@@ -92,23 +92,23 @@ $parser = (new Parser())
 
 try {
     $token = $parser->parse($providedToken);
-} catch (PastException $ex) {
+} catch (PasetoException $ex) {
     /* Handle invalid token cases here. */
 }
-var_dump($token instanceof \ParagonIE\PAST\JsonToken);
+var_dump($token instanceof \ParagonIE\Paseto\JsonToken);
 // bool(true)
 ```
 
 ## Using the Protocol Directly
 
 Unlike JWT, we don't force you to use JSON. You can store arbitrary binary
-data in a PAST, by invoking the Protocol classes directly. This is an advanced
+data in a Paseto, by invoking the Protocol classes directly. This is an advanced
 usage, of course.
 
 ```php
 <?php
-use ParagonIE\PAST\Keys\SymmetricKey;
-use ParagonIE\PAST\Protocol\{Version1, Version2};
+use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Protocol\{Version1, Version2};
 
 $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
 $message = 'This is a signed, non-JSON message.';
@@ -142,7 +142,7 @@ var_dump(Version2::decrypt($v2Token, $key, $footer));
 
 // Explicit nonces (for unit testing):
 $nonce = str_repeat("\0", 24);
-$v2Token = ParagonIE\PAST\Protocol\Version2::encrypt($message, $key, $footer, $nonce);
+$v2Token = ParagonIE\Paseto\Protocol\Version2::encrypt($message, $key, $footer, $nonce);
 var_dump((string) $v2Token);
 // string(130) "v2.local.oFcz6G4gkzMlx3qF2-FnFeUNBwUG0TqR7aoIN8TwsJ1h3xSBKEBsKomYhDsEXHuB3_rVUpzXR45KtDvAzAMPmxZdrWU3SCO9kO_M.a2V5LWlkOmdhbmRhbGYw"
 ```

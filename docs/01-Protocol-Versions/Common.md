@@ -2,7 +2,7 @@
 
 ## Base64 Encoding
 
-Nearly every component in a PAST (except for the version, purpose, and the `.`
+Nearly every component in a Paseto (except for the version, purpose, and the `.`
 separators) will be encoded using [Base64url](https://tools.ietf.org/html/rfc4648#page-8),
 without `=` padding.
 

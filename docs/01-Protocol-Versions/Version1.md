@@ -1,4 +1,4 @@
-# PAST Version 1
+# Paseto Version 1
 
 ## GetNonce
 
@@ -25,13 +25,13 @@ Given a message `m`, key `k`, and optional footer `f`
    Ek = hkdf_sha384(
        len = 32
        ikm = k,
-       info = "past-encryption-key",
+       info = "paseto-encryption-key",
        salt = n[0:16]
    );
    Ak = hkdf_sha384(
        len = 32
        ikm = k,
-       info = "past-auth-key-for-aead",
+       info = "paseto-auth-key-for-aead",
        salt = n[0:16]
    );
    ```
@@ -45,7 +45,7 @@ Given a message `m`, key `k`, and optional footer `f`
    );
    ```
 6. Pack `h`, `n`, `c`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `preAuth`
 7. Calculate HMAC-SHA384 of the output of `preAuth`, using `Ak` as the
    authentication key. We'll call this `t`.
@@ -74,18 +74,18 @@ Given a message `m`, key `k`, and optional footer `f`
    Ek = hkdf_sha384(
        len = 32
        ikm = k,
-       info = "past-encryption-key",
+       info = "paseto-encryption-key",
        salt = n[0:16]
    );
    Ak = hkdf_sha384(
        len = 32
        ikm = k,
-       info = "past-auth-key-for-aead",
+       info = "paseto-auth-key-for-aead",
        salt = n[0:16]
    );
    ```
 5. Pack `h`, `n`, `c`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `preAuth`.
 6. Recalculate HASH-HMAC384 of `preAuth` using `Ak` as the key.
    We'll call this `t2`.
@@ -108,7 +108,7 @@ optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v1.public.`
 2. Pack `h`, `m`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
 3. Sign `m2` using RSA with the private key `sk`. We'll call this `sig`.
    ```
@@ -142,7 +142,7 @@ footer `f` (which defaults to empty string):
    * `s` to the rightmost 256 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`  
 4. Pack `h`, `m`, and `f` together using
-   [PAE](https://github.com/paragonie/past/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
 5. Use RSA to verify that the signature is valid for the message:
    ```
