@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Protocol;
+namespace ParagonIE\Paseto\Protocol;
 
 use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
     SymmetricKey
 };
-use ParagonIE\PAST\{
+use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
@@ -19,7 +19,7 @@ use phpseclib\Crypt\RSA;
 
 /**
  * Class Version1
- * @package ParagonIE\PAST\Protocol
+ * @package ParagonIE\Paseto\Protocol
  */
 class Version1 implements ProtocolInterface
 {

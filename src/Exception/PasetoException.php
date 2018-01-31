@@ -3,10 +3,10 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Exception;
 
 /**
- * Class InvalidVersionException
+ * Class PasetoException
  * @package ParagonIE\Paseto\Exception
  */
-class InvalidVersionException extends SecurityException
+class PasetoException extends \Exception
 {
 
 }

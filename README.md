@@ -1,4 +1,4 @@
-# PAST: Platform-Agnostic Security Tokens
+# PASETO: Platform-Agnostic SEcurity TOkens
 
 [![Build Status](https://travis-ci.org/paragonie/past.svg?branch=master)](https://travis-ci.org/paragonie/past)
 [![Latest Stable Version](https://poser.pugx.org/paragonie/past/v/stable)](https://packagist.org/packages/paragonie/past)
@@ -11,15 +11,15 @@ PAST is everything you love about JOSE (JWT, JWE, JWS) without any of the
 
 What follows is a reference implementation. **Requires PHP 7 or newer.**
 
-# What is PAST?
+# What is Paseto?
 
-PAST (Platform-Agnostic Security Tokens) is a specification and reference implementation
+Paseto (Platform-Agnostic SEcurity TOkens) is a specification and reference implementation
 for secure stateless tokens.
 
-## Key Differences between PAST and JWT
+## Key Differences between Paseto and JWT
 
 Unlike JSON Web Tokens (JWT), which gives developers more than enough rope with which to
-hang themselves, PAST only allows secure operations. JWT gives you "algorithm agility",
+hang themselves, Paseto only allows secure operations. JWT gives you "algorithm agility",
 PAST gives you "versioned protocols". It's incredibly unlikely that you'll be able to
 use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries).
 
@@ -28,9 +28,9 @@ use PAST in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-in
 > PAST is suitable for tamper-proof cookies, but cannot prevent replay attacks
 > by itself.
 
-### PAST
+### Pasteo
 
-#### PAST Example 1
+#### Paseto Example 1
 
 ```
 v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqIIhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
@@ -65,7 +65,7 @@ This decodes to:
   Paragon Initiative Enterprises
   ```
 
-#### PAST Example 2
+#### Paseto Example 2
 
 ```
 v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDArMDA6MDAifcMYjoUaEYXAtzTDwlcOlxdcZWIZp8qZga3jFS8JwdEjEvurZhs6AmTU3bRW5pB9fOQwm43rzmibZXcAkQ4AzQs.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
@@ -130,20 +130,20 @@ choose from (including `none`).
 There have been ways to exploit JWT libraries by replacing RS256 with HS256 and using
 the known public key as the HMAC-SHA256 key, thereby allowing arbitrary token forgery. 
 
-With PAST, your options are `version` and a `purpose`. There are two possible
+With Paseto, your options are `version` and a `purpose`. There are two possible
 values for `purpose`:
 
 * `local` -- shared-key authenticated encrypted
 * `public` -- public-key authentication (a.k.a. digital signatures)
 
-PAST only allows you to use [authenticated modes](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken).
+Paseto only allows you to use [authenticated modes](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken).
 
 Regardless of the purpose selected, the header (and an optional footer, which is always
 cleartext but base64url-encoded) is included in the signature or authentication tag.
 
 ## How to Use this Library
 
-See [the documentation](https://github.com/paragonie/past/tree/master/docs).
+See [the documentation](https://github.com/paragonie/paseto/tree/master/docs).
 
-The section dedicated to [this PHP implementation](https://github.com/paragonie/past/tree/master/docs/02-PHP-Library)
+The section dedicated to [this PHP implementation](https://github.com/paragonie/paseto/tree/master/docs/02-PHP-Library)
 may be more relevant.

@@ -1,30 +1,30 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST;
+namespace ParagonIE\Paseto;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
-use ParagonIE\PAST\Exception\{
+use ParagonIE\Paseto\Exception\{
     EncodingException,
     InvalidKeyException,
     InvalidPurposeException,
     InvalidVersionException,
-    PastException,
+    PasetoException,
     RuleViolation,
     SecurityException
 };
-use ParagonIE\PAST\Keys\{
+use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
-use ParagonIE\PAST\Protocol\{
+use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2
 };
-use ParagonIE\PAST\Traits\RegisteredClaims;
+use ParagonIE\Paseto\Traits\RegisteredClaims;
 
 /**
  * Class Parser
- * @package ParagonIE\PAST
+ * @package ParagonIE\Paseto
  * @psalm-suppress PropertyNotSetInConstructor
  */
 class Parser
@@ -55,7 +55,7 @@ class Parser
      * @param string $purpose
      * @param KeyInterface|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
-     * @throws PastException
+     * @throws PasetoException
      */
     public function __construct(
         array $allowedVersions = self::DEFAULT_VERSION_ALLOW,
@@ -132,7 +132,7 @@ class Parser
      * @param bool $skipValidation Don't validate according to the Rules.
      *                             (Does not disable cryptographic security.)
      * @return JsonToken
-     * @throws PastException
+     * @throws PasetoException
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
@@ -184,7 +184,7 @@ class Parser
                     /** @var string $decoded */
                     $decoded = $protocol::decrypt($tainted, $this->key, $footer);
                 } catch (\Throwable $ex) {
-                    throw new PastException('An error occurred', 0, $ex);
+                    throw new PasetoException('An error occurred', 0, $ex);
                 }
                 break;
             case 'public':
@@ -198,14 +198,14 @@ class Parser
                     /** @var string $decoded */
                     $decoded = $protocol::verify($tainted, $this->key, $footer);
                 } catch (\Throwable $ex) {
-                    throw new PastException('An error occurred', 0, $ex);
+                    throw new PasetoException('An error occurred', 0, $ex);
                 }
                 break;
         }
 
         // Did we get data?
         if (!isset($decoded)) {
-            throw new PastException('Unsupported purpose or version.');
+            throw new PasetoException('Unsupported purpose or version.');
         }
         /** @var array<string, string> $claims */
         $claims = \json_decode((string) $decoded, true);
@@ -245,7 +245,7 @@ class Parser
      * @param KeyInterface $key
      * @param bool $checkPurpose
      * @return self
-     * @throws PastException
+     * @throws PasetoException
      */
     public function setKey(KeyInterface $key, bool $checkPurpose = false): self
     {
@@ -285,7 +285,7 @@ class Parser
      * @param string $purpose
      * @param bool $checkKeyType
      * @return self
-     * @throws PastException
+     * @throws PasetoException
      */
     public function setPurpose(string $purpose, bool $checkKeyType = false): self
     {

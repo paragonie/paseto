@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Tests;
+namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Hex
 };
-use ParagonIE\PAST\Util;
+use ParagonIE\Paseto\Util;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class UtilTest
- * @package ParagonIE\PAST\Tests
+ * @package ParagonIE\Paseto\Tests
  */
 class UtilTest extends TestCase
 {

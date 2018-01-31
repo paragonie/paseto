@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Rules;
+namespace ParagonIE\Paseto\Rules;
 
-use ParagonIE\PAST\Exception\PastException;
-use ParagonIE\PAST\{
+use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\{
     JsonToken,
     ValidationRuleInterface
 };
 
 /**
  * Class IdentifiedBy
- * @package ParagonIE\PAST\Rules
+ * @package ParagonIE\Paseto\Rules
  */
 class IdentifiedBy implements ValidationRuleInterface
 {
@@ -51,7 +51,7 @@ class IdentifiedBy implements ValidationRuleInterface
                     $jti .' instead.';
                 return false;
             }
-        } catch (PastException $ex) {
+        } catch (PasetoException $ex) {
             $this->failure = $ex->getMessage();
             return false;
         }

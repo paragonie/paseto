@@ -1,6 +1,6 @@
 # Protocol Versions
 
-This document describes the cryptography and encoding rules for PAST protocol versions,
+This document describes the cryptography and encoding rules for Paseto protocol versions,
 to assist in cross-platform library development.
 
 # Rules for Current and Future Protocol Versions
@@ -29,13 +29,13 @@ See [the version 1 specification](Version1.md) for details. At a glance:
 * **`v1.local`**: Symmetric Authenticated Encryption:
   * AES-256-CTR + HMAC-SHA384 (Encrypt-then-MAC)
   * Key-splitting: HKDF-SHA384
-    * Info for encryption key: `past-encryption-key`
-    * Info for authentication key: `past-auth-key-for-aead`
+    * Info for encryption key: `paseto-encryption-key`
+    * Info for authentication key: `paseto-auth-key-for-aead`
   * 32-byte nonce (first half for AES-CTR, latter half for the HKDF salt)
   * The nonce calculated from HMAC-SHA384(message, `random_bytes(32)`)
     truncated to 32 bytes, during encryption only
   * The HMAC covers the header, nonce, and ciphertext
-  * Reference implementation in [Version1.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version1.php):
+  * Reference implementation in [Version1.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version1.php):
     * See `aeadEncrypt()` for encryption
     * See `aeadDncrypt()` for decryption
 * **`v1.public`**: Asymmetric Authentication (Public-Key Signatures):
@@ -44,7 +44,7 @@ See [the version 1 specification](Version1.md) for details. At a glance:
     * Hash function: SHA384 as the hash function
     * Mask generation function: MGF1+SHA384
     * Public exponent: 65537
-  * Reference implementation in [Version1.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version1.php):
+  * Reference implementation in [Version1.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version1.php):
     * See `sign()` for signature generation
     * See `verify()` for signature verification
 
@@ -66,14 +66,14 @@ See [the version 2 specification](Version2.md) for details. At a glance:
   * The nonce is calculated from `sodium_crypto_generichash()` of the message,
     with a BLAKE2b key provided by `random_bytes(24)` and an output length of 24,
     during encryption only
-  * Reference implementation in [Version2.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version2.php):
+  * Reference implementation in [Version2.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version2.php):
     * See `aeadEncrypt()` for encryption
     * See `aeadDncrypt()` for decryption
 * **`v2.public`**: Asymmetric Authentication (Public-Key Signatures):
   * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
   * Verifying: `sodium_crypto_sign_verify_detached()`
-  * Reference implementation in [Version2.php](https://github.com/paragonie/past/blob/master/src/Protocol/Version2.php):
+  * Reference implementation in [Version2.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version2.php):
     * See `sign()` for signature generation
     * See `verify()` for signature verification
 

@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST;
+namespace ParagonIE\Paseto;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 
 /**
  * Class Util
- * @package ParagonIE\PAST
+ * @package ParagonIE\Paseto
  */
 class Util
 {

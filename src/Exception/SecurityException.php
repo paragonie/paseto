@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Exception;
+namespace ParagonIE\Paseto\Exception;
 
 /**
  * Class SecurityException
- * @package ParagonIE\PAST\Exception
+ * @package ParagonIE\Paseto\Exception
  */
-class SecurityException extends PastException
+class SecurityException extends PasetoException
 {
 
 }

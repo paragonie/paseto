@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\PAST\Exception;
+namespace ParagonIE\Paseto\Exception;
 
 /**
  * Class InvalidKeyException
- * @package ParagonIE\PAST\Exception
+ * @package ParagonIE\Paseto\Exception
  */
-class InvalidKeyException extends PastException
+class InvalidKeyException extends PasetoException
 {
 
 }
