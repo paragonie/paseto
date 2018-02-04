@@ -97,7 +97,7 @@ class Version1 implements ProtocolInterface
         $rsa = self::getRsa();
         $rsa->loadKey($key->raw());
         $signature = $rsa->sign(
-            Util::preAuthEncode([$header, $data, $footer])
+            Util::preAuthEncode(...[$header, $data, $footer])
         );
         if ($footer) {
             return $header .
@@ -134,7 +134,7 @@ class Version1 implements ProtocolInterface
         $rsa = self::getRsa();
         $rsa->loadKey($key->raw());
         $valid = $rsa->verify(
-            Util::preAuthEncode([$givenHeader, $message, $footer]),
+            Util::preAuthEncode(...[$givenHeader, $message, $footer]),
             $signature
         );
         if (!$valid) {
@@ -185,7 +185,7 @@ class Version1 implements ProtocolInterface
         }
         $mac = \hash_hmac(
             self::HASH_ALGO,
-            Util::preAuthEncode([$header, $nonce, $ciphertext, $footer]),
+            Util::preAuthEncode(...[$header, $nonce, $ciphertext, $footer]),
             $authKey,
             true
         );
@@ -237,7 +237,7 @@ class Version1 implements ProtocolInterface
 
         $calc = \hash_hmac(
             self::HASH_ALGO,
-            Util::preAuthEncode([$header, $nonce, $ciphertext, $footer]),
+            Util::preAuthEncode(...[$header, $nonce, $ciphertext, $footer]),
             $authKey,
             true
         );
