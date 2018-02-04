@@ -112,10 +112,10 @@ class Util
      * followed by each message. This provides a more explicit domain
      * separation between each piece of the message.
      *
-     * @param array<int, string> $pieces
+     * @param string ...$pieces
      * @return string
      */
-    public static function preAuthEncode(array $pieces): string
+    public static function preAuthEncode(string ...$pieces): string
     {
         $accumulator = \pack('P', \count($pieces));
         foreach ($pieces as $piece) {
