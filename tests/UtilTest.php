@@ -71,6 +71,7 @@ class UtilTest extends TestCase
 
     /**
      * @covers Util::preAuthEncode()
+     * @throws \TypeError
      */
     public function testPreAuthEncode()
     {
@@ -80,8 +81,18 @@ class UtilTest extends TestCase
             'Empty array'
         );
         $this->assertSame(
+            '0000000000000000',
+            Hex::encode(Util::preAuthEncode()),
+            'Empty array'
+        );
+        $this->assertSame(
             '01000000000000000000000000000000',
             Hex::encode(Util::preAuthEncode(...[''])),
+            'Array of empty string'
+        );
+        $this->assertSame(
+            '01000000000000000000000000000000',
+            Hex::encode(Util::preAuthEncode('')),
             'Array of empty string'
         );
         $this->assertSame(
@@ -90,8 +101,18 @@ class UtilTest extends TestCase
             'Array of empty strings'
         );
         $this->assertSame(
+            '020000000000000000000000000000000000000000000000',
+            Hex::encode(Util::preAuthEncode('', '')),
+            'Array of empty strings'
+        );
+        $this->assertSame(
             '0100000000000000070000000000000050617261676f6e',
             Hex::encode(Util::preAuthEncode(...['Paragon'])),
+            'Array of non-empty string'
+        );
+        $this->assertSame(
+            '0100000000000000070000000000000050617261676f6e',
+            Hex::encode(Util::preAuthEncode('Paragon')),
             'Array of non-empty string'
         );
         $this->assertSame(
@@ -100,10 +121,22 @@ class UtilTest extends TestCase
             'Array of two non-empty strings'
         );
         $this->assertSame(
+            '0200000000000000070000000000000050617261676f6e0a00000000000000496e6974696174697665',
+            Hex::encode(Util::preAuthEncode('Paragon', 'Initiative')),
+            'Array of two non-empty strings'
+        );
+        $this->assertSame(
             '0100000000000000190000000000000050617261676f6e0a00000000000000496e6974696174697665',
             Hex::encode(Util::preAuthEncode(...[
                 'Paragon' . chr(10) . str_repeat("\0", 7) . 'Initiative'
             ])),
+            'Ensure that faked padding results in different prefixes'
+        );
+        $this->assertSame(
+            '0100000000000000190000000000000050617261676f6e0a00000000000000496e6974696174697665',
+            Hex::encode(Util::preAuthEncode(
+                'Paragon' . chr(10) . str_repeat("\0", 7) . 'Initiative'
+            )),
             'Ensure that faked padding results in different prefixes'
         );
     }

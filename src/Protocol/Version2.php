@@ -83,6 +83,8 @@ class Version2 implements ProtocolInterface
      * @param AsymmetricSecretKey $key
      * @param string $footer
      * @return string
+     *
+     * @throws \TypeError
      */
     public static function sign(
         string $data,
@@ -91,7 +93,7 @@ class Version2 implements ProtocolInterface
     ): string {
         $header = self::HEADER . '.public.';
         $signature = \sodium_crypto_sign_detached(
-            Util::preAuthEncode(...[$header, $data, $footer]),
+            Util::preAuthEncode($header, $data, $footer),
             $key->raw()
         );
         if ($footer) {
@@ -140,7 +142,7 @@ class Version2 implements ProtocolInterface
 
         $valid = \sodium_crypto_sign_verify_detached(
             $signature,
-            Util::preAuthEncode(...[$givenHeader, $message, $footer]),
+            Util::preAuthEncode($givenHeader, $message, $footer),
             $key->raw()
         );
         if (!$valid) {
@@ -184,7 +186,7 @@ class Version2 implements ProtocolInterface
         );
         $ciphertext = \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
-            Util::preAuthEncode(...[$header, $nonce, $footer]),
+            Util::preAuthEncode($header, $nonce, $footer),
             $nonce,
             $key->raw()
         );
@@ -234,7 +236,7 @@ class Version2 implements ProtocolInterface
         );
         return \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_decrypt(
             $ciphertext,
-            Util::preAuthEncode(...[$header, $nonce, $footer]),
+            Util::preAuthEncode($header, $nonce, $footer),
             $nonce,
             $key->raw()
         );
