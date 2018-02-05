@@ -49,6 +49,8 @@ final class ProtocolCollection
 
     /**
      * Does the collection contain the given protocol
+     *
+     * @return bool
      */
     public function has(ProtocolInterface $protocol): bool
     {
