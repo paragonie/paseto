@@ -15,6 +15,13 @@ use ParagonIE\Paseto\Keys\{
 interface ProtocolInterface
 {
     /**
+     * A unique header string with which the protocol can be identified.
+     *
+     * @return string
+     */
+    public static function header(): string;
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data

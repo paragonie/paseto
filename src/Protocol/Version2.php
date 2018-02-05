@@ -26,6 +26,16 @@ class Version2 implements ProtocolInterface
     const HEADER = 'v2';
 
     /**
+     * A unique header string with which the protocol can be identified.
+     *
+     * @return string
+     */
+    public static function header(): string
+    {
+        return self::HEADER;
+    }
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data

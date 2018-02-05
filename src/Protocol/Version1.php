@@ -35,6 +35,16 @@ class Version1 implements ProtocolInterface
     protected static $rsa;
 
     /**
+     * A unique header string with which the protocol can be identified.
+     *
+     * @return string
+     */
+    public static function header(): string
+    {
+        return self::HEADER;
+    }
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data
