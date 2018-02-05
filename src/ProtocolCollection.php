@@ -24,7 +24,7 @@ final class ProtocolCollection
     private $protocols;
 
     /** @var array<string, ProtocolInterface> */
-    static $headerLookup = [];
+    private static $headerLookup = [];
 
     /**
      * @param ProtocolInterface ...$protocols
