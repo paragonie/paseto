@@ -26,6 +26,12 @@ class Version2 implements ProtocolInterface
     const HEADER = 'v2';
 
     /**
+     * Must be constructable with no arguments so an instance may be passed
+     * around in a type safe way.
+     */
+    public function __construct() {}
+
+    /**
      * A unique header string with which the protocol can be identified.
      *
      * @return string
