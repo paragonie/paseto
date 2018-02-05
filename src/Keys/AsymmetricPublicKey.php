@@ -4,7 +4,10 @@ namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\KeyInterface;
+use ParagonIE\Paseto\{
+    KeyInterface,
+    ProtocolInterface
+};
 use ParagonIE\Paseto\Protocol\Version2;
 
 /**
@@ -16,20 +19,22 @@ class AsymmetricPublicKey implements KeyInterface
     /** @var string $key */
     protected $key = '';
 
-    /** @var string $protocol */
-    protected $protocol = Version2::HEADER;
+    /** @var ProtocolInterface $protocol */
+    protected $protocol;
 
     /**
      * AsymmetricPublicKey constructor.
      * @param string $keyMaterial
-     * @param string $protocol
+     * @param ProtocolInterface $protocol
      * @throws \Exception
      */
     public function __construct(
         string $keyMaterial,
-        string $protocol = Version2::HEADER
+        ProtocolInterface $protocol = null
     ) {
-        if (\hash_equals($protocol, Version2::HEADER)) {
+        $protocol = $protocol ?? new Version2;
+
+        if (\hash_equals($protocol::header(), Version2::HEADER)) {
             $len = Binary::safeStrlen($keyMaterial);
             if ($len !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
                 throw new \Exception(
@@ -60,9 +65,9 @@ class AsymmetricPublicKey implements KeyInterface
     }
 
     /**
-     * @return string
+     * @return ProtocolInterface
      */
-    public function getProtocol(): string
+    public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
     }

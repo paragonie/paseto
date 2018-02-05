@@ -4,7 +4,10 @@ namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\KeyInterface;
+use ParagonIE\Paseto\{
+    KeyInterface,
+    ProtocolInterface
+};
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2
@@ -19,22 +22,24 @@ class AsymmetricSecretKey implements KeyInterface
     /** @var string $key */
     protected $key;
 
-    /** @var string $protocol */
+    /** @var ProtocolInterface $protocol */
     protected $protocol;
 
     /**
      * AsymmetricSecretKey constructor.
      *
      * @param string $keyData
-     * @param string $protocol
+     * @param ProtocolInterface $protocol
      * @throws \Exception
      * @throws \TypeError
      */
     public function __construct(
         string $keyData,
-        string $protocol = Version2::HEADER
+        ProtocolInterface $protocol = null
     ) {
-        if (\hash_equals($protocol, Version2::HEADER)) {
+        $protocol = $protocol ?? new Version2;
+
+        if (\hash_equals($protocol::header(), Version2::HEADER)) {
             $len = Binary::safeStrlen($keyData);
             if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
                 $keyData = Binary::safeSubstr($keyData, 0, 64);
@@ -53,14 +58,16 @@ class AsymmetricSecretKey implements KeyInterface
     }
 
     /**
-     * @param string $protocol
+     * @param ProtocolInterface $protocol
      * @return self
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function generate(string $protocol = Version2::HEADER): self
+    public static function generate(ProtocolInterface $protocol = null): self
     {
-        if (\hash_equals($protocol, Version1::HEADER)) {
+        $protocol = $protocol ?? new Version2;
+
+        if (\hash_equals($protocol::header(), Version1::HEADER)) {
             $rsa = Version1::getRsa();
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
@@ -94,9 +101,9 @@ class AsymmetricSecretKey implements KeyInterface
     }
 
     /**
-     * @return string
+     * @return ProtocolInterface
      */
-    public function getProtocol(): string
+    public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
     }
@@ -108,11 +115,11 @@ class AsymmetricSecretKey implements KeyInterface
      */
     public function getPublicKey(): AsymmetricPublicKey
     {
-        switch ($this->protocol) {
+        switch ($this->protocol::header()) {
             case Version1::HEADER:
                 return new AsymmetricPublicKey(
                     Version1::RsaGetPublicKey($this->key),
-                    Version1::HEADER
+                    new Version1
                 );
             default:
                 return new AsymmetricPublicKey(
