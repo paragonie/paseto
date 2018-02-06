@@ -40,8 +40,8 @@ class Builder
     /** @var KeyInterface|null $key */
     protected $key = null;
 
-    /** @var string $purpose */
-    protected $purpose = '';
+    /** @var Purpose|null $purpose */
+    protected $purpose;
 
     /** @var ProtocolInterface $version */
     protected $version;
@@ -116,7 +116,7 @@ class Builder
         $instance = new static($baseToken);
         $instance->key = $key;
         $instance->version = $version;
-        $instance->purpose = 'local';
+        $instance->purpose = new Purpose('local');
         return $instance;
     }
 
@@ -139,7 +139,7 @@ class Builder
         $instance = new static($baseToken);
         $instance->key = $key;
         $instance->version = $version;
-        $instance->purpose = 'public';
+        $instance->purpose = new Purpose('public');
         return $instance;
     }
 
@@ -317,26 +317,20 @@ class Builder
     public function setKey(KeyInterface $key, bool $checkPurpose = false): self
     {
         if ($checkPurpose) {
-            switch ($this->purpose) {
+            if (!isset($this->purpose)) {
+                throw new InvalidKeyException('Unknown purpose');
+            } elseif (!$this->purpose->isSendingKeyValid($key)) {
+                throw new InvalidKeyException(
+                    'Invalid key type. Expected ' .
+                        $this->purpose->expectedSendingKeyType() .
+                        ', got ' .
+                        \get_class($key)
+                );
+            }
+            switch ($this->purpose->rawString()) {
                 case 'local':
-                    if (!($key instanceof SymmetricKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                            SymmetricKey::class .
-                            ', got ' .
-                            \get_class($key)
-                        );
-                    }
                     break;
                 case 'public':
-                    if (!($key instanceof AsymmetricSecretKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                            AsymmetricSecretKey::class .
-                            ', got ' .
-                            \get_class($key)
-                        );
-                    }
                     if (!($key->getProtocol() instanceof $this->version)) {
                         throw new InvalidKeyException(
                             'Invalid key type. This key is for ' .
@@ -358,38 +352,26 @@ class Builder
 
     /**
      * Set the purpose for this token. Allowed values:
-     * 'local', 'public'.
+     * new Purpose('local'), new Purpose('public').
      *
-     * @param string $purpose
+     * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
      * @throws InvalidKeyException
      * @throws InvalidPurposeException
      */
-    public function setPurpose(string $purpose, bool $checkKeyType = false): self
+    public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
         if ($checkKeyType) {
             if (\is_null($this->key)) {
                 throw new InvalidKeyException('Key cannot be null');
             }
-            $keyType = \get_class($this->key);
-            switch ($keyType) {
-                case SymmetricKey::class:
-                    if (!\hash_equals('local', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected local, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricSecretKey::class:
-                    if (!\hash_equals('public', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected public, got ' . $purpose
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
+            $expectedPurpose = Purpose::fromSendingKey($this->key);
+            if (!$purpose->equals($expectedPurpose)) {
+                throw new InvalidPurposeException(
+                    'Invalid purpose. Expected '.$expectedPurpose->rawString()
+                    .', got ' . $purpose->rawString()
+                );
             }
         }
 
@@ -438,6 +420,9 @@ class Builder
         if (\is_null($this->key)) {
             throw new InvalidKeyException('Key cannot be null');
         }
+        if (\is_null($this->purpose)) {
+            throw new InvalidKeyException('Purpose cannot be null');
+        }
         // Mutual sanity checks
         $this->setKey($this->key, true);
         $this->setPurpose($this->purpose, true);
@@ -445,7 +430,7 @@ class Builder
         $claims = \json_encode($this->token->getClaims());
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
-        switch ($this->purpose) {
+        switch ($this->purpose->rawString()) {
             case 'local':
                 if ($this->key instanceof SymmetricKey) {
                     $this->cached = (string) $protocol::encrypt(
@@ -619,15 +604,15 @@ class Builder
     /**
      * Return a new JsonToken instance with a new purpose.
      * Allowed values:
-     * 'local', 'public'.
+     * new Purpose('local'), new Purpose('public').
      *
-     * @param string $purpose
+     * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
      * @throws InvalidKeyException
      * @throws InvalidPurposeException
      */
-    public function withPurpose(string $purpose, bool $checkKeyType = false): self
+    public function withPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
         return (clone $this)->setPurpose($purpose, $checkKeyType);
     }
