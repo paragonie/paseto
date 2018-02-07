@@ -83,7 +83,7 @@ class Parser
         /** @var Parser $instance */
         $instance = new static(
             $allowedVersions ?? ProtocolCollection::default(),
-            new Purpose('local'),
+            Purpose::local(),
             $key
         );
         return $instance;
@@ -103,7 +103,7 @@ class Parser
         /** @var Parser $instance */
         $instance = new static(
             $allowedVersions ?? ProtocolCollection::default(),
-            new Purpose('public'),
+            Purpose::public(),
             $key
         );
         return $instance;

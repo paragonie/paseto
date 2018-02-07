@@ -57,6 +57,16 @@ final class Purpose
         $this->fuzz = \random_bytes(16);
     }
 
+    public static function local(): self
+    {
+        return new self('local');
+    }
+
+    public static function public(): self
+    {
+        return new self('public');
+    }
+
     public function equals(self $purpose): bool
     {
         return \hash_equals($purpose->purpose, $this->purpose);
