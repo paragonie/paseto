@@ -33,7 +33,7 @@ class JsonTokenTest extends TestCase
         // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $builder = (new Builder())
-            ->setPurpose(new Purpose('local'))
+            ->setPurpose(Purpose::local())
             ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
@@ -57,7 +57,7 @@ class JsonTokenTest extends TestCase
         );
 
         // Now let's switch gears to asymmetric crypto:
-        $builder->setPurpose(new Purpose('public'))
+        $builder->setPurpose(Purpose::public())
                 ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
             'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
@@ -88,7 +88,7 @@ class JsonTokenTest extends TestCase
         $footerArray = ['key-id' => 'gandalf0'];
 
         $token = (new Builder())
-            ->setPurpose(new Purpose('local'))
+            ->setPurpose(Purpose::local())
             ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
@@ -142,7 +142,7 @@ class JsonTokenTest extends TestCase
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $footerArray = ['key-id' => 'gandalf0'];
         $builder = (new Builder())
-            ->setPurpose(new Purpose('local'))
+            ->setPurpose(Purpose::local())
             ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
