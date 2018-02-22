@@ -147,3 +147,6 @@ See [the documentation](https://github.com/paragonie/paseto/tree/master/docs).
 
 The section dedicated to [this PHP implementation](https://github.com/paragonie/paseto/tree/master/docs/02-PHP-Library)
 may be more relevant.
+
+## Other implementations
+* [Golang](https://github.com/o1egl/paseto)
