@@ -3,12 +3,14 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
+use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
 use ParagonIE\Paseto\Parser;
+use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\Rules\NotExpired;
 use PHPUnit\Framework\TestCase;
 
@@ -21,6 +23,9 @@ class ParserTest extends TestCase
     /**
      * @covers Parser::parse()
      * @throws PasetoException
+     * @throws \Exception
+     * @throws \ParagonIE\Paseto\Exception\RuleViolation
+     * @throws \TypeError
      */
     public function testAuthToken()
     {
@@ -32,7 +37,8 @@ class ParserTest extends TestCase
         $parser = (new Parser())
             ->setPurpose('local')
             ->setKey($key);
-        $token = $parser->parse($serialized)
+        $token = $parser->parse($serialized);
+        $builder = (Builder::getLocal($key, new Version2(), $token))
             ->setExplicitNonce($nonce);
         $this->assertSame(
             '2039-01-01T00:00:00+00:00',
@@ -44,7 +50,7 @@ class ParserTest extends TestCase
             $token->get('data'),
             'Custom claim not found'
         );
-        $this->assertSame($serialized, (string) $token);
+        $this->assertSame($serialized, (string) $builder);
 
         $this->assertTrue($parser->validate($token));
         $parser->addRule(new NotExpired(new \DateTime('2007-01-01T00:00:00')));
@@ -62,12 +68,12 @@ class ParserTest extends TestCase
         $parser->parse($serialized);
 
         // Switch to asymmetric-key crypto:
-        $token->setPurpose('public')
+        $builder->setPurpose('public')
             ->setExplicitNonce($nonce)
             ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
             'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
-            (string) $token,
+            (string) $builder,
             'Switching to signing caused a different signature'
         );
     }

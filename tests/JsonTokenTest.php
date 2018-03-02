@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
+use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\JsonToken;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\{
@@ -20,13 +21,17 @@ class JsonTokenTest extends TestCase
     /**
      * @covers Builder::getToken()
      * @throws PasetoException
+     * @throws \Exception
+     * @throws \ParagonIE\Paseto\Exception\InvalidKeyException
+     * @throws \ParagonIE\Paseto\Exception\InvalidPurposeException
+     * @throws \TypeError
      */
     public function testAuthDeterminism()
     {
         $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
         // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
-        $builder = (new JsonToken())
+        $builder = (new Builder())
             ->setPurpose('local')
             ->setExplicitNonce($nonce)
             ->setKey($key)
@@ -81,7 +86,7 @@ class JsonTokenTest extends TestCase
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $footerArray = ['key-id' => 'gandalf0'];
 
-        $token = (new JsonToken())
+        $token = (new Builder())
             ->setPurpose('local')
             ->setExplicitNonce($nonce)
             ->setKey($key)
@@ -102,8 +107,8 @@ class JsonTokenTest extends TestCase
         $mutateTwo = $mutated->withAudience('example.org');
 
         $this->assertNotSame(
-            $mutated->getAudience(),
-            $mutateTwo->getAudience()
+            $mutated->getJsonToken()->getAudience(),
+            $mutateTwo->getJsonToken()->getAudience()
         );
     }
 
@@ -135,7 +140,7 @@ class JsonTokenTest extends TestCase
         // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $footerArray = ['key-id' => 'gandalf0'];
-        $builder = (new JsonToken())
+        $builder = (new Builder())
             ->setPurpose('local')
             ->setExplicitNonce($nonce)
             ->setKey($key)
