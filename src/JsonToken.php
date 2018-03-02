@@ -306,9 +306,7 @@ class JsonToken
      */
     public function with(string $claim, $value): self
     {
-        $cloned = clone $this;
-        $cloned->claims[$claim] = $value;
-        return $cloned;
+        return (clone $this)->set($claim, $value);
     }
 
     /**
@@ -330,8 +328,7 @@ class JsonToken
      */
     public function withClaims(array $claims): self
     {
-        $cloned = clone $this;
-        return $cloned->setClaims($claims);
+        return (clone $this)->setClaims($claims);
     }
 
     /**
@@ -342,12 +339,7 @@ class JsonToken
      */
     public function withExpiration(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        $cloned = clone $this;
-        $cloned->claims['exp'] = $time->format(\DateTime::ATOM);
-        return $cloned;
+        return (clone $this)->setExpiration($time);
     }
 
     /**
@@ -358,9 +350,7 @@ class JsonToken
      */
     public function withFooter(string $footer = ''): self
     {
-        $cloned = clone $this;
-        $cloned->footer = $footer;
-        return $cloned;
+        return (clone $this)->setFooter($footer);
     }
 
     /**
@@ -373,11 +363,7 @@ class JsonToken
      */
     public function withFooterArray(array $footer = []): self
     {
-        $encoded = \json_encode($footer);
-        if (!\is_string($encoded)) {
-            throw new EncodingException('Could not encode array into JSON');
-        }
-        return $this->withFooter($encoded);
+        return (clone $this)->setFooterArray($footer);
     }
 
     /**
@@ -388,12 +374,7 @@ class JsonToken
      */
     public function withIssuedAt(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        $cloned = clone $this;
-        $cloned->claims['iat'] = $time->format(\DateTime::ATOM);
-        return $cloned;
+        return (clone $this)->setIssuedAt($time);
     }
 
     /**
@@ -426,12 +407,7 @@ class JsonToken
      */
     public function withNotBefore(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        $cloned = clone $this;
-        $cloned->claims['nbf'] = $time->format(\DateTime::ATOM);
-        return $cloned;
+        return (clone $this)->setNotBefore($time);
     }
 
     /**

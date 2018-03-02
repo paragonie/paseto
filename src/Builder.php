@@ -7,7 +7,6 @@ use ParagonIE\Paseto\Exception\{
     InvalidKeyException,
     InvalidPurposeException,
     InvalidVersionException,
-    NotFoundException,
     PasetoException
 };
 use ParagonIE\Paseto\Keys\{
@@ -499,7 +498,7 @@ class Builder
      */
     public function withAudience(string $aud): self
     {
-        return $this->with('aud', $aud);
+        return (clone $this)->setAudience($aud);
     }
 
     /**
@@ -510,10 +509,7 @@ class Builder
      */
     public function withClaims(array $claims): self
     {
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->token = $cloned->token->withClaims($claims);
-        return $cloned;
+        return (clone $this)->setClaims($claims);
     }
 
     /**
@@ -524,10 +520,7 @@ class Builder
      */
     public function withExpiration(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        return $this->with('exp', $time->format(\DateTime::ATOM));
+        return (clone $this)->setExpiration($time);
     }
 
     /**
@@ -538,10 +531,7 @@ class Builder
      */
     public function withFooter(string $footer = ''): self
     {
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->token = $cloned->token->withFooter($footer);
-        return $cloned;
+        return (clone $this)->setFooter($footer);
     }
 
     /**
@@ -554,11 +544,7 @@ class Builder
      */
     public function withFooterArray(array $footer = []): self
     {
-        $encoded = \json_encode($footer);
-        if (!\is_string($encoded)) {
-            throw new EncodingException('Could not encode array into JSON');
-        }
-        return $this->withFooter($encoded);
+        return (clone $this)->setFooterArray($footer);
     }
 
     /**
@@ -569,10 +555,7 @@ class Builder
      */
     public function withIssuedAt(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        return $this->with('iat', $time->format(\DateTime::ATOM));
+        return (clone $this)->setIssuedAt($time);
     }
 
     /**
@@ -583,7 +566,7 @@ class Builder
      */
     public function withIssuer(string $iss): self
     {
-        return $this->with('iss', $iss);
+        return (clone $this)->setIssuer($iss);
     }
 
     /**
@@ -594,7 +577,7 @@ class Builder
      */
     public function withJti(string $id): self
     {
-        return $this->with('jti', $id);
+        return (clone $this)->setJti($id);
     }
 
     /**
@@ -605,10 +588,7 @@ class Builder
      */
     public function withNotBefore(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        return $this->with('nbf', $time->format(\DateTime::ATOM));
+        return (clone $this)->setNotBefore($time);
     }
 
     /**
@@ -619,9 +599,8 @@ class Builder
      */
     public function withSubject(string $sub): self
     {
-        return $this->with('sub', $sub);
+        return (clone $this)->setSubject($sub);
     }
-
 
     /**
      * Return a new JsonToken instance, with the provided cryptographic key used
@@ -634,46 +613,7 @@ class Builder
      */
     public function withKey(KeyInterface $key, bool $checkPurpose = false): self
     {
-        $cloned = clone $this;
-
-        if ($checkPurpose) {
-            switch ($cloned->purpose) {
-                case 'local':
-                    if (!($key instanceof SymmetricKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                            SymmetricKey::class .
-                            ', got ' .
-                            \get_class($key)
-                        );
-                    }
-                    break;
-                case 'public':
-                    if (!($key instanceof AsymmetricSecretKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                            AsymmetricSecretKey::class .
-                            ', got ' .
-                            \get_class($key)
-                        );
-                    }
-                    if (!\hash_equals($cloned->version::header(), $key->getProtocol()::header())) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' .
-                            $key->getProtocol()::header() .
-                            ', not ' .
-                            $cloned->version::header()
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidKeyException('Unknown purpose');
-            }
-        }
-
-        $cloned->cached = '';
-        $cloned->key = $key;
-        return $cloned;
+        return (clone $this)->setKey($key, $checkPurpose);
     }
 
     /**
@@ -689,35 +629,17 @@ class Builder
      */
     public function withPurpose(string $purpose, bool $checkKeyType = false): self
     {
-        $cloned = clone $this;
-        if ($checkKeyType) {
-            if (\is_null($cloned->key)) {
-                throw new InvalidKeyException('Key cannot be null');
-            }
-            $keyType = \get_class($cloned->key);
-            switch ($keyType) {
-                case SymmetricKey::class:
-                    if (!\hash_equals('local', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected local, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricSecretKey::class:
-                    if (!\hash_equals('public', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected public, got ' . $purpose
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
-            }
-        }
+        return (clone $this)->setPurpose($purpose, $checkKeyType);
+    }
 
-        $cloned->cached = '';
-        $cloned->purpose = $purpose;
-        return $cloned;
+    /**
+     * Make a copy of the JsonToken object.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->token = clone $this->token;
     }
 
     /**
