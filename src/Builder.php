@@ -728,7 +728,6 @@ class Builder
         try {
             return $this->toString();
         } catch (\Throwable $ex) {
-            var_dump($ex->getMessage(), $ex->getTraceAsString());
             return '';
         }
     }

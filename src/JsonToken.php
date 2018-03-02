@@ -88,7 +88,7 @@ class JsonToken
      */
     public function getFooterArray(): array
     {
-        /** @var array $decoded */
+        /** @var array|bool $decoded */
         $decoded = \json_decode($this->footer, true);
         if (!\is_array($decoded)) {
             throw new EncodingException('Footer is not a valid JSON document');
@@ -204,18 +204,6 @@ class JsonToken
     }
 
     /**
-     * Do not use this.
-     *
-     * @param string $nonce
-     * @return self
-     */
-    public function setExplicitNonce(string $nonce = ''): self
-    {
-        $this->explicitNonce = $nonce;
-        return $this;
-    }
-
-    /**
      * Set the footer.
      *
      * @param string $footer
@@ -223,7 +211,6 @@ class JsonToken
      */
     public function setFooter(string $footer = ''): self
     {
-        $this->cached = '';
         $this->footer = $footer;
         return $this;
     }

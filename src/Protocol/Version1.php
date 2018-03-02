@@ -188,7 +188,7 @@ class Version1 implements ProtocolInterface
         list($encKey, $authKey) = $key->split(
             Binary::safeSubstr($nonce, 0, 16)
         );
-        /** @var string $ciphertext */
+        /** @var string|bool $ciphertext */
         $ciphertext = \openssl_encrypt(
             $plaintext,
             self::CIPHER_MODE,
@@ -261,7 +261,7 @@ class Version1 implements ProtocolInterface
             throw new \Exception('Invalid MAC');
         }
 
-        /** @var string $plaintext */
+        /** @var string|bool $plaintext */
         $plaintext = \openssl_decrypt(
             $ciphertext,
             self::CIPHER_MODE,

@@ -194,7 +194,7 @@ class Parser
         if (!isset($decoded)) {
             throw new PasetoException('Unsupported purpose or version.');
         }
-        /** @var array<string, string> $claims */
+        /** @var array<string, string>|bool $claims */
         $claims = \json_decode((string) $decoded, true);
         if (!\is_array($claims)) {
             throw new EncodingException('Not a JSON token.');
