@@ -380,10 +380,10 @@ class JsonToken
                                 \get_class($key)
                         );
                     }
-                    if (!\hash_equals($this->version, $key->getProtocol())) {
+                    if (!\hash_equals($this->version, $key->getProtocol()::header())) {
                         throw new InvalidKeyException(
                             'Invalid key type. This key is for ' .
-                                $key->getProtocol() .
+                                $key->getProtocol()::header() .
                                 ', not ' .
                                 $this->version
                         );
@@ -684,7 +684,7 @@ class JsonToken
     public function withKey(KeyInterface $key, bool $checkPurpose = false): self
     {
         $cloned = clone $this;
-        
+
         if ($checkPurpose) {
             switch ($cloned->purpose) {
                 case 'local':
@@ -706,10 +706,10 @@ class JsonToken
                                 \get_class($key)
                         );
                     }
-                    if (!\hash_equals($cloned->version, $key->getProtocol())) {
+                    if (!\hash_equals($cloned->version, $key->getProtocol()::header())) {
                         throw new InvalidKeyException(
                             'Invalid key type. This key is for ' .
-                                $key->getProtocol() .
+                                $key->getProtocol()::header() .
                                 ', not ' .
                                 $cloned->version
                         );

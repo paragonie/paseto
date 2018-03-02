@@ -5,6 +5,7 @@ namespace ParagonIE\Paseto\Keys;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\Paseto\{
     KeyInterface,
+    ProtocolInterface,
     Protocol\Version2,
     Util
 };
@@ -21,21 +22,21 @@ class SymmetricKey implements KeyInterface
     /** @var string $key */
     protected $key = '';
 
-    /** @var string $protocol */
-    protected $protocol = Version2::HEADER;
+    /** @var ProtocolInterface $protocol */
+    protected $protocol;
 
     /**
      * SymmetricKey constructor.
      *
      * @param string $keyMaterial
-     * @param string $protocol
+     * @param ProtocolInterface|null $protocol
      */
     public function __construct(
         string $keyMaterial,
-        string $protocol = Version2::HEADER
+        ProtocolInterface $protocol = null
     ) {
         $this->key = $keyMaterial;
-        $this->protocol = $protocol;
+        $this->protocol = $protocol ?? new Version2;
     }
 
     /**
@@ -59,9 +60,9 @@ class SymmetricKey implements KeyInterface
     }
 
     /**
-     * @return string
+     * @return ProtocolInterface
      */
-    public function getProtocol(): string
+    public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
     }

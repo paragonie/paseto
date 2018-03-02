@@ -16,10 +16,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
-use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2
-};
+
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
 /**
@@ -31,12 +28,7 @@ class Parser
 {
     use RegisteredClaims;
 
-    const DEFAULT_VERSION_ALLOW = [
-        Version1::HEADER,
-        Version2::HEADER
-    ];
-
-    /** @var array<int, string> */
+    /** @var ProtocolCollection */
     protected $allowedVersions;
 
     /** @var KeyInterface $key */
@@ -51,19 +43,19 @@ class Parser
     /**
      * Parser constructor.
      *
-     * @param array<int, string> $allowedVersions
+     * @param ProtocolCollection|null $allowedVersions
      * @param string $purpose
      * @param KeyInterface|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
      * @throws PasetoException
      */
     public function __construct(
-        array $allowedVersions = self::DEFAULT_VERSION_ALLOW,
+        ProtocolCollection $allowedVersions = null,
         string $purpose = '',
         KeyInterface $key = null,
         array $parserRules = []
     ) {
-        $this->allowedVersions = $allowedVersions;
+        $this->allowedVersions = $allowedVersions ?? ProtocolCollection::default();
         $this->purpose = $purpose;
         if (!\is_null($key)) {
             $this->setKey($key, true);
@@ -79,16 +71,16 @@ class Parser
 
     /**
      * @param SymmetricKey $key
-     * @param array<int, string> $allowedVersions
+     * @param ProtocolCollection|null $allowedVersions
      * @return self
      */
     public static function getLocal(
         SymmetricKey $key,
-        array $allowedVersions = self::DEFAULT_VERSION_ALLOW
+        ProtocolCollection $allowedVersions = null
     ): self {
         /** @var Parser $instance */
         $instance = new static(
-            $allowedVersions,
+            $allowedVersions ?? ProtocolCollection::default(),
             'local',
             $key
         );
@@ -97,16 +89,16 @@ class Parser
 
     /**
      * @param AsymmetricPublicKey $key
-     * @param array<int, string> $allowedVersions
+     * @param ProtocolCollection|null $allowedVersions
      * @return self
      */
     public static function getPublic(
         AsymmetricPublicKey $key,
-        array $allowedVersions = self::DEFAULT_VERSION_ALLOW
+        ProtocolCollection $allowedVersions = null
     ): self {
         /** @var Parser $instance */
         $instance = new static(
-            $allowedVersions,
+            $allowedVersions ?? ProtocolCollection::default(),
             'public',
             $key
         );
@@ -144,22 +136,12 @@ class Parser
 
         // First, check against the user's specified list of allowed versions.
         $header = $pieces[0];
-        if (!\in_array($header, $this->allowedVersions, true)) {
+        /** @var ProtocolInterface $protocol */
+        $protocol = ProtocolCollection::protocolFromHeader($header);
+        if (!$this->allowedVersions->has($protocol)) {
             throw new InvalidVersionException('Disallowed or unsupported version');
         }
 
-        // Our parser's built-in whitelist of headers is defined here.
-        switch ($header) {
-            case Version1::HEADER:
-                $protocol = Version1::class;
-                break;
-            case Version2::HEADER:
-                $protocol = Version2::class;
-                break;
-            default:
-                throw new InvalidVersionException('Disallowed or unsupported version');
-        }
-        /** @var ProtocolInterface $protocol */
         /** @var string $purpose */
         $footer = '';
         $purpose = $pieces[1];
@@ -230,10 +212,10 @@ class Parser
     /**
      * Which protocol versions to permit.
      *
-     * @param array<int, string> $whitelist
+     * @param ProtocolCollection $whitelist
      * @return self
      */
-    public function setAllowedVersions(array $whitelist): self
+    public function setAllowedVersions(ProtocolCollection $whitelist): self
     {
         $this->allowedVersions = $whitelist;
         return $this;

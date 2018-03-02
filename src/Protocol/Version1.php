@@ -35,6 +35,22 @@ class Version1 implements ProtocolInterface
     protected static $rsa;
 
     /**
+     * Must be constructable with no arguments so an instance may be passed
+     * around in a type safe way.
+     */
+    public function __construct() {}
+
+    /**
+     * A unique header string with which the protocol can be identified.
+     *
+     * @return string
+     */
+    public static function header(): string
+    {
+        return self::HEADER;
+    }
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data

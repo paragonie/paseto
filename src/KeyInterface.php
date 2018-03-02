@@ -12,9 +12,9 @@ interface KeyInterface
      * The intended version for this protocol. Currently only meaningful
      * in asymmetric cryptography.
      *
-     * @return string
+     * @return ProtocolInterface
      */
-    public function getProtocol(): string;
+    public function getProtocol(): ProtocolInterface;
 
     /**
      * @return string
