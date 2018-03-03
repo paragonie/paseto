@@ -163,8 +163,8 @@ class Parser
         }
 
         // Let's verify/decode according to the appropriate method:
-        switch ($purpose->rawString()) {
-            case 'local':
+        switch ($purpose) {
+            case Purpose::local():
                 $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
                     : '';
@@ -176,7 +176,7 @@ class Parser
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
                 break;
-            case 'public':
+            case Purpose::public():
                 $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
                     : '';

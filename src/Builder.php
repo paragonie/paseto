@@ -327,10 +327,10 @@ class Builder
                         \get_class($key)
                 );
             }
-            switch ($this->purpose->rawString()) {
-                case 'local':
+            switch ($this->purpose) {
+                case Purpose::local():
                     break;
-                case 'public':
+                case Purpose::public():
                     if (!($key->getProtocol() instanceof $this->version)) {
                         throw new InvalidKeyException(
                             'Invalid key type. This key is for ' .
@@ -430,8 +430,8 @@ class Builder
         $claims = \json_encode($this->token->getClaims());
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
-        switch ($this->purpose->rawString()) {
-            case 'local':
+        switch ($this->purpose) {
+            case Purpose::local():
                 if ($this->key instanceof SymmetricKey) {
                     $this->cached = (string) $protocol::encrypt(
                         $claims,
@@ -442,7 +442,7 @@ class Builder
                     return $this->cached;
                 }
                 break;
-            case 'public':
+            case Purpose::public():
                 if ($this->key instanceof AsymmetricSecretKey) {
                     try {
                         $this->cached = (string) $protocol::sign(
