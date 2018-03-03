@@ -97,6 +97,40 @@ final class Purpose
     }
 
     /**
+     * Given a SendingKey, retrieve the corresponding Purpose.
+     *
+     * @param SendingKey $key
+     * @return self
+     */
+    public static function fromSendingKey(SendingKey $key): self
+    {
+        if (empty(self::$sendingKeyToPurpose)) {
+            /** @var array<string, string> */
+            $expectedSendingKeys = self::EXPECTED_SENDING_KEYS;
+            self::$sendingKeyToPurpose = \array_flip($expectedSendingKeys);
+        }
+
+        return new self(self::$sendingKeyToPurpose[\get_class($key)]);
+    }
+
+    /**
+     * Given a ReceivingKey, retrieve the corresponding Purpose.
+     *
+     * @param ReceivingKey $key
+     * @return self
+     */
+    public static function fromReceivingKey(ReceivingKey $key): self
+    {
+        if (empty(self::$receivingKeyToPurpose)) {
+            /** @var array<string, string> */
+            $expectedReceivingKeys = self::EXPECTED_RECEIVING_KEYS;
+            self::$receivingKeyToPurpose = \array_flip($expectedReceivingKeys);
+        }
+
+        return new self(self::$receivingKeyToPurpose[\get_class($key)]);
+    }
+
+    /**
      * Compare the instance with $purpose in constant time.
      *
      * @param self $Purpose
@@ -105,6 +139,18 @@ final class Purpose
     public function equals(self $purpose): bool
     {
         return \hash_equals($purpose->purpose, $this->purpose);
+    }
+
+    /**
+     * Determine whether new Purpose($rawString) will succeed prior to calling
+     * it.
+     *
+     * @param string $rawString
+     * @return bool
+     */
+    public static function isValid(string $rawString): bool
+    {
+        return \in_array($rawString, self::WHITELIST, true);
     }
 
     /**
@@ -169,51 +215,5 @@ final class Purpose
     public function rawString(): string
     {
         return $this->purpose;
-    }
-
-    /**
-     * Determine whether new Purpose($rawString) will succeed prior to calling
-     * it.
-     *
-     * @param string $rawString
-     * @return bool
-     */
-    public static function isValid(string $rawString): bool
-    {
-        return \in_array($rawString, self::WHITELIST, true);
-    }
-
-    /**
-     * Given a SendingKey, retrieve the corresponding Purpose.
-     *
-     * @param SendingKey $key
-     * @return self
-     */
-    public static function fromSendingKey(SendingKey $key): self
-    {
-        if (empty(self::$sendingKeyToPurpose)) {
-            /** @var array<string, string> */
-            $expectedSendingKeys = self::EXPECTED_SENDING_KEYS;
-            self::$sendingKeyToPurpose = \array_flip($expectedSendingKeys);
-        }
-
-        return new self(self::$sendingKeyToPurpose[\get_class($key)]);
-    }
-
-    /**
-     * Given a ReceivingKey, retrieve the corresponding Purpose.
-     *
-     * @param ReceivingKey $key
-     * @return self
-     */
-    public static function fromReceivingKey(ReceivingKey $key): self
-    {
-        if (empty(self::$receivingKeyToPurpose)) {
-            /** @var array<string, string> */
-            $expectedReceivingKeys = self::EXPECTED_RECEIVING_KEYS;
-            self::$receivingKeyToPurpose = \array_flip($expectedReceivingKeys);
-        }
-
-        return new self(self::$receivingKeyToPurpose[\get_class($key)]);
     }
 }
