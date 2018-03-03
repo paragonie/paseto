@@ -4,7 +4,8 @@ namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\Paseto\{
-    KeyInterface,
+    ReceivingKey,
+    SendingKey,
     ProtocolInterface,
     Protocol\Version2,
     Util
@@ -14,7 +15,7 @@ use ParagonIE\Paseto\{
  * Class SymmetricKey
  * @package ParagonIE\Paseto\Keys
  */
-class SymmetricKey implements KeyInterface
+class SymmetricKey implements ReceivingKey, SendingKey
 {
     const INFO_ENCRYPTION = 'paseto-encryption-key';
     const INFO_AUTHENTICATION = 'paseto-auth-key-for-aead';

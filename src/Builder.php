@@ -37,7 +37,7 @@ class Builder
     /** @var string $explicitNonce -- Do not use this. It's for unit testing! */
     protected $explicitNonce = '';
 
-    /** @var KeyInterface|null $key */
+    /** @var SendingKey|null $key */
     protected $key = null;
 
     /** @var Purpose|null $purpose */
@@ -54,14 +54,14 @@ class Builder
      *
      * @param JsonToken|null $baseToken
      * @param ProtocolInterface|null $protocol
-     * @param KeyInterface|null $key
+     * @param SendingKey|null $key
      *
      * @throws PasetoException
      */
     public function __construct(
         JsonToken $baseToken = null,
         ProtocolInterface $protocol = null,
-        KeyInterface $key = null
+        SendingKey $key = null
     ) {
         if (!$baseToken) {
             $baseToken = new JsonToken();
@@ -309,12 +309,12 @@ class Builder
      * Set the cryptographic key used to authenticate (and possibly encrypt)
      * the serialized token.
      *
-     * @param KeyInterface $key
+     * @param SendingKey $key
      * @param bool $checkPurpose
      * @return self
      * @throws PasetoException
      */
-    public function setKey(KeyInterface $key, bool $checkPurpose = false): self
+    public function setKey(SendingKey $key, bool $checkPurpose = false): self
     {
         if ($checkPurpose) {
             if (!isset($this->purpose)) {
@@ -591,12 +591,12 @@ class Builder
      * Return a new JsonToken instance, with the provided cryptographic key used
      * to authenticate (and possibly encrypt) the serialized token.
      *
-     * @param KeyInterface $key
+     * @param SendingKey $key
      * @param bool $checkPurpose
      * @return self
      * @throws PasetoException
      */
-    public function withKey(KeyInterface $key, bool $checkPurpose = false): self
+    public function withKey(SendingKey $key, bool $checkPurpose = false): self
     {
         return (clone $this)->setKey($key, $checkPurpose);
     }

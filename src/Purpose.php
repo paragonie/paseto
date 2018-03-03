@@ -72,13 +72,13 @@ final class Purpose
         return \hash_equals($purpose->purpose, $this->purpose);
     }
 
-    public function isSendingKeyValid(KeyInterface $key): bool
+    public function isSendingKeyValid(SendingKey $key): bool
     {
         $expectedKeyType = $this->expectedSendingKeyType();
         return $key instanceof $expectedKeyType;
     }
 
-    public function isReceivingKeyValid(KeyInterface $key): bool
+    public function isReceivingKeyValid(ReceivingKey $key): bool
     {
         $expectedKeyType = $this->expectedReceivingKeyType();
         return $key instanceof $expectedKeyType;
@@ -116,19 +116,23 @@ final class Purpose
         return \in_array($rawString, self::WHITELIST, true);
     }
 
-    public static function fromSendingKey(KeyInterface $key): self
+    public static function fromSendingKey(SendingKey $key): self
     {
         if (empty(self::$sendingKeyToPurpose)) {
-            self::$sendingKeyToPurpose = \array_flip(self::EXPECTED_SENDING_KEYS);
+            /** @var array<string, string> */
+            $expectedSendingKeys = self::EXPECTED_SENDING_KEYS;
+            self::$sendingKeyToPurpose = \array_flip($expectedSendingKeys);
         }
 
         return new self(self::$sendingKeyToPurpose[\get_class($key)]);
     }
 
-    public static function fromReceivingKey(KeyInterface $key): self
+    public static function fromReceivingKey(ReceivingKey $key): self
     {
         if (empty(self::$receivingKeyToPurpose)) {
-            self::$receivingKeyToPurpose = \array_flip(self::EXPECTED_RECEIVING_KEYS);
+            /** @var array<string, string> */
+            $expectedReceivingKeys = self::EXPECTED_RECEIVING_KEYS;
+            self::$receivingKeyToPurpose = \array_flip($expectedReceivingKeys);
         }
 
         return new self(self::$receivingKeyToPurpose[\get_class($key)]);

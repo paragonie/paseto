@@ -5,7 +5,7 @@ namespace ParagonIE\Paseto\Keys;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
-    KeyInterface,
+    SendingKey,
     ProtocolInterface
 };
 use ParagonIE\Paseto\Protocol\{
@@ -17,7 +17,7 @@ use ParagonIE\Paseto\Protocol\{
  * Class AsymmetricSecretKey
  * @package ParagonIE\Paseto\Keys
  */
-class AsymmetricSecretKey implements KeyInterface
+class AsymmetricSecretKey implements SendingKey
 {
     /** @var string $key */
     protected $key;

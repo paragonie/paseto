@@ -31,7 +31,7 @@ class Parser
     /** @var ProtocolCollection */
     protected $allowedVersions;
 
-    /** @var KeyInterface $key */
+    /** @var ReceivingKey $key */
     protected $key;
 
     /** @var Purpose|null $purpose */
@@ -45,14 +45,14 @@ class Parser
      *
      * @param ProtocolCollection|null $allowedVersions
      * @param Purpose|null $purpose
-     * @param KeyInterface|null $key
+     * @param ReceivingKey|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
      * @throws PasetoException
      */
     public function __construct(
         ProtocolCollection $allowedVersions = null,
         Purpose $purpose = null,
-        KeyInterface $key = null,
+        ReceivingKey $key = null,
         array $parserRules = []
     ) {
         $this->allowedVersions = $allowedVersions ?? ProtocolCollection::default();
@@ -226,12 +226,12 @@ class Parser
     /**
      * Specify the key for the token we are going to parse.
      *
-     * @param KeyInterface $key
+     * @param ReceivingKey $key
      * @param bool $checkPurpose
      * @return self
      * @throws PasetoException
      */
-    public function setKey(KeyInterface $key, bool $checkPurpose = false): self
+    public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
     {
         if ($checkPurpose) {
             if (!isset($this->purpose)) {
