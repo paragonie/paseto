@@ -83,7 +83,7 @@ use ParagonIE\Paseto\ProtocolCollection;
  * @var string $providedToken
  * @var SymmetricKey $sharedKey
  */
-$parser = Parser::getLocal($sharedKey, [Version2::HEADER]);
+$parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
 // This is the same as:
 $parser = (new Parser())
     ->setKey($sharedKey)
