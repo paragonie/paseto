@@ -35,11 +35,6 @@ final class Purpose
     /**
      * @var string
      */
-    private $fuzz;
-
-    /**
-     * @var string
-     */
     private $purpose;
 
     /**
@@ -52,9 +47,6 @@ final class Purpose
         }
 
         $this->purpose = $rawString;
-        // prevent use of the == operator
-        // i.e. new Purpose('a') == new Purpose('a') will now be false
-        $this->fuzz = \random_bytes(16);
     }
 
     public static function local(): self
@@ -103,12 +95,6 @@ final class Purpose
     public function rawString(): string
     {
         return $this->purpose;
-    }
-
-    public function __clone()
-    {
-        // reconstruct to change the fuzz value
-        $this->__construct($this->rawString());
     }
 
     public static function isValid(string $rawString): bool
