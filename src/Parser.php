@@ -202,7 +202,7 @@ class Parser
 
         // Let's build the token object.
         $builder = (new Builder())
-            ->setVersion(ProtocolCollection::protocolFromHeader($header))
+            ->setVersion($protocol)
             ->setPurpose($purpose)
             ->setKey($this->key)
             ->setFooter($footer)

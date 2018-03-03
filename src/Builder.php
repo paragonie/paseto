@@ -337,7 +337,7 @@ class Builder
                             \get_class($key)
                         );
                     }
-                    if (!\hash_equals($this->version::header(), $key->getProtocol()::header())) {
+                    if (!($key->getProtocol() instanceof $this->version)) {
                         throw new InvalidKeyException(
                             'Invalid key type. This key is for ' .
                             $key->getProtocol()::header() .
@@ -443,19 +443,8 @@ class Builder
         $this->setPurpose($this->purpose, true);
 
         $claims = \json_encode($this->token->getClaims());
-        switch ($this->version::header()) {
-            case Version1::HEADER:
-                $protocol = Version1::class;
-                break;
-            case Version2::HEADER:
-                $protocol = Version2::class;
-                break;
-            default:
-                throw new InvalidVersionException(
-                    'Unsupported version: ' . $this->version::header()
-                );
-        }
-        /** @var ProtocolInterface $protocol */
+        $protocol = $this->version;
+        ProtocolCollection::throwIfUnsupported($protocol);
         switch ($this->purpose) {
             case 'local':
                 if ($this->key instanceof SymmetricKey) {
