@@ -327,7 +327,7 @@ class JsonToken
      */
     public function withAudience(string $aud): self
     {
-        return $this->with('aud', $aud);
+        return (clone $this)->setAudience($aud);
     }
 
     /**
@@ -395,7 +395,7 @@ class JsonToken
      */
     public function withIssuer(string $iss): self
     {
-        return $this->with('iss', $iss);
+        return (clone $this)->setIssuer($iss);
     }
 
     /**
@@ -406,7 +406,7 @@ class JsonToken
      */
     public function withJti(string $id): self
     {
-        return $this->with('jti', $id);
+        return (clone $this)->setJti($id);
     }
 
     /**
@@ -428,6 +428,6 @@ class JsonToken
      */
     public function withSubject(string $sub): self
     {
-        return $this->with('sub', $sub);
+        return (clone $this)->setSubject($sub);
     }
 }
