@@ -39,18 +39,18 @@ to achieve tamper-resistant tokens:
 
 ```php
 <?php
-use ParagonIE\Paseto\JsonToken;
+use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version2;
 
 /**
  * @var SymmetricKey $sharedKey
  */
-$token = JsonToken::getLocal($sharedKey, Version2::HEADER);
+$token = Builder::getLocal($sharedKey, new Version2());
 
-$token = (new JsonToken())
+$token = (new Builder())
     ->setKey($sharedKey)
-    ->setVersion(Version2::HEADER)
+    ->setVersion(new Version2())
     ->setPurpose('local')
     // Set it to expire in one day
     ->setExpiration(
@@ -77,6 +77,7 @@ use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\ProtocolCollection;
 
 /**
  * @var string $providedToken
@@ -88,7 +89,7 @@ $parser = (new Parser())
     ->setKey($sharedKey)
     ->setPurpose('local')
     // Only allow version 2
-    ->setAllowedVersions([Version2::HEADER]);
+    ->setAllowedVersions(ProtocolCollection::default());
 
 try {
     $token = $parser->parse($providedToken);

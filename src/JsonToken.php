@@ -4,19 +4,8 @@ namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\{
     EncodingException,
-    InvalidKeyException,
-    InvalidPurposeException,
-    InvalidVersionException,
     NotFoundException,
     PasetoException
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricSecretKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2
 };
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
@@ -28,57 +17,20 @@ class JsonToken
 {
     use RegisteredClaims;
 
-    /** @var string $cached */
-    protected $cached = '';
-
     /** @var array<string, string> */
     protected $claims = [];
-
-    /** @var string $explicitNonce -- Do not use this. It's for unit testing! */
-    protected $explicitNonce = '';
 
     /** @var string $footer */
     protected $footer = '';
 
-    /** @var KeyInterface|null $key */
-    protected $key = null;
-
-    /** @var string $purpose */
-    protected $purpose = '';
-
-    /** @var string $version */
-    protected $version = Version2::HEADER;
-
     /**
-     * @param SymmetricKey $key
-     * @param string $version
-     * @return self
+     * @param Builder $builder
+     *
+     * @return Builder
      */
-    public static function getLocal(
-        SymmetricKey $key,
-        string $version = Version2::HEADER
-    ): self {
-        $instance = new static();
-        $instance->key = $key;
-        $instance->version = $version;
-        $instance->purpose = 'local';
-        return $instance;
-    }
-
-    /**
-     * @param AsymmetricSecretKey $key
-     * @param string $version
-     * @return self
-     */
-    public static function getPublic(
-        AsymmetricSecretKey $key,
-        string $version = Version2::HEADER
-    ): self {
-        $instance = new static();
-        $instance->key = $key;
-        $instance->version = $version;
-        $instance->purpose = 'public';
-        return $instance;
+    public function build(Builder $builder): Builder
+    {
+        return $builder->setToken($this);
     }
 
     /**
@@ -146,7 +98,7 @@ class JsonToken
      */
     public function getFooterArray(): array
     {
-        /** @var array $decoded */
+        /** @var array|bool $decoded */
         $decoded = \json_decode($this->footer, true);
         if (!\is_array($decoded)) {
             throw new EncodingException('Footer is not a valid JSON document');
@@ -218,7 +170,6 @@ class JsonToken
      */
     public function set(string $claim, $value): self
     {
-        $this->cached = '';
         $this->claims[$claim] = $value;
         return $this;
     }
@@ -231,7 +182,6 @@ class JsonToken
      */
     public function setAudience(string $aud): self
     {
-        $this->cached = '';
         $this->claims['aud'] = $aud;
         return $this;
     }
@@ -244,7 +194,6 @@ class JsonToken
      */
     public function setClaims(array $claims): self
     {
-        $this->cached = '';
         $this->claims = $claims + $this->claims;
         return $this;
     }
@@ -260,20 +209,7 @@ class JsonToken
         if (!$time) {
             $time = new \DateTime('NOW');
         }
-        $this->cached = '';
         $this->claims['exp'] = $time->format(\DateTime::ATOM);
-        return $this;
-    }
-
-    /**
-     * Do not use this.
-     *
-     * @param string $nonce
-     * @return self
-     */
-    public function setExplicitNonce(string $nonce = ''): self
-    {
-        $this->explicitNonce = $nonce;
         return $this;
     }
 
@@ -285,7 +221,6 @@ class JsonToken
      */
     public function setFooter(string $footer = ''): self
     {
-        $this->cached = '';
         $this->footer = $footer;
         return $this;
     }
@@ -317,7 +252,6 @@ class JsonToken
         if (!$time) {
             $time = new \DateTime('NOW');
         }
-        $this->cached = '';
         $this->claims['iat'] = $time->format(\DateTime::ATOM);
         return $this;
     }
@@ -330,7 +264,6 @@ class JsonToken
      */
     public function setIssuer(string $iss): self
     {
-        $this->cached = '';
         $this->claims['iss'] = $iss;
         return $this;
     }
@@ -343,59 +276,7 @@ class JsonToken
      */
     public function setJti(string $id): self
     {
-        $this->cached = '';
         $this->claims['jti'] = $id;
-        return $this;
-    }
-
-    /**
-     * Set the cryptographic key used to authenticate (and possibly encrypt)
-     * the serialized token.
-     *
-     * @param KeyInterface $key
-     * @param bool $checkPurpose
-     * @return self
-     * @throws PasetoException
-     */
-    public function setKey(KeyInterface $key, bool $checkPurpose = false): self
-    {
-        if ($checkPurpose) {
-            switch ($this->purpose) {
-                case 'local':
-                    if (!($key instanceof SymmetricKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                                SymmetricKey::class .
-                                ', got ' .
-                                \get_class($key)
-                        );
-                    }
-                    break;
-                case 'public':
-                    if (!($key instanceof AsymmetricSecretKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                                AsymmetricSecretKey::class .
-                                ', got ' .
-                                \get_class($key)
-                        );
-                    }
-                    if (!\hash_equals($this->version, $key->getProtocol()::header())) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' .
-                                $key->getProtocol()::header() .
-                                ', not ' .
-                                $this->version
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidKeyException('Unknown purpose');
-            }
-        }
-
-        $this->cached = '';
-        $this->key = $key;
         return $this;
     }
 
@@ -410,50 +291,7 @@ class JsonToken
         if (!$time) {
             $time = new \DateTime('NOW');
         }
-        $this->cached = '';
         $this->claims['nbf'] = $time->format(\DateTime::ATOM);
-        return $this;
-    }
-
-    /**
-     * Set the purpose for this token. Allowed values:
-     * 'local', 'public'.
-     *
-     * @param string $purpose
-     * @param bool $checkKeyType
-     * @return self
-     * @throws InvalidKeyException
-     * @throws InvalidPurposeException
-     */
-    public function setPurpose(string $purpose, bool $checkKeyType = false): self
-    {
-        if ($checkKeyType) {
-            if (\is_null($this->key)) {
-                throw new InvalidKeyException('Key cannot be null');
-            }
-            $keyType = \get_class($this->key);
-            switch ($keyType) {
-                case SymmetricKey::class:
-                    if (!\hash_equals('local', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected local, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricSecretKey::class:
-                    if (!\hash_equals('public', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected public, got ' . $purpose
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
-            }
-        }
-
-        $this->cached = '';
-        $this->purpose = $purpose;
         return $this;
     }
 
@@ -465,85 +303,8 @@ class JsonToken
      */
     public function setSubject(string $sub): self
     {
-        $this->cached = '';
         $this->claims['sub'] = $sub;
         return $this;
-    }
-
-    /**
-     * Set the version for the protocol.
-     *
-     * @param string $version
-     * @return self
-     */
-    public function setVersion(string $version): self
-    {
-        $this->cached = '';
-        $this->version = $version;
-        return $this;
-    }
-
-    /**
-     * Get the token as a string.
-     *
-     * @return string
-     * @throws PasetoException
-     * @psalm-suppress MixedInferredReturnType
-     */
-    public function toString(): string
-    {
-        if (!empty($this->cached)) {
-            return $this->cached;
-        }
-        if (\is_null($this->key)) {
-            throw new InvalidKeyException('Key cannot be null');
-        }
-        // Mutual sanity checks
-        $this->setKey($this->key, true);
-        $this->setPurpose($this->purpose, true);
-
-        $claims = \json_encode($this->claims);
-        switch ($this->version) {
-            case Version1::HEADER:
-                $protocol = Version1::class;
-                break;
-            case Version2::HEADER:
-                $protocol = Version2::class;
-                break;
-            default:
-                throw new InvalidVersionException(
-                    'Unsupported version: ' . $this->version
-                );
-        }
-        /** @var ProtocolInterface $protocol */
-        switch ($this->purpose) {
-            case 'local':
-                if ($this->key instanceof SymmetricKey) {
-                    $this->cached = (string) $protocol::encrypt(
-                        $claims,
-                        $this->key,
-                        $this->footer,
-                        $this->explicitNonce
-                    );
-                    return $this->cached;
-                }
-                break;
-            case 'public':
-                if ($this->key instanceof AsymmetricSecretKey) {
-                    try {
-                        $this->cached = (string) $protocol::sign(
-                            $claims,
-                            $this->key,
-                            $this->footer
-                        );
-                        return $this->cached;
-                    } catch (\Throwable $ex) {
-                        throw new PasetoException('Signing failed.', 0, $ex);
-                    }
-                }
-                break;
-        }
-        throw new PasetoException('Unsupported key/purpose pairing.');
     }
 
     /**
@@ -555,12 +316,8 @@ class JsonToken
      */
     public function with(string $claim, $value): self
     {
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->claims[$claim] = $value;
-        return $cloned;
+        return (clone $this)->set($claim, $value);
     }
-
 
     /**
      * Return a new JsonToken instance with a changed 'aud' claim.
@@ -581,8 +338,7 @@ class JsonToken
      */
     public function withClaims(array $claims): self
     {
-        $cloned = clone $this;
-        return $cloned->setClaims($claims);
+        return (clone $this)->setClaims($claims);
     }
 
     /**
@@ -593,13 +349,7 @@ class JsonToken
      */
     public function withExpiration(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->claims['exp'] = $time->format(\DateTime::ATOM);
-        return $cloned;
+        return (clone $this)->setExpiration($time);
     }
 
     /**
@@ -610,10 +360,7 @@ class JsonToken
      */
     public function withFooter(string $footer = ''): self
     {
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->footer = $footer;
-        return $this;
+        return (clone $this)->setFooter($footer);
     }
 
     /**
@@ -626,11 +373,7 @@ class JsonToken
      */
     public function withFooterArray(array $footer = []): self
     {
-        $encoded = \json_encode($footer);
-        if (!\is_string($encoded)) {
-            throw new EncodingException('Could not encode array into JSON');
-        }
-        return $this->withFooter($encoded);
+        return (clone $this)->setFooterArray($footer);
     }
 
     /**
@@ -641,13 +384,7 @@ class JsonToken
      */
     public function withIssuedAt(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->claims['iat'] = $time->format(\DateTime::ATOM);
-        return $cloned;
+        return (clone $this)->setIssuedAt($time);
     }
 
     /**
@@ -673,59 +410,6 @@ class JsonToken
     }
 
     /**
-     * Return a new JsonToken instance, with the provided cryptographic key used
-     * to authenticate (and possibly encrypt) the serialized token.
-     *
-     * @param KeyInterface $key
-     * @param bool $checkPurpose
-     * @return self
-     * @throws PasetoException
-     */
-    public function withKey(KeyInterface $key, bool $checkPurpose = false): self
-    {
-        $cloned = clone $this;
-
-        if ($checkPurpose) {
-            switch ($cloned->purpose) {
-                case 'local':
-                    if (!($key instanceof SymmetricKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                                SymmetricKey::class .
-                                ', got ' .
-                                \get_class($key)
-                        );
-                    }
-                    break;
-                case 'public':
-                    if (!($key instanceof AsymmetricSecretKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                                AsymmetricSecretKey::class .
-                                ', got ' .
-                                \get_class($key)
-                        );
-                    }
-                    if (!\hash_equals($cloned->version, $key->getProtocol()::header())) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. This key is for ' .
-                                $key->getProtocol()::header() .
-                                ', not ' .
-                                $cloned->version
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidKeyException('Unknown purpose');
-            }
-        }
-
-        $cloned->cached = '';
-        $cloned->key = $key;
-        return $cloned;
-    }
-
-    /**
      * Return a new JsonToken instance with a changed 'nbf' claim.
      *
      * @param \DateTime|null $time
@@ -733,57 +417,7 @@ class JsonToken
      */
     public function withNotBefore(\DateTime $time = null): self
     {
-        if (!$time) {
-            $time = new \DateTime('NOW');
-        }
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->claims['nbf'] = $time->format(\DateTime::ATOM);
-        return $cloned;
-    }
-
-    /**
-     * Return a new JsonToken instance with a new purpose.
-     * Allowed values:
-     * 'local', 'public'.
-     *
-     * @param string $purpose
-     * @param bool $checkKeyType
-     * @return self
-     * @throws InvalidKeyException
-     * @throws InvalidPurposeException
-     */
-    public function withPurpose(string $purpose, bool $checkKeyType = false): self
-    {
-        $cloned = clone $this;
-        if ($checkKeyType) {
-            if (\is_null($cloned->key)) {
-                throw new InvalidKeyException('Key cannot be null');
-            }
-            $keyType = \get_class($cloned->key);
-            switch ($keyType) {
-                case SymmetricKey::class:
-                    if (!\hash_equals('local', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected local, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricSecretKey::class:
-                    if (!\hash_equals('public', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected public, got ' . $purpose
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
-            }
-        }
-
-        $cloned->cached = '';
-        $cloned->purpose = $purpose;
-        return $cloned;
+        return (clone $this)->setNotBefore($time);
     }
 
     /**
@@ -795,31 +429,5 @@ class JsonToken
     public function withSubject(string $sub): self
     {
         return $this->with('sub', $sub);
-    }
-
-    /**
-     * Set the version for the protocol.
-     *
-     * @param string $version
-     * @return self
-     */
-    public function withVersion(string $version): self
-    {
-        $cloned = clone $this;
-        $cloned->cached = '';
-        $cloned->version = $version;
-        return $cloned;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        try {
-            return $this->toString();
-        } catch (\Throwable $ex) {
-            return '';
-        }
     }
 }

@@ -72,7 +72,9 @@ class Parser
     /**
      * @param SymmetricKey $key
      * @param ProtocolCollection|null $allowedVersions
-     * @return self
+     *
+     * @return Parser
+     * @throws PasetoException
      */
     public static function getLocal(
         SymmetricKey $key,
@@ -90,7 +92,9 @@ class Parser
     /**
      * @param AsymmetricPublicKey $key
      * @param ProtocolCollection|null $allowedVersions
-     * @return self
+     *
+     * @return Parser
+     * @throws PasetoException
      */
     public static function getPublic(
         AsymmetricPublicKey $key,
@@ -125,6 +129,7 @@ class Parser
      *                             (Does not disable cryptographic security.)
      * @return JsonToken
      * @throws PasetoException
+     * @throws \TypeError
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
@@ -189,24 +194,24 @@ class Parser
         if (!isset($decoded)) {
             throw new PasetoException('Unsupported purpose or version.');
         }
-        /** @var array<string, string> $claims */
+        /** @var array<string, string>|bool $claims */
         $claims = \json_decode((string) $decoded, true);
         if (!\is_array($claims)) {
             throw new EncodingException('Not a JSON token.');
         }
 
         // Let's build the token object.
-        $token = (new JsonToken())
-            ->setVersion($header)
+        $builder = (new Builder())
+            ->setVersion(ProtocolCollection::protocolFromHeader($header))
             ->setPurpose($purpose)
             ->setKey($this->key)
             ->setFooter($footer)
             ->setClaims($claims);
         if (!$skipValidation && !empty($this->rules)) {
             // Validate all of the rules that were specified:
-            $this->validate($token, true);
+            $this->validate($builder->getJsonToken(), true);
         }
-        return $token;
+        return $builder->getJsonToken();
     }
 
     /**

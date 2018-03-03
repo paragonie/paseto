@@ -53,8 +53,7 @@ class Util
         );
 
         // Sanity-check the desired output length.
-        if (empty($length) || ! \is_int($length) ||
-            $length < 0 || $length > 255 * $digest_length) {
+        if (empty($length) || $length < 0 || $length > 255 * $digest_length) {
             throw new \Error(
                 'Bad output length requested of HKDF.'
             );
@@ -97,11 +96,6 @@ class Util
         // ORM = first L octets of T
         /** @var string $orm */
         $orm = Binary::safeSubstr($t, 0, $length);
-        if (!\is_string($orm)) {
-            throw new \TypeError(
-                'Could not get a substring at the end of HKDF processing.'
-            );
-        }
         return (string) $orm;
     }
 
