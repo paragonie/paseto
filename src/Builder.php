@@ -337,7 +337,7 @@ class Builder
                             \get_class($key)
                         );
                     }
-                    if (!\hash_equals($this->version::header(), $key->getProtocol()::header())) {
+                    if (!($key->getProtocol() instanceof $this->version)) {
                         throw new InvalidKeyException(
                             'Invalid key type. This key is for ' .
                             $key->getProtocol()::header() .
