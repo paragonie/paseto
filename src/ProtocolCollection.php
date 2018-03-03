@@ -73,7 +73,7 @@ final class ProtocolCollection
      * @throws InvalidVersionException
      * @return void
      */
-    public static function throwIfUnsupported(ProtocolInterface $protocol): void
+    public static function throwIfUnsupported(ProtocolInterface $protocol)
     {
         if (!self::isValid($protocol)) {
             throw new InvalidVersionException(
