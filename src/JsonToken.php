@@ -24,6 +24,16 @@ class JsonToken
     protected $footer = '';
 
     /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function build(Builder $builder): Builder
+    {
+        return $builder->setToken($this);
+    }
+
+    /**
      * Get any arbitrary claim.
      *
      * @param string $claim

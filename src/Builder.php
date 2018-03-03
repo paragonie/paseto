@@ -399,6 +399,17 @@ class Builder
     }
 
     /**
+     * @param JsonToken $token
+     *
+     * @return Builder
+     */
+    public function setToken(JsonToken $token): self
+    {
+        $this->token = $token;
+        return $this;
+    }
+
+    /**
      * @param ProtocolInterface|null $version
      *
      * @return self
@@ -630,6 +641,16 @@ class Builder
     public function withPurpose(string $purpose, bool $checkKeyType = false): self
     {
         return (clone $this)->setPurpose($purpose, $checkKeyType);
+    }
+
+    /**
+     * @param JsonToken $token
+     *
+     * @return Builder
+     */
+    public function withToken(JsonToken $token): self
+    {
+        return (clone $this)->setToken($token);
     }
 
     /**
