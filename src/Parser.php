@@ -201,17 +201,14 @@ class Parser
         }
 
         // Let's build the token object.
-        $builder = (new Builder())
-            ->setVersion($protocol)
-            ->setPurpose($purpose)
-            ->setKey($this->key)
+        $token = (new JsonToken())
             ->setFooter($footer)
             ->setClaims($claims);
         if (!$skipValidation && !empty($this->rules)) {
             // Validate all of the rules that were specified:
-            $this->validate($builder->getJsonToken(), true);
+            $this->validate($token, true);
         }
-        return $builder->getJsonToken();
+        return $token;
     }
 
     /**

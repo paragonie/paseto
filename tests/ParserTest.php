@@ -5,12 +5,14 @@ namespace ParagonIE\Paseto\Tests;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\JsonToken;
 use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
 use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\ProtocolCollection;
 use ParagonIE\Paseto\Rules\NotExpired;
 use PHPUnit\Framework\TestCase;
 
@@ -76,5 +78,21 @@ class ParserTest extends TestCase
             (string) $builder,
             'Switching to signing caused a different signature'
         );
+    }
+
+    /**
+     * @throws PasetoException
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public function testTokenSignVerify()
+    {
+        $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $publicKey = $secretKey->getPublicKey();
+        $parser = new Parser(ProtocolCollection::default(), 'public', $publicKey);
+        $tainted = 'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag';
+
+        $token = $parser->parse($tainted);
+        $this->assertInstanceOf(JsonToken::class, $token);
     }
 }
