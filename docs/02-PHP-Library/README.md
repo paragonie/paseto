@@ -89,7 +89,7 @@ $parser = (new Parser())
     ->setKey($sharedKey)
     ->setPurpose('local')
     // Only allow version 2
-    ->setAllowedVersions(ProtocolCollection::default());
+    ->setAllowedVersions(ProtocolCollection::v2());
 
 try {
     $token = $parser->parse($providedToken);
