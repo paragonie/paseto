@@ -90,7 +90,7 @@ class ParserTest extends TestCase
     {
         $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY');
         $publicKey = $secretKey->getPublicKey();
-        $parser = new Parser(ProtocolCollection::default(), 'public', $publicKey);
+        $parser = new Parser(ProtocolCollection::default(), Purpose::public(), $publicKey);
         $tainted = 'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag';
 
         $token = $parser->parse($tainted);
