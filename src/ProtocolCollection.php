@@ -39,9 +39,7 @@ final class ProtocolCollection
 
         /** @var ProtocolInterface $protocol */
         foreach ($protocols as $protocol) {
-            if (!self::isValid($protocol)) {
-                throw new InvalidVersionException('Disallowed or unsupported version');
-            }
+            self::throwIfUnsupported($protocol);
         }
 
         $this->protocols = $protocols;
@@ -66,6 +64,22 @@ final class ProtocolCollection
     public static function isValid(ProtocolInterface $protocol): bool
     {
         return \in_array(\get_class($protocol), self::WHITELIST, true);
+    }
+
+    /**
+     * Throws if the given protocol is unsupported
+     *
+     * @param ProtocolInterface $protocol
+     * @throws InvalidVersionException
+     * @return void
+     */
+    public static function throwIfUnsupported(ProtocolInterface $protocol): void
+    {
+        if (!self::isValid($protocol)) {
+            throw new InvalidVersionException(
+                'Unsupported version: ' . $protocol::header()
+            );
+        }
     }
 
     /**
