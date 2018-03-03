@@ -116,7 +116,7 @@ class Builder
         $instance = new static($baseToken);
         $instance->key = $key;
         $instance->version = $version;
-        $instance->purpose = new Purpose('local');
+        $instance->purpose = Purpose::local();
         return $instance;
     }
 
@@ -139,7 +139,7 @@ class Builder
         $instance = new static($baseToken);
         $instance->key = $key;
         $instance->version = $version;
-        $instance->purpose = new Purpose('public');
+        $instance->purpose = Purpose::public();
         return $instance;
     }
 
@@ -352,7 +352,7 @@ class Builder
 
     /**
      * Set the purpose for this token. Allowed values:
-     * new Purpose('local'), new Purpose('public').
+     * Purpose::local(), Purpose::public().
      *
      * @param Purpose $purpose
      * @param bool $checkKeyType
@@ -604,7 +604,7 @@ class Builder
     /**
      * Return a new JsonToken instance with a new purpose.
      * Allowed values:
-     * new Purpose('local'), new Purpose('public').
+     * Purpose::local(), Purpose::public().
      *
      * @param Purpose $purpose
      * @param bool $checkKeyType
