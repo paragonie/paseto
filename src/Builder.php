@@ -421,7 +421,7 @@ class Builder
             throw new InvalidKeyException('Key cannot be null');
         }
         if (\is_null($this->purpose)) {
-            throw new InvalidKeyException('Purpose cannot be null');
+            throw new InvalidPurposeException('Purpose cannot be null');
         }
         // Mutual sanity checks
         $this->setKey($this->key, true);
