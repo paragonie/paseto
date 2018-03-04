@@ -31,10 +31,10 @@ class Parser
     /** @var ProtocolCollection */
     protected $allowedVersions;
 
-    /** @var KeyInterface $key */
+    /** @var ReceivingKey $key */
     protected $key;
 
-    /** @var string $purpose */
+    /** @var Purpose|null $purpose */
     protected $purpose;
 
     /** @var array<int, ValidationRuleInterface> */
@@ -44,15 +44,15 @@ class Parser
      * Parser constructor.
      *
      * @param ProtocolCollection|null $allowedVersions
-     * @param string $purpose
-     * @param KeyInterface|null $key
+     * @param Purpose|null $purpose
+     * @param ReceivingKey|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
      * @throws PasetoException
      */
     public function __construct(
         ProtocolCollection $allowedVersions = null,
-        string $purpose = '',
-        KeyInterface $key = null,
+        Purpose $purpose = null,
+        ReceivingKey $key = null,
         array $parserRules = []
     ) {
         $this->allowedVersions = $allowedVersions ?? ProtocolCollection::default();
@@ -83,7 +83,7 @@ class Parser
         /** @var Parser $instance */
         $instance = new static(
             $allowedVersions ?? ProtocolCollection::default(),
-            'local',
+            Purpose::local(),
             $key
         );
         return $instance;
@@ -103,7 +103,7 @@ class Parser
         /** @var Parser $instance */
         $instance = new static(
             $allowedVersions ?? ProtocolCollection::default(),
-            'public',
+            Purpose::public(),
             $key
         );
         return $instance;
@@ -147,42 +147,42 @@ class Parser
             throw new InvalidVersionException('Disallowed or unsupported version');
         }
 
-        /** @var string $purpose */
+        /** @var Purpose $purpose */
         $footer = '';
-        $purpose = $pieces[1];
+        $purpose = new Purpose($pieces[1]);
 
         // $this->purpose is not mandatory, but if it's set, verify against it.
-        if (!empty($this->purpose)) {
-            if (!\hash_equals($this->purpose, $purpose)) {
+        if (isset($this->purpose)) {
+            if (!$this->purpose->equals($purpose)) {
                 throw new InvalidPurposeException('Disallowed or unsupported purpose');
             }
         }
 
+        if (!$purpose->isReceivingKeyValid($this->key)) {
+            throw new InvalidKeyException('Invalid key type');
+        }
+
         // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
-            case 'local':
-                if (!($this->key instanceof SymmetricKey)) {
-                    throw new InvalidKeyException('Invalid key type');
-                }
+            case Purpose::local():
                 $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
                     : '';
                 try {
                     /** @var string $decoded */
+                    /** @var SymmetricKey $this->key */
                     $decoded = $protocol::decrypt($tainted, $this->key, $footer);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
                 break;
-            case 'public':
-                if (!($this->key instanceof AsymmetricPublicKey)) {
-                    throw new InvalidKeyException('Invalid key type');
-                }
+            case Purpose::public():
                 $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
                     : '';
                 try {
                     /** @var string $decoded */
+                    /** @var AsymmetricPublicKey $this->key */
                     $decoded = $protocol::verify($tainted, $this->key, $footer);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
@@ -226,37 +226,23 @@ class Parser
     /**
      * Specify the key for the token we are going to parse.
      *
-     * @param KeyInterface $key
+     * @param ReceivingKey $key
      * @param bool $checkPurpose
      * @return self
      * @throws PasetoException
      */
-    public function setKey(KeyInterface $key, bool $checkPurpose = false): self
+    public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
     {
         if ($checkPurpose) {
-            switch ($this->purpose) {
-                case 'local':
-                    if (!($key instanceof SymmetricKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                                SymmetricKey::class .
-                                ', got ' .
-                                \get_class($key)
-                        );
-                    }
-                    break;
-                case 'public':
-                    if (!($key instanceof AsymmetricPublicKey)) {
-                        throw new InvalidKeyException(
-                            'Invalid key type. Expected ' .
-                                AsymmetricPublicKey::class .
-                                ', got ' .
-                                \get_class($key)
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidKeyException('Unknown purpose');
+            if (!isset($this->purpose)) {
+                throw new InvalidKeyException('Unknown purpose');
+            } elseif (!$this->purpose->isReceivingKeyValid($key)) {
+                throw new InvalidKeyException(
+                    'Invalid key type. Expected ' .
+                        $this->purpose->expectedReceivingKeyType() .
+                        ', got ' .
+                        \get_class($key)
+                );
             }
         }
         $this->key = $key;
@@ -266,32 +252,21 @@ class Parser
     /**
      * Specify the allowed 'purpose' for the token we are going to parse.
      *
-     * @param string $purpose
+     * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
      * @throws PasetoException
      */
-    public function setPurpose(string $purpose, bool $checkKeyType = false): self
+    public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
         if ($checkKeyType) {
-            $keyType = \get_class($this->key);
-            switch ($keyType) {
-                case SymmetricKey::class:
-                    if (!\hash_equals('local', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected local, got ' . $purpose
-                        );
-                    }
-                    break;
-                case AsymmetricPublicKey::class:
-                    if (!\hash_equals('public', $purpose)) {
-                        throw new InvalidPurposeException(
-                            'Invalid purpose. Expected public, got ' . $purpose
-                        );
-                    }
-                    break;
-                default:
-                    throw new InvalidPurposeException('Unknown purpose: ' . $purpose);
+            /** @var Purpose */
+            $expectedPurpose = Purpose::fromReceivingKey($this->key);
+            if (!$purpose->equals($expectedPurpose)) {
+                throw new InvalidPurposeException(
+                    'Invalid purpose. Expected '.$expectedPurpose->rawString()
+                    .', got ' . $purpose->rawString()
+                );
             }
         }
 

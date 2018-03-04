@@ -11,6 +11,7 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\Paseto\Parser;
+use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\ProtocolCollection;
 use ParagonIE\Paseto\Rules\NotExpired;
@@ -37,7 +38,7 @@ class ParserTest extends TestCase
 
         $serialized = 'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA';
         $parser = (new Parser())
-            ->setPurpose('local')
+            ->setPurpose(Purpose::local())
             ->setKey($key);
         $token = $parser->parse($serialized);
         $builder = (Builder::getLocal($key, new Version2(), $token))
@@ -70,7 +71,7 @@ class ParserTest extends TestCase
         $parser->parse($serialized);
 
         // Switch to asymmetric-key crypto:
-        $builder->setPurpose('public')
+        $builder->setPurpose(Purpose::public())
             ->setExplicitNonce($nonce)
             ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
@@ -89,7 +90,7 @@ class ParserTest extends TestCase
     {
         $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY');
         $publicKey = $secretKey->getPublicKey();
-        $parser = new Parser(ProtocolCollection::default(), 'public', $publicKey);
+        $parser = new Parser(ProtocolCollection::default(), Purpose::public(), $publicKey);
         $tainted = 'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag';
 
         $token = $parser->parse($tainted);
