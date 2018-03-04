@@ -40,6 +40,7 @@ to achieve tamper-resistant tokens:
 ```php
 <?php
 use ParagonIE\Paseto\Builder;
+use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version2;
 
@@ -51,7 +52,7 @@ $token = Builder::getLocal($sharedKey, new Version2());
 $token = (new Builder())
     ->setKey($sharedKey)
     ->setVersion(new Version2())
-    ->setPurpose('local')
+    ->setPurpose(Purpose::local())
     // Set it to expire in one day
     ->setExpiration(
         (new DateTime())->add(new DateInterval('P01D'))
@@ -76,6 +77,7 @@ First, you need to define your `Parser` rules.
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Parser;
+use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\ProtocolCollection;
 
@@ -87,7 +89,7 @@ $parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
 // This is the same as:
 $parser = (new Parser())
     ->setKey($sharedKey)
-    ->setPurpose('local')
+    ->setPurpose(Purpose::local())
     // Only allow version 2
     ->setAllowedVersions(ProtocolCollection::v2());
 
