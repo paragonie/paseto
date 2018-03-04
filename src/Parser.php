@@ -168,10 +168,11 @@ class Parser
                 $footer = (\count($pieces) > 3)
                     ? Base64UrlSafe::decode($pieces[3])
                     : '';
+                /** @var SymmetricKey $key */
+                $key = $this->key;
                 try {
                     /** @var string $decoded */
-                    /** @var SymmetricKey $this->key */
-                    $decoded = $protocol::decrypt($tainted, $this->key, $footer);
+                    $decoded = $protocol::decrypt($tainted, $key, $footer);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
@@ -180,10 +181,11 @@ class Parser
                 $footer = (\count($pieces) > 4)
                     ? Base64UrlSafe::decode($pieces[4])
                     : '';
+                /** @var AsymmetricPublicKey $key */
+                $key = $this->key;
                 try {
                     /** @var string $decoded */
-                    /** @var AsymmetricPublicKey $this->key */
-                    $decoded = $protocol::verify($tainted, $this->key, $footer);
+                    $decoded = $protocol::verify($tainted, $key, $footer);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
