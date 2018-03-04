@@ -118,4 +118,24 @@ final class ProtocolCollection
             self::WHITELIST
         ));
     }
+
+    /**
+     * Get a collection containing protocol version 1.
+     *
+     * @return self
+     */
+    public static function v1(): self
+    {
+        return new self(new Version1);
+    }
+
+    /**
+     * Get a collection containing protocol version 2.
+     *
+     * @return self
+     */
+    public static function v2(): self
+    {
+        return new self(new Version2);
+    }
 }
