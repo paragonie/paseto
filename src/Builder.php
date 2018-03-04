@@ -6,19 +6,14 @@ use ParagonIE\Paseto\Exception\{
     EncodingException,
     InvalidKeyException,
     InvalidPurposeException,
-    InvalidVersionException,
     PasetoException
 };
 use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
-use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2
-};
+use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
-
 
 /**
  * Class Builder
@@ -98,6 +93,9 @@ class Builder
     }
 
     /**
+     * Get a Builder instance configured for local usage.
+     * (i.e. shared-key authenticated encryption)
+     *
      * @param SymmetricKey $key
      * @param ProtocolInterface|null $version
      * @param JsonToken|null $baseToken
@@ -121,6 +119,9 @@ class Builder
     }
 
     /**
+     * Get a Builder instance configured for remote usage.
+     * (i.e. public-key digital signatures)
+     *
      * @param AsymmetricSecretKey $key
      * @param ProtocolInterface|null $version
      * @param JsonToken|null $baseToken
@@ -144,6 +145,8 @@ class Builder
     }
 
     /**
+     * Get the JsonToken object (not the string)
+     *
      * @return JsonToken
      */
     public function getJsonToken(): JsonToken
@@ -166,7 +169,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'aud' claim.
+     * Set the 'aud' claim for the token we're building. (Mutable.)
      *
      * @param string $aud
      * @return self
@@ -177,7 +180,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance set a changed 'exp' claim.
+     * Set the 'exp' claim for the token we're building. (Mutable.)
      *
      * @param \DateTime|null $time
      * @return self
@@ -191,7 +194,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance set a changed 'iat' claim.
+     * Set the 'iat' claim for the token we're building. (Mutable.)
      *
      * @param \DateTime|null $time
      * @return self
@@ -205,7 +208,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance set a changed 'iss' claim.
+     * Set the 'iss' claim for the token we're building. (Mutable.)
      *
      * @param string $iss
      * @return self
@@ -216,7 +219,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance set a changed 'jti' claim.
+     * Set the 'jti' claim for the token we're building. (Mutable.)
      *
      * @param string $id
      * @return self
@@ -227,7 +230,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance set a changed 'nbf' claim.
+     * Set the 'nbf' claim for the token we're building. (Mutable.)
      *
      * @param \DateTime|null $time
      * @return self
@@ -241,7 +244,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance set a changed 'sub' claim.
+     * Set the 'sub' claim for the token we're building. (Mutable.)
      *
      * @param string $sub
      * @return self
@@ -381,17 +384,21 @@ class Builder
     }
 
     /**
+     * Pass an existing JsonToken object. Useful for updating an existing token.
+     *
      * @param JsonToken $token
      *
      * @return Builder
      */
-    public function setToken(JsonToken $token): self
+    public function setJsonToken(JsonToken $token): self
     {
         $this->token = $token;
         return $this;
     }
 
     /**
+     * Specify the version of the protocol to be used.
+     *
      * @param ProtocolInterface|null $version
      *
      * @return self
@@ -461,7 +468,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed claim.
+     * Return a new Builder instance with a changed claim.
      *
      * @param string $claim
      * @param string $value
@@ -476,7 +483,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'aud' claim.
+     * Return a new Builder instance with a changed 'aud' claim.
      *
      * @param string $aud
      * @return self
@@ -487,7 +494,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with an array of changed claims.
+     * Return a new Builder instance with an array of changed claims.
      *
      * @param array<string, string> $claims
      * @return self
@@ -498,7 +505,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'exp' claim.
+     * Return a new Builder instance with a changed 'exp' claim.
      *
      * @param \DateTime|null $time
      * @return self
@@ -509,7 +516,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed footer.
+     * Return a new Builder instance with a changed footer.
      *
      * @param string $footer
      * @return self
@@ -520,7 +527,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed footer,
+     * Return a new Builder instance with a changed footer,
      * representing the JSON-encoded array provided.
      *
      * @param array $footer
@@ -533,7 +540,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'iat' claim.
+     * Return a new Builder instance with a changed 'iat' claim.
      *
      * @param \DateTime|null $time
      * @return self
@@ -544,7 +551,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'iss' claim.
+     * Return a new Builder instance with a changed 'iss' claim.
      *
      * @param string $iss
      * @return self
@@ -555,7 +562,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'jti' claim.
+     * Return a new Builder instance with a changed 'jti' claim.
      *
      * @param string $id
      * @return self
@@ -566,7 +573,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'nbf' claim.
+     * Return a new Builder instance with a changed 'nbf' claim.
      *
      * @param \DateTime|null $time
      * @return self
@@ -577,7 +584,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a changed 'sub' claim.
+     * Return a new Builder instance with a changed 'sub' claim.
      *
      * @param string $sub
      * @return self
@@ -588,7 +595,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance, with the provided cryptographic key used
+     * Return a new Builder instance, with the provided cryptographic key used
      * to authenticate (and possibly encrypt) the serialized token.
      *
      * @param SendingKey $key
@@ -602,7 +609,7 @@ class Builder
     }
 
     /**
-     * Return a new JsonToken instance with a new purpose.
+     * Return a new Builder instance with a new purpose.
      * Allowed values:
      * Purpose::local(), Purpose::public().
      *
@@ -618,13 +625,15 @@ class Builder
     }
 
     /**
+     * Return a new Builder instance with the specified JsonToken object.
+     *
      * @param JsonToken $token
      *
      * @return Builder
      */
-    public function withToken(JsonToken $token): self
+    public function withJsonToken(JsonToken $token): self
     {
-        return (clone $this)->setToken($token);
+        return (clone $this)->setJsonToken($token);
     }
 
     /**

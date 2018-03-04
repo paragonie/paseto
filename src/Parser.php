@@ -70,6 +70,9 @@ class Parser
     }
 
     /**
+     * Get a Parser instance intended for local usage.
+     * (i.e. shard-key authenticated encryption)
+     *
      * @param SymmetricKey $key
      * @param ProtocolCollection|null $allowedVersions
      *
@@ -90,6 +93,9 @@ class Parser
     }
 
     /**
+     * Get a Parser instance intended for remote usage.
+     * (i.e. public-key digital signatures).
+     *
      * @param AsymmetricPublicKey $key
      * @param ProtocolCollection|null $allowedVersions
      *

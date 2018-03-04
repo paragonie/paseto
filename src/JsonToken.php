@@ -30,7 +30,7 @@ class JsonToken
      */
     public function build(Builder $builder): Builder
     {
-        return $builder->setToken($this);
+        return $builder->setJsonToken($this);
     }
 
     /**
