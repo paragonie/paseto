@@ -82,6 +82,7 @@ class AsymmetricSecretKey implements SendingKey
 
     /**
      * @return string
+     * @throws \TypeError
      */
     public function encode(): string
     {

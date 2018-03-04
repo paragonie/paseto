@@ -47,6 +47,7 @@ final class ProtocolCollection
 
     /**
      * Does the collection contain the given protocol
+     * @param ProtocolInterface $protocol
      *
      * @return bool
      */
@@ -89,7 +90,7 @@ final class ProtocolCollection
      */
     public static function protocolFromHeader(string $header): ProtocolInterface {
         if (empty(self::$headerLookup)) {
-            /** @var string $protocolClass */
+            /** @var ProtocolInterface $protocolClass */
             foreach (self::WHITELIST as $protocolClass) {
                 self::$headerLookup[$protocolClass::header()] = new $protocolClass;
             }
@@ -106,6 +107,7 @@ final class ProtocolCollection
      * Get a collection of all supported protocols
      *
      * @return self
+     * @throws InvalidVersionException
      */
     public static function default(): self
     {
@@ -123,6 +125,7 @@ final class ProtocolCollection
      * Get a collection containing protocol version 1.
      *
      * @return self
+     * @throws InvalidVersionException
      */
     public static function v1(): self
     {
@@ -133,6 +136,7 @@ final class ProtocolCollection
      * Get a collection containing protocol version 2.
      *
      * @return self
+     * @throws InvalidVersionException
      */
     public static function v2(): self
     {

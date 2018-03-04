@@ -80,6 +80,7 @@ final class Purpose
      * Create a local purpose.
      *
      * @return self
+     * @throws InvalidPurposeException
      */
     public static function local(): self
     {
@@ -90,6 +91,7 @@ final class Purpose
      * Create a public purpose.
      *
      * @return self
+     * @throws InvalidPurposeException
      */
     public static function public(): self
     {
@@ -100,7 +102,9 @@ final class Purpose
      * Given a SendingKey, retrieve the corresponding Purpose.
      *
      * @param SendingKey $key
+     *
      * @return self
+     * @throws InvalidPurposeException
      */
     public static function fromSendingKey(SendingKey $key): self
     {
@@ -117,7 +121,9 @@ final class Purpose
      * Given a ReceivingKey, retrieve the corresponding Purpose.
      *
      * @param ReceivingKey $key
+     *
      * @return self
+     * @throws InvalidPurposeException
      */
     public static function fromReceivingKey(ReceivingKey $key): self
     {
@@ -133,7 +139,7 @@ final class Purpose
     /**
      * Compare the instance with $purpose in constant time.
      *
-     * @param self $Purpose
+     * @param self $purpose
      * @return bool
      */
     public function equals(self $purpose): bool

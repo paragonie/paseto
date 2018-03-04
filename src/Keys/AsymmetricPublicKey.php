@@ -48,6 +48,7 @@ class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * @return string
+     * @throws \TypeError
      */
     public function encode(): string
     {
@@ -56,7 +57,10 @@ class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * @param string $encoded
+     *
      * @return self
+     * @throws \Exception
+     * @throws \TypeError
      */
     public static function fromEncodedString(string $encoded): self
     {
