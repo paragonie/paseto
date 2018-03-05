@@ -68,7 +68,7 @@ See [the version 2 specification](Version2.md) for details. At a glance:
     during encryption only
   * Reference implementation in [Version2.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version2.php):
     * See `aeadEncrypt()` for encryption
-    * See `aeadDncrypt()` for decryption
+    * See `aeadDecrypt()` for decryption
 * **`v2.public`**: Asymmetric Authentication (Public-Key Signatures):
   * Ed25519 (EdDSA over Curve25519)
   * Signing: `sodium_crypto_sign_detached()` 
