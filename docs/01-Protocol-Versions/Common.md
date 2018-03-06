@@ -50,7 +50,7 @@ function LE64(n) {
         str += String.fromCharCode(n & 255);
         n = n >>> 8;
     }
-    return string;
+    return str;
 }
 function PAE(pieces) {
     if (!Array.isArray(pieces)) {
