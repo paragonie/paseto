@@ -5,8 +5,7 @@ namespace ParagonIE\Paseto\Keys;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
-    ReceivingKey,
-    ProtocolInterface
+    Protocol\Version1, ReceivingKey, ProtocolInterface
 };
 use ParagonIE\Paseto\Protocol\Version2;
 
@@ -44,6 +43,28 @@ class AsymmetricPublicKey implements ReceivingKey
         }
         $this->key = $keyMaterial;
         $this->protocol = $protocol;
+    }
+
+    /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     */
+    public static function v1(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version1());
+    }
+
+    /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     */
+    public static function v2(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version2());
     }
 
     /**

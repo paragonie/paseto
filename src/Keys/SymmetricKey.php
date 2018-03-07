@@ -7,6 +7,7 @@ use ParagonIE\Paseto\{
     ReceivingKey,
     SendingKey,
     ProtocolInterface,
+    Protocol\Version1,
     Protocol\Version2,
     Util
 };
@@ -38,6 +39,30 @@ class SymmetricKey implements ReceivingKey, SendingKey
     ) {
         $this->key = $keyMaterial;
         $this->protocol = $protocol ?? new Version2;
+    }
+
+    /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v1(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version1());
+    }
+
+    /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v2(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version2());
     }
 
     /**

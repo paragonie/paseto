@@ -58,6 +58,30 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v1(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version1());
+    }
+
+    /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v2(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version2());
+    }
+
+    /**
      * @param ProtocolInterface $protocol
      * @return self
      * @throws \Exception
@@ -120,11 +144,12 @@ class AsymmetricSecretKey implements SendingKey
             case Version1::HEADER:
                 return new AsymmetricPublicKey(
                     Version1::RsaGetPublicKey($this->key),
-                    new Version1
+                    $this->protocol
                 );
             default:
                 return new AsymmetricPublicKey(
-                    \sodium_crypto_sign_publickey_from_secretkey($this->key)
+                    \sodium_crypto_sign_publickey_from_secretkey($this->key),
+                    $this->protocol
                 );
         }
     }
