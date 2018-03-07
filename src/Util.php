@@ -106,15 +106,18 @@ class Util
      * followed by each message. This provides a more explicit domain
      * separation between each piece of the message.
      *
+     * Each length is masked with PHP_INT_MAX using bitwise AND (&) to
+     * clear out the MSB of the total string length.
+     *
      * @param string ...$pieces
      * @return string
      */
     public static function preAuthEncode(string ...$pieces): string
     {
-        $accumulator = \pack('P', \count($pieces));
+        $accumulator = \pack('P', \count($pieces) & PHP_INT_MAX);
         foreach ($pieces as $piece) {
             $len = Binary::safeStrlen($piece);
-            $accumulator .= \pack('P', $len);
+            $accumulator .= \pack('P', $len & PHP_INT_MAX);
             $accumulator .= $piece;
         }
         return $accumulator;

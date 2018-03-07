@@ -32,7 +32,8 @@ other languages, `string[]` is preferred; in the PHP community
 they're synonymous).
 
 **LE64()** encodes a 64-bit unsigned integer into a little-endian
-binary string.
+binary string. The most significant bit MUST be cleared for interoperability
+with programming languages that do not have unsigned integer support.
 
 The first 8 bytes of the output will be the number of pieces. Typically
 this is a small number (3 to 5). This is calculated by `LE64()` of the
@@ -47,6 +48,10 @@ An implementation may look like this:
 function LE64(n) {
     var str = '';
     for (var i = 0; i < 8; ++i) {
+        if (i === 7) {
+            // Clear the MSB for interoperability
+            n &= 127;
+        }
         str += String.fromCharCode(n & 255);
         n = n >>> 8;
     }
