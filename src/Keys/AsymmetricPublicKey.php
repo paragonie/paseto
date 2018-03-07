@@ -5,7 +5,9 @@ namespace ParagonIE\Paseto\Keys;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
-    Protocol\Version1, ReceivingKey, ProtocolInterface
+    Protocol\Version1,
+    ReceivingKey,
+    ProtocolInterface
 };
 use ParagonIE\Paseto\Protocol\Version2;
 
