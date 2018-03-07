@@ -49,7 +49,7 @@ class JsonToken
     }
 
     /**
-     * Get the 'exp' claim.
+     * Get the 'aud' claim.
      *
      * @return string
      * @throws PasetoException
