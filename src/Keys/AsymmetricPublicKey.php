@@ -2,14 +2,16 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use ParagonIE\ConstantTime\Binary;
+use ParagonIE\ConstantTime\{
+    Base64UrlSafe,
+    Binary
+};
 use ParagonIE\Paseto\{
     Protocol\Version1,
+    Protocol\Version2,
     ReceivingKey,
     ProtocolInterface
 };
-use ParagonIE\Paseto\Protocol\Version2;
 
 /**
  * Class AsymmetricPublicKey
