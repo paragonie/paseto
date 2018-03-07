@@ -3,17 +3,20 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
-use ParagonIE\Paseto\Keys\SymmetricAuthenticationKey;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Exception\InvalidVersionException;
+use ParagonIE\Paseto\Keys\Version1\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\Version1\AsymmetricSecretKey;
+use ParagonIE\Paseto\Keys\Version1\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version1;
+use ParagonIE\Paseto\Protocol\Version2;
 use PHPUnit\Framework\TestCase;
 
 class Version1Test extends TestCase
 {
     /**
      * @covers Version1::getNonce()
+     *
+     * @throws \TypeError
      */
     public function testNonceDerivation()
     {
@@ -35,6 +38,12 @@ class Version1Test extends TestCase
     /**
      * @covers Version1::decrypt()
      * @covers Version1::encrypt()
+     *
+     * @throws InvalidVersionException
+     * @throws \Error
+     * @throws \Exception
+     * @throws \SodiumException
+     * @throws \TypeError
      */
     public function testEncrypt()
     {
@@ -68,11 +77,27 @@ class Version1Test extends TestCase
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }
+
+        try {
+            Version2::encrypt('test', $key);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
+        $encrypted = Version1::encrypt('test', $key);
+        try {
+            Version2::decrypt($encrypted, $key);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
     }
 
     /**
      * @covers Version1::sign()
      * @covers Version1::verify()
+     *
+     * @throws InvalidVersionException
+     * @throws \Exception
+     * @throws \TypeError
      */
     public function testSign()
     {
@@ -108,6 +133,18 @@ class Version1Test extends TestCase
             $decode = Version1::verify($signed, $publicKey, 'footer');
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
+        }
+
+        try {
+            Version2::sign('test', $privateKey);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
+        $signed = Version1::sign('test', $privateKey);
+        try {
+            Version2::verify($signed, $publicKey);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
         }
     }
 }

@@ -3,8 +3,9 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Keys\Version1\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version1;
+use ParagonIE\Paseto\Exception\InvalidVersionException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,6 +19,7 @@ class Version1VectorTest extends TestCase
 {
     /**
      * @throws \Error
+     * @throws InvalidVersionException
      * @throws \TypeError
      */
     public function testEncrypt()

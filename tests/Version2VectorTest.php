@@ -3,9 +3,10 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Exception\InvalidVersionException;
+use ParagonIE\Paseto\Keys\Version2\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\Version2\AsymmetricSecretKey;
+use ParagonIE\Paseto\Keys\Version2\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version2;
 use PHPUnit\Framework\TestCase;
 
@@ -39,6 +40,10 @@ class Version2VectorTest extends TestCase
      *
      * DO NOT USE THESE KEYS EVER FOR ANY PURPOSE OTHER THAN
      * VERIFYING THE PROVIDED TEST VECTORS FOR VERSION 2.
+     *
+     * @throws \Error
+     * @throws \Exception
+     * @throws \TypeError
      */
     public function setUp()
     {
@@ -67,6 +72,7 @@ class Version2VectorTest extends TestCase
     }
 
     /**
+     * @throws InvalidVersionException
      * @throws \SodiumException
      * @throws \TypeError
      */
@@ -155,6 +161,9 @@ class Version2VectorTest extends TestCase
 
     /**
      * @covers Version2::sign()
+     *
+     * @throws InvalidVersionException
+     * @throws \TypeError
      */
     public function testSignVectors()
     {
