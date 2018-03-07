@@ -3,10 +3,11 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
-use ParagonIE\Paseto\Keys\SymmetricAuthenticationKey;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Exception\InvalidVersionException;
+use ParagonIE\Paseto\Keys\Version2\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\Version2\AsymmetricSecretKey;
+use ParagonIE\Paseto\Keys\Version2\SymmetricKey;
+use ParagonIE\Paseto\Protocol\Version1;
 use ParagonIE\Paseto\Protocol\Version2;
 use PHPUnit\Framework\TestCase;
 
@@ -15,6 +16,12 @@ class Version2Test extends TestCase
     /**
      * @covers Version2::decrypt()
      * @covers Version2::encrypt()
+     *
+     * @throws InvalidVersionException
+     * @throws \Error
+     * @throws \Exception
+     * @throws \SodiumException
+     * @throws \TypeError
      */
     public function testEncrypt()
     {
@@ -48,11 +55,28 @@ class Version2Test extends TestCase
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }
+
+        try {
+            Version1::encrypt('test', $key);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
+        $encrypted = Version2::encrypt('test', $key);
+        try {
+            Version1::decrypt($encrypted, $key);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
     }
 
     /**
      * @covers Version2::sign()
      * @covers Version2::verify()
+     *
+     * @throws InvalidVersionException
+     * @throws \Error
+     * @throws \Exception
+     * @throws \TypeError
      */
     public function testSign()
     {
@@ -88,10 +112,26 @@ class Version2Test extends TestCase
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
         }
+
+        try {
+            Version1::sign('test', $privateKey);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
+        $signed = Version2::sign('test', $privateKey);
+        try {
+            Version1::verify($signed, $publicKey);
+            $this->fail('Invalid version accepted');
+        } catch (InvalidVersionException $ex) {
+        }
     }
 
     /**
      * @covers AsymmetricSecretKey for version 2
+     *
+     * @throws \Error
+     * @throws \Exception
+     * @throws \TypeError
      */
     public function testWeirdKeypairs()
     {

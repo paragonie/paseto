@@ -12,6 +12,7 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\Paseto\{
+    Exception\InvalidVersionException,
     ProtocolInterface,
     Util
 };
@@ -49,6 +50,7 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @param string $nonceForUnitTesting
      * @return string
+     * @throws InvalidVersionException
      * @throws \SodiumException
      * @throws \TypeError
      */
@@ -58,6 +60,9 @@ class Version2 implements ProtocolInterface
         string $footer = '',
         string $nonceForUnitTesting = ''
     ): string {
+        if (!($key->getProtocol() instanceof Version2)) {
+            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+        }
         return self::aeadEncrypt(
             $data,
             self::HEADER . '.local.',
@@ -76,7 +81,7 @@ class Version2 implements ProtocolInterface
      * @return string
      * @throws \Exception
      * @throws \Error
-     * @throws \Exception
+     * @throws InvalidVersionException
      * @throws \TypeError
      */
     public static function decrypt(
@@ -84,6 +89,9 @@ class Version2 implements ProtocolInterface
         SymmetricKey $key,
         string $footer = ''
     ): string {
+        if (!($key->getProtocol() instanceof Version2)) {
+            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+        }
         return self::aeadDecrypt(
             Util::validateAndRemoveFooter($data, $footer),
             self::HEADER . '.local.',
@@ -100,6 +108,7 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @return string
      *
+     * @throws InvalidVersionException
      * @throws \TypeError
      */
     public static function sign(
@@ -107,6 +116,9 @@ class Version2 implements ProtocolInterface
         AsymmetricSecretKey $key,
         string $footer = ''
     ): string {
+        if (!($key->getProtocol() instanceof Version2)) {
+            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+        }
         $header = self::HEADER . '.public.';
         $signature = \sodium_crypto_sign_detached(
             Util::preAuthEncode($header, $data, $footer),
@@ -129,6 +141,7 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @return string
      * @throws \Exception
+     * @throws InvalidVersionException
      * @throws \TypeError
      */
     public static function verify(
@@ -136,6 +149,9 @@ class Version2 implements ProtocolInterface
         AsymmetricPublicKey $key,
         string $footer = ''
     ): string {
+        if (!($key->getProtocol() instanceof Version2)) {
+            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+        }
         $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
