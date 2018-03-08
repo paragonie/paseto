@@ -89,6 +89,9 @@ $parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
 // This is the same as:
 $parser = (new Parser())
     ->setKey($sharedKey)
+    // Adding rules to be checked against your token
+    ->addRule(new NotExpired);
+    ->addRule(new IssuedBy('issuer defined during creation'));
     ->setPurpose(Purpose::local())
     // Only allow version 2
     ->setAllowedVersions(ProtocolCollection::v2());
