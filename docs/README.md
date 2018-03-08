@@ -5,6 +5,12 @@
 ### Without the Optional Footer
 
 ```
+version.purpose.payload
+```
+
+### With the Optional Footer
+
+```
 version.purpose.payload.footer
 ```
 
