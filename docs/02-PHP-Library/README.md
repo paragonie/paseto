@@ -43,6 +43,8 @@ use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\Rules\IssuedBy;
+use ParagonIE\Paseto\Rules\NotExpired;
 
 /**
  * @var SymmetricKey $sharedKey
@@ -89,7 +91,7 @@ $parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
 // This is the same as:
 $parser = (new Parser())
     ->setKey($sharedKey)
-    // Adding rules to be checked against your token
+    // Adding rules to be checked against the token
     ->addRule(new NotExpired);
     ->addRule(new IssuedBy('issuer defined during creation'));
     ->setPurpose(Purpose::local())
