@@ -152,5 +152,8 @@ See [the documentation](https://github.com/paragonie/paseto/tree/master/docs).
 The section dedicated to [this PHP implementation](https://github.com/paragonie/paseto/tree/master/docs/02-PHP-Library)
 may be more relevant.
 
-## Other implementations
-* [Golang](https://github.com/o1egl/paseto)
+## Other Implementations
+
+* **[Golang](https://github.com/o1egl/paseto)** by [Oleg Lobanov](https://github.com/o1egl)
+* **[Rust](https://github.com/instructure/paseto)** by [Instructure, Inc.](https://github.com/instructure)
+* **[Python](https://github.com/rlittlefield/pypaseto)** by [Ryan Littlefield](https://github.com/rlittlefield) and [Jim Dabell](https://github.com/JimDabell)
