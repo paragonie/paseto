@@ -115,14 +115,15 @@ class AsymmetricSecretKey implements SendingKey
 
     /**
      * @param string $encoded
+     * @param ProtocolInterface|null $version
      * @return self
      * @throws \Exception
      * @throws \TypeError
      */
-    public static function fromEncodedString(string $encoded): self
+    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new self($decoded);
+        return new self($decoded, $version);
     }
 
     /**
