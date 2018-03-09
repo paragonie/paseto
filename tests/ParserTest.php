@@ -10,6 +10,10 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Keys\Version2\{
+    AsymmetricSecretKey as V2AsymmetricSecretKey,
+    SymmetricKey as V2SymmetricKey
+};
 use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Protocol\Version2;
@@ -33,6 +37,7 @@ class ParserTest extends TestCase
     public function testAuthToken()
     {
         $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
         // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
 
@@ -40,12 +45,26 @@ class ParserTest extends TestCase
         $parser = (new Parser())
             ->setPurpose(Purpose::local())
             ->setKey($key);
+        $v2parser = (new Parser())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key);
+
         $token = $parser->parse($serialized);
+        $v2token = $v2parser->parse($serialized);
+
         $builder = (Builder::getLocal($key, new Version2(), $token))
             ->setExplicitNonce($nonce);
+        $v2builder = (Builder::getLocal($v2key, new Version2(), $v2token))
+            ->setExplicitNonce($nonce);
+
         $this->assertSame(
             '2039-01-01T00:00:00+00:00',
             $token->getExpiration()->format(\DateTime::ATOM),
+            'Mismatched expiration date/time'
+        );
+        $this->assertSame(
+            '2039-01-01T00:00:00+00:00',
+            $v2token->getExpiration()->format(\DateTime::ATOM),
             'Mismatched expiration date/time'
         );
         $this->assertSame(
@@ -54,10 +73,14 @@ class ParserTest extends TestCase
             'Custom claim not found'
         );
         $this->assertSame($serialized, (string) $builder);
+        $this->assertSame($serialized, (string) $v2builder);
 
         $this->assertTrue($parser->validate($token));
+        $this->assertTrue($parser->validate($v2token));
         $parser->addRule(new NotExpired(new \DateTime('2007-01-01T00:00:00')));
+        $v2parser->addRule(new NotExpired(new \DateTime('2007-01-01T00:00:00')));
         $this->assertTrue($parser->validate($token));
+        $this->assertTrue($v2parser->validate($token));
 
         $cloned = clone $parser;
         $cloned->addRule(new NotExpired(new \DateTime('2050-01-01T23:59:59')));
@@ -72,11 +95,17 @@ class ParserTest extends TestCase
 
         // Switch to asymmetric-key crypto:
         $builder->setPurpose(Purpose::public())
-            ->setExplicitNonce($nonce)
-            ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
+                ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
+        $v2builder->setPurpose(Purpose::public())
+                ->setKey(new V2AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
             'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
             (string) $builder,
+            'Switching to signing caused a different signature'
+        );
+        $this->assertSame(
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
+            (string) $v2builder,
             'Switching to signing caused a different signature'
         );
     }
