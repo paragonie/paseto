@@ -7,6 +7,16 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Keys\Version1\{
+    AsymmetricSecretKey as V1AsymmetricSecretKey,
+    AsymmetricPublicKey as V1AsymmetricPublicKey,
+    SymmetricKey as V1SymmetricKey
+};
+use ParagonIE\Paseto\Keys\Version2\{
+    AsymmetricSecretKey as V2AsymmetricSecretKey,
+    AsymmetricPublicKey as V2AsymmetricPublicKey,
+    SymmetricKey as V2SymmetricKey
+};
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
 
 /**
@@ -34,12 +44,36 @@ final class Purpose
     ];
 
     /**
+     * @const array<string, string>
+     */
+    const SENDING_KEY_MAP = [
+        SymmetricKey::class => 'local',
+        V1SymmetricKey::class => 'local',
+        V2SymmetricKey::class => 'local',
+        AsymmetricSecretKey::class => 'public',
+        V1AsymmetricSecretKey::class => 'public',
+        V2AsymmetricSecretKey::class => 'public'
+    ];
+
+    /**
      * When receiving, which type of key is expected for each mode.
      * @const array<string, string>
      */
     const EXPECTED_RECEIVING_KEYS = [
         'local'  => SymmetricKey::class,
         'public' => AsymmetricPublicKey::class,
+    ];
+
+    /**
+     * @const array<string, string>
+     */
+    const RECEIVING_KEY_MAP = [
+        SymmetricKey::class => 'local',
+        V1SymmetricKey::class => 'local',
+        V2SymmetricKey::class => 'local',
+        AsymmetricPublicKey::class => 'public',
+        V1AsymmetricPublicKey::class => 'public',
+        V2AsymmetricPublicKey::class => 'public'
     ];
 
     /**
@@ -110,8 +144,7 @@ final class Purpose
     {
         if (empty(self::$sendingKeyToPurpose)) {
             /** @var array<string, string> */
-            $expectedSendingKeys = self::EXPECTED_SENDING_KEYS;
-            self::$sendingKeyToPurpose = \array_flip($expectedSendingKeys);
+            self::$sendingKeyToPurpose = self::SENDING_KEY_MAP;
         }
 
         return new self(self::$sendingKeyToPurpose[\get_class($key)]);
@@ -129,8 +162,7 @@ final class Purpose
     {
         if (empty(self::$receivingKeyToPurpose)) {
             /** @var array<string, string> */
-            $expectedReceivingKeys = self::EXPECTED_RECEIVING_KEYS;
-            self::$receivingKeyToPurpose = \array_flip($expectedReceivingKeys);
+            self::$sendingKeyToPurpose = self::RECEIVING_KEY_MAP;
         }
 
         return new self(self::$receivingKeyToPurpose[\get_class($key)]);
