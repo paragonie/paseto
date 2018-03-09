@@ -33,7 +33,7 @@ use Paseto in [an insecure way](https://auth0.com/blog/critical-vulnerabilities-
 #### Paseto Example 1
 
 ```
-v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqIIhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
+v2.local.QAxIpVe-ECVNI1z4xQbm_qQYomyT3h8FtV8bxkz8pBJWkT8f7HtlOpbroPDEZUKop_vaglyp76CzYy375cHmKCW8e1CCkV0Lflu4GTDyXMqQdpZMM1E6OaoQW27gaRSvWBrR3IgbFIa0AkuUFw.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
 ```
 
 This decodes to:
@@ -42,13 +42,13 @@ This decodes to:
 * Purpose: `local` (shared-key authenticated encryption)
 * Payload (hex-encoded):
   ```
-  942961cd53aeb1e09661ea78e2a6c0f2b997af2eba954ba9c843628d7dfbfc8f
-  f3df81223a57f2bb0a882213a317e7bd9b627e42cd7b1acf81a63a4b961df37f
-  e277ee7ed8187a8c055e86e710f669e20aa5c93aae17f01e9185dfc2fbaf262e
-  cee51eaa63e0f17a3349f5383ee3e9f68f
+  400c48a557be10254d235cf8c506e6fea418a26c93de1f05b55f1bc64cfca412
+  56913f1fec7b653a96eba0f0c46542a8a7fbda825ca9efa0b3632dfbe5c1e628
+  25bc7b5082915d0b7e5bb81930f25cca9076964c33513a39aa105b6ee06914af
+  581ad1dc881b1486b4024b9417
   ```
-  * Nonce: `942961cd53aeb1e09661ea78e2a6c0f2b997af2eba954ba9`
-  * Authentication tag: `e51eaa63e0f17a3349f5383ee3e9f68f`
+  * Nonce: `400c48a557be10254d235cf8c506e6fea418a26c93de1f05`
+  * Authentication tag: `6914af581ad1dc881b1486b4024b9417`
 * Decrypted Payload:
   ```json
   {
@@ -68,7 +68,7 @@ This decodes to:
 #### Paseto Example 2
 
 ```
-v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDArMDA6MDAifcMYjoUaEYXAtzTDwlcOlxdcZWIZp8qZga3jFS8JwdEjEvurZhs6AmTU3bRW5pB9fOQwm43rzmibZXcAkQ4AzQs.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz
+v2.public.eyJleHAiOiIyMDM5LTAxLTAxVDAwOjAwOjAwKzAwOjAwIiwiZGF0YSI6InRoaXMgaXMgYSBzaWduZWQgbWVzc2FnZSJ91gC7-jCWsN3mv4uJaZxZp0btLJgcyVwL-svJD7f4IHyGteKe3HTLjHYTGHI1MtCqJ-ESDLNoE7otkIzamFskCA
 ```
 
 This decodes to:
@@ -84,8 +84,12 @@ This decodes to:
   ```
 * Signature (hex-encoded):
   ```
-  70c623a1468461702dcd30f095c3a5c5d719588669f2a6606b78c54bc2707448
-  c4beead986ce809935376d15b9a41f5f390c26e37af39a26d95dc02443803342
+  d600bbfa3096b0dde6bf8b89699c59a746ed2c981cc95c0bfacbc90fb7f8207c
+  86b5e29edc74cb8c761318723532d0aa27e1120cb36813ba2d908cda985b2408
+  ```
+* Public key (hex-encoded):
+  ```
+  11324397f535562178d53ff538e49d5a162242970556b4edd950c87c7d86648a
   ```
 
 To learn what each version means, please see [this page in the documentation](https://github.com/paragonie/paseto/tree/master/docs/01-Protocol-Versions).
