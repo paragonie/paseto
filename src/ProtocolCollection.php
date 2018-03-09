@@ -13,7 +13,7 @@ final class ProtocolCollection
 {
     // Our built-in whitelist of protocol types is defined here.
     /**
-     * @const array<int, string>
+     * @const array<int, class-string>
      */
     const WHITELIST = [
         Version1::class,
@@ -87,6 +87,8 @@ final class ProtocolCollection
      * @param string $header
      * @return ProtocolInterface
      * @throws InvalidVersionException
+     * @psalm-suppress UndefinedClass  A BC break introduced in Psalm v1.0.2
+     *                                 stopped respecting what we were doing.
      */
     public static function protocolFromHeader(string $header): ProtocolInterface {
         if (empty(self::$headerLookup)) {
