@@ -157,3 +157,4 @@ may be more relevant.
 * **[Golang](https://github.com/o1egl/paseto)** by [Oleg Lobanov](https://github.com/o1egl)
 * **[Rust](https://github.com/instructure/paseto)** by [Instructure, Inc.](https://github.com/instructure)
 * **[Python](https://github.com/rlittlefield/pypaseto)** by [Ryan Littlefield](https://github.com/rlittlefield) and [Jim Dabell](https://github.com/JimDabell)
+* **[Swift](https://github.com/aidantwoods/swift-paseto)** by [Aidan Woods](https://github.com/aidantwoods)
