@@ -428,6 +428,13 @@ class Builder
         switch ($this->purpose) {
             case Purpose::local():
                 if ($this->key instanceof SymmetricKey) {
+                    /**
+                     * During unit tests, perform last-minute dependency
+                     * injection to swap $protocol for a conjured up version.
+                     * This new version can access a protected method on our
+                     * actual $protocol, giving unit tests the ability to
+                     * manually set a pre-decided nonce.
+                     */
                     if (isset($this->unitTestEncrypter)) {
                         /** @var ProtocolInterface */
                         $protocol = ($this->unitTestEncrypter)($protocol);
