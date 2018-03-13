@@ -11,8 +11,14 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Exception\{
+    InvalidVersionException,
+    PasetoException,
+    SecurityException
+};
 use ParagonIE\Paseto\{
-    Exception\InvalidVersionException, Exception\PasetoException, Exception\SecurityException, ProtocolInterface, Util
+    ProtocolInterface,
+    Util
 };
 use phpseclib\Crypt\RSA;
 
