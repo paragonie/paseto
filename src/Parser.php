@@ -16,6 +16,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Parsing\PasetoMessage;
 
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
@@ -80,31 +81,9 @@ class Parser
      */
     public static function extractFooter(string $tainted): string
     {
-        /** @var array<int, string> $pieces */
-        $pieces = \explode('.', $tainted);
-        if (\count($pieces) < 3) {
-            throw new SecurityException('Truncated or invalid token');
-        }
-
-        /** @var Purpose $purpose */
-        $purpose = new Purpose($pieces[1]);
-
-        // Let's verify/decode according to the appropriate method:
-        switch ($purpose) {
-            case Purpose::local():
-                $footer = (\count($pieces) > 3)
-                    ? Base64UrlSafe::decode($pieces[3])
-                    : '';
-                break;
-            case Purpose::public():
-                $footer = (\count($pieces) > 4)
-                    ? Base64UrlSafe::decode($pieces[4])
-                    : '';
-                break;
-            default:
-                throw new InvalidPurposeException('Unknown purpose: ' . $purpose->rawString());
-        }
-        return $footer;
+        return Base64UrlSafe::decode(
+            (new PasetoMessage($tainted))->encodedFooter()
+        );
     }
 
     /**
@@ -177,22 +156,18 @@ class Parser
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
-        /** @var array<int, string> $pieces */
-        $pieces = \explode('.', $tainted);
-        if (\count($pieces) < 3) {
-            throw new SecurityException('Truncated or invalid token');
-        }
+        $parsed = new PasetoMessage($tainted);
 
         // First, check against the user's specified list of allowed versions.
         /** @var ProtocolInterface $protocol */
-        $protocol = ProtocolCollection::protocolFromHeaderPart($pieces[0]);
+        $protocol = $parsed->header()->protocol();
         if (!$this->allowedVersions->has($protocol)) {
             throw new InvalidVersionException('Disallowed or unsupported version');
         }
 
         /** @var Purpose $purpose */
-        $footer = '';
-        $purpose = new Purpose($pieces[1]);
+        $footer = Base64UrlSafe::decode($parsed->encodedFooter());
+        $purpose = $parsed->header()->purpose();
 
         // $this->purpose is not mandatory, but if it's set, verify against it.
         if (isset($this->purpose)) {
@@ -208,9 +183,6 @@ class Parser
         // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
             case Purpose::local():
-                $footer = (\count($pieces) > 3)
-                    ? Base64UrlSafe::decode($pieces[3])
-                    : '';
                 /** @var SymmetricKey $key */
                 $key = $this->key;
                 try {
@@ -221,9 +193,6 @@ class Parser
                 }
                 break;
             case Purpose::public():
-                $footer = (\count($pieces) > 4)
-                    ? Base64UrlSafe::decode($pieces[4])
-                    : '';
                 /** @var AsymmetricPublicKey $key */
                 $key = $this->key;
                 try {
