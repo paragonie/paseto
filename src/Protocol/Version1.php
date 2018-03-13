@@ -207,6 +207,7 @@ class Version1 implements ProtocolInterface
      * @throws PasetoException
      * @throws \TypeError
      */
+
     public static function aeadEncrypt(
         string $plaintext,
         string $header,
@@ -231,7 +232,7 @@ class Version1 implements ProtocolInterface
             Binary::safeSubstr($nonce, 16, 16)
         );
         if (!\is_string($ciphertext)) {
-            throw new \Error('Encryption failed.');
+            throw new PasetoException('Encryption failed.');
         }
         $mac = \hash_hmac(
             self::HASH_ALGO,

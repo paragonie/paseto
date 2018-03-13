@@ -109,6 +109,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string|null $salt
      * @return array<int, string>
      *
+     * @throws \ParagonIE\Paseto\Exception\PasetoException
+     * @throws \TypeError
      */
     public function split(string $salt = null): array
     {
