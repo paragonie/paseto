@@ -39,8 +39,7 @@ interface ProtocolInterface
     public static function encrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = '',
-        string $nonceForUnitTesting = ''
+        string $footer = ''
     ): string;
 
     /**

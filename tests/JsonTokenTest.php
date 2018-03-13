@@ -34,10 +34,11 @@ class JsonTokenTest extends TestCase
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $builder = (new Builder())
             ->setPurpose(Purpose::local())
-            ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
+
+        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
 
         $this->assertSame(
             'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA',
@@ -87,24 +88,25 @@ class JsonTokenTest extends TestCase
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
         $footerArray = ['key-id' => 'gandalf0'];
 
-        $token = (new Builder())
+        $builder = (new Builder())
             ->setPurpose(Purpose::local())
-            ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
 
-        $first = (string) $token;
-        $alt = $token->with('data', 'this is a different message');
+        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
+
+        $first = (string) $builder;
+        $alt = $builder->with('data', 'this is a different message');
         $second = (string) $alt;
-        $third = (string) $token;
+        $third = (string) $builder;
 
         $this->assertSame($first, $third);
         $this->assertNotSame($first, $second);
         $this->assertNotSame($second, $third);
 
-        $mutated = $token->withAudience('example.com');
+        $mutated = $builder->withAudience('example.com');
         $mutateTwo = $mutated->withAudience('example.org');
 
         $this->assertNotSame(
@@ -143,11 +145,13 @@ class JsonTokenTest extends TestCase
         $footerArray = ['key-id' => 'gandalf0'];
         $builder = (new Builder())
             ->setPurpose(Purpose::local())
-            ->setExplicitNonce($nonce)
             ->setKey($key)
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
+
+        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
+
         $this->assertSame(
             'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4nZ9JDgBVa-L9vW26CMc57aw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder,

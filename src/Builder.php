@@ -29,8 +29,8 @@ class Builder
     /** @var array<string, string> */
     protected $claims = [];
 
-    /** @var string $explicitNonce -- Do not use this. It's for unit testing! */
-    protected $explicitNonce = '';
+    /** @var \Closure|null $unitTestEncrypter -- Do not use this. It's for unit testing! */
+    protected $unitTestEncrypter;
 
     /** @var SendingKey|null $key */
     protected $key = null;
@@ -255,18 +255,6 @@ class Builder
     }
 
     /**
-     * Do not use this.
-     *
-     * @param string $nonce
-     * @return self
-     */
-    public function setExplicitNonce(string $nonce = ''): self
-    {
-        $this->explicitNonce = $nonce;
-        return $this;
-    }
-
-    /**
      * Set an array of claims in one go.
      *
      * @param array<string, string> $claims
@@ -440,11 +428,22 @@ class Builder
         switch ($this->purpose) {
             case Purpose::local():
                 if ($this->key instanceof SymmetricKey) {
+                    /**
+                     * During unit tests, perform last-minute dependency
+                     * injection to swap $protocol for a conjured up version.
+                     * This new version can access a protected method on our
+                     * actual $protocol, giving unit tests the ability to
+                     * manually set a pre-decided nonce.
+                     */
+                    if (isset($this->unitTestEncrypter)) {
+                        /** @var ProtocolInterface */
+                        $protocol = ($this->unitTestEncrypter)($protocol);
+                    }
+
                     $this->cached = (string) $protocol::encrypt(
                         $claims,
                         $this->key,
-                        $this->token->getFooter(),
-                        $this->explicitNonce
+                        $this->token->getFooter()
                     );
                     return $this->cached;
                 }

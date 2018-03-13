@@ -48,13 +48,32 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
-     * @param string $nonceForUnitTesting
      * @return string
      * @throws InvalidVersionException
      * @throws \SodiumException
      * @throws \TypeError
      */
     public static function encrypt(
+        string $data,
+        SymmetricKey $key,
+        string $footer = ''
+    ): string {
+        return self::__encrypt($data, $key, $footer);
+    }
+
+    /**
+     * Encrypt a message using a shared key.
+     *
+     * @param string $data
+     * @param SymmetricKey $key
+     * @param string $footer
+     * @param string $nonceForUnitTesting
+     * @return string
+     * @throws InvalidVersionException
+     * @throws \SodiumException
+     * @throws \TypeError
+     */
+    protected static function __encrypt(
         string $data,
         SymmetricKey $key,
         string $footer = '',
