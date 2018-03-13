@@ -184,9 +184,8 @@ class Parser
         }
 
         // First, check against the user's specified list of allowed versions.
-        $header = $pieces[0];
         /** @var ProtocolInterface $protocol */
-        $protocol = ProtocolCollection::protocolFromHeader($header);
+        $protocol = ProtocolCollection::protocolFromHeaderPart($pieces[0]);
         if (!$this->allowedVersions->has($protocol)) {
             throw new InvalidVersionException('Disallowed or unsupported version');
         }
