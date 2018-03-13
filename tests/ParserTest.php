@@ -113,6 +113,36 @@ class ParserTest extends TestCase
 
     /**
      * @throws PasetoException
+     * @throws \ParagonIE\Paseto\Exception\InvalidPurposeException
+     * @throws \ParagonIE\Paseto\Exception\SecurityException
+     * @throws \TypeError
+     */
+    public function testExtractFooter()
+    {
+        $footers = [
+            [
+                'token' => 'v2.local.BEsKs5AolRYDb_O-bO-lwHWUextpShFSvu6cB-KuR4wR9uDMjd45cPiOF0zxb7rrtOB5tRcS7dWsFwY4ONEuL5sWeunqHC9jxU0',
+                'footer' => ''
+            ],
+            [
+                'token' => 'v2.local.FGVEQLywggpvH0AzKtLXz0QRmGYuC6yvl05z9GIX0cnol6UK94cfV77AXnShlUcNgpDR12FrQiurS8jxBRmvoIKmeMWC5wY9Y6w.Q3VvbiBBbHBpbnVz',
+                'footer' => 'Cuon Alpinus'
+            ],
+            [
+                'token' => 'v2.local.lClhzVOuseCWYep44qbA8rmXry66lUupyENijX37_I_z34EiOlfyuwqIIhOjF-e9m2J-Qs17Gs-BpjpLlh3zf-J37n7YGHqMBV6G5xD2aeIKpck6rhfwHpGF38L7ryYuzuUeqmPg8XozSfU4PuPp9o8.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
+                'footer' => 'Paragon Initiative Enterprises'
+            ]
+        ];
+        foreach ($footers as $f) {
+            $this->assertSame(
+                $f['footer'],
+                Parser::extractFooter($f['token'])
+            );
+        }
+    }
+
+    /**
+     * @throws PasetoException
      * @throws \Exception
      * @throws \TypeError
      */
