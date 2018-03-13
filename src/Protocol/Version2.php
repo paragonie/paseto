@@ -11,8 +11,13 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Exception\{
+    InvalidVersionException,
+    PasetoException
+};
 use ParagonIE\Paseto\{
-    Exception\InvalidVersionException, Exception\PasetoException, ProtocolInterface, Util
+    ProtocolInterface,
+    Util
 };
 
 /**
