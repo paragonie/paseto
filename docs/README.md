@@ -35,6 +35,9 @@ is used in calculating the authentication tag for the payload. It's always base6
 Thus, if you want unencrypted, but authenticated, tokens, you can simply set your payload
 to an empty string and your footer to the message you want to authenticate.
 
+Conversely, if you want to support key rotation, you can use the unencrypted footer to store
+the Key-ID.
+
 ## Versions and their Respective Purposes
 
 See [Protocol Versions](01-Protocol-Versions) for specifics.
