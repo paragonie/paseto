@@ -70,6 +70,44 @@ class Parser
     }
 
     /**
+     * @param string $tainted
+     *
+     * @return string
+     * @throws InvalidPurposeException
+     * @throws PasetoException
+     * @throws SecurityException
+     * @throws \TypeError
+     */
+    public static function extractFooter(string $tainted): string
+    {
+        /** @var array<int, string> $pieces */
+        $pieces = \explode('.', $tainted);
+        if (\count($pieces) < 3) {
+            throw new SecurityException('Truncated or invalid token');
+        }
+
+        /** @var Purpose $purpose */
+        $purpose = new Purpose($pieces[1]);
+
+        // Let's verify/decode according to the appropriate method:
+        switch ($purpose) {
+            case Purpose::local():
+                $footer = (\count($pieces) > 3)
+                    ? Base64UrlSafe::decode($pieces[3])
+                    : '';
+                break;
+            case Purpose::public():
+                $footer = (\count($pieces) > 4)
+                    ? Base64UrlSafe::decode($pieces[4])
+                    : '';
+                break;
+            default:
+                throw new InvalidPurposeException('Unknown purpose: ' . $purpose->rawString());
+        }
+        return $footer;
+    }
+
+    /**
      * Get a Parser instance intended for local usage.
      * (i.e. shard-key authenticated encryption)
      *

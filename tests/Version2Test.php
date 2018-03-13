@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Exception\InvalidVersionException;
+use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\Version2\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version2\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version2\SymmetricKey;
@@ -44,8 +45,13 @@ class Version2Test extends TestCase
             // Now with a footer
             try {
                 Version2::decrypt($message, $key);
-                $this->fail('Missing footer');
-            } catch (\Exception $ex) {
+                $this->fail('Not a token');
+            } catch (PasetoException $ex) {
+            }
+            try {
+                Version2::decrypt($encrypted, $key, 'footer');
+                $this->fail('Footer did not cause expected MAC failure.');
+            } catch (PasetoException $ex) {
             }
             $encrypted = Version2::encrypt($message, $key, 'footer');
             $this->assertInternalType('string', $encrypted);
@@ -54,6 +60,11 @@ class Version2Test extends TestCase
             $decode = Version2::decrypt($encrypted, $key, 'footer');
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
+            try {
+                Version2::decrypt($encrypted, $key);
+                $this->fail('Missing footer');
+            } catch (PasetoException $ex) {
+            }
         }
 
         try {

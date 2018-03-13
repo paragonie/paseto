@@ -12,9 +12,7 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\Paseto\{
-    Exception\InvalidVersionException,
-    ProtocolInterface,
-    Util
+    Exception\InvalidVersionException, Exception\PasetoException, ProtocolInterface, Util
 };
 
 /**
@@ -98,9 +96,10 @@ class Version2 implements ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
-     * @throws \Exception
-     * @throws \Error
+     *
      * @throws InvalidVersionException
+     * @throws PasetoException
+     * @throws \SodiumException
      * @throws \TypeError
      */
     public static function decrypt(
@@ -159,8 +158,8 @@ class Version2 implements ProtocolInterface
      * @param AsymmetricPublicKey $key
      * @param string $footer
      * @return string
-     * @throws \Exception
      * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \TypeError
      */
     public static function verify(
@@ -175,7 +174,7 @@ class Version2 implements ProtocolInterface
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {
-            throw new \Exception('Invalid message header.');
+            throw new PasetoException('Invalid message header.');
         }
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
@@ -197,7 +196,7 @@ class Version2 implements ProtocolInterface
             $key->raw()
         );
         if (!$valid) {
-            throw new \Exception('Invalid signature for this message');
+            throw new PasetoException('Invalid signature for this message');
         }
         return $message;
     }
@@ -258,8 +257,8 @@ class Version2 implements ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
-     * @throws \Error
-     * @throws \Exception
+     * @throws PasetoException
+     * @throws \SodiumException
      * @throws \TypeError
      */
     public static function aeadDecrypt(
@@ -271,9 +270,13 @@ class Version2 implements ProtocolInterface
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
         if (!\hash_equals($header, $givenHeader)) {
-            throw new \Exception('Invalid message header.');
+            throw new PasetoException('Invalid message header.');
         }
-        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
+        try {
+            $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
+        } catch (\Throwable $ex) {
+            throw new PasetoException('Invalid encoding detected', 0, $ex);
+        }
         $len = Binary::safeStrlen($decoded);
         $nonce = Binary::safeSubstr(
             $decoded,

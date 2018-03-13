@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\PasetoException;
 
 /**
  * Class Util
@@ -25,9 +26,9 @@ class Util
      * @param string|null $salt
      *
      * @return string
-     * @throws \Error
-     * @throws \TypeError
      * @psalm-suppress MixedInferredReturnType This always returns a string!
+     * @throws PasetoException
+     * @throws \TypeError
      */
     public static function HKDF(
         string $hash,
@@ -54,7 +55,7 @@ class Util
 
         // Sanity-check the desired output length.
         if (empty($length) || $length < 0 || $length > 255 * $digest_length) {
-            throw new \Error(
+            throw new PasetoException(
                 'Bad output length requested of HKDF.'
             );
         }
@@ -73,7 +74,7 @@ class Util
 
         // This check is useless, but it serves as a reminder to the spec.
         if (Binary::safeStrlen($prk) < $digest_length) {
-            throw new \Error(
+            throw new PasetoException(
                 'An unexpected condition occurred in the HKDF internals'
             );
         }
@@ -131,7 +132,7 @@ class Util
      * @param string $payload
      * @param string $footer
      * @return string
-     * @throws \Exception
+     * @throws PasetoException
      * @throws \TypeError
      */
     public static function validateAndRemoveFooter(
@@ -151,7 +152,7 @@ class Util
             $footer_len
         );
         if (!\hash_equals('.' . $footer, $trailing)) {
-            throw new \Exception('Invalid message footer');
+            throw new PasetoException('Invalid message footer');
         }
         return Binary::safeSubstr($payload, 0, $payload_len - $footer_len);
     }
