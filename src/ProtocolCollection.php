@@ -84,13 +84,13 @@ final class ProtocolCollection
     }
 
     /**
-     * @param string $header
+     * @param string $headerPart
      * @return ProtocolInterface
      * @throws InvalidVersionException
      * @psalm-suppress UndefinedClass  A BC break introduced in Psalm v1.0.2
      *                                 stopped respecting what we were doing.
      */
-    public static function protocolFromHeader(string $header): ProtocolInterface {
+    public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface {
         if (empty(self::$headerLookup)) {
             /** @var ProtocolInterface $protocolClass */
             foreach (self::WHITELIST as $protocolClass) {
@@ -98,11 +98,11 @@ final class ProtocolCollection
             }
         }
 
-        if (!\array_key_exists($header, self::$headerLookup)) {
+        if (!\array_key_exists($headerPart, self::$headerLookup)) {
             throw new InvalidVersionException('Disallowed or unsupported version');
         }
 
-        return self::$headerLookup[$header];
+        return self::$headerLookup[$headerPart];
     }
 
     /**
