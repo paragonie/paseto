@@ -19,6 +19,7 @@ abstract class NonceFixer {
 
     public static function buildSetExplicitNonce(): \Closure {
         return function (string $nonce) {
+            /** @noinspection Annotator */
             $this->unitTestEncrypter = static function (ProtocolInterface $protocol) use ($nonce) {
                 $class = new class {
                     private static $nonce;
