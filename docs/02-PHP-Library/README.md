@@ -43,8 +43,6 @@ use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version2;
-use ParagonIE\Paseto\Rules\IssuedBy;
-use ParagonIE\Paseto\Rules\NotExpired;
 
 /**
  * @var SymmetricKey $sharedKey
@@ -80,7 +78,10 @@ use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\Rules\{
+    IssuedBy,
+    NotExpired
+};
 use ParagonIE\Paseto\ProtocolCollection;
 
 /**
@@ -92,8 +93,8 @@ $parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
 $parser = (new Parser())
     ->setKey($sharedKey)
     // Adding rules to be checked against the token
-    ->addRule(new NotExpired);
-    ->addRule(new IssuedBy('issuer defined during creation'));
+    ->addRule(new NotExpired)
+    ->addRule(new IssuedBy('issuer defined during creation'))
     ->setPurpose(Purpose::local())
     // Only allow version 2
     ->setAllowedVersions(ProtocolCollection::v2());
@@ -147,10 +148,4 @@ var_dump((string) $v2Token);
 // string(130) "v2.local.b6ClQBYz-s8k7CC-dEYz2sf3zQFqES4xNUP6K-lzQTRnxVlZFxNnT5I6ouSwYe1d-t9OTnjM9d46MEt__GJvHbNO1wwIfnf1Ear-.a2V5LWlkOmdhbmRhbGYw"
 var_dump(Version2::decrypt($v2Token, $key, $footer));
 // string(35) "This is a signed, non-JSON message."
-
-// Explicit nonces (for unit testing):
-$nonce = str_repeat("\0", 24);
-$v2Token = ParagonIE\Paseto\Protocol\Version2::encrypt($message, $key, $footer, $nonce);
-var_dump((string) $v2Token);
-// string(130) "v2.local.oFcz6G4gkzMlx3qF2-FnFeUNBwUG0TqR7aoIN8TwsJ1h3xSBKEBsKomYhDsEXHuB3_rVUpzXR45KtDvAzAMPmxZdrWU3SCO9kO_M.a2V5LWlkOmdhbmRhbGYw"
 ```
