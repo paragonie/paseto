@@ -19,6 +19,12 @@ to assist in cross-platform library development.
    * If there are only two versions, that means `v1` and `v2`.
    * If a future post-quantum `v3` is defined, `v1` should no longer be accepted.
    * If an additional version `v4` is defined, `v2` should no longer be accepted.
+5. New versions will be decided and formalized by the PASETO developers. 
+   * User-defined homemade protocols are discouraged. If implementors wish to break
+     this rule and define their own custom protocol suite, they must NOT continue
+     the {`v1`, `v2`, ... } series naming convention.
+   * Any version identifiers that match the regular expression, `/^v[0-9\.]+$/` are
+     reserved by the PASETO development team.
 
 # Versions
 
