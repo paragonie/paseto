@@ -10,6 +10,10 @@ use ParagonIE\Paseto\{
     Purpose
 };
 
+/**
+ * Class Header
+ * @package ParagonIE\Paseto\Parsing
+ */
 final class Header
 {
     /**

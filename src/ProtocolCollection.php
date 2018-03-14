@@ -9,10 +9,14 @@ use ParagonIE\Paseto\Protocol\{
 
 use ParagonIE\Paseto\Exception\InvalidVersionException;
 
+/**
+ * Class ProtocolCollection
+ * @package ParagonIE\Paseto
+ */
 final class ProtocolCollection
 {
-    // Our built-in whitelist of protocol types is defined here.
     /**
+     * Our built-in whitelist of protocol types is defined here.
      * @const array<int, class-string>
      */
     const WHITELIST = [

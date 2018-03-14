@@ -17,7 +17,6 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\Paseto\Parsing\PasetoMessage;
-
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
 /**
@@ -299,6 +298,7 @@ class Parser
     public function validate(JsonToken $token, bool $throwOnFailure = false): bool
     {
         if (empty($this->rules)) {
+            // No rules defined, so we default to "true".
             return true;
         }
         /** @var ValidationRuleInterface $rule */

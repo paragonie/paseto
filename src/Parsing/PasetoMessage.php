@@ -8,21 +8,19 @@ use ParagonIE\Paseto\Exception\{
     InvalidPurposeException
 };
 
+/**
+ * Class PasetoMessage
+ * @package ParagonIE\Paseto\Parsing
+ */
 final class PasetoMessage
 {
-    /**
-     * @var Header
-     */
-
+    /** @var Header */
     private $header;
-    /**
-     * @var string
-     */
+
+    /** @var string */
     private $encodedPayload;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $encodedFooter;
 
     /**

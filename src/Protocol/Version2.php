@@ -52,7 +52,7 @@ class Version2 implements ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
-     * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \SodiumException
      * @throws \TypeError
      */
@@ -72,7 +72,7 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @param string $nonceForUnitTesting
      * @return string
-     * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \SodiumException
      * @throws \TypeError
      */
@@ -102,7 +102,6 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @return string
      *
-     * @throws InvalidVersionException
      * @throws PasetoException
      * @throws \SodiumException
      * @throws \TypeError
@@ -131,7 +130,7 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @return string
      *
-     * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \TypeError
      */
     public static function sign(
@@ -163,7 +162,6 @@ class Version2 implements ProtocolInterface
      * @param AsymmetricPublicKey $key
      * @param string $footer
      * @return string
-     * @throws InvalidVersionException
      * @throws PasetoException
      * @throws \TypeError
      */

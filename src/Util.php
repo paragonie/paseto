@@ -2,15 +2,17 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use ParagonIE\ConstantTime\Binary;
+use ParagonIE\ConstantTime\{
+    Base64UrlSafe,
+    Binary
+};
 use ParagonIE\Paseto\Exception\PasetoException;
 
 /**
  * Class Util
  * @package ParagonIE\Paseto
  */
-class Util
+abstract class Util
 {
     /**
      * Computes the HKDF key derivation function specified in

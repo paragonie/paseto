@@ -7,10 +7,12 @@ use ParagonIE\ConstantTime\{
     Binary
 };
 use ParagonIE\Paseto\{
-    Protocol\Version1,
-    Protocol\Version2,
     ReceivingKey,
     ProtocolInterface
+};
+use ParagonIE\Paseto\Protocol\{
+    Version1,
+    Version2
 };
 
 /**

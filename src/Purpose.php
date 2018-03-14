@@ -44,6 +44,8 @@ final class Purpose
     ];
 
     /**
+     * Maps the fully-qualified class names for various SendingKey
+     * objects to the expected purpose string.
      * @const array<string, string>
      */
     const SENDING_KEY_MAP = [
@@ -65,6 +67,8 @@ final class Purpose
     ];
 
     /**
+     * Maps the fully-qualified class names for various ReceivingKey
+     * objects to the expected purpose string.
      * @const array<string, string>
      */
     const RECEIVING_KEY_MAP = [

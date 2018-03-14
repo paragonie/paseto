@@ -33,7 +33,6 @@ interface ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
-     * @param string $nonceForUnitTesting
      * @return string
      */
     public static function encrypt(
@@ -49,10 +48,6 @@ interface ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
-     * @throws \Exception
-     * @throws \Error
-     * @throws \Exception
-     * @throws \TypeError
      */
     public static function decrypt(string $data, SymmetricKey $key, string $footer = ''): string;
 
@@ -73,8 +68,6 @@ interface ProtocolInterface
      * @param AsymmetricPublicKey $key
      * @param string $footer
      * @return string
-     * @throws \Exception
-     * @throws \TypeError
      */
     public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string;
 }

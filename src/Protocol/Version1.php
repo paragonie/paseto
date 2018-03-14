@@ -62,9 +62,7 @@ class Version1 implements ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
-     * @throws InvalidVersionException
      * @throws PasetoException
-     * @throws \SodiumException
      * @throws \TypeError
      */
     public static function encrypt(
@@ -83,7 +81,6 @@ class Version1 implements ProtocolInterface
      * @param string $footer
      * @param string $nonceForUnitTesting
      * @return string
-     * @throws InvalidVersionException
      * @throws PasetoException
      * @throws \TypeError
      */
@@ -112,9 +109,7 @@ class Version1 implements ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
-     * @throws \Exception
-     * @throws \Error
-     * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \TypeError
      */
     public static function decrypt(string $data, SymmetricKey $key, string $footer = ''): string
@@ -137,7 +132,7 @@ class Version1 implements ProtocolInterface
      * @param AsymmetricSecretKey $key
      * @param string $footer
      * @return string
-     * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \TypeError
      */
     public static function sign(string $data, AsymmetricSecretKey $key, string $footer = ''): string
@@ -167,8 +162,7 @@ class Version1 implements ProtocolInterface
      * @param AsymmetricPublicKey $key
      * @param string $footer
      * @return string
-     * @throws \Exception
-     * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws \TypeError
      */
     public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string
@@ -302,7 +296,7 @@ class Version1 implements ProtocolInterface
             true
         );
         if (!\hash_equals($calc, $mac)) {
-            throw new PasetoException('Invalid MAC');
+            throw new SecurityException('Invalid MAC for given ciphertext.');
         }
 
         /** @var string|bool $plaintext */
@@ -350,6 +344,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Version 1 specific: Get the RSA public key for the given SA private key.
+     *
      * @param string $keyData
      * @return string
      */

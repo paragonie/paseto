@@ -7,4 +7,6 @@ namespace ParagonIE\Paseto;
  * @package ParagonIE\Paseto
  */
 interface ReceivingKey extends KeyInterface
-{}
+{
+
+}
