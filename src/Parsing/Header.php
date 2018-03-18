@@ -5,6 +5,7 @@ namespace ParagonIE\Paseto\Parsing;
 use ParagonIE\Paseto\{
     Exception\InvalidPurposeException,
     Exception\InvalidVersionException,
+    Exception\SecurityException,
     ProtocolInterface,
     ProtocolCollection,
     Purpose
