@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Parsing;
 
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\Paseto\Exception\{
     SecurityException,
     InvalidVersionException,
@@ -18,10 +19,10 @@ final class PasetoMessage
     private $header;
 
     /** @var string */
-    private $encodedPayload;
+    private $payload;
 
     /** @var string */
-    private $encodedFooter;
+    private $footer;
 
     /**
      * Parse a string into a deconstructed PasetoMessage object.
@@ -42,8 +43,8 @@ final class PasetoMessage
         }
 
         $this->header = new Header($pieces[0], $pieces[1]);
-        $this->encodedPayload = $pieces[2];
-        $this->encodedFooter = $count > 3 ? $pieces[3] : '';
+        $this->payload = Base64UrlSafe::decode($pieces[2]);
+        $this->footer = $count > 3 ? Base64UrlSafe::decode($pieces[3]) : '';
     }
 
     public function header(): Header
@@ -51,13 +52,13 @@ final class PasetoMessage
         return $this->header;
     }
 
-    public function encodedPayload(): string
+    public function payload(): string
     {
-        return $this->encodedPayload;
+        return $this->payload;
     }
 
-    public function encodedFooter(): string
+    public function footer(): string
     {
-        return $this->encodedFooter;
+        return $this->footer;
     }
 }
