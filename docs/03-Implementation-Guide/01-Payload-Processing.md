@@ -55,3 +55,12 @@ decrypt the token).
 Implementations should feel free to provide a means to extract the footer from a token,
 before decryption, since the footer is used in the calculation of the authentication
 tag for the encrypted payload.
+
+Users should beware that, until this authentication tag has been verified, the
+footer's contents are not authenticated.
+
+While a key identifier can generally be safely used for selecting the cryptographic
+key used to decrypt and/or verify payloads before verification, provided that they
+`key-id` is a public number that is associated with a particular key which is not
+supplied by attackers, any other fields stored in the footer MUST be distrusted
+until the payload has been verified.
