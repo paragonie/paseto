@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Exception\InvalidVersionException;
+use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\Version2\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version2\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version2\SymmetricKey;
@@ -72,8 +73,6 @@ class Version2VectorTest extends TestCase
     }
 
     /**
-     * @throws InvalidVersionException
-     * @throws \SodiumException
      * @throws \TypeError
      */
     public function testEncrypt()
@@ -159,13 +158,21 @@ class Version2VectorTest extends TestCase
             $version2Encrypt($message, $this->symmetricKey, $footer, $nonce2),
             'Test Vector 2E-5'
         );
+
+        $message = \json_encode(['data' => 'this is a signed message', 'exp' => '2019-01-01T00:00:00+00:00']);
+        $footer = \json_encode(['kid' => 'zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN']);
+        $this->assertSame(
+            'v2.local.5K4SCXNhItIhyNuVIZcwrdtaDKiyF81-eWHScuE0idiVqCo72bbjo07W05mqQkhLZdVbxEa5I_u5sgVk1QLkcWEcOSlLHwNpCkvmGGlbCdNExn6Qclw3qTKIIl5-zSLIrxZqOLwcFLYbVK1SrQ.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            $version2Encrypt($message, $this->symmetricKey, $footer, $nonce2),
+            'Test Vector 2E-6'
+        );
     }
 
     /**
      * @covers Version2::sign()
      *
-     * @throws InvalidVersionException
      * @throws \TypeError
+     * @throws PasetoException
      */
     public function testSignVectors()
     {
@@ -215,6 +222,14 @@ class Version2VectorTest extends TestCase
             'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwaXJlcyI6IjIwMTktMDEtMDFUMDA6MDA6MDArMDA6MDAifcMYjoUaEYXAtzTDwlcOlxdcZWIZp8qZga3jFS8JwdEjEvurZhs6AmTU3bRW5pB9fOQwm43rzmibZXcAkQ4AzQs.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
             Version2::sign($message, $this->privateKey, $footer),
             'Test Vector S-6'
+        );
+
+        $message = \json_encode(['data' => 'this is a signed message', 'exp' => '2019-01-01T00:00:00+00:00']);
+        $footer = \json_encode(['kid' => 'zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN']);
+        $this->assertSame(
+            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAxOS0wMS0wMVQwMDowMDowMCswMDowMCJ9flsZsx_gYCR0N_Ec2QxJFFpvQAs7h9HtKwbVK2n1MJ3Rz-hwe8KUqjnd8FAnIJZ601tp7lGkguU63oGbomhoBw.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            Version2::sign($message, $this->privateKey, $footer),
+            'Test Vector 2E-6'
         );
     }
 }
