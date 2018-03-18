@@ -13,7 +13,8 @@ use ParagonIE\Paseto\Keys\{
 };
 use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
-    PasetoException
+    PasetoException,
+    SecurityException
 };
 use ParagonIE\Paseto\{
     ProtocolInterface,
@@ -218,6 +219,7 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @param string $nonceForUnitTesting
      * @return string
+     * @throws SecurityException
      * @throws \SodiumException
      * @throws \TypeError
      */

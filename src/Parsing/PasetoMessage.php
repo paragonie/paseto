@@ -35,10 +35,13 @@ final class PasetoMessage
      * Parse a string into a deconstructed PasetoMessage object.
      *
      * @param string $tainted      Tainted user-provided string.
+     * @return self
      *
      * @throws SecurityException
      * @throws InvalidVersionException
      * @throws InvalidPurposeException
+     * @return PasetoMessage
+     * @throws \TypeError
      */
     public static function fromString(string $tainted): self
     {
