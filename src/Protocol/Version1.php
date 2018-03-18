@@ -20,6 +20,10 @@ use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
+use ParagonIE\Paseto\Parsing\{
+    Header,
+    PasetoMessage
+};
 use phpseclib\Crypt\RSA;
 
 /**
@@ -146,13 +150,12 @@ class Version1 implements ProtocolInterface
         $signature = $rsa->sign(
             Util::preAuthEncode($header, $data, $footer)
         );
-        if ($footer) {
-            return $header .
-                Base64UrlSafe::encodeUnpadded($data . $signature) .
-                '.' .
-                Base64UrlSafe::encodeUnpadded($footer);
-        }
-        return $header . Base64UrlSafe::encodeUnpadded($data . $signature);
+
+        return (new PasetoMessage(
+            Header::fromString($header),
+            $data . $signature,
+            $footer
+        ))->toString();
     }
 
     /**
@@ -240,13 +243,12 @@ class Version1 implements ProtocolInterface
             $authKey,
             true
         );
-        if ($footer) {
-            return $header .
-                Base64UrlSafe::encodeUnpadded($nonce . $ciphertext . $mac) .
-                '.' .
-                Base64UrlSafe::encodeUnpadded($footer);
-        }
-        return $header . Base64UrlSafe::encodeUnpadded($nonce . $ciphertext . $mac);
+
+        return (new PasetoMessage(
+            Header::fromString($header),
+            $nonce . $ciphertext . $mac,
+            $footer
+        ))->toString();
     }
 
     /**

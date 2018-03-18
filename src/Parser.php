@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\Paseto\Exception\{
     EncodingException,
     InvalidKeyException,
@@ -80,9 +79,7 @@ class Parser
      */
     public static function extractFooter(string $tainted): string
     {
-        return Base64UrlSafe::decode(
-            (new PasetoMessage($tainted))->encodedFooter()
-        );
+        return PasetoMessage::fromString($tainted)->footer();
     }
 
     /**
@@ -155,7 +152,7 @@ class Parser
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
-        $parsed = new PasetoMessage($tainted);
+        $parsed = PasetoMessage::fromString($tainted);
 
         // First, check against the user's specified list of allowed versions.
         /** @var ProtocolInterface $protocol */
@@ -165,7 +162,7 @@ class Parser
         }
 
         /** @var Purpose $purpose */
-        $footer = Base64UrlSafe::decode($parsed->encodedFooter());
+        $footer = $parsed->footer();
         $purpose = $parsed->header()->purpose();
 
         // $this->purpose is not mandatory, but if it's set, verify against it.

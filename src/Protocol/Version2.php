@@ -19,6 +19,10 @@ use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
+use ParagonIE\Paseto\Parsing\{
+    Header,
+    PasetoMessage
+};
 
 /**
  * Class Version1
@@ -146,13 +150,12 @@ class Version2 implements ProtocolInterface
             Util::preAuthEncode($header, $data, $footer),
             $key->raw()
         );
-        if ($footer) {
-            return $header .
-                Base64UrlSafe::encodeUnpadded($data . $signature) .
-                '.' .
-                Base64UrlSafe::encodeUnpadded($footer);
-        }
-        return $header . Base64UrlSafe::encodeUnpadded($data . $signature);
+
+        return (new PasetoMessage(
+            Header::fromString($header),
+            $data . $signature,
+            $footer
+        ))->toString();
     }
 
     /**
@@ -243,13 +246,12 @@ class Version2 implements ProtocolInterface
             $nonce,
             $key->raw()
         );
-        if ($footer) {
-            return $header .
-                Base64UrlSafe::encodeUnpadded($nonce . $ciphertext) .
-                '.' .
-                Base64UrlSafe::encodeUnpadded($footer);
-        }
-        return $header . Base64UrlSafe::encodeUnpadded($nonce . $ciphertext);
+
+        return (new PasetoMessage(
+            Header::fromString($header),
+            $nonce . $ciphertext,
+            $footer
+        ))->toString();
     }
 
     /**
