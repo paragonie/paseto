@@ -50,4 +50,11 @@ final class Header
     {
         return $this->purpose;
     }
+
+    public function toString(): string
+    {
+        return $this->protocol->header() . "."
+            . $this->purpose->rawString() . "."
+        ;
+    }
 }

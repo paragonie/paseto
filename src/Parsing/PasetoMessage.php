@@ -70,4 +70,17 @@ final class PasetoMessage
     {
         return $this->footer;
     }
+
+    public function toString(): string
+    {
+        $message =  $this->header->toString()
+            . Base64UrlSafe::encodeUnpadded($this->payload)
+        ;
+
+        if ($this->footer === '') {
+            return $message;
+        }
+
+        return $message . "." . Base64UrlSafe::encodeUnpadded($this->footer);
+    }
 }
