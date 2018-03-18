@@ -161,3 +161,4 @@ may be more relevant.
 * **[Rust](https://github.com/instructure/paseto)** by [Instructure, Inc.](https://github.com/instructure)
 * **[Python](https://github.com/rlittlefield/pypaseto)** by [Ryan Littlefield](https://github.com/rlittlefield) and [Jim Dabell](https://github.com/JimDabell)
 * **[Swift](https://github.com/aidantwoods/swift-paseto)** by [Aidan Woods](https://github.com/aidantwoods)
+* **[Java](https://github.com/nbaars/paseto4j)** by [Nanne Baars](https://github.com/nbaars)
