@@ -41,6 +41,26 @@ final class Header
         $this->purpose  = new Purpose($purpose);
     }
 
+    /**
+     * Parse a string into a deconstructed Header object.
+     *
+     * @param string $tainted      Tainted user-provided string.
+     * @return self
+     * @throws SecurityException
+     */
+    public static function fromString(string $tainted): self
+    {
+        /** @var array<int, string> $pieces */
+        $pieces = \explode('.', $tainted);
+        $count = \count($pieces);
+        if ($count !== 3 or $pieces[2] !== '') {
+            // we expect "version.purpose." format
+            throw new SecurityException('Truncated or invalid header');
+        }
+
+        return new Header($pieces[0], $pieces[1]);
+    }
+
     public function protocol(): ProtocolInterface
     {
         return $this->protocol;
