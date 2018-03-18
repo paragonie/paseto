@@ -24,6 +24,13 @@ final class PasetoMessage
     /** @var string */
     private $footer;
 
+    public function __construct(Header $header, string $payload, string $footer)
+    {
+        $this->header  = $header;
+        $this->payload = $payload;
+        $this->footer  = $footer;
+    }
+
     /**
      * Parse a string into a deconstructed PasetoMessage object.
      *
@@ -33,7 +40,7 @@ final class PasetoMessage
      * @throws InvalidVersionException
      * @throws InvalidPurposeException
      */
-    public function __construct(string $tainted)
+    public static function fromString(string $tainted): self
     {
         /** @var array<int, string> $pieces */
         $pieces = \explode('.', $tainted);
@@ -42,9 +49,11 @@ final class PasetoMessage
             throw new SecurityException('Truncated or invalid token');
         }
 
-        $this->header = new Header($pieces[0], $pieces[1]);
-        $this->payload = Base64UrlSafe::decode($pieces[2]);
-        $this->footer = $count > 3 ? Base64UrlSafe::decode($pieces[3]) : '';
+        $header = new Header($pieces[0], $pieces[1]);
+        $payload = Base64UrlSafe::decode($pieces[2]);
+        $footer = $count > 3 ? Base64UrlSafe::decode($pieces[3]) : '';
+
+        return new self($header, $payload, $footer);
     }
 
     public function header(): Header

@@ -79,7 +79,7 @@ class Parser
      */
     public static function extractFooter(string $tainted): string
     {
-        return (new PasetoMessage($tainted))->footer();
+        return PasetoMessage::fromString($tainted)->footer();
     }
 
     /**
@@ -152,7 +152,7 @@ class Parser
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
-        $parsed = new PasetoMessage($tainted);
+        $parsed = PasetoMessage::fromString($tainted);
 
         // First, check against the user's specified list of allowed versions.
         /** @var ProtocolInterface $protocol */
