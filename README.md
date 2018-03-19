@@ -137,8 +137,8 @@ the known public key as the HMAC-SHA256 key, thereby allowing arbitrary token fo
 With Paseto, your options are `version` and a `purpose`. There are two possible
 values for `purpose`:
 
-* `local` -- shared-key authenticated encrypted
-* `public` -- public-key authentication (a.k.a. digital signatures)
+* `local` -- shared-key encryption (symmetric-key, [AEAD](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken))
+* `public` -- public-key digital signatures (asymmetric-key)
 
 Paseto only allows you to use [authenticated modes](https://tonyarcieri.com/all-the-crypto-code-youve-ever-written-is-probably-broken).
 
