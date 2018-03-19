@@ -2,11 +2,11 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Rules;
 
-use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\{
     JsonToken,
     ValidationRuleInterface
 };
+use ParagonIE\Paseto\Exception\PasetoException;
 
 /**
  * Class Subject

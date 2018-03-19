@@ -6,7 +6,6 @@ use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2
 };
-
 use ParagonIE\Paseto\Exception\InvalidVersionException;
 
 /**

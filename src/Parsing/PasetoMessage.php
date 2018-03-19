@@ -24,6 +24,13 @@ final class PasetoMessage
     /** @var string */
     private $footer;
 
+    /**
+     * PasetoMessage constructor.
+     *
+     * @param Header $header
+     * @param string $payload
+     * @param string $footer
+     */
     public function __construct(Header $header, string $payload, string $footer)
     {
         $this->header  = $header;
@@ -74,6 +81,10 @@ final class PasetoMessage
         return $this->footer;
     }
 
+    /**
+     * @return string
+     * @throws \TypeError
+     */
     public function toString(): string
     {
         $message =  $this->header->toString()
