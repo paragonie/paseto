@@ -77,3 +77,21 @@ into their application.
 No, neither Paseto nor JWT were designed for
 [stateless session management](http://cryto.net/~joepie91/blog/2016/06/13/stop-using-jwt-for-sessions/),
 which is largely an anti-pattern.
+
+There is no built-in mechanism to defeat replay attacks within the validity
+window, should a token become compromised, without server-side persistent
+data storage.
+
+Therefore, neither PASETO nor JWT should be used in any attempt to obviate the
+need for server-side persistent data storage. 
+
+### What Should We Use PASETO For?
+
+Some example use-cases:
+
+1. (`local`): Tamper-proof, short-lived immutable data stored on client machines.
+   * e.g. "remember me on this computer" cookies, which secure a unique ID that
+     are used in a database lookup upon successful validation to provide long-term
+     user authentication across multiple browsing sessions.
+2. (`public`): Transparent claims provided by a third party.
+   * e.g. Authentication and authorization protocols (OAuth 2, OIDC).
