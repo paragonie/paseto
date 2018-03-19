@@ -41,6 +41,11 @@ In the table above, DateTime means an ISO 8601 compliant DateTime string.
 Any other claims can be freely used. These keys are only reserved in the top-level
 JSON object.
 
+The keys in the above table are case-sensitive.
+
+Implementors SHOULD provide some means to discourage setting invalid/arbitrary data
+to these reserved claims.
+
 ### Key-ID Support
 
 Some systems need to support key rotation, but since the payloads of a `local`
@@ -64,3 +69,14 @@ key used to decrypt and/or verify payloads before verification, provided that th
 `key-id` is a public number that is associated with a particular key which is not
 supplied by attackers, any other fields stored in the footer MUST be distrusted
 until the payload has been verified.
+
+## Future Changes to Payload Processing
+
+The payload processing SHOULD NOT change after version 1.0.0 of the reference
+implementation has been tagged, signed, and released; only the cryptography
+protocols will receive new versions.
+
+In the event that this turns out to not be true, we will change the first letter
+of the version identifier (`v`) to another ASCII-compatible alphanumeric character.
+
+However, we hope to never need to do this.
