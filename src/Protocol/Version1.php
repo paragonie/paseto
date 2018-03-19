@@ -43,11 +43,21 @@ class Version1 implements ProtocolInterface
     /** @var RSA */
     protected static $rsa;
 
+    /** @var bool $checked */
+    private static $checked = false;
+
     /**
      * Must be constructable with no arguments so an instance may be passed
      * around in a type safe way.
+     *
+     * @throws SecurityException
      */
-    public function __construct() {}
+    public function __construct()
+    {
+        if (!self::$checked) {
+            self::checkPhpSecLib();
+        }
+    }
 
     /**
      * A unique header string with which the protocol can be identified.
@@ -210,7 +220,6 @@ class Version1 implements ProtocolInterface
      * @throws PasetoException
      * @throws \TypeError
      */
-
     public static function aeadEncrypt(
         string $plaintext,
         string $header,
@@ -334,6 +343,8 @@ class Version1 implements ProtocolInterface
     /**
      * Get the PHPSecLib RSA provider for signing
      *
+     * Hard-coded: RSASSA-PSS with MGF1+SHA384 and SHA384, with e = 65537
+     *
      * @return RSA
      */
     public static function getRsa(): RSA
@@ -346,7 +357,28 @@ class Version1 implements ProtocolInterface
     }
 
     /**
-     * Version 1 specific: Get the RSA public key for the given SA private key.
+     * @throws SecurityException
+     */
+    public static function checkPhpSecLib(): bool
+    {
+        if (self::$checked) {
+            return true;
+        }
+        if (!defined('CRYPT_RSA_EXPONENT')) {
+            define('CRYPT_RSA_EXPONENT', 65537);
+        } elseif (CRYPT_RSA_EXPONENT != 65537) {
+            throw new SecurityException(
+                'RSA Public Exponent must be equal to 65537; it is set to ' .
+                CRYPT_RSA_EXPONENT
+            );
+        }
+        self::$checked = true;
+        return true;
+    }
+
+    /**
+     * Version 1 specific:
+     * Get the RSA public key for the given RSA private key.
      *
      * @param string $keyData
      * @return string
