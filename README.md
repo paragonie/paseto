@@ -155,10 +155,10 @@ may be more relevant.
 ## Other Implementations
 
 * **[Golang](https://github.com/o1egl/paseto)** by [Oleg Lobanov](https://github.com/o1egl)
+* **[Java](https://github.com/nbaars/paseto4j)** by [Nanne Baars](https://github.com/nbaars)
 * **[Javascript (Node.js)](https://github.com/sjudson/paseto.js)** by [Samuel Judson](https://github.com/sjudson)
 * **[.NET](https://github.com/idaviddesmet/paseto-dotnet)** by [David De Smet](https://github.com/idaviddesmet)
 * **[.NET Standard](https://github.com/dustinsoftware/paseto.net)** by [Dustin Masters](https://github.com/dustinsoftware)
 * **[Rust](https://github.com/instructure/paseto)** by [Instructure, Inc.](https://github.com/instructure)
 * **[Python](https://github.com/rlittlefield/pypaseto)** by [Ryan Littlefield](https://github.com/rlittlefield) and [Jim Dabell](https://github.com/JimDabell)
 * **[Swift](https://github.com/aidantwoods/swift-paseto)** by [Aidan Woods](https://github.com/aidantwoods)
-* **[Java](https://github.com/nbaars/paseto4j)** by [Nanne Baars](https://github.com/nbaars)
