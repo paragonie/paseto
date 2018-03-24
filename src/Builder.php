@@ -182,10 +182,10 @@ class Builder
     /**
      * Set the 'exp' claim for the token we're building. (Mutable.)
      *
-     * @param \DateTime|null $time
+     * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function setExpiration(\DateTime $time = null): self
+    public function setExpiration(\DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new \DateTime('NOW');
