@@ -97,7 +97,7 @@ class AsymmetricSecretKey implements SendingKey
             $rsa = Version1::getRsa();
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
-            return new self($keypair['privatekey']);
+            return new self($keypair['privatekey'], $protocol);
         }
         return new self(
             \sodium_crypto_sign_secretkey(

@@ -42,6 +42,20 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * @param ProtocolInterface|null $protocol
+     *
+     * @return SymmetricKey
+     */
+    public static function generate(ProtocolInterface $protocol = null): self
+    {
+        $protocol = $protocol ?? new Version2;
+        return new static(
+            \random_bytes($protocol::getSymmetricKeyByteLength()),
+            $protocol
+        );
+    }
+
+    /**
      * @param string $keyMaterial
      *
      * @return self
