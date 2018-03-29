@@ -102,7 +102,8 @@ class AsymmetricSecretKey implements SendingKey
         return new self(
             \sodium_crypto_sign_secretkey(
                 \sodium_crypto_sign_keypair()
-            )
+            ),
+            $protocol
         );
     }
 
