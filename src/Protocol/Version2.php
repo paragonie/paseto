@@ -11,6 +11,10 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Keys\Version2\{
+    AsymmetricSecretKey as V2AsymmetricSecretKey,
+    SymmetricKey as V2SymmetricKey
+};
 use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     PasetoException,
@@ -33,6 +37,7 @@ class Version2 implements ProtocolInterface
 {
     /** @const string HEADER */
     const HEADER = 'v2';
+    const SYMMETRIC_KEY_BYTES = 32;
 
     /**
      * Must be constructable with no arguments so an instance may be passed
@@ -48,6 +53,34 @@ class Version2 implements ProtocolInterface
     public static function header(): string
     {
         return self::HEADER;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getSymmetricKeyByteLength(): int
+    {
+        return (int) static::SYMMETRIC_KEY_BYTES;
+    }
+
+    /**
+     * @return AsymmetricSecretKey
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
+    {
+        return V2AsymmetricSecretKey::generate(new static);
+    }
+
+    /**
+     * @return SymmetricKey
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function generateSymmetricKey(): SymmetricKey
+    {
+        return V2SymmetricKey::generate(new static);
     }
 
     /**

@@ -11,6 +11,10 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Keys\Version1\{
+    AsymmetricSecretKey as V1AsymmetricSecretKey,
+    SymmetricKey as V1SymmetricKey
+};
 use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     PasetoException,
@@ -36,6 +40,8 @@ class Version1 implements ProtocolInterface
     const CIPHER_MODE = 'aes-256-ctr';
     const HASH_ALGO = 'sha384';
 
+    const SYMMETRIC_KEY_BYTES = 32;
+
     const NONCE_SIZE = 32;
     const MAC_SIZE = 48;
     const SIGN_SIZE = 256; // 2048-bit RSA = 256 byte signature
@@ -57,6 +63,36 @@ class Version1 implements ProtocolInterface
         if (!self::$checked) {
             self::checkPhpSecLib();
         }
+    }
+
+    /**
+     * @return int
+     */
+    public static function getSymmetricKeyByteLength(): int
+    {
+        return (int) static::SYMMETRIC_KEY_BYTES;
+    }
+
+    /**
+     * @return AsymmetricSecretKey
+     * @throws SecurityException
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
+    {
+        return V1AsymmetricSecretKey::generate(new static);
+    }
+
+    /**
+     * @return SymmetricKey
+     * @throws SecurityException
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function generateSymmetricKey(): SymmetricKey
+    {
+        return V1SymmetricKey::generate(new static);
     }
 
     /**

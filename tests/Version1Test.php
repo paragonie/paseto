@@ -15,6 +15,22 @@ use PHPUnit\Framework\TestCase;
 class Version1Test extends TestCase
 {
     /**
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public function testKeyGen()
+    {
+        $symmetric = Version1::generateSymmetricKey();
+        $secret = Version1::generateAsymmetricSecretKey();
+
+        $this->assertInstanceOf('ParagonIE\Paseto\Keys\SymmetricKey', $symmetric);
+        $this->assertInstanceOf('ParagonIE\Paseto\Keys\AsymmetricSecretKey', $secret);
+
+        $this->assertSame(Version1::getSymmetricKeyByteLength(), Binary::safeStrlen($symmetric->raw()));
+        $this->assertGreaterThanOrEqual(1700, Binary::safeStrlen($secret->raw())); // PEM encoded
+    }
+
+    /**
      * @covers Version1::getNonce()
      *
      * @throws \TypeError
@@ -40,7 +56,6 @@ class Version1Test extends TestCase
      * @covers Version1::decrypt()
      * @covers Version1::encrypt()
      *
-     * @throws InvalidVersionException
      * @throws \Error
      * @throws \Exception
      * @throws \SodiumException

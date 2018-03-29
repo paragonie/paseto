@@ -28,6 +28,21 @@ interface ProtocolInterface
     public static function header(): string;
 
     /**
+     * @return AsymmetricSecretKey
+     */
+    public static function generateAsymmetricSecretKey(): AsymmetricSecretKey;
+
+    /**
+     * @return SymmetricKey
+     */
+    public static function generateSymmetricKey(): SymmetricKey;
+
+    /**
+     * @return int
+     */
+    public static function getSymmetricKeyByteLength(): int;
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data

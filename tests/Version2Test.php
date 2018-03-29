@@ -15,10 +15,25 @@ use PHPUnit\Framework\TestCase;
 class Version2Test extends TestCase
 {
     /**
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public function testKeyGen()
+    {
+        $symmetric = Version2::generateSymmetricKey();
+        $secret = Version2::generateAsymmetricSecretKey();
+
+        $this->assertInstanceOf('ParagonIE\Paseto\Keys\SymmetricKey', $symmetric);
+        $this->assertInstanceOf('ParagonIE\Paseto\Keys\AsymmetricSecretKey', $secret);
+
+        $this->assertSame(Version2::getSymmetricKeyByteLength(), Binary::safeStrlen($symmetric->raw()));
+        $this->assertSame(64, Binary::safeStrlen($secret->raw()));
+    }
+
+    /**
      * @covers Version2::decrypt()
      * @covers Version2::encrypt()
      *
-     * @throws InvalidVersionException
      * @throws \Error
      * @throws \Exception
      * @throws \SodiumException
