@@ -48,7 +48,7 @@ abstract class Util
              * @psalm-suppress UndefinedFunction
              * This is wrapped in an is_callable() check.
              */
-            return (string) \hash_hkdf($hash, $ikm, $length, $info, $salt);
+            return (string) \hash_hkdf($hash, $ikm, $length, $info, $salt ?? '');
         }
 
         $digest_length = Binary::safeStrlen(
