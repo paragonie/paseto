@@ -70,6 +70,22 @@ key used to decrypt and/or verify payloads before verification, provided that th
 supplied by attackers, any other fields stored in the footer MUST be distrusted
 until the payload has been verified.
 
+**IMPORTANT**: Key identifiers MUST be independent of the actual keys
+used by Paseto.
+
+For example, you MUST NOT just drop the public key into the footer for
+a `public` token and have the recipient use the provided public key.
+Doing so would allow an attacker to simply replace the public key with
+one of their own choosing, which will cause the recipient to simply
+accept any signature for any message as valid, which defeats the
+security goals of public-key cryptography.
+
+Instead, it's recommended that implementors and users use a unique
+identifier for each key (independent of the cryptographic key's contents
+itself) that is used in a database or other key-value store to select
+the apppropriate cryptographic key. These search operations MUST fail
+closed if no valid key is found for the given key identifier.
+
 ## Future Changes to Payload Processing
 
 The payload processing SHOULD NOT change after version 1.0.0 of the reference
