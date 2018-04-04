@@ -154,7 +154,7 @@ may be more relevant.
 
 ## Other Implementations
 
-* **[C](https://github.com/authenticvision/libpaseto)** by [Authentic Vision GmbH](https://github.com/authenticvision)
+* **[C](https://github.com/authenticvision/libpaseto)** by [Thomas Renoth](https://github.com/minus7)
 * **[Golang](https://github.com/o1egl/paseto)** by [Oleg Lobanov](https://github.com/o1egl)
 * **[Java](https://github.com/nbaars/paseto4j)** by [Nanne Baars](https://github.com/nbaars)
 * **[Javascript (Node.js)](https://github.com/sjudson/paseto.js)** by [Samuel Judson](https://github.com/sjudson)
