@@ -22,7 +22,7 @@
   "require": {
     "php": "^7",
     "paragonie/constant_time_encoding": "^2",
-    "paragonie/sodium_compat": "^1.5",
+    "paragonie/sodium_compat": "^1.6",
     "phpseclib/phpseclib": "^2"
   },
   "require-dev": {
