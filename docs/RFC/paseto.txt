@@ -13,7 +13,7 @@ Expires: October 7, 2018
 
 Abstract
 
-   Platform-Agonstic SEcurity TOkens (PASETO) provides a
+   Platform-Agnostic SEcurity TOkens (PASETO) provides a
    cryptographically secure, compact, and URL-safe representation of
    claims that may be transferred between two parties.  The claims in a
    PASETO are encoded as a JavaScript Object (JSON), version-tagged, and
@@ -67,8 +67,6 @@ Table of Contents
 
 1.  Introduction
 
-   Foo
-
 1.1.  Conventions and Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -99,6 +97,8 @@ Author's Address
    United States
 
    Email: security@paragonie.com
+
+
 
 
 
