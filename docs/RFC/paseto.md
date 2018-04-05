@@ -18,7 +18,7 @@
 
 .# Abstract
 
-Platform-Agonstic SEcurity TOkens (PASETO) provides a cryptographically
+Platform-Agnostic SEcurity TOkens (PASETO) provides a cryptographically
 secure, compact, and URL-safe representation of claims that may be
 transferred between two parties. The claims in a PASETO are encoded as
 a JavaScript Object (JSON), version-tagged, and either encrypted
