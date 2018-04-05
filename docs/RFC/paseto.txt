@@ -1,0 +1,112 @@
+
+
+
+
+Network Working Group                                     S. Arciszewski
+Internet-Draft                            Paragon Initiative Enterprises
+Intended status: Informational                             April 5, 2018
+Expires: October 7, 2018
+
+
+               PASETO: Platform-Agnostic SEcurity TOkens
+                   draft-paragonie-pasetorfc-draft00
+
+Abstract
+
+   Platform-Agonstic SEcurity TOkens (PASETO) provides a
+   cryptographically secure, compact, and URL-safe representation of
+   claims that may be transferred between two parties.  The claims in a
+   PASETO are encoded as a JavaScript Object (JSON), version-tagged, and
+   either encrypted or signed using public-key cryptography.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on October 7, 2018.
+
+Copyright Notice
+
+   Copyright (c) 2018 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+Arciszewski              Expires October 7, 2018                [Page 1]
+
+Internet-Draft                                                April 2018
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Conventions and Terminology . . . . . . . . . . . . . . .   2
+   2.  Normative References  . . . . . . . . . . . . . . . . . . . .   2
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   2
+
+1.  Introduction
+
+   Foo
+
+1.1.  Conventions and Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+
+   Additionally, the key words "*MIGHT*", "*COULD*", "*MAY WISH TO*",
+   "*WOULD PROBABLY*", "*SHOULD CONSIDER*", and "*MUST (BUT WE KNOW YOU
+   WON'T)*" in this document are to interpreted as described in RFC 6919
+   [RFC6919].
+
+2.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
+              editor.org/info/rfc2119>.
+
+   [RFC6919]  Barnes, R., Kent, S., and E. Rescorla, "Further Key Words
+              for Use in RFCs to Indicate Requirement Levels", RFC 6919,
+              DOI 10.17487/RFC6919, April 2013, <https://www.rfc-
+              editor.org/info/rfc6919>.
+
+Author's Address
+
+   Scott Arciszewski
+   Paragon Initiative Enterprises
+   United States
+
+   Email: security@paragonie.com
+
+
+
+
+
+
+
+
+
+
+Arciszewski              Expires October 7, 2018                [Page 2]
