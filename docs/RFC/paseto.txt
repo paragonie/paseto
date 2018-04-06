@@ -61,13 +61,39 @@ Internet-Draft                                                April 2018
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-     1.1.  Conventions and Terminology . . . . . . . . . . . . . . .   2
-   2.  Normative References  . . . . . . . . . . . . . . . . . . . .   2
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Difference Between PASETO and JOSE  . . . . . . . . . . .   2
+   2.  Notation and Conventions  . . . . . . . . . . . . . . . . . .   2
+   3.  PASETO Message Format . . . . . . . . . . . . . . . . . . . .   3
+   4.  PASETO Protocol Versions  . . . . . . . . . . . . . . . . . .   3
+   5.  Normative References  . . . . . . . . . . . . . . . . . . . .   3
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   4
 
 1.  Introduction
 
-1.1.  Conventions and Terminology
+   Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically
+   secure, compact, and URL-safe representation of claims intended for
+   space-constrained environments such as HTTP Cookies, HTTP
+   Authorization headers, and URI query parameters.  PASETOs encode
+   claims to be transmitted in a JSON [RFC7159] object, and is either
+   encrypted or signed using public-key cryptography.
+
+1.1.  Difference Between PASETO and JOSE
+
+   The key difference between PASETO and the JOSE family of standards
+   (JWS [RFC7516], JWE [RFC7517], JWK [RFC7518], JWA [RFC7518], and JWT
+   [RFC7519]) is that JOSE allows implementors and users to mix and
+   match their own choice of cryptographig algorithms (specified by the
+   "alg" header in JWT), while PASETO has clearly defined protocol
+   versions to prevent users without a cryptography engineering
+   background from selecting or permitting an insecure configuration.
+
+   PASETO is defined in two pieces:
+
+   1.  The PASETO Message Format, defined in Section 3
+
+   2.  The PASETO Protocol Version, defined in Section 4
+
+2.  Notation and Conventions
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
@@ -78,7 +104,44 @@ Table of Contents
    WON'T)*" in this document are to interpreted as described in RFC 6919
    [RFC6919].
 
-2.  Normative References
+
+
+
+
+
+Arciszewski              Expires October 7, 2018                [Page 2]
+
+Internet-Draft                                                April 2018
+
+
+3.  PASETO Message Format
+
+   Without the Optional Footer:
+
+                          version.purpose.payload
+
+   With the Optional Footer:
+
+                      version.purpose.payload.footer
+
+   The *version* is a string that represents the current version of the
+   protocol.  Currently, two versions are specified, which each possess
+   their own ciphersuites.  Accepted values: *v1*, *v2*.
+
+   The *purpose* is a short string describing the purpose of the token.
+   Accepted values: *local*, *public*.
+
+   o  *local*: shared-key authenticated encryption
+
+   o  *public*: public-key digital signatures; *not encrypted*
+
+   Any optional data can be appended to the end.  This information is
+   NOT encrypted, but it is used in calculating the authentication tag
+   for the payload.  It's always base64url-encoded.
+
+4.  PASETO Protocol Versions
+
+5.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -89,6 +152,35 @@ Table of Contents
               for Use in RFCs to Indicate Requirement Levels", RFC 6919,
               DOI 10.17487/RFC6919, April 2013, <https://www.rfc-
               editor.org/info/rfc6919>.
+
+   [RFC7159]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
+              Interchange Format", RFC 7159, DOI 10.17487/RFC7159, March
+              2014, <https://www.rfc-editor.org/info/rfc7159>.
+
+   [RFC7516]  Jones, M. and J. Hildebrand, "JSON Web Encryption (JWE)",
+              RFC 7516, DOI 10.17487/RFC7516, May 2015,
+              <https://www.rfc-editor.org/info/rfc7516>.
+
+
+
+
+
+Arciszewski              Expires October 7, 2018                [Page 3]
+
+Internet-Draft                                                April 2018
+
+
+   [RFC7517]  Jones, M., "JSON Web Key (JWK)", RFC 7517,
+              DOI 10.17487/RFC7517, May 2015, <https://www.rfc-
+              editor.org/info/rfc7517>.
+
+   [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
+              DOI 10.17487/RFC7518, May 2015, <https://www.rfc-
+              editor.org/info/rfc7518>.
+
+   [RFC7519]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
+              (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
+              <https://www.rfc-editor.org/info/rfc7519>.
 
 Author's Address
 
@@ -109,4 +201,24 @@ Author's Address
 
 
 
-Arciszewski              Expires October 7, 2018                [Page 2]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Arciszewski              Expires October 7, 2018                [Page 4]
