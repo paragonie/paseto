@@ -88,14 +88,13 @@ Any optional data can be appended to the **footer**. This data is authenticated
 through inclusion in the calculation of the authentication tag along with the header
 and payload. The **footer** is NOT encrypted.
 
-# PASETO Protocol Versions
+## Base64 Encoding
 
-PASETO defines two protocol versions, **v1** and **v2**. Each protocol version
-strictly defines the cryptographic primitives used. Changes to the primitives
-requires new protocol versions.
+Nearly every component in a PASETO (except for the version, purpose, and
+the `.` separators) will be encoded using base64url as defined in [@!RFC4648],
+without `=` padding.
 
-Both **v1** and **v2** provide authentication of the entire PASETO message,
-including the **version**, **purpose**, **payload** and **footer**.
+In this document. `b64()` refers to this unpadded variant of b64url.
 
 ## Authentication Padding
 
@@ -108,7 +107,6 @@ associated data (AAD). In `remote` mode, which is not encrypted,
 this encoding is applied to the components of the token, with
 respect to the protocol version being followed.
 
-The reference implementation resides in `Util::preAuthEncode()`.
 We will refer to it as **PAE** in this document (short for
 Pre-Authentication Encoding).
 
@@ -175,7 +173,17 @@ This is not used to encode data prior to decryption, and no decoding function
 is provided or specified. This merely exists to prevent canonicalization
 attacks.
 
-# Version v1
+# Protocol Versions
+
+PASETO defines two protocol versions, **v1** and **v2**. Each protocol version
+strictly defines the cryptographic primitives used. Changes to the primitives
+requires new protocol versions. Future RFCs **MAY** introduce new PASETO
+protocol versions by continuing the convention (e.g. **v3**, **v4**, ...).
+
+Both **v1** and **v2** provide authentication of the entire PASETO message,
+including the **version**, **purpose**, **payload** and **footer**.
+
+# PASETO Protocol Version v1
 
 Version **v1** is a compatibility mode comprised of cryptographic primitives
 likely available on legacy systems. **v1** **SHOULD NOT** be used when
@@ -248,10 +256,9 @@ Given a message `m`, key `k`, and optional footer `f`
 7. Calculate HMAC-SHA384 of the output of `preAuth`, using `Ak` as the
    authentication key. We'll call this `t`.
 8. If `f` is:
-   * Empty: return "`h` || base64url(`n` || `c` || `t`)"
-   * Non-empty: return "`h` || base64url(`n` || `c` || `t`) || `.` || base64url(`f`)"
+   * Empty: return "`h` || b64(`n` || `c` || `t`)"
+   * Non-empty: return "`h` || b64(`n` || `c` || `t`) || `.` || b64(`f`)"
    * ...where || means "concatenate"
-   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
 
 ### v1.Decrypt
 
@@ -263,7 +270,7 @@ Given a message `m`, key `k`, and optional footer `f`
 2. Verify that the message begins with `v1.local.`, otherwise throw an exception.
    This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
-   between `m` and `f`) from base64url to raw binary. Set:
+   between `m` and `f`) from b64 to raw binary. Set:
    * `n` to the leftmost 32 bytes
    * `t` to the rightmost 48 bytes
    * `c` to the middle remainder of the payload, excluding `n` and `t`
@@ -319,10 +326,9 @@ optional footer `f` (which defaults to empty string):
    ```
    Only the above parameters are supported. PKCS1v1.5 is explicitly forbidden.
 4. If `f` is:
-   * Empty: return "`h` || base64url(`m` || `sig`)"
-   * Non-empty: return "`h` || base64url(`m` || `sig`) || `.` || base64url(`f`)"
+   * Empty: return "`h` || b64(`m` || `sig`)"
+   * Non-empty: return "`h` || b64(`m` || `sig`) || `.` || b64(`f`)"
    * ...where || means "concatenate"
-   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
 
 ## v1.Verify
 
@@ -334,10 +340,10 @@ footer `f` (which defaults to empty string):
 2. Verify that the message begins with `v1.public.`, otherwise throw an exception.
    This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
-   between `m` and `f`) from base64url to raw binary. Set:
+   between `m` and `f`) from b64 to raw binary. Set:
    * `s` to the rightmost 256 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using  [PAE](#authentication-padding)
+4. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
 5. Use RSA to verify that the signature is valid for the message:
    ```
@@ -350,7 +356,8 @@ footer `f` (which defaults to empty string):
 6. If the signature is valid, return `m`. Otherwise, throw an exception.
 
 
-# Version v2
+# PASETO Protocol Version v2
+
 Version **v2** is the **RECOMMENDED** protocol version. **v2** **SHOULD** be
 used in preference to **v1**. Applications using PASETO **SHOULD CONSIDER**
 only supporting **v1** messages.
@@ -381,7 +388,7 @@ of the **payload**, using the generated **nonce**, the generated
 and `crypto_aead_xchacha20poly1305_ietf_decrypt` functions when available.
 
 The **v2.local output** is generated by prepending 'v2.local.' to the
-base64url-encoded **v2.local ciphertext** as per the **PASETO Message Format**
+b64-encoded **v2.local ciphertext** as per the **PASETO Message Format**
 
 ## v2.public
 
@@ -403,8 +410,110 @@ the `crypto_sign_detached` libsodium function to generate this signature when
 available.
 
 The **signed payload** is generated by appending the **signature** to the input
-data bytes. It is then base64url-encoded.
+data bytes. It is then b64-encoded.
 
 The **v2.public output** is generated by prepending 'v2.public.' to the
 **signed payload** as per the **PASETO Message Format**.
+
+## Version v2 Algorithms
+
+### v2.Encrypt
+
+Given a message `m`, key `k`, and optional footer `f`.
+
+1. Set header `h` to `v2.local.`
+2. Generate 24 random bytes from the OS's CSPRNG.
+3. Calculate BLAKE2b of the message `m` with the output of step 2
+   as the key, with an output length of 24. This will be our nonce, `n`.
+   * This step is to ensure that an RNG failure does not result
+     in a nonce-misuse condition that breaks the security of
+     our stream cipher.
+4. Pack `h`, `n`, and `f` together using [PAE](#authentication-padding)
+   (pre-authentication encoding). We'll call this `preAuth`.
+5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface
+   such as the one provided in libsodium.
+   ```
+   c = crypto_aead_xchacha20poly1305_encrypt(
+       message = m
+       aad = preAuth
+       nonce = n
+       key = k
+   );
+   ```
+6. If `f` is:
+   * Empty: return "`h` || base64url(`n` || `c`)"
+   * Non-empty: return "`h` || base64url(`n` || `c`) || `.` || base64url(`f`)"
+   * ...where || means "concatenate"
+   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
+
+### v2.Decrypt
+
+Given a message `m`, key `k`, and optional footer `f`.
+
+1. If `f` is not empty, verify that the value appended to the token matches `f`,
+   using a constant-time string compare function. If it does not, throw an exception.
+2. Verify that the message begins with `v2.local.`, otherwise throw an exception.
+   This constant will be referred to as `h`.
+3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
+   between `m` and `f`) from base64url to raw binary. Set:
+   * `n` to the leftmost 24 bytes
+   * `c` to the middle remainder of the payload, excluding `n`.
+5. Pack `h`, `n`, and `f` together using [PAE](#authentication-padding)
+   (pre-authentication encoding). We'll call this `preAuth`
+8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
+   ```
+   p = crypto_aead_xchacha20poly1305_decrypt(
+      ciphertext = c
+      aad = preAuth
+      nonce = n
+      key = k
+   );
+   ```
+9. If decryption failed, throw an exception. Otherwise, return `p`.
+
+### v2.Sign
+
+Given a message `m`, Ed25519 secret key `sk`, and
+optional footer `f` (which defaults to empty string):
+
+1. Set `h` to `v2.public.`
+2. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
+   (pre-authentication encoding). We'll call this `m2`.
+3. Sign `m2` using Ed25519 `sk`. We'll call this `sig`.
+   ```
+   sig = crypto_sign_detached(
+       message = m2,
+       private_key = sk
+   );
+   ```
+4. If `f` is:
+   * Empty: return "`h` || base64url(`m` || `sig`)"
+   * Non-empty: return "`h` || base64url(`m` || `sig`) || `.` || base64url(`f`)"
+   * ...where || means "concatenate"
+   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
+
+### v2.Verify
+
+Given a signed message `sm`, public key `pk`, and optional footer `f`
+(which defaults to empty string):
+
+1. If `f` is not empty, verify that the value appended to the token matches `f`,
+   using a constant-time string compare function. If it does not, throw an exception.
+2. Verify that the message begins with `v2.public.`, otherwise throw an exception.
+   This constant will be referred to as `h`.
+3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
+   between `m` and `f`) from base64url to raw binary. Set:
+   * `s` to the rightmost 64 bytes
+   * `m` to the leftmost remainder of the payload, excluding `s`
+4. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
+   (pre-authentication encoding). We'll call this `m2`.
+5. Use Ed25519 to verify that the signature is valid for the message:
+   ```
+   valid = crypto_sign_verify_detached(
+       signature = s,
+       message = m2,
+       public_key = pk
+   );
+   ```
+6. If the signature is valid, return `m`. Otherwise, throw an exception.
 
