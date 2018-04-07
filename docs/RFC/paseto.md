@@ -48,7 +48,7 @@ selecting or permitting an insecure configuration.
 PASETO is defined in two pieces:
 
 1. The PASETO Message Format, defined in (#paseto-message-format)
-2. The PASETO Protocol Version, defined in (#paseto-protocol-versions)
+2. The PASETO Protocol Version, defined in (#protocol-versions)
 
 # Notation and Conventions
 
