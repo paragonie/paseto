@@ -89,8 +89,9 @@ Table of Contents
      6.1.  Registered Claims . . . . . . . . . . . . . . . . . . . .  14
        6.1.1.  Key-ID Support  . . . . . . . . . . . . . . . . . . .  15
    7.  AEAD_XChaCha20_Poly1305 . . . . . . . . . . . . . . . . . . .  16
-     7.1.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  16
-       7.1.1.  Test Vector for the HChaCha20 Block Function  . . . .  17
+     7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  16
+     7.2.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  17
+       7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  17
    8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  18
      8.1.  Normative References  . . . . . . . . . . . . . . . . . .  18
      8.2.  URIs  . . . . . . . . . . . . . . . . . . . . . . . . . .  19
@@ -104,7 +105,6 @@ Table of Contents
    Authorization headers, and URI query parameters.  PASETOs encode
    claims to be transmitted in a JSON [RFC8259] object, and is either
    encrypted or signed using public-key cryptography.
-
 
 
 
@@ -871,23 +871,23 @@ Internet-Draft                                                April 2018
    The algorithm for XChaCha20-Poly1305 is as follows:
 
    1.  Calculate a subkey from the first 16 bytes of the nonce and the
-       key.
+       key, using HChaCha20.
 
    2.  Use the subkey and remaining 8 bytes of the nonce (prefixed with
        4 NUL bytes) with AEAD_CHACHA20_POLY1305 from [RFC7539] as
        normal.
 
-7.1.  HChaCha20
+7.1.  Motivation for XChaCha20-Poly1305
 
-   *HChaCha20* is an intermediary step towards XChaCha20 based on the
-   construction and security proof used to create XSalsa20 [2], an
-   extended-nonce Salsa20 variant used in NaCl [3].
+   As long as ChaCha20-Poly1305 is a secure AEAD cipher and ChaCha is a
+   secure pseudorandom function (PRF), XChaCha20-Poly1305 is secure.
 
-   HChaCha20 is initialized the same way as the ChaCha cipher, except
-   that HChaCha20 uses a 128-bit nonce and has no counter.
+   The nonce used by the original ChaCha20-Poly1305 is too short to
+   safely use with random strings for long-lived keys.
 
-
-
+   With XChaCha20-Poly1305, users can safely generate a random 192-bit
+   nonce for each message and not worry about nonce-reuse
+   vulnerabilities.
 
 
 
@@ -897,6 +897,15 @@ Arciszewski             Expires October 11, 2018               [Page 16]
 
 Internet-Draft                                                April 2018
 
+
+7.2.  HChaCha20
+
+   *HChaCha20* is an intermediary step towards XChaCha20 based on the
+   construction and security proof used to create XSalsa20 [2], an
+   extended-nonce Salsa20 variant used in NaCl [3].
+
+   HChaCha20 is initialized the same way as the ChaCha cipher, except
+   that HChaCha20 uses a 128-bit nonce and has no counter.
 
                   cccccccc  cccccccc  cccccccc  cccccccc
                   kkkkkkkk  kkkkkkkk  kkkkkkkk  kkkkkkkk
@@ -915,10 +924,10 @@ Internet-Draft                                                April 2018
    After initialization, proceed through the ChaCha rounds as usual.
 
    Once the 20 ChaCha rounds have completed, the first 128 bits and last
-   128 bits of the keystream are concatenated, and this 256-bit subkey
-   is returned.
+   128 bits of the keystream (both little-endian) are concatenated, and
+   this 256-bit subkey is returned.
 
-7.1.1.  Test Vector for the HChaCha20 Block Function
+7.2.1.  Test Vector for the HChaCha20 Block Function
 
    o  Key = 00:01:02:03:04:05:06:07:08:09:0a:0b:0c:0d:0e:0f:10:11:12:13:
       14:15:16:17:18:19:1a:1b:1c:1d:1e:1f.  The key is a sequence of
@@ -936,6 +945,15 @@ Internet-Draft                                                April 2018
 
                      ChaCha state with the key setup.
 
+
+
+
+
+Arciszewski             Expires October 11, 2018               [Page 17]
+
+Internet-Draft                                                April 2018
+
+
    After running 20 rounds (10 column rounds interleaved with 10
    "diagonal rounds"), the HChaCha state looks like this:
 
@@ -945,14 +963,6 @@ Internet-Draft                                                April 2018
                     a0f9e4d5 8a74a853 c12ec413 26d3ecdc
 
                        HChaCha state after 20 rounds
-
-
-
-
-Arciszewski             Expires October 11, 2018               [Page 17]
-
-Internet-Draft                                                April 2018
-
 
    HChaCha20 will then return only the first and last rows, resulting in
    the following 256-bit key:
@@ -993,6 +1003,13 @@ Internet-Draft                                                April 2018
               DOI 10.17487/RFC7517, May 2015, <https://www.rfc-
               editor.org/info/rfc7517>.
 
+
+
+Arciszewski             Expires October 11, 2018               [Page 18]
+
+Internet-Draft                                                April 2018
+
+
    [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
               DOI 10.17487/RFC7518, May 2015, <https://www.rfc-
               editor.org/info/rfc7518>.
@@ -1000,15 +1017,6 @@ Internet-Draft                                                April 2018
    [RFC7519]  Jones, M., Bradley, J., and N. Sakimura, "JSON Web Token
               (JWT)", RFC 7519, DOI 10.17487/RFC7519, May 2015,
               <https://www.rfc-editor.org/info/rfc7519>.
-
-
-
-
-
-Arciszewski             Expires October 11, 2018               [Page 18]
-
-Internet-Draft                                                April 2018
-
 
    [RFC7539]  Nir, Y. and A. Langley, "ChaCha20 and Poly1305 for IETF
               Protocols", RFC 7539, DOI 10.17487/RFC7539, May 2015,
@@ -1049,14 +1057,6 @@ Author's Address
    United States
 
    Email: security@paragonie.com
-
-
-
-
-
-
-
-
 
 
 

@@ -629,9 +629,22 @@ nonce.
 
 The algorithm for XChaCha20-Poly1305 is as follows:
 
-1. Calculate a subkey from the first 16 bytes of the nonce and the key.
+1. Calculate a subkey from the first 16 bytes of the nonce and the key,
+   using HChaCha20.
 2. Use the subkey and remaining 8 bytes of the nonce (prefixed with 4
    NUL bytes) with AEAD_CHACHA20_POLY1305 from [@!RFC7539] as normal.
+
+## Motivation for XChaCha20-Poly1305
+
+As long as ChaCha20-Poly1305 is a secure AEAD cipher and ChaCha is a
+secure pseudorandom function (PRF), XChaCha20-Poly1305 is secure.
+
+The nonce used by the original ChaCha20-Poly1305 is too short to safely
+use with random strings for long-lived keys.
+
+With XChaCha20-Poly1305, users can safely generate a random
+192-bit nonce for each message and not worry about nonce-reuse
+vulnerabilities.
 
 ## HChaCha20
 
@@ -661,8 +674,8 @@ Figure: HChaCha20 State: c=constant k=key n=nonce
 After initialization, proceed through the ChaCha rounds as usual.
 
 Once the 20 ChaCha rounds have completed, the first 128 bits and last
-128 bits of the keystream are concatenated, and this 256-bit subkey is
-returned.
+128 bits of the keystream (both little-endian) are concatenated, and this
+256-bit subkey is returned.
 
 ### Test Vector for the HChaCha20 Block Function
 
