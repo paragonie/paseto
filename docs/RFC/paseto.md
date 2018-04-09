@@ -757,4 +757,23 @@ is discouraged.
 
 # IANA Considerations
 
-None that the authors of this draft are aware of.
+This document defines a suite of string prefixes for PASETO tokens, called
+"PASETO Headers", (see (#paseto-message-format)), which consists of two parts:
+
+* **version**, with values **v1**, **v2** defined above
+* **purpose**, with the values of **local** or **public**
+
+These two values are concatenated with a single character separator, the
+ASCII period character **.**.
+
+PASETO Headers are as follows:
+
+| Value     | PASETO Header Meaning | Definition  |
+| --------- | --------------------- | ----------- |
+| v1.local  | Version 1, local      | (#v1local)  |
+| v1.public | Version 1, public     | (#v1public) |
+| v2.local  | Version 2, local      | (#v2local)  |
+| v2.public | Version 2, public     | (#v2public) |
+Table: PASETO Headers and their reespective meanings
+
+Future RFCs may define new entires to the PASETO Header registry.

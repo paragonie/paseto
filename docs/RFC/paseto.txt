@@ -95,9 +95,9 @@ Table of Contents
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .  18
    9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  19
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .  19
-     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  20
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  20
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  20
+     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  21
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  21
 
 1.  Introduction
 
@@ -1026,9 +1026,45 @@ Internet-Draft                                                April 2018
 
 9.  IANA Considerations
 
-   None that the authors of this draft are aware of.
+   This document defines a suite of string prefixes for PASETO tokens,
+   called "PASETO Headers", (see Section 2), which consists of two
+   parts:
+
+   o  *version*, with values *v1*, *v2* defined above
+
+   o  *purpose*, with the values of *local* or *public*
+
+   These two values are concatenated with a single character separator,
+   the ASCII period character *.*.
+
+   PASETO Headers are as follows:
+
+            +-----------+-----------------------+-------------+
+            |   Value   | PASETO Header Meaning |  Definition |
+            +-----------+-----------------------+-------------+
+            |  v1.local |    Version 1, local   | Section 4.1 |
+            | v1.public |   Version 1, public   | Section 4.2 |
+            |  v2.local |    Version 2, local   | Section 5.1 |
+            | v2.public |   Version 2, public   | Section 5.2 |
+            +-----------+-----------------------+-------------+
+
+               PASETO Headers and their reespective meanings
+
+   Future RFCs may define new entires to the PASETO Header registry.
 
 10.  References
+
+
+
+
+
+
+
+
+Arciszewski             Expires October 11, 2018               [Page 19]
+
+Internet-Draft                                                April 2018
+
 
 10.1.  Normative References
 
@@ -1059,13 +1095,6 @@ Internet-Draft                                                April 2018
               DOI 10.17487/RFC7517, May 2015, <https://www.rfc-
               editor.org/info/rfc7517>.
 
-
-
-Arciszewski             Expires October 11, 2018               [Page 19]
-
-Internet-Draft                                                April 2018
-
-
    [RFC7518]  Jones, M., "JSON Web Algorithms (JWA)", RFC 7518,
               DOI 10.17487/RFC7518, May 2015, <https://www.rfc-
               editor.org/info/rfc7518>.
@@ -1082,6 +1111,16 @@ Internet-Draft                                                April 2018
               Cryptographic Hash and Message Authentication Code (MAC)",
               RFC 7693, DOI 10.17487/RFC7693, November 2015,
               <https://www.rfc-editor.org/info/rfc7693>.
+
+
+
+
+
+
+Arciszewski             Expires October 11, 2018               [Page 20]
+
+Internet-Draft                                                April 2018
+
 
    [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
               "PKCS #1: RSA Cryptography Specifications Version 2.2",
@@ -1117,4 +1156,21 @@ Author's Address
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 20]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Arciszewski             Expires October 11, 2018               [Page 21]
