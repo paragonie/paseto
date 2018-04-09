@@ -90,11 +90,11 @@ The **purpose** is a short string describing the purpose of the token. Accepted 
 
 Any optional data can be appended to the **footer**. This data is authenticated
 through inclusion in the calculation of the authentication tag along with the header
-and payload. The **footer** is NOT encrypted.
+and payload. The **footer** is MUST NOT be encrypted.
 
 ## Base64 Encoding
 
-The payload and footer in a PASETO will be encoded using base64url as
+The payload and footer in a PASETO MUST BE encoded using base64url as
 defined in [@!RFC4648], without `=` padding.
 
 In this document. `b64()` refers to this unpadded variant of base64url.
@@ -187,6 +187,10 @@ introduce new PASETO protocol versions by continuing the convention
 
 Both **v1** and **v2** provide authentication of the entire PASETO message,
 including the **version**, **purpose**, **payload** and **footer**.
+
+Implementations SHOULD only consider the most recent two versions of the 
+protocol as valid, as such any implementation which accepts a future **v3**
+protocol version SHOULD reject **v1** tokens.
 
 # PASETO Protocol Version v1
 
