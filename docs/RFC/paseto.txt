@@ -175,11 +175,11 @@ Internet-Draft                                                April 2018
    Any optional data can be appended to the *footer*. This data is
    authenticated through inclusion in the calculation of the
    authentication tag along with the header and payload.  The *footer*
-   is NOT encrypted.
+   is MUST NOT be encrypted.
 
 2.1.  Base64 Encoding
 
-   The payload and footer in a PASETO will be encoded using base64url as
+   The payload and footer in a PASETO MUST BE encoded using base64url as
    defined in [RFC4648], without "=" padding.
 
    In this document. "b64()" refers to this unpadded variant of
@@ -298,6 +298,10 @@ Internet-Draft                                                April 2018
    Both *v1* and *v2* provide authentication of the entire PASETO
    message, including the *version*, *purpose*, *payload* and *footer*.
 
+   Implementations SHOULD only consider the most recent two versions of
+   the protocol as valid, as such any implementation which accepts a
+   future *v3* protocol version SHOULD reject *v1* tokens.
+
 4.  PASETO Protocol Version v1
 
    Version *v1* is a compatibility mode comprised of cryptographic
@@ -325,10 +329,6 @@ Internet-Draft                                                April 2018
    *v1.public* messages SHALL be signed using RSASSA-PSS as defined in
    [RFC8017].  Refer to the operations defined in *v1.Sign* and
    *v1.Verify* for a formal definition.
-
-
-
-
 
 
 
