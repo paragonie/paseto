@@ -757,6 +757,9 @@ is discouraged.
 
 # IANA Considerations
 
+The IANA should reserve a new "PASETO Headers" registry for the purpose
+of this document and superseding RFCs.
+
 This document defines a suite of string prefixes for PASETO tokens, called
 "PASETO Headers", (see (#paseto-message-format)), which consists of two parts:
 
