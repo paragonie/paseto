@@ -62,6 +62,9 @@ this document are to interpreted as described in RFC 6919 [@!RFC6919].
 
 # PASETO Message Format
 
+PASETOs consist of three or more segments, separated by a period
+(the ASCII character whose number, represented in hexadecimal, is 2E).
+
 Without the Optional Footer:
 
 ~~~
@@ -90,11 +93,10 @@ and payload. The **footer** is NOT encrypted.
 
 ## Base64 Encoding
 
-Nearly every component in a PASETO (except for the version, purpose, and
-the `.` separators) will be encoded using base64url as defined in [@!RFC4648],
-without `=` padding.
+The payload and footer in a PASETO will be encoded using base64url as
+defined in [@!RFC4648], without `=` padding.
 
-In this document. `b64()` refers to this unpadded variant of b64url.
+In this document. `b64()` refers to this unpadded variant of base64url.
 
 ## Authentication Padding
 
@@ -150,7 +152,7 @@ function PAE(pieces) {
     return output;
 }
 ~~~
-Figure: JavaScript implementation of Pre-Authentication Encoding
+Figure: JavaScript implementation of Pre-Authentication Encoding (PAE)
 
 As a consequence:
 
@@ -175,10 +177,12 @@ attacks.
 
 # Protocol Versions
 
-PASETO defines two protocol versions, **v1** and **v2**. Each protocol version
-strictly defines the cryptographic primitives used. Changes to the primitives
-requires new protocol versions. Future RFCs **MAY** introduce new PASETO
-protocol versions by continuing the convention (e.g. **v3**, **v4**, ...).
+This document defines two protocol versions, **v1** and **v2**.
+
+Each protocol version strictly defines the cryptographic primitives used.
+Changes to the primitives requires new protocol versions. Future RFCs **MAY**
+introduce new PASETO protocol versions by continuing the convention
+(e.g. **v3**, **v4**, ...).
 
 Both **v1** and **v2** provide authentication of the entire PASETO message,
 including the **version**, **purpose**, **payload** and **footer**.
@@ -200,10 +204,17 @@ primitives from **v2**.
 **v1.local** messages **SHALL** be encrypted and authenticated with AES-256-CTR
 and HMAC-SHA384, using an **Encrypt-then-MAC** construction.
 
+Encryption and authentication keys are split from the original key and
+half the nonce, facilitated by HKDF [@!RFC5869] using SHA384.
+
+Refer to the operations defined in **v1.Encrypt** and **v1.Decrypt** for
+a formal definition.
+
 ## v1.public
 
 **v1.public** messages **SHALL** be signed using RSASSA-PSS as defined in
-[@!RFC8017].
+[@!RFC8017]. Refer to the operations defined in **v1.Sign** and **v1.Verify**
+for a formal definition.
 
 ## Version v1 Algorithms
 
