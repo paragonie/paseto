@@ -94,7 +94,7 @@ Table of Contents
        7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  17
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .  18
    9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  19
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
      10.1.  Normative References . . . . . . . . . . . . . . . . . .  20
      10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  21
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  21
@@ -1026,6 +1026,9 @@ Internet-Draft                                                April 2018
 
 9.  IANA Considerations
 
+   The IANA should reserve a new "PASETO Headers" registry for the
+   purpose of this document and superseding RFCs.
+
    This document defines a suite of string prefixes for PASETO tokens,
    called "PASETO Headers", (see Section 2), which consists of two
    parts:
@@ -1037,7 +1040,9 @@ Internet-Draft                                                April 2018
    These two values are concatenated with a single character separator,
    the ASCII period character *.*.
 
-   PASETO Headers are as follows:
+   Initial values for the "PASETO Headers" registry are given below;
+   future assignments are to be made through Expert Review [RFC8126],
+   such as the CFRG [4].
 
             +-----------+-----------------------+-------------+
             |   Value   | PASETO Header Meaning |  Definition |
@@ -1050,11 +1055,6 @@ Internet-Draft                                                April 2018
 
                PASETO Headers and their reespective meanings
 
-   Future RFCs may define new entires to the PASETO Header registry.
-
-10.  References
-
-
 
 
 
@@ -1065,6 +1065,8 @@ Arciszewski             Expires October 11, 2018               [Page 19]
 
 Internet-Draft                                                April 2018
 
+
+10.  References
 
 10.1.  Normative References
 
@@ -1115,8 +1117,6 @@ Internet-Draft                                                April 2018
 
 
 
-
-
 Arciszewski             Expires October 11, 2018               [Page 20]
 
 Internet-Draft                                                April 2018
@@ -1132,6 +1132,11 @@ Internet-Draft                                                April 2018
               DOI 10.17487/RFC8032, January 2017, <https://www.rfc-
               editor.org/info/rfc8032>.
 
+   [RFC8126]  Cotton, M., Leiba, B., and T. Narten, "Guidelines for
+              Writing an IANA Considerations Section in RFCs", BCP 26,
+              RFC 8126, DOI 10.17487/RFC8126, June 2017,
+              <https://www.rfc-editor.org/info/rfc8126>.
+
    [RFC8259]  Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
               Interchange Format", STD 90, RFC 8259,
               DOI 10.17487/RFC8259, December 2017, <https://www.rfc-
@@ -1145,6 +1150,8 @@ Internet-Draft                                                April 2018
 
    [3] https://nacl.cr.yp.to
 
+   [4] https://irtf.org/cfrg
+
 Author's Address
 
    Scott Arciszewski
@@ -1152,13 +1159,6 @@ Author's Address
    United States
 
    Email: security@paragonie.com
-
-
-
-
-
-
-
 
 
 

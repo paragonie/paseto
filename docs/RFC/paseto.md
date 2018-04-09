@@ -769,7 +769,9 @@ This document defines a suite of string prefixes for PASETO tokens, called
 These two values are concatenated with a single character separator, the
 ASCII period character **.**.
 
-PASETO Headers are as follows:
+Initial values for the "PASETO Headers" registry are given below;
+future assignments are to be made through Expert Review [@!RFC8126],
+such as the [CFRG].
 
 | Value     | PASETO Header Meaning | Definition  |
 | --------- | --------------------- | ----------- |
@@ -779,4 +781,4 @@ PASETO Headers are as follows:
 | v2.public | Version 2, public     | (#v2public) |
 Table: PASETO Headers and their reespective meanings
 
-Future RFCs may define new entires to the PASETO Header registry.
+[CFRG]: https://irtf.org/cfrg "Crypto Forum Research Group"
