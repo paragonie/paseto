@@ -5,7 +5,7 @@
 % workgroup = "(No Working Group)"
 % keyword = ["security", "token"]
 %
-% date = 2018-04-05T13:00:00Z
+% date = 2018-04-09T21:00:00Z
 %
 % [[author]]
 % initials="S."
@@ -33,7 +33,7 @@ Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
 compact, and URL-safe representation of claims intended for space-constrained
 environments such as HTTP Cookies, HTTP Authorization headers, and URI
 query parameters. PASETOs encode claims to be transmitted in a JSON
-[@!RFC7159] object, and is either encrypted or signed using public-key
+[@!RFC8259] object, and is either encrypted or signed using public-key
 cryptography.
 
 ## Difference Between PASETO and JOSE
@@ -609,7 +609,7 @@ IMPORTANT: Key identifiers **MUST** be independent of the actual keys
 used by Paseto.
 
 For example, you MUST NOT just drop the public key into the footer for
-a *public* token and have the recipient use the provided public key.
+a **public** token and have the recipient use the provided public key.
 Doing so would allow an attacker to simply replace the public key with
 one of their own choosing, which will cause the recipient to simply
 accept any signature for any message as valid, which defeats the
@@ -620,17 +620,6 @@ identifier for each key (independent of the cryptographic key's contents
 itself) that is used in a database or other key-value store to select
 the apppropriate cryptographic key. These search operations MUST fail
 closed if no valid key is found for the given key identifier.
-
-## Future Changes to Payload Processing
-
-The payload processing SHOULD NOT change after version 1.0.0 of the reference
-implementation has been tagged, signed, and released; only the cryptography
-protocols will receive new versions.
-
-In the event that this turns out to not be true, we will change the first letter
-of the version identifier (*v*) to another ASCII-compatible alphanumeric character.
-
-However, we hope to never need to do this.
 
 # AEAD_XChaCha20_Poly1305
 
@@ -685,10 +674,10 @@ returned.
 After setting up the HChaCha state, it looks like this:
 
 ~~~
-61707865  3320646e  79622d32  6b206574
-03020100  07060504  0b0a0908  0f0e0d0c
-13121110  17161514  1b1a1918  1f1e1d1c
-09000000  4a000000  00000000  27594131
+61707865 3320646e 79622d32 6b206574
+03020100 07060504 0b0a0908 0f0e0d0c
+13121110 17161514 1b1a1918 1f1e1d1c
+09000000 4a000000 00000000 27594131
 ~~~
 Figure: ChaCha state with the key setup.
 
