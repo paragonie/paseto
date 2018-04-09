@@ -50,7 +50,7 @@ PASETO is defined in two pieces:
 1. The PASETO Message Format, defined in (#paseto-message-format)
 2. The PASETO Protocol Version, defined in (#protocol-versions)
 
-# Notation and Conventions
+## Notation and Conventions
 
 The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**",
 "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this
