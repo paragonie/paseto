@@ -1,4 +1,4 @@
 /.idea
 /composer.lock
 /vendor
-/docs/RFC/paseto.xml
+/docs/RFC/*.xml
