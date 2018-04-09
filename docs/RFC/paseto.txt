@@ -9,7 +9,7 @@ Expires: October 7, 2018
 
 
                PASETO: Platform-Agnostic SEcurity TOkens
-                   draft-paragonie-pasetorfc-draft00
+                     draft-paragonie-paseto-rfc-00
 
 Abstract
 

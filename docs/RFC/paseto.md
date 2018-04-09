@@ -1,7 +1,7 @@
 % title = "PASETO: Platform-Agnostic SEcurity TOkens"
 % abbr = "PASETO"
 % category = "info"
-% docname = "draft-paragonie-pasetorfc-draft00"
+% docname = "draft-paragonie-paseto-rfc-00"
 % workgroup = "(No Working Group)"
 % keyword = ["security", "token"]
 %
