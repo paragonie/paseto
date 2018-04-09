@@ -714,3 +714,47 @@ a0f9e4d 58a74a853 c12ec413 26d3ecdc
 ~~~
 Figure: Resultant HChaCha20 subkey
 
+# Security Considerations
+
+PASETO was designed in part to address known deficits of the JOSE standards
+that lead to insecure implementations.
+
+PASETO uses versioned protocols, rather than runtime ciphersuite negotiation
+to prevent insecure algorithms from being selected. Mix-n-match is not a
+robust strategy for usable security engineering, especially when implementations
+have insecure default settings.
+
+If a severe security vulnerability is ever discovered in one of the specified
+versions, instead of expecting users to rewrite and/or reconfigure their
+implementations to side-step the vulnerability, a new version of the protocol
+that is not affected should be decided by a team of cryptography engineers
+familiar with the vulnerability in question.
+
+PASETO implementors should only support the two most recent protocol
+versions (currently **v1** and **v2**) at any given time.
+
+PASETO users should beware that, although footers are authenticated,
+they are never encrypted. Therefore, sensitive information MUST NOT ever
+be stored in a footer.
+
+Furthermore, PASETO users should beware that, if footers are employed to
+implement Key Identification (**kid**), the values stored in the footer
+MUST BE unrelated to the actual cryptographic key used in verifying the
+token as discussed in (#keyid-support).
+
+PASETO has no built-in mechanism to resist replay attacks within the token
+lifetime. Users SHOULD NOT attempt to use PASETO to obviate the need for
+server-side data storage when designing web applications.
+
+PASETO's cryptography features requires the availability of a secure
+random number generator, such as the getrandom(2) syscall on newer Linux
+distributions, /dev/urandom on most Unix-like systems, and CryptGenRandom
+on Windows computers.
+
+The use of userspace pseudo-random number generators, even if seeded by the
+operadting system's cryptographically secure pseudo-random number generator,
+is discouraged.
+
+# IANA Considerations
+
+None that the authors of this draft are aware of.

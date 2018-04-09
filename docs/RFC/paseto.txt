@@ -70,7 +70,7 @@ Table of Contents
    3.  Protocol Versions . . . . . . . . . . . . . . . . . . . . . .   6
    4.  PASETO Protocol Version v1  . . . . . . . . . . . . . . . . .   6
      4.1.  v1.local  . . . . . . . . . . . . . . . . . . . . . . . .   6
-     4.2.  v1.public . . . . . . . . . . . . . . . . . . . . . . . .   6
+     4.2.  v1.public . . . . . . . . . . . . . . . . . . . . . . . .   7
      4.3.  Version v1 Algorithms . . . . . . . . . . . . . . . . . .   7
        4.3.1.  v1.GetNonce . . . . . . . . . . . . . . . . . . . . .   7
        4.3.2.  v1.Encrypt  . . . . . . . . . . . . . . . . . . . . .   7
@@ -92,10 +92,12 @@ Table of Contents
      7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  16
      7.2.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  17
        7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  17
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  18
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  18
-     8.2.  URIs  . . . . . . . . . . . . . . . . . . . . . . . . . .  19
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  19
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  18
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  19
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  19
+     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  20
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  20
 
 1.  Introduction
 
@@ -103,8 +105,6 @@ Table of Contents
    secure, compact, and URL-safe representation of claims intended for
    space-constrained environments such as HTTP Cookies, HTTP
    Authorization headers, and URI query parameters.  PASETOs encode
-   claims to be transmitted in a JSON [RFC8259] object, and is either
-   encrypted or signed using public-key cryptography.
 
 
 
@@ -113,6 +113,9 @@ Arciszewski             Expires October 11, 2018                [Page 2]
 
 Internet-Draft                                                April 2018
 
+
+   claims to be transmitted in a JSON [RFC8259] object, and is either
+   encrypted or signed using public-key cryptography.
 
 1.1.  Difference Between PASETO and JOSE
 
@@ -158,10 +161,7 @@ Internet-Draft                                                April 2018
    protocol.  Currently, two versions are specified, which each possess
    their own ciphersuites.  Accepted values: *v1*, *v2*.
 
-   The *purpose* is a short string describing the purpose of the token.
-   Accepted values: *local*, *public*.
 
-   o  *local*: shared-key authenticated encryption
 
 
 
@@ -169,6 +169,11 @@ Arciszewski             Expires October 11, 2018                [Page 3]
 
 Internet-Draft                                                April 2018
 
+
+   The *purpose* is a short string describing the purpose of the token.
+   Accepted values: *local*, *public*.
+
+   o  *local*: shared-key authenticated encryption
 
    o  *public*: public-key digital signatures; *not encrypted*
 
@@ -212,11 +217,6 @@ Internet-Draft                                                April 2018
    Typically this is a small number (3 to 5).  This is calculated by
    "LE64()" of the size of the array.
 
-   Next, for each piece provided, the length of the piece is encoded via
-   "LE64()" and prefixed to each piece before concatenation.
-
-
-
 
 
 
@@ -225,6 +225,9 @@ Arciszewski             Expires October 11, 2018                [Page 4]
 
 Internet-Draft                                                April 2018
 
+
+   Next, for each piece provided, the length of the piece is encoded via
+   "LE64()" and prefixed to each piece before concatenation.
 
               function LE64(n) {
                   var str = '';
@@ -269,9 +272,6 @@ Internet-Draft                                                April 2018
    the length of one of the fields (which is prefixed to the input you
    can provide) will differ, or both.
 
-   Due to the length being expressed as an unsigned 64-bit integer, it
-   remains infeasible to generate/transmit enough data to create an
-   integer overflow.
 
 
 
@@ -281,6 +281,10 @@ Arciszewski             Expires October 11, 2018                [Page 5]
 
 Internet-Draft                                                April 2018
 
+
+   Due to the length being expressed as an unsigned 64-bit integer, it
+   remains infeasible to generate/transmit enough data to create an
+   integer overflow.
 
    This is not used to encode data prior to decryption, and no decoding
    function is provided or specified.  This merely exists to prevent
@@ -324,11 +328,7 @@ Internet-Draft                                                April 2018
    Refer to the operations defined in *v1.Encrypt* and *v1.Decrypt* for
    a formal definition.
 
-4.2.  v1.public
 
-   *v1.public* messages SHALL be signed using RSASSA-PSS as defined in
-   [RFC8017].  Refer to the operations defined in *v1.Sign* and
-   *v1.Verify* for a formal definition.
 
 
 
@@ -337,6 +337,12 @@ Arciszewski             Expires October 11, 2018                [Page 6]
 
 Internet-Draft                                                April 2018
 
+
+4.2.  v1.public
+
+   *v1.public* messages SHALL be signed using RSASSA-PSS as defined in
+   [RFC8017].  Refer to the operations defined in *v1.Sign* and
+   *v1.Verify* for a formal definition.
 
 4.3.  Version v1 Algorithms
 
@@ -381,18 +387,16 @@ Internet-Draft                                                April 2018
    7.  Calculate HMAC-SHA384 of the output of "preAuth", using "Ak" as
        the authentication key.  We'll call this "t".
 
-   8.  If "f" is:
-
-       *  Empty: return ""h" || b64("n" || "c" || "t")"
-
-
-
 
 
 Arciszewski             Expires October 11, 2018                [Page 7]
 
 Internet-Draft                                                April 2018
 
+
+   8.  If "f" is:
+
+       *  Empty: return ""h" || b64("n" || "c" || "t")"
 
        *  Non-empty: return ""h" || b64("n" || "c" || "t") || "." ||
           b64("f")"
@@ -437,10 +441,6 @@ Internet-Draft                                                April 2018
 
    8.  Decrypt "c" using "AES-256-CTR", using "Ek" as the key and the
        rightmost 16 bytes of "n" as the nonce, and return this value.
-       "return aes256ctr_decrypt( cipherext = c, nonce = n[16:] key = Ek
-       );"
-
-
 
 
 
@@ -449,6 +449,9 @@ Arciszewski             Expires October 11, 2018                [Page 8]
 
 Internet-Draft                                                April 2018
 
+
+       "return aes256ctr_decrypt( cipherext = c, nonce = n[16:] key = Ek
+       );"
 
 4.3.4.  v1.Sign
 
@@ -494,9 +497,6 @@ Internet-Draft                                                April 2018
 
        *  "m" to the leftmost remainder of the payload, excluding "s"
 
-   4.  Pack "h", "m", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "m2".
-
 
 
 
@@ -505,6 +505,9 @@ Arciszewski             Expires October 11, 2018                [Page 9]
 
 Internet-Draft                                                April 2018
 
+
+   4.  Pack "h", "m", and "f" together using Section 2.2 (pre-
+       authentication encoding).  We'll call this "m2".
 
    5.  Use RSA to verify that the signature is valid for the message:
        "valid = crypto_sign_rsa_verify( signature = s, message = m2,
@@ -549,9 +552,6 @@ Internet-Draft                                                April 2018
 
    The *v2.local output* is generated by prepending 'v2.local.' to the
    b64-encoded *v2.local ciphertext* as per the *PASETO Message Format*
-
-
-
 
 
 
@@ -972,9 +972,65 @@ Internet-Draft                                                April 2018
 
                         Resultant HChaCha20 subkey
 
-8.  References
+8.  Security Considerations
 
-8.1.  Normative References
+   PASETO was designed in part to address known deficits of the JOSE
+   standards that lead to insecure implementations.
+
+   PASETO uses versioned protocols, rather than runtime ciphersuite
+   negotiation to prevent insecure algorithms from being selected.  Mix-
+   n-match is not a robust strategy for usable security engineering,
+   especially when implementations have insecure default settings.
+
+   If a severe security vulnerability is ever discovered in one of the
+   specified versions, instead of expecting users to rewrite and/or
+   reconfigure their implementations to side-step the vulnerability, a
+   new version of the protocol that is not affected should be decided by
+   a team of cryptography engineers familiar with the vulnerability in
+   question.
+
+   PASETO implementors should only support the two most recent protocol
+   versions (currently *v1* and *v2*) at any given time.
+
+   PASETO users should beware that, although footers are authenticated,
+   they are never encrypted.  Therefore, sensitive information MUST NOT
+   ever be stored in a footer.
+
+   Furthermore, PASETO users should beware that, if footers are employed
+   to implement Key Identification (*kid*), the values stored in the
+   footer MUST BE unrelated to the actual cryptographic key used in
+   verifying the token as discussed in Section 6.1.1.
+
+
+
+
+
+Arciszewski             Expires October 11, 2018               [Page 18]
+
+Internet-Draft                                                April 2018
+
+
+   PASETO has no built-in mechanism to resist replay attacks within the
+   token lifetime.  Users SHOULD NOT attempt to use PASETO to obviate
+   the need for server-side data storage when designing web
+   applications.
+
+   PASETO's cryptography features requires the availability of a secure
+   random number generator, such as the getrandom(2) syscall on newer
+   Linux distributions, /dev/urandom on most Unix-like systems, and
+   CryptGenRandom on Windows computers.
+
+   The use of userspace pseudo-random number generators, even if seeded
+   by the operadting system's cryptographically secure pseudo-random
+   number generator, is discouraged.
+
+9.  IANA Considerations
+
+   None that the authors of this draft are aware of.
+
+10.  References
+
+10.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1005,7 +1061,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 18]
+Arciszewski             Expires October 11, 2018               [Page 19]
 
 Internet-Draft                                                April 2018
 
@@ -1042,7 +1098,7 @@ Internet-Draft                                                April 2018
               DOI 10.17487/RFC8259, December 2017, <https://www.rfc-
               editor.org/info/rfc8259>.
 
-8.2.  URIs
+10.2.  URIs
 
    [1] https://tools.ietf.org/html/rfc4648#page-7
 
@@ -1061,4 +1117,4 @@ Author's Address
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 19]
+Arciszewski             Expires October 11, 2018               [Page 20]
