@@ -2,7 +2,7 @@
 
 
 
-Network Working Group                                     S. Arciszewski
+JSON Working Group                                        S. Arciszewski
 Internet-Draft                            Paragon Initiative Enterprises
 Intended status: Informational                             April 5, 2018
 Expires: October 7, 2018

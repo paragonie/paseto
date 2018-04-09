@@ -2,6 +2,7 @@
 % abbr = "PASETO"
 % category = "info"
 % docname = "draft-paragonie-pasetorfc-draft00"
+% workgroup = "(No Working Group)"
 % keyword = ["security", "token"]
 %
 % date = 2018-04-05T13:00:00Z
