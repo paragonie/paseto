@@ -372,7 +372,7 @@ footer `f` (which defaults to empty string):
 
 Version **v2** is the **RECOMMENDED** protocol version. **v2** **SHOULD** be
 used in preference to **v1**. Applications using PASETO **SHOULD CONSIDER**
-only supporting **v1** messages.
+only supporting **v2** messages.
 
 **v2** messages **MUST** use a **purpose**  value of either **local** or
 **public**.
