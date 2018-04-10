@@ -194,7 +194,7 @@ Internet-Draft                                                April 2018
    function.
 
    In "local" mode, this encoding is applied to the additional
-   associated data (AAD).  In "remote" mode, which is not encrypted,
+   associated data (AAD).  In "public" mode, which is not encrypted,
    this encoding is applied to the components of the token, with respect
    to the protocol version being followed.
 
@@ -824,7 +824,7 @@ Internet-Draft                                                April 2018
 
    Implementations should feel free to provide a means to extract the
    footer from a token, before authentication and decryption.  This is
-   possible for *local* tokens because the contents of the footer are
+   possible for _local_ tokens because the contents of the footer are
    _not_ encrypted.  However, the authenticity of the footer is only
    assured after the authentication tag is verified.
 
@@ -855,7 +855,7 @@ Internet-Draft                                                April 2018
    Instead, it's recommended that implementors and users use a unique
    identifier for each key (independent of the cryptographic key's
    contents) that is used in a database or other key-value store to
-   select the appropriate cryptographic key.  These search operations
+   select the appropriate cryptographic key.  These search opexrations
    MUST fail closed if no valid key is found for the given key
    identifier.
 
@@ -923,9 +923,9 @@ Internet-Draft                                                April 2018
 
    After initialization, proceed through the ChaCha rounds as usual.
 
-   Once the 20 ChaCha rounds have completed, the first 128 bits and last
-   128 bits of the keystream (both little-endian) are concatenated, and
-   this 256-bit subkey is returned.
+   Once the 20 ChaCha rounds have been completed, the first 128 bits and
+   last 128 bits of the keystream (both little-endian) are concatenated,
+   and this 256-bit subkey is returned.
 
 7.2.1.  Test Vector for the HChaCha20 Block Function
 
@@ -984,11 +984,11 @@ Internet-Draft                                                April 2018
    settings.
 
    If a severe security vulnerability is ever discovered in one of the
-   specified versions, instead of expecting users to rewrite and/or
-   reconfigure their implementations to side-step the vulnerability, a
-   new version of the protocol that is not affected should be decided by
-   a team of cryptography engineers familiar with the vulnerability in
-   question.
+   specified versions, a new version of the protocol that is not
+   affected should be decided by a team of cryptography engineers
+   familiar with the vulnerability in question.  This prevents users
+   from having to rewrite and/or reconfigure their implementations to
+   side-step the vulnerability.
 
    PASETO implementors should only support the two most recent protocol
    versions (currently *v1* and *v2*) at any given time.
@@ -1021,7 +1021,7 @@ Internet-Draft                                                April 2018
    CryptGenRandom on Windows computers.
 
    The use of userspace pseudo-random number generators, even if seeded
-   by the operadting system's cryptographically secure pseudo-random
+   by the operating system's cryptographically secure pseudo-random
    number generator, is discouraged.
 
 9.  IANA Considerations
@@ -1030,8 +1030,7 @@ Internet-Draft                                                April 2018
    purpose of this document and superseding RFCs.
 
    This document defines a suite of string prefixes for PASETO tokens,
-   called "PASETO Headers", (see Section 2), which consists of two
-   parts:
+   called "PASETO Headers" (see Section 2), which consists of two parts:
 
    o  *version*, with values *v1*, *v2* defined above
 
@@ -1054,6 +1053,7 @@ Internet-Draft                                                April 2018
             +-----------+-----------------------+-------------+
 
                PASETO Headers and their reespective meanings
+
 
 
 

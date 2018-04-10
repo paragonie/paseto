@@ -56,10 +56,6 @@ The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL 
 "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this
 document are to be interpreted as described in RFC 2119 [@!RFC2119].
 
-Additionally, the key words "**MIGHT**", "**COULD**", "**MAY WISH TO**", "**WOULD
-PROBABLY**", "**SHOULD CONSIDER**", and "**MUST (BUT WE KNOW YOU WON'T)**" in
-this document are to interpreted as described in RFC 6919 [@!RFC6919].
-
 # PASETO Message Format
 
 PASETOs consist of three or more segments, separated by a period
@@ -105,7 +101,7 @@ in a specific manner before being passed to the respective
 cryptographic function.
 
 In `local` mode, this encoding is applied to the additional
-associated data (AAD). In `remote` mode, which is not encrypted,
+associated data (AAD). In `public` mode, which is not encrypted,
 this encoding is applied to the components of the token, with
 respect to the protocol version being followed.
 
@@ -374,8 +370,8 @@ footer `f` (which defaults to empty string):
 # PASETO Protocol Version v2
 
 Version **v2** is the **RECOMMENDED** protocol version. **v2** **SHOULD** be
-used in preference to **v1**. Applications using PASETO **SHOULD CONSIDER**
-only supporting **v2** messages.
+used in preference to **v1**. Applications using PASETO **SHOULD**
+only support **v2** messages.
 
 **v2** messages **MUST** use a **purpose**  value of either **local** or
 **public**.
@@ -387,7 +383,7 @@ ChaCha20-Poly1305 [@!RFC7539] defined below.
 
 The **key** **SHALL** be provided by the user. The **key** **MUST** be 32 bytes
 long, and **SHOULD** be generated using a cryptographically secure source.
-Implementors **SHOULD CONSIDER** providing functionality to generate this
+Implementors **SHOULD** provide functionality to generate this
 key for users when the implementation can ensure adequate entropy. Any provided
 means for generating the **key** **MUST NOT** use poor sources of randomness.
 
@@ -413,7 +409,7 @@ contents from being read, including by those without either the **public key**
 or the **private key**.
 
 The **public key** and **private key** **MUST** be a valid pair of Ed25519 keys.
-Implementations **SHOULD CONSIDER** providing functions to generate the keypair
+Implementations **SHOULD** consider providing functions to generate the keypair
 and **SHOULD** use the `crypto_sign_keypair` libsodium function to do this when
 available.
 
@@ -591,7 +587,7 @@ needing to first decrypt the token (which would in turn knowing which key to use
 decrypt the token).
 
 Implementations should feel free to provide a means to extract the footer from a token,
-before authentication and decryption. This is possible for **local** tokens because
+before authentication and decryption. This is possible for *local* tokens because
 the contents of the footer are *not* encrypted. However, the authenticity of the
 footer is only assured after the authentication tag is verified.
 
@@ -614,7 +610,7 @@ security goals of public-key cryptography.
 Instead, it's recommended that implementors and users use a unique
 identifier for each key (independent of the cryptographic key's contents)
 that is used in a database or other key-value store to select
-the appropriate cryptographic key. These search operations **MUST** fail
+the appropriate cryptographic key. These search opexrations **MUST** fail
 closed if no valid key is found for the given key identifier.
 
 # AEAD_XChaCha20_Poly1305
@@ -669,7 +665,7 @@ Figure: HChaCha20 State: c=constant k=key n=nonce
 
 After initialization, proceed through the ChaCha rounds as usual.
 
-Once the 20 ChaCha rounds have completed, the first 128 bits and last
+Once the 20 ChaCha rounds have been completed, the first 128 bits and last
 128 bits of the keystream (both little-endian) are concatenated, and this
 256-bit subkey is returned.
 
@@ -721,10 +717,10 @@ robust strategy for usable security engineering, especially when implementations
 have insecure default settings.
 
 If a severe security vulnerability is ever discovered in one of the specified
-versions, instead of expecting users to rewrite and/or reconfigure their
-implementations to side-step the vulnerability, a new version of the protocol
-that is not affected should be decided by a team of cryptography engineers
-familiar with the vulnerability in question.
+versions, a new version of the protocol that is not affected should be decided
+by a team of cryptography engineers familiar with the vulnerability in question.
+This prevents users from having to rewrite and/or reconfigure their implementations
+to side-step the vulnerability.
 
 PASETO implementors should only support the two most recent protocol
 versions (currently **v1** and **v2**) at any given time.
@@ -748,7 +744,7 @@ distributions, /dev/urandom on most Unix-like systems, and CryptGenRandom
 on Windows computers.
 
 The use of userspace pseudo-random number generators, even if seeded by the
-operadting system's cryptographically secure pseudo-random number generator,
+operating system's cryptographically secure pseudo-random number generator,
 is discouraged.
 
 # IANA Considerations
@@ -757,7 +753,7 @@ The IANA should reserve a new "PASETO Headers" registry for the purpose
 of this document and superseding RFCs.
 
 This document defines a suite of string prefixes for PASETO tokens, called
-"PASETO Headers", (see (#paseto-message-format)), which consists of two parts:
+"PASETO Headers" (see (#paseto-message-format)), which consists of two parts:
 
 * **version**, with values **v1**, **v2** defined above
 * **purpose**, with the values of **local** or **public**
