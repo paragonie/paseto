@@ -187,9 +187,9 @@ introduce new PASETO protocol versions by continuing the convention
 Both **v1** and **v2** provide authentication of the entire PASETO message,
 including the **version**, **purpose**, **payload**, and **footer**.
 
-Implementations SHOULD only consider the most recent two versions of the
+Implementations **SHOULD** only consider the most recent two versions of the
 protocol as valid, as such any implementation which accepts a future **v3**
-protocol version SHOULD reject **v1** tokens.
+protocol version **SHOULD** reject **v1** tokens.
 
 # PASETO Protocol Version v1
 
@@ -556,7 +556,7 @@ the actual payloads.
 
 ## Registered Claims
 
-The following keys are reserved for use within PASETO. Users SHOULD NOT write
+The following keys are reserved for use within PASETO. Users **SHOULD NOT** write
 arbitrary/invalid data to any keys in a top-level PASETO in the list below:
 
 | Key  | Name      | Type   | Example                             |
@@ -616,7 +616,7 @@ security goals of public-key cryptography.
 Instead, it's recommended that implementors and users use a unique
 identifier for each key (independent of the cryptographic key's contents
 itself) that is used in a database or other key-value store to select
-the appropriate cryptographic key. These search operations MUST fail
+the appropriate cryptographic key. These search operations **MUST** fail
 closed if no valid key is found for the given key identifier.
 
 # AEAD_XChaCha20_Poly1305
