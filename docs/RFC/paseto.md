@@ -591,11 +591,9 @@ needing to first decrypt the token (which would in turn knowing which key to use
 decrypt the token).
 
 Implementations should feel free to provide a means to extract the footer from a token,
-before decryption, since the footer is used in the calculation of the authentication
-tag for the encrypted payload.
-
-Users should be aware that, until this authentication tag has been verified, the
-footer's contents are not authenticated.
+before authentication and decryption. This is possible for **local** tokens because
+the contents of the footer are *not* encrypted. However, the authenticity of the
+footer is only assured after the authentication tag is verified.
 
 While a key identifier can generally be safely used for selecting the cryptographic
 key used to decrypt and/or verify payloads before verification, provided that the
@@ -606,7 +604,7 @@ until the payload has been verified.
 IMPORTANT: Key identifiers **MUST** be independent of the actual keys
 used by Paseto.
 
-For example, the user **MUST NOT** drop the public key into the footer for
+For example, the user **MUST NOT** store the public key in the footer for
 a **public** token and have the recipient use the provided public key.
 Doing so would allow an attacker to replace the public key with
 one of their own choosing, which will cause the recipient to
@@ -614,8 +612,8 @@ accept any signature for any message as valid, which defeats the
 security goals of public-key cryptography.
 
 Instead, it's recommended that implementors and users use a unique
-identifier for each key (independent of the cryptographic key's contents
-itself) that is used in a database or other key-value store to select
+identifier for each key (independent of the cryptographic key's contents)
+that is used in a database or other key-value store to select
 the appropriate cryptographic key. These search operations **MUST** fail
 closed if no valid key is found for the given key identifier.
 

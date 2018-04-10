@@ -327,8 +327,8 @@ Internet-Draft                                                April 2018
 4.2.  v1.public
 
    *v1.public* messages SHALL be signed using RSASSA-PSS as defined in
-   [RFC8017].  Refer to the operations defined in *v1.Sign* and
-   *v1.Verify* for a formal definition.
+   [RFC8017], with 2048-bit private keys.  Refer to the operations
+   defined in *v1.Sign* and *v1.Verify* for a formal definition.
 
 
 
@@ -760,8 +760,6 @@ Internet-Draft                                                April 2018
 
       *  "["foo"]"
 
-      *  ""foo""
-
       *  "{0: "test"}"
 
    If non-UTF-8 character sets are desired for some fields, implementors
@@ -773,6 +771,8 @@ Internet-Draft                                                April 2018
    The following keys are reserved for use within PASETO.  Users SHOULD
    NOT write arbitrary/invalid data to any keys in a top-level PASETO in
    the list below:
+
+
 
 
 
@@ -823,17 +823,17 @@ Internet-Draft                                                April 2018
    turn knowing which key to use to decrypt the token).
 
    Implementations should feel free to provide a means to extract the
-   footer from a token, before decryption, since the footer is used in
-   the calculation of the authentication tag for the encrypted payload.
-
-   Users should be aware that, until this authentication tag has been
-   verified, the footer's contents are not authenticated.
+   footer from a token, before authentication and decryption.  This is
+   possible for *local* tokens because the contents of the footer are
+   _not_ encrypted.  However, the authenticity of the footer is only
+   assured after the authentication tag is verified.
 
    While a key identifier can generally be safely used for selecting the
    cryptographic key used to decrypt and/or verify payloads before
    verification, provided that the "key-id" is a public number that is
    associated with a particular key which is not supplied by attackers,
-
+   any other fields stored in the footer MUST be distrusted until the
+   payload has been verified.
 
 
 
@@ -842,23 +842,20 @@ Arciszewski             Expires October 11, 2018               [Page 15]
 Internet-Draft                                                April 2018
 
 
-   any other fields stored in the footer MUST be distrusted until the
-   payload has been verified.
-
    IMPORTANT: Key identifiers MUST be independent of the actual keys
    used by Paseto.
 
-   For example, the user MUST NOT drop the public key into the footer
-   for a *public* token and have the recipient use the provided public
-   key.  Doing so would allow an attacker to replace the public key with
-   one of their own choosing, which will cause the recipient to accept
-   any signature for any message as valid, which defeats the security
-   goals of public-key cryptography.
+   For example, the user MUST NOT store the public key in the footer for
+   a *public* token and have the recipient use the provided public key.
+   Doing so would allow an attacker to replace the public key with one
+   of their own choosing, which will cause the recipient to accept any
+   signature for any message as valid, which defeats the security goals
+   of public-key cryptography.
 
    Instead, it's recommended that implementors and users use a unique
    identifier for each key (independent of the cryptographic key's
-   contents itself) that is used in a database or other key-value store
-   to select the appropriate cryptographic key.  These search operations
+   contents) that is used in a database or other key-value store to
+   select the appropriate cryptographic key.  These search operations
    MUST fail closed if no valid key is found for the given key
    identifier.
 
@@ -888,6 +885,9 @@ Internet-Draft                                                April 2018
    With XChaCha20-Poly1305, users can safely generate a random 192-bit
    nonce for each message and not worry about nonce-reuse
    vulnerabilities.
+
+
+
 
 
 
