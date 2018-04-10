@@ -341,8 +341,8 @@ Internet-Draft                                                April 2018
 4.2.  v1.public
 
    *v1.public* messages SHALL be signed using RSASSA-PSS as defined in
-   [RFC8017].  Refer to the operations defined in *v1.Sign* and
-   *v1.Verify* for a formal definition.
+   [RFC8017], with 2048-bit private keys.  Refer to the operations
+   defined in *v1.Sign* and *v1.Verify* for a formal definition.
 
 4.3.  Version v1 Algorithms
 
@@ -760,8 +760,6 @@ Internet-Draft                                                April 2018
 
       *  "["foo"]"
 
-      *  "["foo"]"
-
       *  "{0: "test"}"
 
    If non-UTF-8 character sets are desired for some fields, implementors
@@ -773,6 +771,8 @@ Internet-Draft                                                April 2018
    The following keys are reserved for use within PASETO.  Users SHOULD
    NOT write arbitrary/invalid data to any keys in a top-level PASETO in
    the list below:
+
+
 
 
 
@@ -1021,7 +1021,7 @@ Internet-Draft                                                April 2018
    CryptGenRandom on Windows computers.
 
    The use of userspace pseudo-random number generators, even if seeded
-   by the operadting system's cryptographically secure pseudo-random
+   by the operating system's cryptographically secure pseudo-random
    number generator, is discouraged.
 
 9.  IANA Considerations

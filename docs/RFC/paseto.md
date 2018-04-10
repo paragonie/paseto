@@ -751,7 +751,7 @@ distributions, /dev/urandom on most Unix-like systems, and CryptGenRandom
 on Windows computers.
 
 The use of userspace pseudo-random number generators, even if seeded by the
-operadting system's cryptographically secure pseudo-random number generator,
+operating system's cryptographically secure pseudo-random number generator,
 is discouraged.
 
 # IANA Considerations
