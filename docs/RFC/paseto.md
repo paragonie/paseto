@@ -780,6 +780,6 @@ such as the [CFRG].
 | v1.public | Version 1, public     | (#v1public) |
 | v2.local  | Version 2, local      | (#v2local)  |
 | v2.public | Version 2, public     | (#v2public) |
-Table: PASETO Headers and their reespective meanings
+Table: PASETO Headers and their respective meanings
 
 [CFRG]: https://irtf.org/cfrg "Crypto Forum Research Group"

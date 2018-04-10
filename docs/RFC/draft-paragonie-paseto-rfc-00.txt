@@ -855,7 +855,7 @@ Internet-Draft                                                April 2018
    Instead, it's recommended that implementors and users use a unique
    identifier for each key (independent of the cryptographic key's
    contents) that is used in a database or other key-value store to
-   select the appropriate cryptographic key.  These search opexrations
+   select the appropriate cryptographic key.  These search operations
    MUST fail closed if no valid key is found for the given key
    identifier.
 
@@ -1052,7 +1052,7 @@ Internet-Draft                                                April 2018
             | v2.public |   Version 2, public   | Section 5.2 |
             +-----------+-----------------------+-------------+
 
-               PASETO Headers and their reespective meanings
+               PASETO Headers and their respective meanings
 
 
 
