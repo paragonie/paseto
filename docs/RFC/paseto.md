@@ -16,6 +16,15 @@
 %   email = "security@paragonie.com"
 %   [author.address.postal]
 %   country = "United States"
+% [[author]]
+% initials="S."
+% surname="Haussmann"
+% fullname="Steven Haussmann"
+% organization="Rensselaer Polytechnic Institute"
+%   [author.address]
+%   email = "hausss@rpi.edu"
+%   [author.address.postal]
+%   country = "United States"
 
 .# Abstract
 
@@ -610,7 +619,7 @@ security goals of public-key cryptography.
 Instead, it's recommended that implementors and users use a unique
 identifier for each key (independent of the cryptographic key's contents)
 that is used in a database or other key-value store to select
-the appropriate cryptographic key. These search opexrations **MUST** fail
+the appropriate cryptographic key. These search operations **MUST** fail
 closed if no valid key is found for the given key identifier.
 
 # AEAD_XChaCha20_Poly1305
