@@ -19,7 +19,7 @@
 
 .# Abstract
 
-Platform-Agnostic SEcurity TOkens (PASETO) provides a cryptographically
+Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically
 secure, compact, and URL-safe representation of claims that may be
 transferred between two parties. The claims in a PASETO are encoded as
 a JavaScript Object (JSON), version-tagged, and either encrypted
@@ -29,10 +29,10 @@ or signed using public-key cryptography.
 
 # Introduction
 
-Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
+A Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
 compact, and URL-safe representation of claims intended for space-constrained
 environments such as HTTP Cookies, HTTP Authorization headers, and URI
-query parameters. A PAESTO encodes claims to be transmitted in a JSON
+query parameters. A PASETO encodes claims to be transmitted in a JSON
 [@!RFC8259] object, and is either encrypted or signed using public-key
 cryptography.
 
@@ -93,7 +93,7 @@ and payload. The **footer** MUST NOT be encrypted.
 
 ## Base64 Encoding
 
-The payload and footer in a PASETO MUST BE encoded using base64url as
+The payload and footer in a PASETO **MUST** be encoded using base64url as
 defined in [@!RFC4648], without `=` padding.
 
 In this document. `b64()` refers to this unpadded variant of base64url.
@@ -117,7 +117,7 @@ Pre-Authentication Encoding).
 `PAE()` accepts an array of strings.
 
 `LE64()` encodes a 64-bit unsigned integer into a little-endian binary
-string. The most significant bit MUST be set to 0 for interoperability
+string. The most significant bit **MUST** be set to 0 for interoperability
 with programming languages that do not have unsigned integer support.
 
 The first 8 bytes of the output will be the number of pieces. Typically,
@@ -185,7 +185,7 @@ introduce new PASETO protocol versions by continuing the convention
 (e.g. **v3**, **v4**, ...).
 
 Both **v1** and **v2** provide authentication of the entire PASETO message,
-including the **version**, **purpose**, **payload** and **footer**.
+including the **version**, **purpose**, **payload**, and **footer**.
 
 Implementations SHOULD only consider the most recent two versions of the
 protocol as valid, as such any implementation which accepts a future **v3**
@@ -601,7 +601,7 @@ footer's contents are not authenticated.
 While a key identifier can generally be safely used for selecting the cryptographic
 key used to decrypt and/or verify payloads before verification, provided that the
 `key-id` is a public number that is associated with a particular key which is not
-supplied by attackers, any other fields stored in the footer MUST be distrusted
+supplied by attackers, any other fields stored in the footer **MUST** be distrusted
 until the payload has been verified.
 
 IMPORTANT: Key identifiers **MUST** be independent of the actual keys
@@ -738,11 +738,11 @@ be stored in a footer.
 
 Furthermore, PASETO users should beware that, if footers are employed to
 implement Key Identification (**kid**), the values stored in the footer
-MUST BE unrelated to the actual cryptographic key used in verifying the
+**MUST** be unrelated to the actual cryptographic key used in verifying the
 token as discussed in (#keyid-support).
 
-PASETO has no built-in mechanism to resist replay attacks within the token
-lifetime. Users SHOULD NOT attempt to use PASETO to obviate the need for
+PASETO has no built-in mechanism to resist replay attacks within the token's
+lifetime. Users **SHOULD NOT** attempt to use PASETO to obviate the need for
 server-side data storage when designing web applications.
 
 PASETO's cryptography features requires the availability of a secure
