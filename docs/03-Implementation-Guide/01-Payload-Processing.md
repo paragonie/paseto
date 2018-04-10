@@ -12,7 +12,6 @@ string. The topmost JSON object should be an object, map, or associative array
 > **Invalid**:
 >
 > * `[{"foo":"bar"}]`
-> * `["foo"]` 
 > * `["foo"]`
 > * `{0: "test"}`
 

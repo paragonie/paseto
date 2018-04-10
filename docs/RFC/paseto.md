@@ -218,8 +218,8 @@ a formal definition.
 ## v1.public
 
 **v1.public** messages **SHALL** be signed using RSASSA-PSS as defined in
-[@!RFC8017]. Refer to the operations defined in **v1.Sign** and **v1.Verify**
-for a formal definition.
+[@!RFC8017], with 2048-bit private keys. Refer to the operations defined
+in **v1.Sign** and **v1.Verify** for a formal definition.
 
 ## Version v1 Algorithms
 
@@ -547,7 +547,6 @@ string. The topmost JSON object should be an object, map, or associative array
 > **Invalid**:
 >
 > * `[{"foo":"bar"}]`
-> * `["foo"]`
 > * `["foo"]`
 > * `{0: "test"}`
 
