@@ -84,23 +84,23 @@ Table of Contents
      5.1.  v2.local  . . . . . . . . . . . . . . . . . . . . . . . .  11
      5.2.  v2.public . . . . . . . . . . . . . . . . . . . . . . . .  12
      5.3.  Version v2 Algorithms . . . . . . . . . . . . . . . . . .  12
-       5.3.1.  v2.Encrypt  . . . . . . . . . . . . . . . . . . . . .  13
+       5.3.1.  v2.Encrypt  . . . . . . . . . . . . . . . . . . . . .  12
        5.3.2.  v2.Decrypt  . . . . . . . . . . . . . . . . . . . . .  13
        5.3.3.  v2.Sign . . . . . . . . . . . . . . . . . . . . . . .  14
-       5.3.4.  v2.Verify . . . . . . . . . . . . . . . . . . . . . .  15
+       5.3.4.  v2.Verify . . . . . . . . . . . . . . . . . . . . . .  14
    6.  Payload Processing  . . . . . . . . . . . . . . . . . . . . .  15
      6.1.  Registered Claims . . . . . . . . . . . . . . . . . . . .  16
-       6.1.1.  Key-ID Support  . . . . . . . . . . . . . . . . . . .  17
-   7.  AEAD_XChaCha20_Poly1305 . . . . . . . . . . . . . . . . . . .  18
-     7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  18
+       6.1.1.  Key-ID Support  . . . . . . . . . . . . . . . . . . .  16
+   7.  AEAD_XChaCha20_Poly1305 . . . . . . . . . . . . . . . . . . .  17
+     7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  17
      7.2.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  18
-       7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  19
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+       7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  18
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  19
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  20
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
      10.1.  Normative References . . . . . . . . . . . . . . . . . .  21
-     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  23
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  23
+     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  22
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  22
 
 
 
@@ -372,11 +372,11 @@ Internet-Draft                                                April 2018
 
    4.  Split the key ("k") into an Encryption key ("Ek") and an
        Authentication key ("Ak"), using the leftmost 16 bytes of "n" as
-       the HKDF salt.  (See below for pseudocde.)
+       the HKDF salt.  (See below for pseudocode.)
 
    5.  Encrypt the message using "AES-256-CTR", using "Ek" as the key
        and the rightmost 16 bytes of "n" as the nonce.  We'll call this
-       "c".  (See below for pseudocde.)
+       "c".  (See below for pseudocode.)
 
    6.  Pack "h", "n", "c", and "f" together (in that order) using PAE
        (see Section 2.2).  We'll call this "preAuth".
@@ -457,7 +457,7 @@ Internet-Draft                                                April 2018
 
    4.  Split the key ("k") into an Encryption key ("Ek") and an
        Authentication key ("Ak"), using the leftmost 16 bytes of "n" as
-       the HKDF salt.  (See below for pseudocde.)
+       the HKDF salt.  (See below for pseudocode.)
 
    5.  Pack "h", "n", "c", and "f" together (in that order) using PAE
        (see Section 2.2).  We'll call this "preAuth".
@@ -593,7 +593,8 @@ Internet-Draft                                                April 2018
 
    Version *v2* is the RECOMMENDED protocol version. *v2* SHOULD be used
    in preference to *v1*. Applications using PASETO SHOULD only support
-   *v2* messages.
+   *v2* messages, but MAY support *v1* messages if the cryptography
+   primitives used in *v2* are not available on all machines.
 
    *v2* messages MUST use a *purpose* value of either *local* or
    *public*.
@@ -601,14 +602,13 @@ Internet-Draft                                                April 2018
 5.1.  v2.local
 
    *v2.local* messages MUST be encrypted with XChaCha20-Poly1305, a
-   variant of ChaCha20-Poly1305 [RFC7539] defined below.
+   variant of ChaCha20-Poly1305 [RFC7539] defined in Section 7.  Refer
+   to the operations defined in *v2.Encrypt* and *v2.Decrypt* for a
+   formal definition.
 
-   The *key* SHALL be provided by the user.  The *key* MUST be 32 bytes
-   long, and SHOULD be generated using a cryptographically secure
-   source.  Implementors SHOULD provide functionality to generate this
-   key for users when the implementation can ensure adequate entropy.
-   Any provided means for generating the *key* MUST NOT use poor sources
-   of randomness.
+
+
+
 
 
 
@@ -618,61 +618,15 @@ Arciszewski & Haussmann Expires October 14, 2018               [Page 11]
 Internet-Draft                                                April 2018
 
 
-   The *nonce* SHALL be constructed from a *BLAKE2b* [RFC7693] hash of
-   the *payload*, with a 24 byte randomly generated key parameter and an
-   output length of 24 bytes.  Implementations SHOULD use the libsodium
-   "crypto_generichash" function when available.
-
-   The v2.local ciphertext SHALL be constructed using XChaCha20-Poly1305
-   of the *payload*, using the generated *nonce*, the generated
-   *Additional Associated Data*, and using the 32 byte *key*.
-   Implementations SHOULD use the libsodium
-   "crypto_aead_xchacha20poly1305_ietf_encrypt" and
-   "crypto_aead_xchacha20poly1305_ietf_decrypt" functions when
-   available.
-
-   The *v2.local output* is generated by prepending 'v2.local.' to the
-   b64-encoded *v2.local ciphertext* as per the *PASETO Message Format*
-
 5.2.  v2.public
 
    *v2.public* messages MUST be signed using Ed25519 [RFC8032] public
    key signatures.  These messages provide authentication but do not
    prevent the contents from being read, including by those without
-   either the *public key* or the *private key*.
-
-   The *public key* and *private key* MUST be a valid pair of Ed25519
-   keys.  Implementations SHOULD consider providing functions to
-   generate the keypair and SHOULD use the "crypto_sign_keypair"
-   libsodium function to do this when available.
-
-   The *v2.public* *signature* is created by generating a byte string
-   containing the *Additional Associated Data* of the public header
-   (v2.public), the bytes of the *data*, and the *footer*. The
-   *Additional Associated Data* is then signed with Ed25519 using the
-   *private key*. Implementations SHOULD use the
-   "crypto_sign_verify_detached" libsodium function to generate this
-   signature when available.
-
-   The *signed payload* is generated by appending the *signature* to the
-   input data bytes.  It is then b64-encoded.
-
-   The *v2.public output* is generated by prepending 'v2.public.' to the
-   *signed payload* as per the *PASETO Message Format*.
+   either the *public key* or the *private key*. Refer to the operations
+   defined in *v2.Sign* and *v2.Verify* for a formal definition.
 
 5.3.  Version v2 Algorithms
-
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 12]
-
-Internet-Draft                                                April 2018
-
 
 5.3.1.  v2.Encrypt
 
@@ -705,6 +659,21 @@ Internet-Draft                                                April 2018
 
        *  ...where || means "concatenate"
 
+
+
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 12]
+
+Internet-Draft                                                April 2018
+
+
                 c = crypto_aead_xchacha20poly1305_encrypt(
                     message = m
                     aad = preAuth
@@ -721,14 +690,6 @@ Internet-Draft                                                April 2018
    1.  If "f" is not empty, verify that the value appended to the token
        matches "f", using a constant-time string compare function.  If
        it does not, throw an exception.
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 13]
-
-Internet-Draft                                                April 2018
-
 
    2.  Verify that the message begins with "v2.local.", otherwise throw
        an exception.  This constant will be referred to as "h".
@@ -757,6 +718,18 @@ Internet-Draft                                                April 2018
 
                        Step 8: PASETO v2 decryption
 
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 13]
+
+Internet-Draft                                                April 2018
+
+
 5.3.3.  v2.Sign
 
    Given a message "m", Ed25519 secret key "sk", and optional footer "f"
@@ -777,14 +750,6 @@ Internet-Draft                                                April 2018
        *  Non-empty: return h || b64(m || sig) || "." || b64(f)
 
        *  ...where || means "concatenate"
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 14]
-
-Internet-Draft                                                April 2018
-
 
                         sig = crypto_sign_detached(
                             message = m2,
@@ -812,6 +777,15 @@ Internet-Draft                                                April 2018
 
        *  "m" to the leftmost remainder of the payload, excluding "s"
 
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 14]
+
+Internet-Draft                                                April 2018
+
+
    4.  Pack "h", "m", and "f" together using PAE (see Section 2.2).
        We'll call this "m2".
 
@@ -833,15 +807,6 @@ Internet-Draft                                                April 2018
 
    All PASETO payloads MUST be a JSON-encoded object represented as a
    UTF-8 encoded string.  The topmost JSON object should be an object,
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 15]
-
-Internet-Draft                                                April 2018
-
-
    map, or associative array (depending on the language of choice), not
    a flat array.
 
@@ -867,6 +832,16 @@ Internet-Draft                                                April 2018
    are encouraged to use Base64url [1] encoding to preserve the original
    intended binary data, but still use UTF-8 for the actual payloads.
 
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 15]
+
+Internet-Draft                                                April 2018
+
+
 6.1.  Registered Claims
 
    The following keys are reserved for use within PASETO.  Users SHOULD
@@ -890,13 +865,6 @@ Internet-Draft                                                April 2018
 
    Any other claims can be freely used.  These keys are only reserved in
    the top-level JSON object.
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 16]
-
-Internet-Draft                                                April 2018
-
 
    The keys in the above table are case-sensitive.
 
@@ -922,6 +890,14 @@ Internet-Draft                                                April 2018
    _not_ encrypted.  However, the authenticity of the footer is only
    assured after the authentication tag is verified.
 
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 16]
+
+Internet-Draft                                                April 2018
+
+
    While a key identifier can generally be safely used for selecting the
    cryptographic key used to decrypt and/or verify payloads before
    verification, provided that the "key-id" is a public number that is
@@ -946,14 +922,6 @@ Internet-Draft                                                April 2018
    MUST fail closed if no valid key is found for the given key
    identifier.
 
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 17]
-
-Internet-Draft                                                April 2018
-
-
 7.  AEAD_XChaCha20_Poly1305
 
    XChaCha20-Poly1305 is a variant of the ChaCha20-Poly1305 AEAD
@@ -977,6 +945,15 @@ Internet-Draft                                                April 2018
    The nonce used by the original ChaCha20-Poly1305 is too short to
    safely use with random strings for long-lived keys.
 
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 17]
+
+Internet-Draft                                                April 2018
+
+
    With XChaCha20-Poly1305, users can safely generate a random 192-bit
    nonce for each message and not worry about nonce-reuse
    vulnerabilities.
@@ -996,19 +973,6 @@ Internet-Draft                                                April 2018
                   bbbbbbbb  nnnnnnnn  nnnnnnnn  nnnnnnnn
 
            ChaCha20 State: c=constant k=key b=blockcount n=nonce
-
-
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 18]
-
-Internet-Draft                                                April 2018
-
 
                   cccccccc  cccccccc  cccccccc  cccccccc
                   kkkkkkkk  kkkkkkkk  kkkkkkkk  kkkkkkkk
@@ -1033,6 +997,18 @@ Internet-Draft                                                April 2018
    o  Nonce = (00:00:00:09:00:00:00:4a:00:00:00:00:31:41:59:27)
 
    After setting up the HChaCha state, it looks like this:
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 18]
+
+Internet-Draft                                                April 2018
+
 
                     61707865 3320646e 79622d32 6b206574
                     03020100 07060504 0b0a0908 0f0e0d0c
@@ -1059,13 +1035,6 @@ Internet-Draft                                                April 2018
 
                         Resultant HChaCha20 subkey
 
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 19]
-
-Internet-Draft                                                April 2018
-
-
 8.  Security Considerations
 
    PASETO was designed in part to address known deficits of the JOSE
@@ -1086,6 +1055,16 @@ Internet-Draft                                                April 2018
 
    PASETO implementors should only support the two most recent protocol
    versions (currently *v1* and *v2*) at any given time.
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 19]
+
+Internet-Draft                                                April 2018
+
 
    PASETO users should beware that, although footers are authenticated,
    they are never encrypted.  Therefore, sensitive information MUST NOT
@@ -1110,18 +1089,6 @@ Internet-Draft                                                April 2018
    by the operating system's cryptographically secure pseudo-random
    number generator, is discouraged.
 
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 20]
-
-Internet-Draft                                                April 2018
-
-
 9.  IANA Considerations
 
    The IANA should reserve a new "PASETO Headers" registry for the
@@ -1140,6 +1107,20 @@ Internet-Draft                                                April 2018
    Initial values for the "PASETO Headers" registry are given below;
    future assignments are to be made through Expert Review [RFC8126],
    such as the CFRG [4].
+
+
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 20]
+
+Internet-Draft                                                April 2018
+
 
             +-----------+-----------------------+-------------+
             |   Value   | PASETO Header Meaning |  Definition |
@@ -1170,14 +1151,6 @@ Internet-Draft                                                April 2018
               DOI 10.17487/RFC5869, May 2010, <https://www.rfc-
               editor.org/info/rfc5869>.
 
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 21]
-
-Internet-Draft                                                April 2018
-
-
    [RFC7516]  Jones, M. and J. Hildebrand, "JSON Web Encryption (JWE)",
               RFC 7516, DOI 10.17487/RFC7516, May 2015,
               <https://www.rfc-editor.org/info/rfc7516>.
@@ -1198,10 +1171,12 @@ Internet-Draft                                                April 2018
               Protocols", RFC 7539, DOI 10.17487/RFC7539, May 2015,
               <https://www.rfc-editor.org/info/rfc7539>.
 
-   [RFC7693]  Saarinen, M-J., Ed. and J-P. Aumasson, "The BLAKE2
-              Cryptographic Hash and Message Authentication Code (MAC)",
-              RFC 7693, DOI 10.17487/RFC7693, November 2015,
-              <https://www.rfc-editor.org/info/rfc7693>.
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 21]
+
+Internet-Draft                                                April 2018
+
 
    [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
               "PKCS #1: RSA Cryptography Specifications Version 2.2",
@@ -1222,17 +1197,6 @@ Internet-Draft                                                April 2018
               Interchange Format", STD 90, RFC 8259,
               DOI 10.17487/RFC8259, December 2017, <https://www.rfc-
               editor.org/info/rfc8259>.
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 22]
-
-Internet-Draft                                                April 2018
-
 
 10.2.  URIs
 
@@ -1265,24 +1229,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 23]
+Arciszewski & Haussmann Expires October 14, 2018               [Page 22]
