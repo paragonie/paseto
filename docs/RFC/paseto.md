@@ -5,7 +5,7 @@
 % workgroup = "(No Working Group)"
 % keyword = ["security", "token"]
 %
-% date = 2018-04-09T21:00:00Z
+% date = 2018-04-12T07:00:00Z
 %
 % [[author]]
 % initials="S."
@@ -246,39 +246,47 @@ Given a message `m`, key `k`, and optional footer `f`
    * This step is to ensure that an RNG failure does not result
      in a nonce-misuse condition that breaks the security of
      our stream cipher.
-4. Split the key into an Encryption key (`Ek`) and Authentication key (`Ak`),
-   using the leftmost 16 bytes of `n` as the HKDF salt:
-   ```
-   Ek = hkdf_sha384(
-       len = 32
-       ikm = k,
-       info = "paseto-encryption-key",
-       salt = n[0:16]
-   );
-   Ak = hkdf_sha384(
-       len = 32
-       ikm = k,
-       info = "paseto-auth-key-for-aead",
-       salt = n[0:16]
-   );
-   ```
+4. Split the key (`k`) into an Encryption key (`Ek`) and an
+   Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
+   HKDF salt. (See below for pseudocde.)
 5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and
-   the rightmost 16 bytes of `n` as the nonce. We'll call this `c`:
-   ```
-   c = aes256ctr_encrypt(
-       plaintext = m,
-       nonce = n[16:]
-       key = Ek
-   );
-   ```
-6. Pack `h`, `n`, `c`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `preAuth`
+   the rightmost 16 bytes of `n` as the nonce. We'll call this `c`.
+   (See below for pseudocde.)
+6. Pack `h`, `n`, `c`, and `f` together (in that order) using
+   PAE (see (#authentication-padding)). We'll call this `preAuth`.
 7. Calculate HMAC-SHA384 of the output of `preAuth`, using `Ak` as the
    authentication key. We'll call this `t`.
 8. If `f` is:
-   * Empty: return "`h` || b64(`n` || `c` || `t`)"
-   * Non-empty: return "`h` || b64(`n` || `c` || `t`) || `.` || b64(`f`)"
+   * Empty: return h || b64(n || c || t)
+   * Non-empty: return h || b64(n || c || t) || `.` || b64(f)
    * ...where || means "concatenate"
+
+Example code:
+
+~~~
+Ek = hkdf_sha384(
+   len = 32
+   ikm = k,
+   info = "paseto-encryption-key",
+   salt = n[0:16]
+);
+Ak = hkdf_sha384(
+   len = 32
+   ikm = k,
+   info = "paseto-auth-key-for-aead",
+   salt = n[0:16]
+);
+~~~
+Figure: Step 4: Key splitting with HKDF-SHA384 as per [@!RFC5869].
+
+~~~
+c = aes256ctr_encrypt(
+    plaintext = m,
+    nonce = n[16:]
+    key = Ek
+);
+~~~
+Figure: Step 5: PASETO v1 encryption (calculating `c`)
 
 ### v1.Decrypt
 
@@ -294,36 +302,44 @@ Given a message `m`, key `k`, and optional footer `f`
    * `n` to the leftmost 32 bytes
    * `t` to the rightmost 48 bytes
    * `c` to the middle remainder of the payload, excluding `n` and `t`
-4. Split the keys using the leftmost 32 bytes of `n` as the HKDF salt:
-   ```
-   Ek = hkdf_sha384(
-       len = 32
-       ikm = k,
-       info = "paseto-encryption-key",
-       salt = n[0:16]
-   );
-   Ak = hkdf_sha384(
-       len = 32
-       ikm = k,
-       info = "paseto-auth-key-for-aead",
-       salt = n[0:16]
-   );
-   ```
-5. Pack `h`, `n`, `c`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `preAuth`.
+4. Split the key (`k`) into an Encryption key (`Ek`) and an
+   Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
+   HKDF salt. (See below for pseudocde.)
+5. Pack `h`, `n`, `c`, and `f` together (in that order) using
+   PAE (see (#authentication-padding)). We'll call this `preAuth`.
 6. Recalculate HASH-HMAC384 of `preAuth` using `Ak` as the key.
    We'll call this `t2`.
 7. Compare `t` with `t2` using a constant-time string compare function.
    If they are not identical, throw an exception.
 8. Decrypt `c` using `AES-256-CTR`, using `Ek` as the key and
    the rightmost 16 bytes of `n` as the nonce, and return this value.
-   ```
-   return aes256ctr_decrypt(
-       cipherext = c,
-       nonce = n[16:]
-       key = Ek
-   );
-   ```
+
+Example code:
+
+~~~
+Ek = hkdf_sha384(
+   len = 32
+   ikm = k,
+   info = "paseto-encryption-key",
+   salt = n[0:16]
+);
+Ak = hkdf_sha384(
+   len = 32
+   ikm = k,
+   info = "paseto-auth-key-for-aead",
+   salt = n[0:16]
+);
+~~~
+Figure: Step 4: Key splitting with HKDF-SHA384 as per [@!RFC5869].
+
+~~~
+return aes256ctr_decrypt(
+   cipherext = c,
+   nonce = n[16:]
+   key = Ek
+);
+~~~
+Figure: Step 8: PASETO v1 decryption
 
 ### v1.Sign
 
@@ -331,24 +347,29 @@ Given a message `m`, 2048-bit RSA secret key `sk`, and
 optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v1.public.`
-2. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `m2`.
+2. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+   We'll call this `m2`.
 3. Sign `m2` using RSA with the private key `sk`. We'll call this `sig`.
-   ```
-   sig = crypto_sign_rsa(
-       message = m2,
-       private_key = sk,
-       padding_mode = "pss",
-       public_exponent = 65537,
-       hash = "sha384"
-       mgf = "mgf1+sha384"
-   );
-   ```
-   Only the above parameters are supported. PKCS1v1.5 is explicitly forbidden.
+   The padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is
+   explicitly forbidden. The public exponent `e` **MUST** be 65537.
+   The mask generating function **MUST** be MGF1+SHA384. The hash function
+   **MUST** be SHA384. (See below for pseudocode.)
 4. If `f` is:
-   * Empty: return "`h` || b64(`m` || `sig`)"
-   * Non-empty: return "`h` || b64(`m` || `sig`) || `.` || b64(`f`)"
+   * Empty: return h || b64(m || sig)
+   * Non-empty: return h || b64(m || sig) || `.` || b64(f)
    * ...where || means "concatenate"
+
+~~~
+sig = crypto_sign_rsa(
+   message = m2,
+   private_key = sk,
+   padding_mode = "pss",
+   public_exponent = 65537,
+   hash = "sha384"
+   mgf = "mgf1+sha384"
+);
+~~~
+Figure: Pseudocode: RSA signature algorithm used in PASETO v1
 
 ## v1.Verify
 
@@ -363,17 +384,23 @@ footer `f` (which defaults to empty string):
    between `m` and `f`) from b64 to raw binary. Set:
    * `s` to the rightmost 256 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `m2`.
-5. Use RSA to verify that the signature is valid for the message:
-   ```
-   valid = crypto_sign_rsa_verify(
-       signature = s,
-       message = m2,
-       public_key = pk
-   );
-   ```
+4. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+   We'll call this `m2`.
+5. Use RSA to verify that the signature is valid for the message.
+   The padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is
+   explicitly forbidden. The public exponent `e` **MUST** be 65537.
+   The mask generating function **MUST** be MGF1+SHA384. The hash function
+   **MUST** be SHA384. (See below for pseudocode.)
 6. If the signature is valid, return `m`. Otherwise, throw an exception.
+
+~~~
+valid = crypto_sign_rsa_verify(
+    signature = s,
+    message = m2,
+    public_key = pk
+);
+~~~
+Figure: Pseudocode: RSA signature validation for PASETO v1
 
 
 # PASETO Protocol Version v2
@@ -448,23 +475,25 @@ Given a message `m`, key `k`, and optional footer `f`.
    * This step is to ensure that an RNG failure does not result
      in a nonce-misuse condition that breaks the security of
      our stream cipher.
-4. Pack `h`, `n`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `preAuth`.
+4. Pack `h`, `n`, and `f` together using PAE (see (#authentication-padding)).
+   We'll call this `preAuth`.
 5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface
    such as the one provided in libsodium.
-   ```
-   c = crypto_aead_xchacha20poly1305_encrypt(
-       message = m
-       aad = preAuth
-       nonce = n
-       key = k
-   );
-   ```
+   (See below for pseudocode.)
 6. If `f` is:
-   * Empty: return "`h` || base64url(`n` || `c`)"
-   * Non-empty: return "`h` || base64url(`n` || `c`) || `.` || base64url(`f`)"
+   * Empty: return h || b64(n || c)
+   * Non-empty: return h || b64(n || c) || `.` || base64url(f)
    * ...where || means "concatenate"
-   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
+
+~~~
+c = crypto_aead_xchacha20poly1305_encrypt(
+    message = m
+    aad = preAuth
+    nonce = n
+    key = k
+);
+~~~
+Figure: Step 5: PASETO v2 encryption (calculating `c`)
 
 ### v2.Decrypt
 
@@ -478,18 +507,21 @@ Given a message `m`, key `k`, and optional footer `f`.
    between `m` and `f`) from base64url to raw binary. Set:
    * `n` to the leftmost 24 bytes
    * `c` to the middle remainder of the payload, excluding `n`.
-5. Pack `h`, `n`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `preAuth`
+5. Pack `h`, `n`, and `f` together using PAE (see (#authentication-padding)).
+   We'll call this `preAuth`
 8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
-   ```
-   p = crypto_aead_xchacha20poly1305_decrypt(
-      ciphertext = c
-      aad = preAuth
-      nonce = n
-      key = k
-   );
-   ```
+   (See below for pseudocode.)
 9. If decryption failed, throw an exception. Otherwise, return `p`.
+
+~~~
+p = crypto_aead_xchacha20poly1305_decrypt(
+    ciphertext = c
+    aad = preAuth
+    nonce = n
+    key = k
+);
+~~~
+Figure: Step 8: PASETO v2 decryption
 
 ### v2.Sign
 
@@ -497,20 +529,22 @@ Given a message `m`, Ed25519 secret key `sk`, and
 optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v2.public.`
-2. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `m2`.
+2. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+   We'll call this `m2`.
 3. Sign `m2` using Ed25519 `sk`. We'll call this `sig`.
-   ```
-   sig = crypto_sign_detached(
-       message = m2,
-       private_key = sk
-   );
-   ```
+   (See below for pseudocode.)
 4. If `f` is:
-   * Empty: return "`h` || base64url(`m` || `sig`)"
-   * Non-empty: return "`h` || base64url(`m` || `sig`) || `.` || base64url(`f`)"
+   * Empty: return h || b64(m || sig)
+   * Non-empty: return h || b64(m || sig) || `.` || b64(f)
    * ...where || means "concatenate"
-   * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
+
+~~~
+sig = crypto_sign_detached(
+    message = m2,
+    private_key = sk
+);
+~~~
+Figure: Step 3: Generating an Ed25519 with libsodium
 
 ### v2.Verify
 
@@ -525,17 +559,20 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
    between `m` and `f`) from base64url to raw binary. Set:
    * `s` to the rightmost 64 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using [PAE](#authentication-padding)
-   (pre-authentication encoding). We'll call this `m2`.
+4. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+   We'll call this `m2`.
 5. Use Ed25519 to verify that the signature is valid for the message:
-   ```
-   valid = crypto_sign_verify_detached(
-       signature = s,
-       message = m2,
-       public_key = pk
-   );
-   ```
+   (See below for pseudocode.)
 6. If the signature is valid, return `m`. Otherwise, throw an exception.
+
+~~~
+valid = crypto_sign_verify_detached(
+    signature = s,
+    message = m2,
+    public_key = pk
+);
+~~~
+Figure: Step 5: Validating the Ed25519 signature using libsodium.
 
 # Payload Processing
 

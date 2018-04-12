@@ -5,8 +5,8 @@
 (No Working Group)                                        S. Arciszewski
 Internet-Draft                            Paragon Initiative Enterprises
 Intended status: Informational                              S. Haussmann
-Expires: October 11, 2018               Rensselaer Polytechnic Institute
-                                                           April 9, 2018
+Expires: October 14, 2018               Rensselaer Polytechnic Institute
+                                                          April 12, 2018
 
 
                PASETO: Platform-Agnostic SEcurity TOkens
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 11, 2018.
+   This Internet-Draft will expire on October 14, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 1]
+Arciszewski & Haussmann Expires October 14, 2018                [Page 1]
 
 Internet-Draft                                                April 2018
 
@@ -78,29 +78,29 @@ Table of Contents
        4.3.1.  v1.GetNonce . . . . . . . . . . . . . . . . . . . . .   7
        4.3.2.  v1.Encrypt  . . . . . . . . . . . . . . . . . . . . .   7
        4.3.3.  v1.Decrypt  . . . . . . . . . . . . . . . . . . . . .   8
-       4.3.4.  v1.Sign . . . . . . . . . . . . . . . . . . . . . . .   9
-     4.4.  v1.Verify . . . . . . . . . . . . . . . . . . . . . . . .   9
-   5.  PASETO Protocol Version v2  . . . . . . . . . . . . . . . . .  10
-     5.1.  v2.local  . . . . . . . . . . . . . . . . . . . . . . . .  10
-     5.2.  v2.public . . . . . . . . . . . . . . . . . . . . . . . .  11
-     5.3.  Version v2 Algorithms . . . . . . . . . . . . . . . . . .  11
-       5.3.1.  v2.Encrypt  . . . . . . . . . . . . . . . . . . . . .  11
-       5.3.2.  v2.Decrypt  . . . . . . . . . . . . . . . . . . . . .  12
-       5.3.3.  v2.Sign . . . . . . . . . . . . . . . . . . . . . . .  13
-       5.3.4.  v2.Verify . . . . . . . . . . . . . . . . . . . . . .  13
-   6.  Payload Processing  . . . . . . . . . . . . . . . . . . . . .  14
-     6.1.  Registered Claims . . . . . . . . . . . . . . . . . . . .  14
-       6.1.1.  Key-ID Support  . . . . . . . . . . . . . . . . . . .  15
-   7.  AEAD_XChaCha20_Poly1305 . . . . . . . . . . . . . . . . . . .  16
-     7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  16
-     7.2.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  17
-       7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  17
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  18
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  19
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .  20
-     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  21
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  21
+       4.3.4.  v1.Sign . . . . . . . . . . . . . . . . . . . . . . .  10
+     4.4.  v1.Verify . . . . . . . . . . . . . . . . . . . . . . . .  10
+   5.  PASETO Protocol Version v2  . . . . . . . . . . . . . . . . .  11
+     5.1.  v2.local  . . . . . . . . . . . . . . . . . . . . . . . .  11
+     5.2.  v2.public . . . . . . . . . . . . . . . . . . . . . . . .  12
+     5.3.  Version v2 Algorithms . . . . . . . . . . . . . . . . . .  12
+       5.3.1.  v2.Encrypt  . . . . . . . . . . . . . . . . . . . . .  13
+       5.3.2.  v2.Decrypt  . . . . . . . . . . . . . . . . . . . . .  13
+       5.3.3.  v2.Sign . . . . . . . . . . . . . . . . . . . . . . .  14
+       5.3.4.  v2.Verify . . . . . . . . . . . . . . . . . . . . . .  15
+   6.  Payload Processing  . . . . . . . . . . . . . . . . . . . . .  15
+     6.1.  Registered Claims . . . . . . . . . . . . . . . . . . . .  16
+       6.1.1.  Key-ID Support  . . . . . . . . . . . . . . . . . . .  17
+   7.  AEAD_XChaCha20_Poly1305 . . . . . . . . . . . . . . . . . . .  18
+     7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  18
+     7.2.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  18
+       7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  19
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  21
+     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  23
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  23
 
 
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 2]
+Arciszewski & Haussmann Expires October 14, 2018                [Page 2]
 
 Internet-Draft                                                April 2018
 
@@ -165,7 +165,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 3]
+Arciszewski & Haussmann Expires October 14, 2018                [Page 3]
 
 Internet-Draft                                                April 2018
 
@@ -221,7 +221,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 4]
+Arciszewski & Haussmann Expires October 14, 2018                [Page 4]
 
 Internet-Draft                                                April 2018
 
@@ -277,7 +277,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 5]
+Arciszewski & Haussmann Expires October 14, 2018                [Page 5]
 
 Internet-Draft                                                April 2018
 
@@ -333,7 +333,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 6]
+Arciszewski & Haussmann Expires October 14, 2018                [Page 6]
 
 Internet-Draft                                                April 2018
 
@@ -370,38 +370,60 @@ Internet-Draft                                                April 2018
           a nonce-misuse condition that breaks the security of our
           stream cipher.
 
-   4.  Split the key into an Encryption key ("Ek") and Authentication
-       key ("Ak"), using the leftmost 16 bytes of "n" as the HKDF salt:
-       "Ek = hkdf_sha384( len = 32 ikm = k, info = "paseto-encryption-
-       key", salt = n[0:16] ); Ak = hkdf_sha384( len = 32 ikm = k, info
-       = "paseto-auth-key-for-aead", salt = n[0:16] );"
+   4.  Split the key ("k") into an Encryption key ("Ek") and an
+       Authentication key ("Ak"), using the leftmost 16 bytes of "n" as
+       the HKDF salt.  (See below for pseudocde.)
 
    5.  Encrypt the message using "AES-256-CTR", using "Ek" as the key
        and the rightmost 16 bytes of "n" as the nonce.  We'll call this
-       "c": "c = aes256ctr_encrypt( plaintext = m, nonce = n[16:] key =
-       Ek );"
+       "c".  (See below for pseudocde.)
 
-   6.  Pack "h", "n", "c", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "preAuth"
+   6.  Pack "h", "n", "c", and "f" together (in that order) using PAE
+       (see Section 2.2).  We'll call this "preAuth".
 
    7.  Calculate HMAC-SHA384 of the output of "preAuth", using "Ak" as
        the authentication key.  We'll call this "t".
 
+   8.  If "f" is:
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 7]
+
+
+Arciszewski & Haussmann Expires October 14, 2018                [Page 7]
 
 Internet-Draft                                                April 2018
 
 
-   8.  If "f" is:
+       *  Empty: return h || b64(n || c || t)
 
-       *  Empty: return ""h" || b64("n" || "c" || "t")"
-
-       *  Non-empty: return ""h" || b64("n" || "c" || "t") || "." ||
-          b64("f")"
+       *  Non-empty: return h || b64(n || c || t) || "." || b64(f)
 
        *  ...where || means "concatenate"
+
+   Example code:
+
+                   Ek = hkdf_sha384(
+                      len = 32
+                      ikm = k,
+                      info = "paseto-encryption-key",
+                      salt = n[0:16]
+                   );
+                   Ak = hkdf_sha384(
+                      len = 32
+                      ikm = k,
+                      info = "paseto-auth-key-for-aead",
+                      salt = n[0:16]
+                   );
+
+              Step 4: Key splitting with HKDF-SHA384 as per .
+
+                          c = aes256ctr_encrypt(
+                              plaintext = m,
+                              nonce = n[16:]
+                              key = Ek
+                          );
+
+               Step 5: PASETO v1 encryption (calculating c)
 
 4.3.3.  v1.Decrypt
 
@@ -420,18 +442,25 @@ Internet-Draft                                                April 2018
 
        *  "n" to the leftmost 32 bytes
 
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018                [Page 8]
+
+Internet-Draft                                                April 2018
+
+
        *  "t" to the rightmost 48 bytes
 
        *  "c" to the middle remainder of the payload, excluding "n" and
           "t"
 
-   4.  Split the keys using the leftmost 32 bytes of "n" as the HKDF
-       salt: "Ek = hkdf_sha384( len = 32 ikm = k, info = "paseto-
-       encryption-key", salt = n[0:16] ); Ak = hkdf_sha384( len = 32 ikm
-       = k, info = "paseto-auth-key-for-aead", salt = n[0:16] );"
+   4.  Split the key ("k") into an Encryption key ("Ek") and an
+       Authentication key ("Ak"), using the leftmost 16 bytes of "n" as
+       the HKDF salt.  (See below for pseudocde.)
 
-   5.  Pack "h", "n", "c", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "preAuth".
+   5.  Pack "h", "n", "c", and "f" together (in that order) using PAE
+       (see Section 2.2).  We'll call this "preAuth".
 
    6.  Recalculate HASH-HMAC384 of "preAuth" using "Ak" as the key.
        We'll call this "t2".
@@ -442,16 +471,40 @@ Internet-Draft                                                April 2018
    8.  Decrypt "c" using "AES-256-CTR", using "Ek" as the key and the
        rightmost 16 bytes of "n" as the nonce, and return this value.
 
+   Example code:
+
+                   Ek = hkdf_sha384(
+                      len = 32
+                      ikm = k,
+                      info = "paseto-encryption-key",
+                      salt = n[0:16]
+                   );
+                   Ak = hkdf_sha384(
+                      len = 32
+                      ikm = k,
+                      info = "paseto-auth-key-for-aead",
+                      salt = n[0:16]
+                   );
+
+              Step 4: Key splitting with HKDF-SHA384 as per .
+
+                         return aes256ctr_decrypt(
+                            cipherext = c,
+                            nonce = n[16:]
+                            key = Ek
+                         );
+
+                       Step 8: PASETO v1 decryption
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018                [Page 8]
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018                [Page 9]
 
 Internet-Draft                                                April 2018
 
-
-       "return aes256ctr_decrypt( cipherext = c, nonce = n[16:] key = Ek
-       );"
 
 4.3.4.  v1.Sign
 
@@ -460,23 +513,33 @@ Internet-Draft                                                April 2018
 
    1.  Set "h" to "v1.public."
 
-   2.  Pack "h", "m", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "m2".
+   2.  Pack "h", "m", and "f" together using PAE (see Section 2.2).
+       We'll call this "m2".
 
    3.  Sign "m2" using RSA with the private key "sk".  We'll call this
-       "sig".  "sig = crypto_sign_rsa( message = m2, private_key = sk,
-       padding_mode = "pss", public_exponent = 65537, hash = "sha384"
-       mgf = "mgf1+sha384" );" Only the above parameters are supported.
-       PKCS1v1.5 is explicitly forbidden.
+       "sig".  The padding mode MUST be RSASSA-PSS [RFC8017]; PKCS1v1.5
+       is explicitly forbidden.  The public exponent "e" MUST be 65537.
+       The mask generating function MUST be MGF1+SHA384.  The hash
+       function MUST be SHA384.  (See below for pseudocode.)
 
    4.  If "f" is:
 
-       *  Empty: return ""h" || b64("m" || "sig")"
+       *  Empty: return h || b64(m || sig)
 
-       *  Non-empty: return ""h" || b64("m" || "sig") || "." ||
-          b64("f")"
+       *  Non-empty: return h || b64(m || sig) || "." || b64(f)
 
        *  ...where || means "concatenate"
+
+                        sig = crypto_sign_rsa(
+                           message = m2,
+                           private_key = sk,
+                           padding_mode = "pss",
+                           public_exponent = 65537,
+                           hash = "sha384"
+                           mgf = "mgf1+sha384"
+                        );
+
+           Pseudocode: RSA signature algorithm used in PASETO v1
 
 4.4.  v1.Verify
 
@@ -490,6 +553,15 @@ Internet-Draft                                                April 2018
    2.  Verify that the message begins with "v1.public.", otherwise throw
        an exception.  This constant will be referred to as "h".
 
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 10]
+
+Internet-Draft                                                April 2018
+
+
    3.  Decode the payload ("sm" sans "h", "f", and the optional trailing
        period between "m" and "f") from b64 to raw binary.  Set:
 
@@ -497,24 +569,25 @@ Internet-Draft                                                April 2018
 
        *  "m" to the leftmost remainder of the payload, excluding "s"
 
+   4.  Pack "h", "m", and "f" together using PAE (see Section 2.2).
+       We'll call this "m2".
 
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018                [Page 9]
-
-Internet-Draft                                                April 2018
-
-
-   4.  Pack "h", "m", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "m2".
-
-   5.  Use RSA to verify that the signature is valid for the message:
-       "valid = crypto_sign_rsa_verify( signature = s, message = m2,
-       public_key = pk );"
+   5.  Use RSA to verify that the signature is valid for the message.
+       The padding mode MUST be RSASSA-PSS [RFC8017]; PKCS1v1.5 is
+       explicitly forbidden.  The public exponent "e" MUST be 65537.
+       The mask generating function MUST be MGF1+SHA384.  The hash
+       function MUST be SHA384.  (See below for pseudocode.)
 
    6.  If the signature is valid, return "m".  Otherwise, throw an
        exception.
+
+                      valid = crypto_sign_rsa_verify(
+                          signature = s,
+                          message = m2,
+                          public_key = pk
+                      );
+
+            Pseudocode: RSA signature validation for PASETO v1
 
 5.  PASETO Protocol Version v2
 
@@ -537,6 +610,14 @@ Internet-Draft                                                April 2018
    Any provided means for generating the *key* MUST NOT use poor sources
    of randomness.
 
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 11]
+
+Internet-Draft                                                April 2018
+
+
    The *nonce* SHALL be constructed from a *BLAKE2b* [RFC7693] hash of
    the *payload*, with a 24 byte randomly generated key parameter and an
    output length of 24 bytes.  Implementations SHOULD use the libsodium
@@ -552,15 +633,6 @@ Internet-Draft                                                April 2018
 
    The *v2.local output* is generated by prepending 'v2.local.' to the
    b64-encoded *v2.local ciphertext* as per the *PASETO Message Format*
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 10]
-
-Internet-Draft                                                April 2018
-
 
 5.2.  v2.public
 
@@ -590,6 +662,18 @@ Internet-Draft                                                April 2018
 
 5.3.  Version v2 Algorithms
 
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 12]
+
+Internet-Draft                                                April 2018
+
+
 5.3.1.  v2.Encrypt
 
    Given a message "m", key "k", and optional footer "f".
@@ -606,34 +690,29 @@ Internet-Draft                                                April 2018
           a nonce-misuse condition that breaks the security of our
           stream cipher.
 
-   4.  Pack "h", "n", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "preAuth".
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 11]
-
-Internet-Draft                                                April 2018
-
+   4.  Pack "h", "n", and "f" together using PAE (see Section 2.2).
+       We'll call this "preAuth".
 
    5.  Encrypt the message using XChaCha20-Poly1305, using an AEAD
-       interface such as the one provided in libsodium.  "c =
-       crypto_aead_xchacha20poly1305_encrypt( message = m aad = preAuth
-       nonce = n key = k );"
+       interface such as the one provided in libsodium.  (See below for
+       pseudocode.)
 
    6.  If "f" is:
 
-       *  Empty: return ""h" || base64url("n" || "c")"
+       *  Empty: return h || b64(n || c)
 
-       *  Non-empty: return ""h" || base64url("n" || "c") || "." ||
-          base64url("f")"
+       *  Non-empty: return h || b64(n || c) || "." || base64url(f)
 
        *  ...where || means "concatenate"
 
-       *  Note: "base64url()" means Base64url from RFC 4648 without "="
-          padding.
+                c = crypto_aead_xchacha20poly1305_encrypt(
+                    message = m
+                    aad = preAuth
+                    nonce = n
+                    key = k
+                );
+
+               Step 5: PASETO v2 encryption (calculating c)
 
 5.3.2.  v2.Decrypt
 
@@ -642,6 +721,14 @@ Internet-Draft                                                April 2018
    1.  If "f" is not empty, verify that the value appended to the token
        matches "f", using a constant-time string compare function.  If
        it does not, throw an exception.
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 13]
+
+Internet-Draft                                                April 2018
+
 
    2.  Verify that the message begins with "v2.local.", otherwise throw
        an exception.  This constant will be referred to as "h".
@@ -653,26 +740,22 @@ Internet-Draft                                                April 2018
 
        *  "c" to the middle remainder of the payload, excluding "n".
 
-   4.  Pack "h", "n", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "preAuth"
+   4.  Pack "h", "n", and "f" together using PAE (see Section 2.2).
+       We'll call this "preAuth"
 
    5.  Decrypt "c" using "XChaCha20-Poly1305", store the result in "p".
-       "p = crypto_aead_xchacha20poly1305_decrypt( ciphertext = c aad =
-       preAuth nonce = n key = k );"
+       (See below for pseudocode.)
 
    6.  If decryption failed, throw an exception.  Otherwise, return "p".
 
+                p = crypto_aead_xchacha20poly1305_decrypt(
+                    ciphertext = c
+                    aad = preAuth
+                    nonce = n
+                    key = k
+                );
 
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 12]
-
-Internet-Draft                                                April 2018
-
+                       Step 8: PASETO v2 decryption
 
 5.3.3.  v2.Sign
 
@@ -681,23 +764,34 @@ Internet-Draft                                                April 2018
 
    1.  Set "h" to "v2.public."
 
-   2.  Pack "h", "m", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "m2".
+   2.  Pack "h", "m", and "f" together using PAE (see Section 2.2).
+       We'll call this "m2".
 
-   3.  Sign "m2" using Ed25519 "sk".  We'll call this "sig".  "sig =
-       crypto_sign_detached( message = m2, private_key = sk );"
+   3.  Sign "m2" using Ed25519 "sk".  We'll call this "sig".  (See below
+       for pseudocode.)
 
    4.  If "f" is:
 
-       *  Empty: return ""h" || base64url("m" || "sig")"
+       *  Empty: return h || b64(m || sig)
 
-       *  Non-empty: return ""h" || base64url("m" || "sig") || "." ||
-          base64url("f")"
+       *  Non-empty: return h || b64(m || sig) || "." || b64(f)
 
        *  ...where || means "concatenate"
 
-       *  Note: "base64url()" means Base64url from RFC 4648 without "="
-          padding.
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 14]
+
+Internet-Draft                                                April 2018
+
+
+                        sig = crypto_sign_detached(
+                            message = m2,
+                            private_key = sk
+                        );
+
+               Step 3: Generating an Ed25519 with libsodium
 
 5.3.4.  v2.Verify
 
@@ -718,29 +812,36 @@ Internet-Draft                                                April 2018
 
        *  "m" to the leftmost remainder of the payload, excluding "s"
 
-   4.  Pack "h", "m", and "f" together using Section 2.2 (pre-
-       authentication encoding).  We'll call this "m2".
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 13]
-
-Internet-Draft                                                April 2018
-
+   4.  Pack "h", "m", and "f" together using PAE (see Section 2.2).
+       We'll call this "m2".
 
    5.  Use Ed25519 to verify that the signature is valid for the
-       message: "valid = crypto_sign_verify_detached( signature = s,
-       message = m2, public_key = pk );"
+       message: (See below for pseudocode.)
 
    6.  If the signature is valid, return "m".  Otherwise, throw an
        exception.
+
+                   valid = crypto_sign_verify_detached(
+                       signature = s,
+                       message = m2,
+                       public_key = pk
+                   );
+
+         Step 5: Validating the Ed25519 signature using libsodium.
 
 6.  Payload Processing
 
    All PASETO payloads MUST be a JSON-encoded object represented as a
    UTF-8 encoded string.  The topmost JSON object should be an object,
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 15]
+
+Internet-Draft                                                April 2018
+
+
    map, or associative array (depending on the language of choice), not
    a flat array.
 
@@ -772,20 +873,6 @@ Internet-Draft                                                April 2018
    NOT write arbitrary/invalid data to any keys in a top-level PASETO in
    the list below:
 
-
-
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 14]
-
-Internet-Draft                                                April 2018
-
-
     +-----+------------+--------+-------------------------------------+
     | Key |    Name    |  Type  |               Example               |
     +-----+------------+--------+-------------------------------------+
@@ -804,6 +891,13 @@ Internet-Draft                                                April 2018
    Any other claims can be freely used.  These keys are only reserved in
    the top-level JSON object.
 
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 16]
+
+Internet-Draft                                                April 2018
+
+
    The keys in the above table are case-sensitive.
 
    Implementors SHOULD provide some means to discourage setting invalid/
@@ -819,8 +913,8 @@ Internet-Draft                                                April 2018
    footer.
 
    For example, a footer of {"kid":"gandalf0"} can be read without
-   needing to first decrypt the token (which would in turn knowing which
-   key to use to decrypt the token).
+   needing to first decrypt the token (which would in turn allow the
+   user to know which key to use to decrypt the token).
 
    Implementations should feel free to provide a means to extract the
    footer from a token, before authentication and decryption.  This is
@@ -834,13 +928,6 @@ Internet-Draft                                                April 2018
    associated with a particular key which is not supplied by attackers,
    any other fields stored in the footer MUST be distrusted until the
    payload has been verified.
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 15]
-
-Internet-Draft                                                April 2018
-
 
    IMPORTANT: Key identifiers MUST be independent of the actual keys
    used by Paseto.
@@ -858,6 +945,14 @@ Internet-Draft                                                April 2018
    select the appropriate cryptographic key.  These search operations
    MUST fail closed if no valid key is found for the given key
    identifier.
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 17]
+
+Internet-Draft                                                April 2018
+
 
 7.  AEAD_XChaCha20_Poly1305
 
@@ -886,18 +981,6 @@ Internet-Draft                                                April 2018
    nonce for each message and not worry about nonce-reuse
    vulnerabilities.
 
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 16]
-
-Internet-Draft                                                April 2018
-
-
 7.2.  HChaCha20
 
    *HChaCha20* is an intermediary step towards XChaCha20 based on the
@@ -913,6 +996,19 @@ Internet-Draft                                                April 2018
                   bbbbbbbb  nnnnnnnn  nnnnnnnn  nnnnnnnn
 
            ChaCha20 State: c=constant k=key b=blockcount n=nonce
+
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 18]
+
+Internet-Draft                                                April 2018
+
 
                   cccccccc  cccccccc  cccccccc  cccccccc
                   kkkkkkkk  kkkkkkkk  kkkkkkkk  kkkkkkkk
@@ -945,15 +1041,6 @@ Internet-Draft                                                April 2018
 
                      ChaCha state with the key setup.
 
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 17]
-
-Internet-Draft                                                April 2018
-
-
    After running 20 rounds (10 column rounds interleaved with 10
    "diagonal rounds"), the HChaCha state looks like this:
 
@@ -971,6 +1058,13 @@ Internet-Draft                                                April 2018
                     a0f9e4d 58a74a853 c12ec413 26d3ecdc
 
                         Resultant HChaCha20 subkey
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 19]
+
+Internet-Draft                                                April 2018
+
 
 8.  Security Considerations
 
@@ -1002,14 +1096,6 @@ Internet-Draft                                                April 2018
    footer MUST be unrelated to the actual cryptographic key used in
    verifying the token as discussed in Section 6.1.1.
 
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 18]
-
-Internet-Draft                                                April 2018
-
-
    PASETO has no built-in mechanism to resist replay attacks within the
    token's lifetime.  Users SHOULD NOT attempt to use PASETO to obviate
    the need for server-side data storage when designing web
@@ -1023,6 +1109,18 @@ Internet-Draft                                                April 2018
    The use of userspace pseudo-random number generators, even if seeded
    by the operating system's cryptographically secure pseudo-random
    number generator, is discouraged.
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 20]
+
+Internet-Draft                                                April 2018
+
 
 9.  IANA Considerations
 
@@ -1054,18 +1152,6 @@ Internet-Draft                                                April 2018
 
                PASETO Headers and their respective meanings
 
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 19]
-
-Internet-Draft                                                April 2018
-
-
 10.  References
 
 10.1.  Normative References
@@ -1083,6 +1169,14 @@ Internet-Draft                                                April 2018
               Key Derivation Function (HKDF)", RFC 5869,
               DOI 10.17487/RFC5869, May 2010, <https://www.rfc-
               editor.org/info/rfc5869>.
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 21]
+
+Internet-Draft                                                April 2018
+
 
    [RFC7516]  Jones, M. and J. Hildebrand, "JSON Web Encryption (JWE)",
               RFC 7516, DOI 10.17487/RFC7516, May 2015,
@@ -1114,14 +1208,6 @@ Internet-Draft                                                April 2018
               RFC 8017, DOI 10.17487/RFC8017, November 2016,
               <https://www.rfc-editor.org/info/rfc8017>.
 
-
-
-
-Arciszewski & Haussmann Expires October 11, 2018               [Page 20]
-
-Internet-Draft                                                April 2018
-
-
    [RFC8032]  Josefsson, S. and I. Liusvaara, "Edwards-Curve Digital
               Signature Algorithm (EdDSA)", RFC 8032,
               DOI 10.17487/RFC8032, January 2017, <https://www.rfc-
@@ -1136,6 +1222,17 @@ Internet-Draft                                                April 2018
               Interchange Format", STD 90, RFC 8259,
               DOI 10.17487/RFC8259, December 2017, <https://www.rfc-
               editor.org/info/rfc8259>.
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 22]
+
+Internet-Draft                                                April 2018
+
 
 10.2.  URIs
 
@@ -1173,4 +1270,19 @@ Authors' Addresses
 
 
 
-Arciszewski & Haussmann Expires October 11, 2018               [Page 21]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 23]
