@@ -5,8 +5,8 @@
 (No Working Group)                                        S. Arciszewski
 Internet-Draft                            Paragon Initiative Enterprises
 Intended status: Informational                              S. Haussmann
-Expires: October 14, 2018               Rensselaer Polytechnic Institute
-                                                          April 12, 2018
+Expires: October 21, 2018               Rensselaer Polytechnic Institute
+                                                          April 19, 2018
 
 
                PASETO: Platform-Agnostic SEcurity TOkens
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 14, 2018.
+   This Internet-Draft will expire on October 21, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 1]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 1]
 
 Internet-Draft                                                April 2018
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 2]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 2]
 
 Internet-Draft                                                April 2018
 
@@ -165,7 +165,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 3]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 3]
 
 Internet-Draft                                                April 2018
 
@@ -221,7 +221,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 4]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 4]
 
 Internet-Draft                                                April 2018
 
@@ -277,7 +277,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 5]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 5]
 
 Internet-Draft                                                April 2018
 
@@ -333,7 +333,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 6]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 6]
 
 Internet-Draft                                                April 2018
 
@@ -389,7 +389,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 7]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 7]
 
 Internet-Draft                                                April 2018
 
@@ -445,7 +445,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 8]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 8]
 
 Internet-Draft                                                April 2018
 
@@ -501,7 +501,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018                [Page 9]
+Arciszewski & Haussmann Expires October 21, 2018                [Page 9]
 
 Internet-Draft                                                April 2018
 
@@ -557,7 +557,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 10]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 10]
 
 Internet-Draft                                                April 2018
 
@@ -613,7 +613,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 11]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 11]
 
 Internet-Draft                                                April 2018
 
@@ -669,7 +669,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 12]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 12]
 
 Internet-Draft                                                April 2018
 
@@ -725,7 +725,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 13]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 13]
 
 Internet-Draft                                                April 2018
 
@@ -781,7 +781,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 14]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 14]
 
 Internet-Draft                                                April 2018
 
@@ -837,7 +837,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 15]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 15]
 
 Internet-Draft                                                April 2018
 
@@ -893,7 +893,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 16]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 16]
 
 Internet-Draft                                                April 2018
 
@@ -949,7 +949,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 17]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 17]
 
 Internet-Draft                                                April 2018
 
@@ -1005,7 +1005,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 18]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 18]
 
 Internet-Draft                                                April 2018
 
@@ -1061,7 +1061,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 19]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 19]
 
 Internet-Draft                                                April 2018
 
@@ -1117,7 +1117,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 20]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 20]
 
 Internet-Draft                                                April 2018
 
@@ -1173,7 +1173,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 21]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 21]
 
 Internet-Draft                                                April 2018
 
@@ -1229,7 +1229,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 22]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 22]
 
 Internet-Draft                                                April 2018
 
@@ -1285,7 +1285,7 @@ A.1.1.  v1.local (Shared-Key Encryption) Test Vectors
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 23]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 23]
 
 Internet-Draft                                                April 2018
 
@@ -1341,7 +1341,7 @@ A.1.1.3.  Test Vector v1-E-3
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 24]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 24]
 
 Internet-Draft                                                April 2018
 
@@ -1397,7 +1397,7 @@ A.1.1.6.  Test Vector v1-E-6
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 25]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 25]
 
 Internet-Draft                                                April 2018
 
@@ -1453,7 +1453,7 @@ A.1.2.2.  Test Vector v1-S-2
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 26]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 26]
 
 Internet-Draft                                                April 2018
 
@@ -1509,7 +1509,7 @@ A.2.1.2.  Test Vector v2-E-2
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 27]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 27]
 
 Internet-Draft                                                April 2018
 
@@ -1565,7 +1565,7 @@ A.2.1.5.  Test Vector v2-E-5
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 28]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 28]
 
 Internet-Draft                                                April 2018
 
@@ -1621,7 +1621,7 @@ A.2.2.1.  Test Vector v2-S-1
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 29]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 29]
 
 Internet-Draft                                                April 2018
 
@@ -1677,4 +1677,4 @@ Authors' Addresses
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 30]
+Arciszewski & Haussmann Expires October 21, 2018               [Page 30]
