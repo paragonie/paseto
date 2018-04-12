@@ -718,6 +718,23 @@ a0f9e4d 58a74a853 c12ec413 26d3ecdc
 ~~~
 Figure: Resultant HChaCha20 subkey
 
+# Intended Use-Cases for PASETO
+
+Like JWTs, PASETOs are intended to be single-use tokens, as there is no
+build-in mechanism to prevent replay attacks within the token lifetime.
+
+* **local** tokens are intended for tamper-resistant encrypted cookies or
+  HTTP request parameters. A resonable example would be long-term authentication
+  cookies which re-establish a new session cookie if a user checked the
+  "remember me on this computer" box when authenticating. To accomplish
+  this, the server would look use the `jti` claim in a database lookup
+  to find the appropriate user to associate this session with. After each
+  new browsing session, the `jti` would be rotated in the database and
+  a fresh cookie would be stored in tbe browser.
+* **public** tokens are intended for one-time authentication claims from
+  a third party. For example, **public** PASETO would be suitable for
+  a protocol like OpenID Connect.
+
 # Security Considerations
 
 PASETO was designed in part to address known deficits of the JOSE standards

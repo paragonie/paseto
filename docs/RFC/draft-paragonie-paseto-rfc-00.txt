@@ -95,13 +95,13 @@ Table of Contents
      7.1.  Motivation for XChaCha20-Poly1305 . . . . . . . . . . . .  17
      7.2.  HChaCha20 . . . . . . . . . . . . . . . . . . . . . . . .  18
        7.2.1.  Test Vector for the HChaCha20 Block Function  . . . .  18
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  19
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  20
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .  21
-     10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  22
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  22
-
+   8.  Intended Use-Cases for PASETO . . . . . . . . . . . . . . . .  19
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  21
+     11.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  22
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  23
 
 
 
@@ -1035,7 +1035,38 @@ Internet-Draft                                                April 2018
 
                         Resultant HChaCha20 subkey
 
-8.  Security Considerations
+8.  Intended Use-Cases for PASETO
+
+   Like JWTs, PASETOs are intended to be single-use tokens, as there is
+   no build-in mechanism to prevent replay attacks within the token
+   lifetime.
+
+   o  *local* tokens are intended for tamper-resistant encrypted cookies
+      or HTTP request parameters.  A resonable example would be long-
+      term authentication cookies which re-establish a new session
+      cookie if a user checked the "remember me on this computer" box
+      when authenticating.  To accomplish this, the server would look
+      use the "jti" claim in a database lookup to find the appropriate
+      user to associate this session with.  After each new browsing
+      session, the "jti" would be rotated in the database and a fresh
+      cookie would be stored in tbe browser.
+
+   o  *public* tokens are intended for one-time authentication claims
+      from a third party.  For example, *public* PASETO would be
+      suitable for a protocol like OpenID Connect.
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 19]
+
+Internet-Draft                                                April 2018
+
+
+9.  Security Considerations
 
    PASETO was designed in part to address known deficits of the JOSE
    standards that lead to insecure implementations.
@@ -1055,16 +1086,6 @@ Internet-Draft                                                April 2018
 
    PASETO implementors should only support the two most recent protocol
    versions (currently *v1* and *v2*) at any given time.
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 19]
-
-Internet-Draft                                                April 2018
-
 
    PASETO users should beware that, although footers are authenticated,
    they are never encrypted.  Therefore, sensitive information MUST NOT
@@ -1089,7 +1110,19 @@ Internet-Draft                                                April 2018
    by the operating system's cryptographically secure pseudo-random
    number generator, is discouraged.
 
-9.  IANA Considerations
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 20]
+
+Internet-Draft                                                April 2018
+
+
+10.  IANA Considerations
 
    The IANA should reserve a new "PASETO Headers" registry for the
    purpose of this document and superseding RFCs.
@@ -1108,20 +1141,6 @@ Internet-Draft                                                April 2018
    future assignments are to be made through Expert Review [RFC8126],
    such as the CFRG [4].
 
-
-
-
-
-
-
-
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 20]
-
-Internet-Draft                                                April 2018
-
-
             +-----------+-----------------------+-------------+
             |   Value   | PASETO Header Meaning |  Definition |
             +-----------+-----------------------+-------------+
@@ -1133,9 +1152,9 @@ Internet-Draft                                                April 2018
 
                PASETO Headers and their respective meanings
 
-10.  References
+11.  References
 
-10.1.  Normative References
+11.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -1150,6 +1169,14 @@ Internet-Draft                                                April 2018
               Key Derivation Function (HKDF)", RFC 5869,
               DOI 10.17487/RFC5869, May 2010, <https://www.rfc-
               editor.org/info/rfc5869>.
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 21]
+
+Internet-Draft                                                April 2018
+
 
    [RFC7516]  Jones, M. and J. Hildebrand, "JSON Web Encryption (JWE)",
               RFC 7516, DOI 10.17487/RFC7516, May 2015,
@@ -1171,13 +1198,6 @@ Internet-Draft                                                April 2018
               Protocols", RFC 7539, DOI 10.17487/RFC7539, May 2015,
               <https://www.rfc-editor.org/info/rfc7539>.
 
-
-
-Arciszewski & Haussmann Expires October 14, 2018               [Page 21]
-
-Internet-Draft                                                April 2018
-
-
    [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
               "PKCS #1: RSA Cryptography Specifications Version 2.2",
               RFC 8017, DOI 10.17487/RFC8017, November 2016,
@@ -1198,13 +1218,21 @@ Internet-Draft                                                April 2018
               DOI 10.17487/RFC8259, December 2017, <https://www.rfc-
               editor.org/info/rfc8259>.
 
-10.2.  URIs
+11.2.  URIs
 
    [1] https://tools.ietf.org/html/rfc4648#page-7
 
    [2] https://cr.yp.to/snuffle/xsalsa-20110204.pdf
 
    [3] https://nacl.cr.yp.to
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 22]
+
+Internet-Draft                                                April 2018
+
 
    [4] https://irtf.org/cfrg
 
@@ -1229,4 +1257,32 @@ Authors' Addresses
 
 
 
-Arciszewski & Haussmann Expires October 14, 2018               [Page 22]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Arciszewski & Haussmann Expires October 14, 2018               [Page 23]
