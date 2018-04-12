@@ -4,8 +4,9 @@
 
 (No Working Group)                                        S. Arciszewski
 Internet-Draft                            Paragon Initiative Enterprises
-Intended status: Informational                             April 9, 2018
-Expires: October 11, 2018
+Intended status: Informational                              S. Haussmann
+Expires: October 11, 2018               Rensselaer Polytechnic Institute
+                                                           April 9, 2018
 
 
                PASETO: Platform-Agnostic SEcurity TOkens
@@ -13,7 +14,7 @@ Expires: October 11, 2018
 
 Abstract
 
-   Platform-Agnostic SEcurity TOkens (PASETO) provides a
+   Platform-Agnostic SEcurity TOkens (PASETOs) provide a
    cryptographically secure, compact, and URL-safe representation of
    claims that may be transferred between two parties.  The claims in a
    PASETO are encoded as a JavaScript Object (JSON), version-tagged, and
@@ -48,19 +49,21 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-   the Trust Legal Provisions and are provided without warranty as
-   described in the Simplified BSD License.
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 1]
+
+Arciszewski & Haussmann Expires October 11, 2018                [Page 1]
 
 Internet-Draft                                                April 2018
 
 
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
      1.1.  Difference Between PASETO and JOSE  . . . . . . . . . . .   3
      1.2.  Notation and Conventions  . . . . . . . . . . . . . . . .   3
    2.  PASETO Message Format . . . . . . . . . . . . . . . . . . . .   3
@@ -97,23 +100,26 @@ Table of Contents
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
      10.1.  Normative References . . . . . . . . . . . . . . . . . .  20
      10.2.  URIs . . . . . . . . . . . . . . . . . . . . . . . . . .  21
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  21
-
-1.  Introduction
-
-   Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically
-   secure, compact, and URL-safe representation of claims intended for
-   space-constrained environments such as HTTP Cookies, HTTP
-   Authorization headers, and URI query parameters.  PASETOs encode
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  21
 
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 2]
+
+
+
+
+Arciszewski & Haussmann Expires October 11, 2018                [Page 2]
 
 Internet-Draft                                                April 2018
 
 
+1.  Introduction
+
+   A Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically
+   secure, compact, and URL-safe representation of claims intended for
+   space-constrained environments such as HTTP Cookies, HTTP
+   Authorization headers, and URI query parameters.  A PASETO encodes
    claims to be transmitted in a JSON [RFC8259] object, and is either
    encrypted or signed using public-key cryptography.
 
@@ -122,10 +128,9 @@ Internet-Draft                                                April 2018
    The key difference between PASETO and the JOSE family of standards
    (JWS [RFC7516], JWE [RFC7517], JWK [RFC7518], JWA [RFC7518], and JWT
    [RFC7519]) is that JOSE allows implementors and users to mix and
-   match their own choice of cryptographig algorithms (specified by the
+   match their own choice of cryptographic algorithms (specified by the
    "alg" header in JWT), while PASETO has clearly defined protocol
-   versions to prevent users without a cryptography engineering
-   background from selecting or permitting an insecure configuration.
+   versions to prevent unsafe configurations from being selected.
 
    PASETO is defined in two pieces:
 
@@ -138,11 +143,6 @@ Internet-Draft                                                April 2018
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in RFC 2119 [RFC2119].
-
-   Additionally, the key words "*MIGHT*", "*COULD*", "*MAY WISH TO*",
-   "*WOULD PROBABLY*", "*SHOULD CONSIDER*", and "*MUST (BUT WE KNOW YOU
-   WON'T)*" in this document are to interpreted as described in RFC 6919
-   [RFC6919].
 
 2.  PASETO Message Format
 
@@ -165,7 +165,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 3]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 3]
 
 Internet-Draft                                                April 2018
 
@@ -180,11 +180,11 @@ Internet-Draft                                                April 2018
    Any optional data can be appended to the *footer*. This data is
    authenticated through inclusion in the calculation of the
    authentication tag along with the header and payload.  The *footer*
-   is MUST NOT be encrypted.
+   MUST NOT be encrypted.
 
 2.1.  Base64 Encoding
 
-   The payload and footer in a PASETO MUST BE encoded using base64url as
+   The payload and footer in a PASETO MUST be encoded using base64url as
    defined in [RFC4648], without "=" padding.
 
    In this document. "b64()" refers to this unpadded variant of
@@ -197,7 +197,7 @@ Internet-Draft                                                April 2018
    function.
 
    In "local" mode, this encoding is applied to the additional
-   associated data (AAD).  In "remote" mode, which is not encrypted,
+   associated data (AAD).  In "public" mode, which is not encrypted,
    this encoding is applied to the components of the token, with respect
    to the protocol version being followed.
 
@@ -214,14 +214,14 @@ Internet-Draft                                                April 2018
    integer support.
 
    The first 8 bytes of the output will be the number of pieces.
-   Typically this is a small number (3 to 5).  This is calculated by
-   "LE64()" of the size of the array.
+   Typically, this is a small number (3 to 5).  This is calculated by
+   applying "LE64()" to the size of the array.
 
 
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 4]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 4]
 
 Internet-Draft                                                April 2018
 
@@ -267,17 +267,17 @@ Internet-Draft                                                April 2018
 
    o  "PAE('test')" will throw a "TypeError"
 
-   As a result, you cannot create a collision with only a partially
-   controlled plaintext.  Either the number of pieces will differ, or
-   the length of one of the fields (which is prefixed to the input you
-   can provide) will differ, or both.
+   As a result, partially controlled plaintext cannot be used to create
+   a collision.  Either the number of pieces will differ, or the length
+   of one of the fields (which is prefixed to user-controlled input)
+   will differ, or both.
 
 
 
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 5]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 5]
 
 Internet-Draft                                                April 2018
 
@@ -300,7 +300,7 @@ Internet-Draft                                                April 2018
    the convention (e.g. *v3*, *v4*, ...).
 
    Both *v1* and *v2* provide authentication of the entire PASETO
-   message, including the *version*, *purpose*, *payload* and *footer*.
+   message, including the *version*, *purpose*, *payload*, and *footer*.
 
    Implementations SHOULD only consider the most recent two versions of
    the protocol as valid, as such any implementation which accepts a
@@ -308,7 +308,7 @@ Internet-Draft                                                April 2018
 
 4.  PASETO Protocol Version v1
 
-   Version *v1* is a compatibility mode comprised of cryptographic
+   Version *v1* is a compatibility mode composed of cryptographic
    primitives likely available on legacy systems. *v1* SHOULD NOT be
    used when all systems are able to use *v2*. *v1* MAY be used when
    when compatibility requirements include systems unable to use
@@ -333,7 +333,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 6]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 6]
 
 Internet-Draft                                                April 2018
 
@@ -389,7 +389,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 7]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 7]
 
 Internet-Draft                                                April 2018
 
@@ -445,7 +445,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 8]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 8]
 
 Internet-Draft                                                April 2018
 
@@ -501,7 +501,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018                [Page 9]
+Arciszewski & Haussmann Expires October 11, 2018                [Page 9]
 
 Internet-Draft                                                April 2018
 
@@ -519,8 +519,8 @@ Internet-Draft                                                April 2018
 5.  PASETO Protocol Version v2
 
    Version *v2* is the RECOMMENDED protocol version. *v2* SHOULD be used
-   in preference to *v1*. Applications using PASETO *SHOULD CONSIDER*
-   only supporting *v2* messages.
+   in preference to *v1*. Applications using PASETO SHOULD only support
+   *v2* messages.
 
    *v2* messages MUST use a *purpose* value of either *local* or
    *public*.
@@ -532,10 +532,10 @@ Internet-Draft                                                April 2018
 
    The *key* SHALL be provided by the user.  The *key* MUST be 32 bytes
    long, and SHOULD be generated using a cryptographically secure
-   source.  Implementors *SHOULD CONSIDER* providing functionality to
-   generate this key for users when the implementation can ensure
-   adequate entropy.  Any provided means for generating the *key* MUST
-   NOT use poor sources of randomness.
+   source.  Implementors SHOULD provide functionality to generate this
+   key for users when the implementation can ensure adequate entropy.
+   Any provided means for generating the *key* MUST NOT use poor sources
+   of randomness.
 
    The *nonce* SHALL be constructed from a *BLAKE2b* [RFC7693] hash of
    the *payload*, with a 24 byte randomly generated key parameter and an
@@ -557,7 +557,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 10]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 10]
 
 Internet-Draft                                                April 2018
 
@@ -569,8 +569,8 @@ Internet-Draft                                                April 2018
    prevent the contents from being read, including by those without
    either the *public key* or the *private key*.
 
-   The *public key* and *private key* SHOULD be a valid pair of Ed25519
-   keys.  Implementations *SHOULD CONSIDER* providing functions to
+   The *public key* and *private key* MUST be a valid pair of Ed25519
+   keys.  Implementations SHOULD consider providing functions to
    generate the keypair and SHOULD use the "crypto_sign_keypair"
    libsodium function to do this when available.
 
@@ -613,7 +613,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 11]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 11]
 
 Internet-Draft                                                April 2018
 
@@ -669,7 +669,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 12]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 12]
 
 Internet-Draft                                                April 2018
 
@@ -725,7 +725,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 13]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 13]
 
 Internet-Draft                                                April 2018
 
@@ -739,9 +739,9 @@ Internet-Draft                                                April 2018
 
 6.  Payload Processing
 
-   All PASETO payloads must be a JSON-encoded object represented as a
+   All PASETO payloads MUST be a JSON-encoded object represented as a
    UTF-8 encoded string.  The topmost JSON object should be an object,
-   map, or associative array (select appropriate for your language), not
+   map, or associative array (depending on the language of choice), not
    a flat array.
 
       *Valid*:
@@ -781,7 +781,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 14]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 14]
 
 Internet-Draft                                                April 2018
 
@@ -812,55 +812,52 @@ Internet-Draft                                                April 2018
 6.1.1.  Key-ID Support
 
    Some systems need to support key rotation, but since the payloads of
-   a _local_ token are always encrypted, you can't just drop a _kid_
-   claim inside the payload.
+   a _local_ token are always encrypted, it is impractical to store the
+   key id in the payload.
 
    Instead, users should store Key-ID claims (_kid_) in the unencrypted
    footer.
 
-   For example, if you set the footer to {"kid":"gandalf0"}, you can
-   read it without needing to first decrypt the token (which would in
-   turn knowing which key to use to decrypt the token).
+   For example, a footer of {"kid":"gandalf0"} can be read without
+   needing to first decrypt the token (which would in turn knowing which
+   key to use to decrypt the token).
 
    Implementations should feel free to provide a means to extract the
-   footer from a token, before decryption, since the footer is used in
-   the calculation of the authentication tag for the encrypted payload.
-
-   Users should beware that, until this authentication tag has been
-   verified, the footer's contents are not authenticated.
+   footer from a token, before authentication and decryption.  This is
+   possible for _local_ tokens because the contents of the footer are
+   _not_ encrypted.  However, the authenticity of the footer is only
+   assured after the authentication tag is verified.
 
    While a key identifier can generally be safely used for selecting the
    cryptographic key used to decrypt and/or verify payloads before
-   verification, provided that they "key-id" is a public number that is
+   verification, provided that the "key-id" is a public number that is
    associated with a particular key which is not supplied by attackers,
+   any other fields stored in the footer MUST be distrusted until the
+   payload has been verified.
 
 
 
-
-Arciszewski             Expires October 11, 2018               [Page 15]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 15]
 
 Internet-Draft                                                April 2018
 
 
-   any other fields stored in the footer MUST be distrusted until the
-   payload has been verified.
-
    IMPORTANT: Key identifiers MUST be independent of the actual keys
    used by Paseto.
 
-   For example, you MUST NOT just drop the public key into the footer
-   for a *public* token and have the recipient use the provided public
-   key.  Doing so would allow an attacker to simply replace the public
-   key with one of their own choosing, which will cause the recipient to
-   simply accept any signature for any message as valid, which defeats
-   the security goals of public-key cryptography.
+   For example, the user MUST NOT store the public key in the footer for
+   a *public* token and have the recipient use the provided public key.
+   Doing so would allow an attacker to replace the public key with one
+   of their own choosing, which will cause the recipient to accept any
+   signature for any message as valid, which defeats the security goals
+   of public-key cryptography.
 
    Instead, it's recommended that implementors and users use a unique
    identifier for each key (independent of the cryptographic key's
-   contents itself) that is used in a database or other key-value store
-   to select the apppropriate cryptographic key.  These search
-   operations MUST fail closed if no valid key is found for the given
-   key identifier.
+   contents) that is used in a database or other key-value store to
+   select the appropriate cryptographic key.  These search operations
+   MUST fail closed if no valid key is found for the given key
+   identifier.
 
 7.  AEAD_XChaCha20_Poly1305
 
@@ -893,7 +890,10 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 16]
+
+
+
+Arciszewski & Haussmann Expires October 11, 2018               [Page 16]
 
 Internet-Draft                                                April 2018
 
@@ -923,9 +923,9 @@ Internet-Draft                                                April 2018
 
    After initialization, proceed through the ChaCha rounds as usual.
 
-   Once the 20 ChaCha rounds have completed, the first 128 bits and last
-   128 bits of the keystream (both little-endian) are concatenated, and
-   this 256-bit subkey is returned.
+   Once the 20 ChaCha rounds have been completed, the first 128 bits and
+   last 128 bits of the keystream (both little-endian) are concatenated,
+   and this 256-bit subkey is returned.
 
 7.2.1.  Test Vector for the HChaCha20 Block Function
 
@@ -949,7 +949,7 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 17]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 17]
 
 Internet-Draft                                                April 2018
 
@@ -978,40 +978,40 @@ Internet-Draft                                                April 2018
    standards that lead to insecure implementations.
 
    PASETO uses versioned protocols, rather than runtime ciphersuite
-   negotiation to prevent insecure algorithms from being selected.  Mix-
-   n-match is not a robust strategy for usable security engineering,
-   especially when implementations have insecure default settings.
+   negotiation, to prevent insecure algorithms from being selected.
+   Mix-and-match is not a robust strategy for usable security
+   engineering, especially when implementations have insecure default
+   settings.
 
    If a severe security vulnerability is ever discovered in one of the
-   specified versions, instead of expecting users to rewrite and/or
-   reconfigure their implementations to side-step the vulnerability, a
-   new version of the protocol that is not affected should be decided by
-   a team of cryptography engineers familiar with the vulnerability in
-   question.
+   specified versions, a new version of the protocol that is not
+   affected should be decided by a team of cryptography engineers
+   familiar with the vulnerability in question.  This prevents users
+   from having to rewrite and/or reconfigure their implementations to
+   side-step the vulnerability.
 
    PASETO implementors should only support the two most recent protocol
    versions (currently *v1* and *v2*) at any given time.
 
    PASETO users should beware that, although footers are authenticated,
    they are never encrypted.  Therefore, sensitive information MUST NOT
-   ever be stored in a footer.
+   be stored in a footer.
 
    Furthermore, PASETO users should beware that, if footers are employed
    to implement Key Identification (*kid*), the values stored in the
-   footer MUST BE unrelated to the actual cryptographic key used in
+   footer MUST be unrelated to the actual cryptographic key used in
    verifying the token as discussed in Section 6.1.1.
 
 
 
 
-
-Arciszewski             Expires October 11, 2018               [Page 18]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 18]
 
 Internet-Draft                                                April 2018
 
 
    PASETO has no built-in mechanism to resist replay attacks within the
-   token lifetime.  Users SHOULD NOT attempt to use PASETO to obviate
+   token's lifetime.  Users SHOULD NOT attempt to use PASETO to obviate
    the need for server-side data storage when designing web
    applications.
 
@@ -1030,8 +1030,7 @@ Internet-Draft                                                April 2018
    purpose of this document and superseding RFCs.
 
    This document defines a suite of string prefixes for PASETO tokens,
-   called "PASETO Headers", (see Section 2), which consists of two
-   parts:
+   called "PASETO Headers" (see Section 2), which consists of two parts:
 
    o  *version*, with values *v1*, *v2* defined above
 
@@ -1053,7 +1052,7 @@ Internet-Draft                                                April 2018
             | v2.public |   Version 2, public   | Section 5.2 |
             +-----------+-----------------------+-------------+
 
-               PASETO Headers and their reespective meanings
+               PASETO Headers and their respective meanings
 
 
 
@@ -1061,7 +1060,8 @@ Internet-Draft                                                April 2018
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 19]
+
+Arciszewski & Haussmann Expires October 11, 2018               [Page 19]
 
 Internet-Draft                                                April 2018
 
@@ -1083,11 +1083,6 @@ Internet-Draft                                                April 2018
               Key Derivation Function (HKDF)", RFC 5869,
               DOI 10.17487/RFC5869, May 2010, <https://www.rfc-
               editor.org/info/rfc5869>.
-
-   [RFC6919]  Barnes, R., Kent, S., and E. Rescorla, "Further Key Words
-              for Use in RFCs to Indicate Requirement Levels", RFC 6919,
-              DOI 10.17487/RFC6919, April 2013, <https://www.rfc-
-              editor.org/info/rfc6919>.
 
    [RFC7516]  Jones, M. and J. Hildebrand, "JSON Web Encryption (JWE)",
               RFC 7516, DOI 10.17487/RFC7516, May 2015,
@@ -1114,18 +1109,18 @@ Internet-Draft                                                April 2018
               RFC 7693, DOI 10.17487/RFC7693, November 2015,
               <https://www.rfc-editor.org/info/rfc7693>.
 
-
-
-
-Arciszewski             Expires October 11, 2018               [Page 20]
-
-Internet-Draft                                                April 2018
-
-
    [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
               "PKCS #1: RSA Cryptography Specifications Version 2.2",
               RFC 8017, DOI 10.17487/RFC8017, November 2016,
               <https://www.rfc-editor.org/info/rfc8017>.
+
+
+
+
+Arciszewski & Haussmann Expires October 11, 2018               [Page 20]
+
+Internet-Draft                                                April 2018
+
 
    [RFC8032]  Josefsson, S. and I. Liusvaara, "Edwards-Curve Digital
               Signature Algorithm (EdDSA)", RFC 8032,
@@ -1152,7 +1147,7 @@ Internet-Draft                                                April 2018
 
    [4] https://irtf.org/cfrg
 
-Author's Address
+Authors' Addresses
 
    Scott Arciszewski
    Paragon Initiative Enterprises
@@ -1161,6 +1156,11 @@ Author's Address
    Email: security@paragonie.com
 
 
+   Steven Haussmann
+   Rensselaer Polytechnic Institute
+   United States
+
+   Email: hausss@rpi.edu
 
 
 
@@ -1173,4 +1173,4 @@ Author's Address
 
 
 
-Arciszewski             Expires October 11, 2018               [Page 21]
+Arciszewski & Haussmann Expires October 11, 2018               [Page 21]

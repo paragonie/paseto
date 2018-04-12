@@ -16,10 +16,19 @@
 %   email = "security@paragonie.com"
 %   [author.address.postal]
 %   country = "United States"
+% [[author]]
+% initials="S."
+% surname="Haussmann"
+% fullname="Steven Haussmann"
+% organization="Rensselaer Polytechnic Institute"
+%   [author.address]
+%   email = "hausss@rpi.edu"
+%   [author.address.postal]
+%   country = "United States"
 
 .# Abstract
 
-Platform-Agnostic SEcurity TOkens (PASETO) provides a cryptographically
+Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically
 secure, compact, and URL-safe representation of claims that may be
 transferred between two parties. The claims in a PASETO are encoded as
 a JavaScript Object (JSON), version-tagged, and either encrypted
@@ -29,10 +38,10 @@ or signed using public-key cryptography.
 
 # Introduction
 
-Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
+A Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
 compact, and URL-safe representation of claims intended for space-constrained
 environments such as HTTP Cookies, HTTP Authorization headers, and URI
-query parameters. PASETOs encode claims to be transmitted in a JSON
+query parameters. A PASETO encodes claims to be transmitted in a JSON
 [@!RFC8259] object, and is either encrypted or signed using public-key
 cryptography.
 
@@ -41,10 +50,9 @@ cryptography.
 The key difference between PASETO and the JOSE family of standards
 (JWS [@!RFC7516], JWE [@!RFC7517], JWK [@!RFC7518], JWA [@!RFC7518], and
 JWT [@!RFC7519]) is that JOSE allows implementors and users to mix and
-match their own choice of cryptographig algorithms (specified by the
+match their own choice of cryptographic algorithms (specified by the
 "alg" header in JWT), while PASETO has clearly defined protocol versions
-to prevent users without a cryptography engineering background from
-selecting or permitting an insecure configuration.
+to prevent unsafe configurations from being selected.
 
 PASETO is defined in two pieces:
 
@@ -56,10 +64,6 @@ PASETO is defined in two pieces:
 The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**",
 "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this
 document are to be interpreted as described in RFC 2119 [@!RFC2119].
-
-Additionally, the key words "**MIGHT**", "**COULD**", "**MAY WISH TO**", "**WOULD
-PROBABLY**", "**SHOULD CONSIDER**", and "**MUST (BUT WE KNOW YOU WON'T)**" in
-this document are to interpreted as described in RFC 6919 [@!RFC6919].
 
 # PASETO Message Format
 
@@ -90,11 +94,11 @@ The **purpose** is a short string describing the purpose of the token. Accepted 
 
 Any optional data can be appended to the **footer**. This data is authenticated
 through inclusion in the calculation of the authentication tag along with the header
-and payload. The **footer** is MUST NOT be encrypted.
+and payload. The **footer** MUST NOT be encrypted.
 
 ## Base64 Encoding
 
-The payload and footer in a PASETO MUST BE encoded using base64url as
+The payload and footer in a PASETO **MUST** be encoded using base64url as
 defined in [@!RFC4648], without `=` padding.
 
 In this document. `b64()` refers to this unpadded variant of base64url.
@@ -106,7 +110,7 @@ in a specific manner before being passed to the respective
 cryptographic function.
 
 In `local` mode, this encoding is applied to the additional
-associated data (AAD). In `remote` mode, which is not encrypted,
+associated data (AAD). In `public` mode, which is not encrypted,
 this encoding is applied to the components of the token, with
 respect to the protocol version being followed.
 
@@ -118,12 +122,12 @@ Pre-Authentication Encoding).
 `PAE()` accepts an array of strings.
 
 `LE64()` encodes a 64-bit unsigned integer into a little-endian binary
-string. The most significant bit MUST be set to 0 for interoperability
+string. The most significant bit **MUST** be set to 0 for interoperability
 with programming languages that do not have unsigned integer support.
 
-The first 8 bytes of the output will be the number of pieces. Typically
-this is a small number (3 to 5). This is calculated by `LE64()` of the
-size of the array.
+The first 8 bytes of the output will be the number of pieces. Typically,
+this is a small number (3 to 5). This is calculated by applying `LE64()`
+to the size of the array.
 
 Next, for each piece provided, the length of the piece is encoded via
 `LE64()` and prefixed to each piece before concatenation.
@@ -164,9 +168,9 @@ As a consequence:
   `\x01\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00test`
 * `PAE('test')` will throw a `TypeError`
 
-As a result, you cannot create a collision with only a partially controlled
-plaintext. Either the number of pieces will differ, or the length of one
-of the fields (which is prefixed to the input you can provide) will differ,
+As a result, partially controlled plaintext cannot be used to create a collision.
+Either the number of pieces will differ, or the length of one
+of the fields (which is prefixed to user-controlled input) will differ,
 or both.
 
 Due to the length being expressed as an unsigned 64-bit integer, it remains
@@ -186,15 +190,15 @@ introduce new PASETO protocol versions by continuing the convention
 (e.g. **v3**, **v4**, ...).
 
 Both **v1** and **v2** provide authentication of the entire PASETO message,
-including the **version**, **purpose**, **payload** and **footer**.
+including the **version**, **purpose**, **payload**, and **footer**.
 
-Implementations SHOULD only consider the most recent two versions of the 
+Implementations **SHOULD** only consider the most recent two versions of the
 protocol as valid, as such any implementation which accepts a future **v3**
-protocol version SHOULD reject **v1** tokens.
+protocol version **SHOULD** reject **v1** tokens.
 
 # PASETO Protocol Version v1
 
-Version **v1** is a compatibility mode comprised of cryptographic primitives
+Version **v1** is a compatibility mode composed of cryptographic primitives
 likely available on legacy systems. **v1** **SHOULD NOT** be used when
 all systems are able to use **v2**. **v1** **MAY** be used when
 when compatibility requirements include systems unable to use cryptographic
@@ -375,8 +379,8 @@ footer `f` (which defaults to empty string):
 # PASETO Protocol Version v2
 
 Version **v2** is the **RECOMMENDED** protocol version. **v2** **SHOULD** be
-used in preference to **v1**. Applications using PASETO **SHOULD CONSIDER**
-only supporting **v2** messages.
+used in preference to **v1**. Applications using PASETO **SHOULD**
+only support **v2** messages.
 
 **v2** messages **MUST** use a **purpose**  value of either **local** or
 **public**.
@@ -388,7 +392,7 @@ ChaCha20-Poly1305 [@!RFC7539] defined below.
 
 The **key** **SHALL** be provided by the user. The **key** **MUST** be 32 bytes
 long, and **SHOULD** be generated using a cryptographically secure source.
-Implementors **SHOULD CONSIDER** providing functionality to generate this
+Implementors **SHOULD** provide functionality to generate this
 key for users when the implementation can ensure adequate entropy. Any provided
 means for generating the **key** **MUST NOT** use poor sources of randomness.
 
@@ -413,8 +417,8 @@ signatures. These messages provide authentication but do not prevent the
 contents from being read, including by those without either the **public key**
 or the **private key**.
 
-The **public key** and **private key** **SHOULD** be a valid pair of Ed25519 keys.
-Implementations **SHOULD CONSIDER** providing functions to generate the keypair
+The **public key** and **private key** **MUST** be a valid pair of Ed25519 keys.
+Implementations **SHOULD** consider providing functions to generate the keypair
 and **SHOULD** use the `crypto_sign_keypair` libsodium function to do this when
 available.
 
@@ -535,9 +539,9 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
 
 # Payload Processing
 
-All PASETO payloads must be a JSON-encoded object represented as a UTF-8 encoded
+All PASETO payloads **MUST** be a JSON-encoded object represented as a UTF-8 encoded
 string. The topmost JSON object should be an object, map, or associative array
-(select appropriate for your language), not a flat array.
+(depending on the language of choice), not a flat array.
 
 > **Valid**:
 >
@@ -557,7 +561,7 @@ the actual payloads.
 
 ## Registered Claims
 
-The following keys are reserved for use within PASETO. Users SHOULD NOT write
+The following keys are reserved for use within PASETO. Users **SHOULD NOT** write
 arbitrary/invalid data to any keys in a top-level PASETO in the list below:
 
 | Key  | Name      | Type   | Example                             |
@@ -577,47 +581,44 @@ JSON object.
 
 The keys in the above table are case-sensitive.
 
-Implementors SHOULD provide some means to discourage setting invalid/arbitrary data
+Implementors **SHOULD** provide some means to discourage setting invalid/arbitrary data
 to these reserved claims.
 
 ### Key-ID Support
 
 Some systems need to support key rotation, but since the payloads of a *local*
-token are always encrypted, you can't just drop a *kid* claim inside the payload.
+token are always encrypted, it is impractical to store the key id in the payload.
 
 Instead, users should store Key-ID claims (*kid*) in the unencrypted footer.
 
-For example, if you set the footer to {"kid":"gandalf0"}, you can read it without
-needing to first decrypt the token (which would in turn knowing which key to use to
-decrypt the token).
+For example, a footer of {"kid":"gandalf0"} can be read without needing to first
+decrypt the token (which would in turn knowing which key to use to decrypt the token).
 
 Implementations should feel free to provide a means to extract the footer from a token,
-before decryption, since the footer is used in the calculation of the authentication
-tag for the encrypted payload.
-
-Users should beware that, until this authentication tag has been verified, the
-footer's contents are not authenticated.
+before authentication and decryption. This is possible for *local* tokens because
+the contents of the footer are *not* encrypted. However, the authenticity of the
+footer is only assured after the authentication tag is verified.
 
 While a key identifier can generally be safely used for selecting the cryptographic
-key used to decrypt and/or verify payloads before verification, provided that they
+key used to decrypt and/or verify payloads before verification, provided that the
 `key-id` is a public number that is associated with a particular key which is not
-supplied by attackers, any other fields stored in the footer MUST be distrusted
+supplied by attackers, any other fields stored in the footer **MUST** be distrusted
 until the payload has been verified.
 
 IMPORTANT: Key identifiers **MUST** be independent of the actual keys
 used by Paseto.
 
-For example, you MUST NOT just drop the public key into the footer for
+For example, the user **MUST NOT** store the public key in the footer for
 a **public** token and have the recipient use the provided public key.
-Doing so would allow an attacker to simply replace the public key with
-one of their own choosing, which will cause the recipient to simply
+Doing so would allow an attacker to replace the public key with
+one of their own choosing, which will cause the recipient to
 accept any signature for any message as valid, which defeats the
 security goals of public-key cryptography.
 
 Instead, it's recommended that implementors and users use a unique
-identifier for each key (independent of the cryptographic key's contents
-itself) that is used in a database or other key-value store to select
-the apppropriate cryptographic key. These search operations MUST fail
+identifier for each key (independent of the cryptographic key's contents)
+that is used in a database or other key-value store to select
+the appropriate cryptographic key. These search operations **MUST** fail
 closed if no valid key is found for the given key identifier.
 
 # AEAD_XChaCha20_Poly1305
@@ -672,7 +673,7 @@ Figure: HChaCha20 State: c=constant k=key n=nonce
 
 After initialization, proceed through the ChaCha rounds as usual.
 
-Once the 20 ChaCha rounds have completed, the first 128 bits and last
+Once the 20 ChaCha rounds have been completed, the first 128 bits and last
 128 bits of the keystream (both little-endian) are concatenated, and this
 256-bit subkey is returned.
 
@@ -718,31 +719,31 @@ Figure: Resultant HChaCha20 subkey
 PASETO was designed in part to address known deficits of the JOSE standards
 that lead to insecure implementations.
 
-PASETO uses versioned protocols, rather than runtime ciphersuite negotiation
-to prevent insecure algorithms from being selected. Mix-n-match is not a
+PASETO uses versioned protocols, rather than runtime ciphersuite negotiation,
+to prevent insecure algorithms from being selected. Mix-and-match is not a
 robust strategy for usable security engineering, especially when implementations
 have insecure default settings.
 
 If a severe security vulnerability is ever discovered in one of the specified
-versions, instead of expecting users to rewrite and/or reconfigure their
-implementations to side-step the vulnerability, a new version of the protocol
-that is not affected should be decided by a team of cryptography engineers
-familiar with the vulnerability in question.
+versions, a new version of the protocol that is not affected should be decided
+by a team of cryptography engineers familiar with the vulnerability in question.
+This prevents users from having to rewrite and/or reconfigure their implementations
+to side-step the vulnerability.
 
 PASETO implementors should only support the two most recent protocol
 versions (currently **v1** and **v2**) at any given time.
 
 PASETO users should beware that, although footers are authenticated,
-they are never encrypted. Therefore, sensitive information MUST NOT ever
+they are never encrypted. Therefore, sensitive information **MUST NOT**
 be stored in a footer.
 
 Furthermore, PASETO users should beware that, if footers are employed to
 implement Key Identification (**kid**), the values stored in the footer
-MUST BE unrelated to the actual cryptographic key used in verifying the
+**MUST** be unrelated to the actual cryptographic key used in verifying the
 token as discussed in (#keyid-support).
 
-PASETO has no built-in mechanism to resist replay attacks within the token
-lifetime. Users SHOULD NOT attempt to use PASETO to obviate the need for
+PASETO has no built-in mechanism to resist replay attacks within the token's
+lifetime. Users **SHOULD NOT** attempt to use PASETO to obviate the need for
 server-side data storage when designing web applications.
 
 PASETO's cryptography features requires the availability of a secure
@@ -760,7 +761,7 @@ The IANA should reserve a new "PASETO Headers" registry for the purpose
 of this document and superseding RFCs.
 
 This document defines a suite of string prefixes for PASETO tokens, called
-"PASETO Headers", (see (#paseto-message-format)), which consists of two parts:
+"PASETO Headers" (see (#paseto-message-format)), which consists of two parts:
 
 * **version**, with values **v1**, **v2** defined above
 * **purpose**, with the values of **local** or **public**
@@ -778,6 +779,6 @@ such as the [CFRG].
 | v1.public | Version 1, public     | (#v1public) |
 | v2.local  | Version 2, local      | (#v2local)  |
 | v2.public | Version 2, public     | (#v2public) |
-Table: PASETO Headers and their reespective meanings
+Table: PASETO Headers and their respective meanings
 
 [CFRG]: https://irtf.org/cfrg "Crypto Forum Research Group"
