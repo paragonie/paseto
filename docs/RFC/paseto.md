@@ -591,8 +591,9 @@ token are always encrypted, it is impractical to store the key id in the payload
 
 Instead, users should store Key-ID claims (*kid*) in the unencrypted footer.
 
-For example, a footer of {"kid":"gandalf0"} can be read without needing to first
-decrypt the token (which would in turn knowing which key to use to decrypt the token).
+For example, a footer of {"kid":"gandalf0"} can be read without needing
+to first decrypt the token (which would in turn allow the user to know
+which key to use to decrypt the token).
 
 Implementations should feel free to provide a means to extract the footer from a token,
 before authentication and decryption. This is possible for *local* tokens because
