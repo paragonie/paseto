@@ -371,7 +371,7 @@ sig = crypto_sign_rsa(
 ~~~
 Figure: Pseudocode: RSA signature algorithm used in PASETO v1
 
-## v1.Verify
+### v1.Verify
 
 Given a signed message `sm`, RSA public key `pk`, and optional
 footer `f` (which defaults to empty string):
@@ -848,7 +848,9 @@ uVSj9gOo61hF7UH9XB6R4HRdlpBOuIbgAWZ46dkj9/HM9ovdP0Iy
 
 ## PASETO v1 Test Vectors
 
-### Test Vector v1-E-1
+### v1.local (Shared-Key Encryption) Test Vectors
+
+#### Test Vector v1-E-1
 
 ~~~
 Key:     70717273 74757677 78797a7b 7c7d7e7f
@@ -864,7 +866,7 @@ Token:   v1.local.WzhIh1MpbqVNXNt7-HbWvL-JwAym3Tomad9Pc2nl7wK87vGraUV
          s8fnfjJO8oKiqQMaiBP_Cqncmqw8
 ~~~
 
-### Test Vector v1-E-2
+#### Test Vector v1-E-2
 
 Same as v1-E-1, but with a slightly different message.
 
@@ -882,7 +884,7 @@ Token:   v1.local.w_NOpjgte4bX-2i1JAiTQzHoGUVOgc2yqKqsnYGmaPaCu_KWUkR
          Mr1RvfDI8emoPoW83q4Q60_xpHaw
 ~~~
 
-### Test Vector v1-E-3
+#### Test Vector v1-E-3
 
 ~~~
 Key:     70717273 74757677 78797a7b 7c7d7e7f
@@ -898,7 +900,7 @@ Token:   v1.local.4VyfcVcFAOAbB8yEM1j1Ob7Iez5VZJy5kHNsQxmlrAwKUbOtq9c
          JUYk4IK_JEdUeo_uFRqAIgHsiGCg
 ~~~
 
-### Test Vector v1-E-4
+#### Test Vector v1-E-4
 
 Same as v1-E-3, but with a slightly different message.
 
@@ -916,7 +918,7 @@ Token:   v1.local.IddlRQmpk6ojcD10z1EYdLexXvYiadtY0MrYQaRnq3dnqKIWcbb
          XUTWXchFEi0etJ4u6tqgxZSklcec
 ~~~
 
-### Test Vector v1-E-5
+#### Test Vector v1-E-5
 
 ~~~
 Key:     70717273 74757677 78797a7b 7c7d7e7f
@@ -933,7 +935,7 @@ Token:   v1.local.4VyfcVcFAOAbB8yEM1j1Ob7Iez5VZJy5kHNsQxmlrAwKUbOtq9c
          A2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9
 ~~~
 
-### Test Vector v1-E-6
+#### Test Vector v1-E-6
 
 Same as v1-E-5, but with a slightly different message.
 
@@ -952,7 +954,9 @@ Token:   v1.local.IddlRQmpk6ojcD10z1EYdLexXvYiadtY0MrYQaRnq3dnqKIWcbb
          2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9
 ~~~
 
-### Test Vector v1-S-1
+### v1.public (Public-Key Authentication) Test Vectors
+
+#### Test Vector v1-S-1
 
 ~~~
 Token:      v1.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiw
@@ -977,7 +981,7 @@ Payload:    {"data":"this is a secret message",
 Footer:
 ~~~
 
-### Test Vector v1-S-2
+#### Test Vector v1-S-2
 
 ~~~
 Token:      v1.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiw
@@ -1006,7 +1010,9 @@ Footer:     {"kid":"dYkISylxQeecEcHELfzF88UZrwbLolNiCdpzUHGw9Uqn"}
 
 ## PASETO v2 Test Vectors
 
-### Test Vector v2-E-1
+### v2.local (Shared-Key Encryption) Test Vectors
+
+#### Test Vector v2-E-1
 
 ~~~
 Key:     70717273 74757677 78797a7b 7c7d7e7f
@@ -1021,7 +1027,7 @@ Token:   v2.local.97TTOvgwIxNGvV80XKiGZg_kD3tsXM_-qB4dZGHOeN1cTkgQ4Pn
          yfnDbi6rEGMY3pSfCbLWMM2oHJxvlEl2XbQ
 ~~~
 
-### Test Vector v2-E-2
+#### Test Vector v2-E-2
 
 Same as v2-E-1, but with a slightly different message.
 
@@ -1038,7 +1044,7 @@ Token:   v2.local.CH50H-HM5tzdK4kOmQ8KbIvrzJfjYUGuu5Vy9ARSFHy9owVDMYg
          J2OlvLlIwlG06mzQVunrFNb7Z3_CHM0PK5w
 ~~~
 
-### Test Vector v2-E-3
+#### Test Vector v2-E-3
 
 ~~~
 Key:     70717273 74757677 78797a7b 7c7d7e7f
@@ -1053,7 +1059,7 @@ Token:   v2.local.5K4SCXNhItIhyNuVIZcwrdtaDKiyF81-eWHScuE0idiVqCo72bb
          Qclw3qTKIIl5-O5xRBN076fSDPo5xUCPpBA
 ~~~
 
-### Test Vector v2-E-4
+#### Test Vector v2-E-4
 
 Same as v2-E-3, but with a slightly different message.
 
@@ -1070,7 +1076,7 @@ Token:   v2.local.pvFdDeNtXxknVPsbBCZF6MGedVhPm40SneExdClOxa9HNR8wFv7
          Iu3B6h232h62DPbIxtjGvNRAwsLK7LcV8oQ
 ~~~
 
-### Test Vector v2-E-5
+#### Test Vector v2-E-5
 
 ~~~
 Key:     70717273 74757677 78797a7b 7c7d7e7f
@@ -1086,7 +1092,7 @@ Token:   v2.local.5K4SCXNhItIhyNuVIZcwrdtaDKiyF81-eWHScuE0idiVqCo72bb
          UmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9
 ~~~
 
-### Test Vector v2-E-6
+#### Test Vector v2-E-6
 
 Same as v2-E-5, but with a slightly different message.
 
@@ -1104,7 +1110,9 @@ Token:   v2.local.pvFdDeNtXxknVPsbBCZF6MGedVhPm40SneExdClOxa9HNR8wFv7
          UmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9
 ~~~
 
-### Test Vector v2-S-1
+### v2.public (Public-Key Authentication) Test Vectors
+
+#### Test Vector v2-S-1
 
 ~~~
 Token:       v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIi
@@ -1122,7 +1130,7 @@ Payload:     {"data":"this is a signed message",
 Footer:
 ~~~
 
-### Test Vector v2-S-2
+#### Test Vector v2-S-2
 
 ~~~
 Token:       v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIi
