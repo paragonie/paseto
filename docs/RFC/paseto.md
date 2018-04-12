@@ -31,8 +31,8 @@
 Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically
 secure, compact, and URL-safe representation of claims that may be
 transferred between two parties. The claims in a PASETO are encoded as
-a JavaScript Object (JSON), version-tagged, and either encrypted
-or signed using public-key cryptography.
+a JavaScript Object (JSON), version-tagged, and either encrypted using
+shared-key cryptography or signed using public-key cryptography.
 
 {mainmatter}
 

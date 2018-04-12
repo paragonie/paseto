@@ -18,7 +18,8 @@ Abstract
    cryptographically secure, compact, and URL-safe representation of
    claims that may be transferred between two parties.  The claims in a
    PASETO are encoded as a JavaScript Object (JSON), version-tagged, and
-   either encrypted or signed using public-key cryptography.
+   either encrypted using shared-key cryptography or signed using
+   public-key cryptography.
 
 Status of This Memo
 
@@ -49,7 +50,6 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-
 
 
 
