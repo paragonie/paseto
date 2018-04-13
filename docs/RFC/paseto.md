@@ -42,8 +42,8 @@ A Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
 compact, and URL-safe representation of claims intended for space-constrained
 environments such as HTTP Cookies, HTTP Authorization headers, and URI
 query parameters. A PASETO encodes claims to be transmitted in a JSON
-[@!RFC8259] object, and is either encrypted or signed using public-key
-cryptography.
+[@!RFC8259] object, and is either encrypted symmetrically or signed using
+public-key cryptography.
 
 ## Difference Between PASETO and JOSE
 
@@ -94,7 +94,7 @@ The **purpose** is a short string describing the purpose of the token. Accepted 
 
 Any optional data can be appended to the **footer**. This data is authenticated
 through inclusion in the calculation of the authentication tag along with the header
-and payload. The **footer** MUST NOT be encrypted.
+and payload. The **footer** **MUST NOT** be encrypted.
 
 ## Base64 Encoding
 
