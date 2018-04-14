@@ -92,8 +92,8 @@ The **purpose** is a short string describing the purpose of the token. Accepted 
 * **local**: shared-key authenticated encryption
 * **public**: public-key digital signatures; **not encrypted**
 
-The **payload** is a string that contains the token's data. In a **local** token,
-this data is encrypted with a symmetric cipher. In a **public** token, this data
+The **payload** is a string that contains the token's data. In a `local` token,
+this data is encrypted with a symmetric cipher. In a `public` token, this data
 is *unencrypted*.
 
 Any optional data can be appended to the **footer**. This data is authenticated
@@ -110,7 +110,7 @@ In this document. `b64()` refers to this unpadded variant of base64url.
 ## Authentication Padding
 
 Multi-part messages (e.g. header, content, footer) are encoded
-in a specific manner before being passed to the respective
+in a specific manner before being passed to the appropriate
 cryptographic function.
 
 In `local` mode, this encoding is applied to the additional
@@ -118,7 +118,7 @@ associated data (AAD). In `public` mode, which is not encrypted,
 this encoding is applied to the components of the token, with
 respect to the protocol version being followed.
 
-We will refer to it as **PAE** in this document (short for
+We will refer to this process as **PAE** in this document (short for
 Pre-Authentication Encoding).
 
 ### PAE Definition
@@ -177,8 +177,8 @@ Either the number of pieces will differ, or the length of one
 of the fields (which is prefixed to user-controlled input) will differ,
 or both.
 
-Due to the length being expressed as an unsigned 64-bit integer, it remains
-infeasible to generate/transmit enough data to create an integer overflow.
+Due to the length being expressed as an unsigned 64-bit integer, it is
+infeasible to encode enough data to create an integer overflow.
 
 This is not used to encode data prior to decryption, and no decoding function
 is provided or specified. This merely exists to prevent canonicalization
@@ -208,14 +208,13 @@ all systems are able to use **v2**. **v1** **MAY** be used when
 when compatibility requirements include systems unable to use cryptographic
 primitives from **v2**.
 
-**v1** messages **MUST** use a **purpose**  value of either **local** or
+**v1** messages **MUST** use a **purpose** value of either **local** or
 **public**.
-
 
 ## v1.local
 
 **v1.local** messages **SHALL** be encrypted and authenticated with AES-256-CTR
-and HMAC-SHA384, using an **Encrypt-then-MAC** construction.
+and HMAC-SHA384, using an **encrypt-then-MAC** construction.
 
 Encryption and authentication keys are split from the original key and
 half the nonce, facilitated by HKDF [@!RFC5869] using SHA384.
