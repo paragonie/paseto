@@ -30,8 +30,8 @@
 
 Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically
 secure, compact, and URL-safe representation of claims that may be
-transferred between two parties. The claims in a PASETO are encoded as
-a JavaScript Object (JSON), version-tagged, and either encrypted using
+transferred between two parties. The claims in a PASETO are encoded in
+JavaScript Object Notation (JSON), version-tagged, and either encrypted using
 shared-key cryptography or signed using public-key cryptography.
 
 {mainmatter}
@@ -92,9 +92,13 @@ The **purpose** is a short string describing the purpose of the token. Accepted 
 * **local**: shared-key authenticated encryption
 * **public**: public-key digital signatures; **not encrypted**
 
+The **payload** is a string that contains the token's data. In a **local** token,
+this data is encrypted with a symmetric cipher. In a **public** token, this data
+is *unencrypted*.
+
 Any optional data can be appended to the **footer**. This data is authenticated
-through inclusion in the calculation of the authentication tag along with the header
-and payload. The **footer** **MUST NOT** be encrypted.
+through inclusion in the calculation of the authentication tag along with the
+header and payload. The **footer** **MUST NOT** be encrypted.
 
 ## Base64 Encoding
 
@@ -130,7 +134,7 @@ this is a small number (3 to 5). This is calculated by applying `LE64()`
 to the size of the array.
 
 Next, for each piece provided, the length of the piece is encoded via
-`LE64()` and prefixed to each piece before concatenation.
+`LE64()` and prefixed to the piece before concatenation.
 
 ~~~ javascript
 function LE64(n) {
