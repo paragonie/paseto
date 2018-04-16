@@ -655,6 +655,9 @@ in the footer **MUST** be distrusted until the payload has been verified.
 IMPORTANT: Key identifiers **MUST** be independent of the actual keys
 used by Paseto.
 
+A fingerprint of the key is allowed as long as it is impractical for an
+attacker to recover the key from said fingerprint.
+
 For example, the user **MUST NOT** store the public key in the footer for
 a **public** token and have the recipient use the provided public key.
 Doing so would allow an attacker to replace the public key with
