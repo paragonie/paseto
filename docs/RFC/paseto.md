@@ -453,7 +453,7 @@ Figure: Pseudocode: RSA signature validation for PASETO v1
 Version **v2** is the **RECOMMENDED** protocol version. **v2** **SHOULD** be
 used in preference to **v1**. Applications using PASETO **SHOULD**
 only support **v2** messages, but **MAY** support **v1** messages if
-the cryptography primitives used in **v2** are not available on all
+the cryptographic primitives used in **v2** are not available on all
 machines.
 
 **v2** messages **MUST** use a **purpose**  value of either **local** or
