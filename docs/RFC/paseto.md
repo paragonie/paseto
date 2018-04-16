@@ -330,8 +330,9 @@ Figure: Step 5: PASETO v1 encryption (calculating `c`)
 Given a message `m`, key `k`, and optional footer `f`
 (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
+1. If `f` is not empty, implementations **MAY** verify that the value
+   appended to the token matches some expected string `f`, provided they
+   do so using a constant-time string compare function.
 2. Verify that the message begins with `v1.local.`, otherwise throw an exception.
    This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
@@ -418,8 +419,9 @@ Figure: Pseudocode: RSA signature algorithm used in PASETO v1
 Given a signed message `sm`, RSA public key `pk`, and optional
 footer `f` (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
+1. If `f` is not empty, implementations **MAY** verify that the value
+   appended to the token matches some expected string `f`, provided they
+   do so using a constant-time string compare function.
 2. Verify that the message begins with `v1.public.`, otherwise throw an exception.
    This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
@@ -507,8 +509,9 @@ Figure: Step 5: PASETO v2 encryption (calculating `c`)
 
 Given a message `m`, key `k`, and optional footer `f`.
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
+1. If `f` is not empty, implementations **MAY** verify that the value
+   appended to the token matches some expected string `f`, provided they
+   do so using a constant-time string compare function.
 2. Verify that the message begins with `v2.local.`, otherwise throw an exception.
    This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
@@ -559,8 +562,9 @@ Figure: Step 3: Generating an Ed25519 with libsodium
 Given a signed message `sm`, public key `pk`, and optional footer `f`
 (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
+1. If `f` is not empty, implementations **MAY** verify that the value
+   appended to the token matches some expected string `f`, provided they
+   do so using a constant-time string compare function.
 2. Verify that the message begins with `v2.public.`, otherwise throw an exception.
    This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
