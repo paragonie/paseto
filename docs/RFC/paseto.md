@@ -767,7 +767,7 @@ Figure: Resultant HChaCha20 subkey
 # Intended Use-Cases for PASETO
 
 Like JWTs, PASETOs are intended to be single-use tokens, as there is no
-build-in mechanism to prevent replay attacks within the token lifetime.
+built-in mechanism to prevent replay attacks within the token lifetime.
 
 * **local** tokens are intended for tamper-resistant encrypted cookies or
   HTTP request parameters. A resonable example would be long-term authentication
