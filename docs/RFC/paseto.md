@@ -612,16 +612,22 @@ arbitrary/invalid data to any keys in a top-level PASETO in the list below:
 | nbf | Not Before | DtTime | {"nbf":"2038-04-01T00:00:00+00:00"} |
 | iat | Issued At  | DtTime | {"iat":"2038-03-17T00:00:00+00:00"} |
 | jti | Token ID   | string | {"jti":"87IFSGFgPNtQNNuw0AtuLttP"}  |
+| kid | Key-ID     | string | {"kid":"stored-in-the-footer"}      |
 
 In the table above, DtTime means an ISO 8601 compliant DateTime string.
+See [#keyid-support] for special rules about `kid` claims.
 
 Any other claims can be freely used. These keys are only reserved in the top-level
 JSON object.
 
 The keys in the above table are case-sensitive.
 
-Implementors **SHOULD** provide some means to discourage setting invalid/arbitrary data
-to these reserved claims.
+Implementors (i.e. library designers) **SHOULD** provide some means to
+discourage setting invalid/arbitrary data to these reserved claims.
+
+For example: Storing any string that isn't a valid ISO 8601 DateTime in
+the `exp` claim should result in an exception or error state (depending
+on the programming language in question).
 
 ### Key-ID Support
 
@@ -634,16 +640,17 @@ For example, a footer of {"kid":"gandalf0"} can be read without needing
 to first decrypt the token (which would in turn allow the user to know
 which key to use to decrypt the token).
 
-Implementations should feel free to provide a means to extract the footer from a token,
-before authentication and decryption. This is possible for *local* tokens because
-the contents of the footer are *not* encrypted. However, the authenticity of the
-footer is only assured after the authentication tag is verified.
+Implementations **SHOULD** provide a means to extract the footer from a
+PASETO before authentication and decryption. This is possible for *local*
+tokens because the contents of the footer are *not* encrypted. However,
+the authenticity of the footer is only assured after the authentication
+tag is verified.
 
-While a key identifier can generally be safely used for selecting the cryptographic
-key used to decrypt and/or verify payloads before verification, provided that the
-`key-id` is a public number that is associated with a particular key which is not
-supplied by attackers, any other fields stored in the footer **MUST** be distrusted
-until the payload has been verified.
+While a key identifier can generally be safely used for selecting the
+cryptographic key used to decrypt and/or verify payloads before verification,
+provided that the *kid* is a public number that is associated with a
+particular key which is not supplied by attackers, any other fields stored
+in the footer **MUST** be distrusted until the payload has been verified.
 
 IMPORTANT: Key identifiers **MUST** be independent of the actual keys
 used by Paseto.
