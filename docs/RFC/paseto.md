@@ -591,20 +591,7 @@ Figure: Step 5: Validating the Ed25519 signature using libsodium.
 
 # Payload Processing
 
-All PASETO payloads **MUST** be a JSON-encoded object represented as a UTF-8 encoded
-string. The topmost JSON object should be an object, map, or associative array
-(depending on the language of choice), not a flat array.
-
-> **Valid**:
->
-> * `{"foo":"bar"}`
-> * `{"foo":"bar","baz":12345,"678":["a","b","c"]}`
->
-> **Invalid**:
->
-> * `[{"foo":"bar"}]`
-> * `["foo"]`
-> * `{0: "test"}`
+All PASETO payloads **MUST** be a JSON object [@!RFC8259].
 
 If non-UTF-8 character sets are desired for some fields, implementors are
 encouraged to use [Base64url](https://tools.ietf.org/html/rfc4648#page-7)
