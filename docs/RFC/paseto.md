@@ -82,6 +82,9 @@ With the Optional Footer:
 version.purpose.payload.footer
 ~~~
 
+If no footer is provided, implementations **SHOULD NOT** append a trailing
+period to each payload.
+
 The **version** is a string that represents the current version of the
 protocol. Currently, two versions are specified, which each possess
 their own ciphersuites. Accepted values: **v1**, **v2**.
