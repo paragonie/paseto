@@ -343,7 +343,7 @@ Given a message `m`, key `k`, and optional footer `f`
      set to **paseto-auth-key-for-aead**.
 5. Pack `h`, `n`, `c`, and `f` together (in that order) using
    PAE (see (#authentication-padding)). We'll call this `preAuth`.
-6. Recalculate HASH-HMAC384 of `preAuth` using `Ak` as the key.
+6. Recalculate HMAC_SHA384 of `preAuth` using `Ak` as the key.
    We'll call this `t2`.
 7. Compare `t` with `t2` using a constant-time string compare function.
    If they are not identical, throw an exception.
