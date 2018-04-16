@@ -242,8 +242,9 @@ primitives from **v2**.
 
 ## v1.local
 
-**v1.local** messages **SHALL** be encrypted and authenticated with AES-256-CTR
-and HMAC-SHA384, using an **Encrypt-then-MAC** construction.
+**v1.local** messages **SHALL** be encrypted and authenticated with
+**AES-256-CTR** (AES-CTR from [@!RFC3686] with a 256-bit key) and
+**HMAC-SHA-384** ([@!RFC4231]), using an **Encrypt-then-MAC** construction.
 
 Encryption and authentication keys are split from the original key and
 half the nonce, facilitated by HKDF [@!RFC5869] using SHA384.
@@ -291,7 +292,7 @@ Given a message `m`, key `k`, and optional footer `f`
    (See below for pseudocode.)
 6. Pack `h`, `n`, `c`, and `f` together (in that order) using
    PAE (see (#authentication-padding)). We'll call this `preAuth`.
-7. Calculate HMAC-SHA384 of the output of `preAuth`, using `Ak` as the
+7. Calculate HMAC-SHA-384 of the output of `preAuth`, using `Ak` as the
    authentication key. We'll call this `t`.
 8. If `f` is:
    * Empty: return h || b64(n || c || t)
@@ -350,7 +351,7 @@ Given a message `m`, key `k`, and optional footer `f`
    * The output length **MUST** be 32 for both keys.
 5. Pack `h`, `n`, `c`, and `f` together (in that order) using
    PAE (see (#authentication-padding)). We'll call this `preAuth`.
-6. Recalculate HMAC_SHA384 of `preAuth` using `Ak` as the key.
+6. Recalculate HMAC-SHA-384 of `preAuth` using `Ak` as the key.
    We'll call this `t2`.
 7. Compare `t` with `t2` using a constant-time string compare function.
    If they are not identical, throw an exception.
