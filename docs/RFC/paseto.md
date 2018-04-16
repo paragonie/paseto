@@ -383,7 +383,7 @@ Given a message `m`, 2048-bit RSA secret key `sk`, and
 optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v1.public.`
-2. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+2. Pack `h`, `m`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `m2`.
 3. Sign `m2` using RSA with the private key `sk`. We'll call this `sig`.
    The padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is
@@ -420,7 +420,7 @@ footer `f` (which defaults to empty string):
    between `m` and `f`) from b64 to raw binary. Set:
    * `s` to the rightmost 256 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+4. Pack `h`, `m`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `m2`.
 5. Use RSA to verify that the signature is valid for the message.
    The padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is
@@ -477,7 +477,7 @@ Given a message `m`, key `k`, and optional footer `f`.
    * This step is to ensure that an RNG failure does not result
      in a nonce-misuse condition that breaks the security of
      our stream cipher.
-4. Pack `h`, `n`, and `f` together using PAE (see (#authentication-padding)).
+4. Pack `h`, `n`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `preAuth`.
 5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface
    such as the one provided in libsodium.
@@ -509,7 +509,7 @@ Given a message `m`, key `k`, and optional footer `f`.
    between `m` and `f`) from base64url to raw binary. Set:
    * `n` to the leftmost 24 bytes
    * `c` to the middle remainder of the payload, excluding `n`.
-5. Pack `h`, `n`, and `f` together using PAE (see (#authentication-padding)).
+5. Pack `h`, `n`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `preAuth`
 8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
    (See below for pseudocode.)
@@ -531,7 +531,7 @@ Given a message `m`, Ed25519 secret key `sk`, and
 optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v2.public.`
-2. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+2. Pack `h`, `m`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `m2`.
 3. Sign `m2` using Ed25519 `sk`. We'll call this `sig`.
    (See below for pseudocode.)
@@ -561,7 +561,7 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
    between `m` and `f`) from base64url to raw binary. Set:
    * `s` to the rightmost 64 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+4. Pack `h`, `m`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `m2`.
 5. Use Ed25519 to verify that the signature is valid for the message:
    (See below for pseudocode.)
