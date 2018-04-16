@@ -281,6 +281,11 @@ Given a message `m`, key `k`, and optional footer `f`
 4. Split the key (`k`) into an Encryption key (`Ek`) and an
    Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
    HKDF salt. (See below for pseudocode.)
+   * For encryption keys, the **info** parameter for HKDF **MUST** be
+     set to **paseto-encryption-key**.
+   * For authentication keys, the **info** parameter for HKDF **MUST** be
+     set to **paseto-auth-key-for-aead**.
+   * The output length **MUST** be 32 for both keys.
 5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and
    the rightmost 16 bytes of `n` as the nonce. We'll call this `c`.
    (See below for pseudocode.)
@@ -337,10 +342,11 @@ Given a message `m`, key `k`, and optional footer `f`
 4. Split the key (`k`) into an Encryption key (`Ek`) and an
    Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
    HKDF salt. (See below for pseudocode.)
-   * For encryption keys, the **info** parameter for HKDF should be
+   * For encryption keys, the **info** parameter for HKDF **MUST** be
      set to **paseto-encryption-key**.
-   * For authentication keys, the **info** parameter for HKDF should be
+   * For authentication keys, the **info** parameter for HKDF **MUST** be
      set to **paseto-auth-key-for-aead**.
+   * The output length **MUST** be 32 for both keys.
 5. Pack `h`, `n`, `c`, and `f` together (in that order) using
    PAE (see (#authentication-padding)). We'll call this `preAuth`.
 6. Recalculate HMAC_SHA384 of `preAuth` using `Ak` as the key.
