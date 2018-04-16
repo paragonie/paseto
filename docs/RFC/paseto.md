@@ -195,9 +195,9 @@ introduce new PASETO protocol versions by continuing the convention
 Both **v1** and **v2** provide authentication of the entire PASETO message,
 including the **version**, **purpose**, **payload**, and **footer**.
 
-Implementations **SHOULD** only consider the most recent two versions of the
-protocol as valid, as such any implementation which accepts a future **v3**
-protocol version **SHOULD** reject **v1** tokens.
+The initial recommendation is to use **v2**, allowing for upgrades to
+possible future versions **v3**, **v4**, etc. when they are defined in
+the future.
 
 # PASETO Protocol Version v1
 
