@@ -308,6 +308,10 @@ Given a message `m`, key `k`, and optional footer `f`
 4. Split the key (`k`) into an Encryption key (`Ek`) and an
    Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
    HKDF salt. (See below for pseudocode.)
+   * For encryption keys, the **info** parameter for HKDF should be
+     set to **paseto-encryption-key**.
+   * For authentication keys, the **info** parameter for HKDF should be
+     set to **paseto-auth-key-for-aead**.
 5. Pack `h`, `n`, `c`, and `f` together (in that order) using
    PAE (see (#authentication-padding)). We'll call this `preAuth`.
 6. Recalculate HASH-HMAC384 of `preAuth` using `Ak` as the key.
