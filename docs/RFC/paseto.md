@@ -67,7 +67,7 @@ document are to be interpreted as described in RFC 2119 [@!RFC2119].
 
 # PASETO Message Format
 
-PASETOs consist of three or more segments, separated by a period
+PASETOs consist of three or four segments, separated by a period
 (the ASCII character whose number, represented in hexadecimal, is 2E).
 
 Without the Optional Footer:
