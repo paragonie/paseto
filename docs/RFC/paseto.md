@@ -537,7 +537,8 @@ Given a message `m`, Ed25519 secret key `sk`, and
 optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v2.public.`
-2. Pack `h`, `m`, and `f` together (in that order) using PAE (see (#authentication-padding)).
+2. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)).
    We'll call this `m2`.
 3. Sign `m2` using Ed25519 `sk`. We'll call this `sig`.
    (See below for pseudocode.)
@@ -568,7 +569,8 @@ Given a signed message `sm`, public key `pk`, and optional footer `f`
    between `m` and `f`) from base64url to raw binary. Set:
    * `s` to the rightmost 64 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together (in that order) using PAE (see (#authentication-padding)).
+4. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)).
    We'll call this `m2`.
 5. Use Ed25519 to verify that the signature is valid for the message:
    (See below for pseudocode.)
