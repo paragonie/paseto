@@ -388,7 +388,7 @@ class Version1 implements ProtocolInterface
         $rsa = new RSA();
         $rsa->setHash('sha384');
         $rsa->setMGFHash('sha384');
-        $rsa->setEncryptionMode(RSA::SIGNATURE_PSS);
+        $rsa->setSignatureMode(RSA::SIGNATURE_PSS);
         return $rsa;
     }
 
