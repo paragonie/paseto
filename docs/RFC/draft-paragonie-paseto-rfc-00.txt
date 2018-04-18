@@ -1010,6 +1010,9 @@ Arciszewski & Haussmann Expires October 21, 2018               [Page 18]
 Internet-Draft                                                April 2018
 
 
+   XChaCha20-Poly1305 implementations already exist in libsodium [2],
+   Monocypher [3], xsecretbox [4], and a standalone Go [5] library.
+
 7.1.  Motivation for XChaCha20-Poly1305
 
    As long as ChaCha20-Poly1305 is a secure AEAD cipher and ChaCha is a
@@ -1025,8 +1028,8 @@ Internet-Draft                                                April 2018
 7.2.  HChaCha20
 
    *HChaCha20* is an intermediary step towards XChaCha20 based on the
-   construction and security proof used to create XSalsa20 [2], an
-   extended-nonce Salsa20 variant used in NaCl [3].
+   construction and security proof used to create XSalsa20 [6], an
+   extended-nonce Salsa20 variant used in NaCl [7].
 
    HChaCha20 is initialized the same way as the ChaCha cipher, except
    that HChaCha20 uses a 128-bit nonce and has no counter.
@@ -1054,9 +1057,6 @@ Internet-Draft                                                April 2018
    Once the 20 ChaCha rounds have been completed, the first 128 bits and
    last 128 bits of the keystream (both little-endian) are concatenated,
    and this 256-bit subkey is returned.
-
-
-
 
 
 
@@ -1199,7 +1199,7 @@ Internet-Draft                                                April 2018
 
    Initial values for the "PASETO Headers" registry are given below;
    future assignments are to be made through Expert Review [RFC8126],
-   such as the CFRG [4].
+   such as the CFRG [8].
 
             +-----------+-----------------------+-------------+
             |   Value   | PASETO Header Meaning |  Definition |
@@ -1304,11 +1304,20 @@ Internet-Draft                                                April 2018
 
    [1] https://tools.ietf.org/html/rfc4648#page-7
 
-   [2] https://cr.yp.to/snuffle/xsalsa-20110204.pdf
+   [2] https://download.libsodium.org/doc/secret-key_cryptography/
+       xchacha20-poly1305_construction.html
 
-   [3] https://nacl.cr.yp.to
+   [3] https://github.com/LoupVaillant/Monocypher
 
-   [4] https://irtf.org/cfrg
+   [4] https://github.com/jedisct1/xsecretbox
+
+   [5] https://github.com/aead/chacha20
+
+   [6] https://cr.yp.to/snuffle/xsalsa-20110204.pdf
+
+   [7] https://nacl.cr.yp.to
+
+   [8] https://irtf.org/cfrg
 
 Appendix A.  PASETO Test Vectors
 
@@ -1319,15 +1328,6 @@ Appendix A.  PASETO Test Vectors
    Note: Signing may result in a different token each time, but the
    given token and public key pair should validate successfully.  The
    private key that corresponds to this public key is as follows:
-
-
-
-
-
-
-
-
-
 
 
 

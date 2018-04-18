@@ -680,6 +680,12 @@ The algorithm for XChaCha20-Poly1305 is as follows:
 2. Use the subkey and remaining 8 bytes of the nonce (prefixed with 4 NUL
    bytes) with AEAD_CHACHA20_POLY1305 from [@!RFC7539] as normal.
 
+XChaCha20-Poly1305 implementations already exist in
+[libsodium](https://download.libsodium.org/doc/secret-key_cryptography/xchacha20-poly1305_construction.html),
+[Monocypher](https://github.com/LoupVaillant/Monocypher),
+[xsecretbox](https://github.com/jedisct1/xsecretbox),
+and a standalone [Go](https://github.com/aead/chacha20) library.
+
 ## Motivation for XChaCha20-Poly1305
 
 As long as ChaCha20-Poly1305 is a secure AEAD cipher and ChaCha is a secure
