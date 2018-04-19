@@ -234,7 +234,7 @@ or **MUST** be followed:
 
 Version **v1** is a compatibility mode composed of cryptographic primitives
 likely available on legacy systems. **v1** **SHOULD NOT** be used when all
-systems are able to use **v2**. **v1** **MAY** be used when when compatibility
+systems are able to use **v2**. **v1** **MAY** be used when compatibility
 requirements include systems unable to use cryptographic primitives from **v2**.
 
 **v1** messages **MUST** use a **purpose** value of either **local** or
