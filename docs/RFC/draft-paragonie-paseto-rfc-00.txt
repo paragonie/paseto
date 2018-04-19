@@ -16,8 +16,8 @@ Abstract
 
    Platform-Agnostic SEcurity TOkens (PASETOs) provide a
    cryptographically secure, compact, and URL-safe representation of
-   claims that may be transferred between two parties.  The claims in a
-   PASETO are encoded as a JavaScript Object (JSON), version-tagged, and
+   claims that may be transferred between two parties.  The claims are
+   encoded in JavaScript Object Notation (JSON), version-tagged, and
    either encrypted using shared-key cryptography or signed using
    public-key cryptography.
 
@@ -69,7 +69,7 @@ Table of Contents
    2.  PASETO Message Format . . . . . . . . . . . . . . . . . . . .   3
      2.1.  Base64 Encoding . . . . . . . . . . . . . . . . . . . . .   4
      2.2.  Authentication Padding  . . . . . . . . . . . . . . . . .   4
-       2.2.1.  PAE Definition  . . . . . . . . . . . . . . . . . . .   4
+       2.2.1.  PAE Definition  . . . . . . . . . . . . . . . . . . .   5
    3.  Protocol Versions . . . . . . . . . . . . . . . . . . . . . .   6
      3.1.  PASETO Protocol Guidelines  . . . . . . . . . . . . . . .   6
    4.  PASETO Protocol Version v1  . . . . . . . . . . . . . . . . .   7
@@ -126,7 +126,7 @@ Internet-Draft                                                April 2018
    space-constrained environments such as HTTP Cookies, HTTP
    Authorization headers, and URI query parameters.  A PASETO encodes
    claims to be transmitted in a JSON [RFC8259] object, and is either
-   encrypted or signed using public-key cryptography.
+   encrypted symmetrically or signed using public-key cryptography.
 
 1.1.  Difference Between PASETO and JOSE
 
@@ -184,6 +184,10 @@ Internet-Draft                                                April 2018
 
    o  *public*: public-key digital signatures; *not encrypted*
 
+   The *payload* is a string that contains the token's data.  In a
+   "local" token, this data is encrypted with a symmetric cipher.  In a
+   "public" token, this data is _unencrypted_.
+
    Any optional data can be appended to the *footer*. This data is
    authenticated through inclusion in the calculation of the
    authentication tag along with the header and payload.  The *footer*
@@ -200,7 +204,7 @@ Internet-Draft                                                April 2018
 2.2.  Authentication Padding
 
    Multi-part messages (e.g. header, content, footer) are encoded in a
-   specific manner before being passed to the respective cryptographic
+   specific manner before being passed to the appropriate cryptographic
    function.
 
    In "local" mode, this encoding is applied to the additional
@@ -208,15 +212,11 @@ Internet-Draft                                                April 2018
    this encoding is applied to the components of the token, with respect
    to the protocol version being followed.
 
-   We will refer to it as *PAE* in this document (short for Pre-
-   Authentication Encoding).
+   We will refer to this process as *PAE* in this document (short for
+   Pre-Authentication Encoding).
 
-2.2.1.  PAE Definition
 
-   "PAE()" accepts an array of strings.
 
-   "LE64()" encodes a 64-bit unsigned integer into a little-endian
-   binary string.  The most significant bit MUST be set to 0 for
 
 
 
@@ -226,6 +226,12 @@ Arciszewski & Haussmann Expires October 21, 2018                [Page 4]
 Internet-Draft                                                April 2018
 
 
+2.2.1.  PAE Definition
+
+   "PAE()" accepts an array of strings.
+
+   "LE64()" encodes a 64-bit unsigned integer into a little-endian
+   binary string.  The most significant bit MUST be set to 0 for
    interoperability with programming languages that do not have unsigned
    integer support.
 
@@ -269,12 +275,6 @@ Internet-Draft                                                April 2018
    o  "PAE([''])" will always return
       "\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 
-   o  "PAE(['test'])" will always return "\x01\x00\x00\x00\x00\x00\x00\x
-      00\x04\x00\x00\x00\x00\x00\x00\x00test"
-
-   o  "PAE('test')" will throw a "TypeError"
-
-
 
 
 Arciszewski & Haussmann Expires October 21, 2018                [Page 5]
@@ -282,14 +282,18 @@ Arciszewski & Haussmann Expires October 21, 2018                [Page 5]
 Internet-Draft                                                April 2018
 
 
+   o  "PAE(['test'])" will always return "\x01\x00\x00\x00\x00\x00\x00\x
+      00\x04\x00\x00\x00\x00\x00\x00\x00test"
+
+   o  "PAE('test')" will throw a "TypeError"
+
    As a result, partially controlled plaintext cannot be used to create
    a collision.  Either the number of pieces will differ, or the length
    of one of the fields (which is prefixed to user-controlled input)
    will differ, or both.
 
    Due to the length being expressed as an unsigned 64-bit integer, it
-   remains infeasible to generate/transmit enough data to create an
-   integer overflow.
+   is infeasible to encode enough data to create an integer overflow.
 
    This is not used to encode data prior to decryption, and no decoding
    function is provided or specified.  This merely exists to prevent
@@ -327,10 +331,6 @@ Internet-Draft                                                April 2018
 
    2.  Some degree of nonce-misuse resistance SHOULD be provided:
 
-       *  Supporting larger nonces (longer than 128-bit) is sufficient
-          for satisfying this requirement, provided the nonce is
-
-
 
 
 Arciszewski & Haussmann Expires October 21, 2018                [Page 6]
@@ -338,6 +338,8 @@ Arciszewski & Haussmann Expires October 21, 2018                [Page 6]
 Internet-Draft                                                April 2018
 
 
+       *  Supporting larger nonces (longer than 128-bit) is sufficient
+          for satisfying this requirement, provided the nonce is
           generated by a cryptographically secure random number
           generator, such as */dev/urandom* on Linux.
 
@@ -381,8 +383,6 @@ Internet-Draft                                                April 2018
 
    Refer to the operations defined in *v1.Encrypt* and *v1.Decrypt* for
    a formal definition.
-
-
 
 
 
