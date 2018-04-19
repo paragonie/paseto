@@ -49,10 +49,10 @@ public-key cryptography.
 
 The key difference between PASETO and the JOSE family of standards
 (JWS [@!RFC7516], JWE [@!RFC7517], JWK [@!RFC7518], JWA [@!RFC7518], and
-JWT [@!RFC7519]) is that JOSE allows implementors and users to mix and
-match their own choice of cryptographic algorithms (specified by the
-"alg" header in JWT), while PASETO has clearly defined protocol versions
-to prevent unsafe configurations from being selected.
+JWT [@!RFC7519]) is that JOSE allows implementors and users to mix and match
+their own choice of cryptographic algorithms (specified by the "alg" header in
+JWT), while PASETO has clearly defined protocol versions to prevent unsafe
+configurations from being selected.
 
 PASETO is defined in two pieces:
 
@@ -61,14 +61,15 @@ PASETO is defined in two pieces:
 
 ## Notation and Conventions
 
-The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**",
-"**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this
-document are to be interpreted as described in RFC 2119 [@!RFC2119].
+The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
+"**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**MAY**",
+and "**OPTIONAL**" in this document are to be interpreted as described in
+RFC 2119 [@!RFC2119].
 
 # PASETO Message Format
 
-PASETOs consist of three or more segments, separated by a period
-(the ASCII character whose number, represented in hexadecimal, is 2E).
+PASETOs consist of three or four segments, separated by a period (the ASCII
+character whose number, represented in hexadecimal, is 2E).
 
 Without the Optional Footer:
 
@@ -82,12 +83,15 @@ With the Optional Footer:
 version.purpose.payload.footer
 ~~~
 
-The **version** is a string that represents the current version of the
-protocol. Currently, two versions are specified, which each possess
-their own ciphersuites. Accepted values: **v1**, **v2**.
+If no footer is provided, implementations **SHOULD NOT** append a trailing
+period to each payload.
 
-The **purpose** is a short string describing the purpose of the token. Accepted values:
-**local**, **public**.
+The **version** is a string that represents the current version of the protocol.
+Currently, two versions are specified, which each possess their own
+ciphersuites. Accepted values: **v1**, **v2**.
+
+The **purpose** is a short string describing the purpose of the token. Accepted
+values: **local**, **public**.
 
 * **local**: shared-key authenticated encryption
 * **public**: public-key digital signatures; **not encrypted**
@@ -113,10 +117,9 @@ Multi-part messages (e.g. header, content, footer) are encoded
 in a specific manner before being passed to the appropriate
 cryptographic function.
 
-In `local` mode, this encoding is applied to the additional
-associated data (AAD). In `public` mode, which is not encrypted,
-this encoding is applied to the components of the token, with
-respect to the protocol version being followed.
+In `local` mode, this encoding is applied to the additional associated data
+(AAD). In `public` mode, which is not encrypted, this encoding is applied to the
+components of the token, with respect to the protocol version being followed.
 
 We will refer to this process as **PAE** in this document (short for
 Pre-Authentication Encoding).
@@ -125,16 +128,16 @@ Pre-Authentication Encoding).
 
 `PAE()` accepts an array of strings.
 
-`LE64()` encodes a 64-bit unsigned integer into a little-endian binary
-string. The most significant bit **MUST** be set to 0 for interoperability
-with programming languages that do not have unsigned integer support.
+`LE64()` encodes a 64-bit unsigned integer into a little-endian binary string.
+The most significant bit **MUST** be set to 0 for interoperability with
+programming languages that do not have unsigned integer support.
 
-The first 8 bytes of the output will be the number of pieces. Typically,
-this is a small number (3 to 5). This is calculated by applying `LE64()`
-to the size of the array.
+The first 8 bytes of the output will be the number of pieces. Currently, this
+will be 3 or 4. This is calculated by applying `LE64()` to the size of the
+array.
 
-Next, for each piece provided, the length of the piece is encoded via
-`LE64()` and prefixed to the piece before concatenation.
+Next, for each piece provided, the length of the piece is encoded via `LE64()`
+and prefixed to each piece before concatenation.
 
 ~~~ javascript
 function LE64(n) {
@@ -172,10 +175,9 @@ As a consequence:
   `\x01\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00test`
 * `PAE('test')` will throw a `TypeError`
 
-As a result, partially controlled plaintext cannot be used to create a collision.
-Either the number of pieces will differ, or the length of one
-of the fields (which is prefixed to user-controlled input) will differ,
-or both.
+As a result, partially controlled plaintext cannot be used to create a
+collision. Either the number of pieces will differ, or the length of one of the
+fields (which is prefixed to user-controlled input) will differ, or both.
 
 Due to the length being expressed as an unsigned 64-bit integer, it is
 infeasible to encode enough data to create an integer overflow.
@@ -196,37 +198,68 @@ introduce new PASETO protocol versions by continuing the convention
 Both **v1** and **v2** provide authentication of the entire PASETO message,
 including the **version**, **purpose**, **payload**, and **footer**.
 
-Implementations **SHOULD** only consider the most recent two versions of the
-protocol as valid, as such any implementation which accepts a future **v3**
-protocol version **SHOULD** reject **v1** tokens.
+The initial recommendation is to use **v2**, allowing for upgrades to
+possible future versions **v3**, **v4**, etc. when they are defined in
+the future.
+
+## PASETO Protocol Guidelines
+
+When defining future protocol versions, the following rules **SHOULD**
+or **MUST** be followed:
+
+1. Everything in a token **MUST** be authenticated. Attackers should never be
+   allowed the opportunity to alter messages freely.
+   * If encryption is specified, unauthenticated modes (e.g. AES-CBC without
+     a MAC) are forbidden.
+   * The nonce or initialization vector must be covered by the authentication
+     tag, not just the ciphertext.
+2. Some degree of nonce-misuse resistance **SHOULD** be provided:
+   * Supporting larger nonces (longer than 128-bit) is sufficient for satisfying
+     this requirement, provided the nonce is generated by a cryptographically
+     secure random number generator, such as **/dev/urandom** on Linux.
+   * Key-splitting and including an additional HKDF salt as part of the nonce is
+     sufficient for this requirement.
+   * Hashing the plaintext payload with the random nonce is an acceptable 
+     strategy for mitigating random number generator failures, but a secure
+     random number generator **SHOULD** be used even with this safeguard in
+     place.
+3. Non-deterministic, stateful, and otherwise dangerous signature schemes (e.g.
+   ECDSA without deterministic signatures as in [@!RFC6979], XMSS) are
+   forbidden from all PASETO protocols.
+4. Public-key cryptography **MUST** be IND-CCA2 secure to be considered for
+   inclusion.
+   * This means that RSA with PKCS1v1.5 padding and unpadded RSA **MUST NOT**
+     ever be used in a PASETO protocol.
 
 # PASETO Protocol Version v1
 
 Version **v1** is a compatibility mode composed of cryptographic primitives
-likely available on legacy systems. **v1** **SHOULD NOT** be used when
-all systems are able to use **v2**. **v1** **MAY** be used when
-when compatibility requirements include systems unable to use cryptographic
-primitives from **v2**.
+likely available on legacy systems. **v1** **SHOULD NOT** be used when all
+systems are able to use **v2**. **v1** **MAY** be used when when compatibility
+requirements include systems unable to use cryptographic primitives from **v2**.
 
 **v1** messages **MUST** use a **purpose** value of either **local** or
 **public**.
 
 ## v1.local
 
-**v1.local** messages **SHALL** be encrypted and authenticated with AES-256-CTR
-and HMAC-SHA384, using an **encrypt-then-MAC** construction.
+**v1.local** messages **SHALL** be encrypted and authenticated with
+**AES-256-CTR** (AES-CTR from [@!RFC3686] with a 256-bit key) and
+**HMAC-SHA-384** ([@!RFC4231]), using an **Encrypt-then-MAC** construction.
 
-Encryption and authentication keys are split from the original key and
-half the nonce, facilitated by HKDF [@!RFC5869] using SHA384.
+Encryption and authentication keys are split from the original key and half the
+nonce, facilitated by HKDF [@!RFC5869] using SHA384.
 
-Refer to the operations defined in **v1.Encrypt** and **v1.Decrypt** for
-a formal definition.
+Refer to the operations defined in **v1.Encrypt** and **v1.Decrypt** for a
+formal definition.
 
 ## v1.public
 
 **v1.public** messages **SHALL** be signed using RSASSA-PSS as defined in
-[@!RFC8017], with 2048-bit private keys. Refer to the operations defined
-in **v1.Sign** and **v1.Verify** for a formal definition.
+[@!RFC8017], with 2048-bit private keys. These messages provide authentication
+but do not prevent the contents from being read, including by those without
+either the **public key** or the **private key**. Refer to the operations
+defined in **v1.Sign** and **v1.Verify** for a formal definition.
 
 ## Version v1 Algorithms
 
@@ -244,20 +277,23 @@ Given a message `m`, key `k`, and optional footer `f`
 
 1. Set header `h` to `v1.local.`
 2. Generate 32 random bytes from the OS's CSPRNG.
-3. Calculate `GetNonce()` of `m` and the output of step 2
-   to get the nonce, `n`.
-   * This step is to ensure that an RNG failure does not result
-     in a nonce-misuse condition that breaks the security of
-     our stream cipher.
-4. Split the key (`k`) into an Encryption key (`Ek`) and an
-   Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
-   HKDF salt. (See below for pseudocode.)
-5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and
-   the rightmost 16 bytes of `n` as the nonce. We'll call this `c`.
-   (See below for pseudocode.)
-6. Pack `h`, `n`, `c`, and `f` together (in that order) using
-   PAE (see (#authentication-padding)). We'll call this `preAuth`.
-7. Calculate HMAC-SHA384 of the output of `preAuth`, using `Ak` as the
+3. Calculate `GetNonce()` of `m` and the output of step 2 to get the nonce, `n`.
+   * This step is to ensure that an RNG failure does not result in a
+     nonce-misuse condition that breaks the security of our stream cipher.
+4. Split the key (`k`) into an Encryption key (`Ek`) and an Authentication key
+   (`Ak`), using the leftmost 16 bytes of `n` as the HKDF salt. (See below for
+   pseudocode.)
+   * For encryption keys, the **info** parameter for HKDF **MUST** be set to
+     **paseto-encryption-key**.
+   * For authentication keys, the **info** parameter for HKDF **MUST** be set to
+     **paseto-auth-key-for-aead**.
+   * The output length **MUST** be 32 for both keys.
+5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and the
+   rightmost 16 bytes of `n` as the nonce. We'll call this `c`. (See below for
+   pseudocode.)
+6. Pack `h`, `n`, `c`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)). We'll call this `preAuth`.
+7. Calculate HMAC-SHA-384 of the output of `preAuth`, using `Ak` as the
    authentication key. We'll call this `t`.
 8. If `f` is:
    * Empty: return h || b64(n || c || t)
@@ -296,26 +332,32 @@ Figure: Step 5: PASETO v1 encryption (calculating `c`)
 Given a message `m`, key `k`, and optional footer `f`
 (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
-2. Verify that the message begins with `v1.local.`, otherwise throw an exception.
-   This constant will be referred to as `h`.
+1. If `f` is not empty, implementations **MAY** verify that the value appended
+   to the token matches some expected string `f`, provided they do so using a
+   constant-time string compare function.
+2. Verify that the message begins with `v1.local.`, otherwise throw an
+   exception. This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from b64 to raw binary. Set:
    * `n` to the leftmost 32 bytes
    * `t` to the rightmost 48 bytes
    * `c` to the middle remainder of the payload, excluding `n` and `t`
-4. Split the key (`k`) into an Encryption key (`Ek`) and an
-   Authentication key (`Ak`), using the leftmost 16 bytes of `n` as the
-   HKDF salt. (See below for pseudocode.)
-5. Pack `h`, `n`, `c`, and `f` together (in that order) using
-   PAE (see (#authentication-padding)). We'll call this `preAuth`.
-6. Recalculate HASH-HMAC384 of `preAuth` using `Ak` as the key.
-   We'll call this `t2`.
-7. Compare `t` with `t2` using a constant-time string compare function.
-   If they are not identical, throw an exception.
-8. Decrypt `c` using `AES-256-CTR`, using `Ek` as the key and
-   the rightmost 16 bytes of `n` as the nonce, and return this value.
+4. Split the key (`k`) into an Encryption key (`Ek`) and an Authentication key
+   (`Ak`), using the leftmost 16 bytes of `n` as the HKDF salt. (See below for
+   pseudocode.)
+   * For encryption keys, the **info** parameter for HKDF **MUST** be set to
+     **paseto-encryption-key**.
+   * For authentication keys, the **info** parameter for HKDF **MUST** be set to
+     **paseto-auth-key-for-aead**.
+   * The output length **MUST** be 32 for both keys.
+5. Pack `h`, `n`, `c`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)). We'll call this `preAuth`.
+6. Recalculate HMAC-SHA-384 of `preAuth` using `Ak` as the key. We'll call this
+   `t2`.
+7. Compare `t` with `t2` using a constant-time string compare function. If they
+   are not identical, throw an exception.
+8. Decrypt `c` using `AES-256-CTR`, using `Ek` as the key and the rightmost 16
+   bytes of `n` as the nonce, and return this value.
 
 Example code:
 
@@ -346,17 +388,17 @@ Figure: Step 8: PASETO v1 decryption
 
 ### v1.Sign
 
-Given a message `m`, 2048-bit RSA secret key `sk`, and
-optional footer `f` (which defaults to empty string):
+Given a message `m`, 2048-bit RSA secret key `sk`, and optional footer `f`
+(which defaults to empty string):
 
 1. Set `h` to `v1.public.`
-2. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
-   We'll call this `m2`.
-3. Sign `m2` using RSA with the private key `sk`. We'll call this `sig`.
-   The padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is
-   explicitly forbidden. The public exponent `e` **MUST** be 65537.
-   The mask generating function **MUST** be MGF1+SHA384. The hash function
-   **MUST** be SHA384. (See below for pseudocode.)
+2. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)). We'll call this `m2`.
+3. Sign `m2` using RSA with the private key `sk`. We'll call this `sig`. The
+   padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is explicitly
+   forbidden. The public exponent `e` **MUST** be 65537. The mask generating
+   function **MUST** be MGF1+SHA384. The hash function **MUST** be SHA384.
+   (See below for pseudocode.)
 4. If `f` is:
    * Empty: return h || b64(m || sig)
    * Non-empty: return h || b64(m || sig) || `.` || b64(f)
@@ -379,16 +421,17 @@ Figure: Pseudocode: RSA signature algorithm used in PASETO v1
 Given a signed message `sm`, RSA public key `pk`, and optional
 footer `f` (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
-2. Verify that the message begins with `v1.public.`, otherwise throw an exception.
-   This constant will be referred to as `h`.
+1. If `f` is not empty, implementations **MAY** verify that the value appended
+   to the token matches some expected string `f`, provided they do so using a
+   constant-time string compare function.
+2. Verify that the message begins with `v1.public.`, otherwise throw an
+   exception. This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from b64 to raw binary. Set:
    * `s` to the rightmost 256 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
-   We'll call this `m2`.
+4. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)). We'll call this `m2`.
 5. Use RSA to verify that the signature is valid for the message.
    The padding mode **MUST** be RSASSA-PSS [@!RFC8017]; PKCS1v1.5 is
    explicitly forbidden. The public exponent `e` **MUST** be 65537.
@@ -400,28 +443,31 @@ footer `f` (which defaults to empty string):
 valid = crypto_sign_rsa_verify(
     signature = s,
     message = m2,
-    public_key = pk
+    public_key = pk,
+    padding_mode = "pss",
+    public_exponent = 65537,
+    hash = "sha384"
+    mgf = "mgf1+sha384"
 );
 ~~~
 Figure: Pseudocode: RSA signature validation for PASETO v1
 
-
 # PASETO Protocol Version v2
 
 Version **v2** is the **RECOMMENDED** protocol version. **v2** **SHOULD** be
-used in preference to **v1**. Applications using PASETO **SHOULD**
-only support **v2** messages, but **MAY** support **v1** messages if
-the cryptography primitives used in **v2** are not available on all
-machines.
+used in preference to **v1**. Applications using PASETO **SHOULD** only support
+**v2** messages, but **MAY** support **v1** messages if the cryptographic
+primitives used in **v2** are not available on all machines.
 
 **v2** messages **MUST** use a **purpose**  value of either **local** or
 **public**.
 
 ## v2.local
 
-**v2.local** messages **MUST** be encrypted with XChaCha20-Poly1305, a variant of
-ChaCha20-Poly1305 [@!RFC7539] defined in (#aeadxchacha20poly1305). Refer
-to the operations defined in **v2.Encrypt** and **v2.Decrypt** for a formal definition.
+**v2.local** messages **MUST** be encrypted with XChaCha20-Poly1305, a variant
+of ChaCha20-Poly1305 [@!RFC7539] defined in (#aeadxchacha20poly1305). Refer
+to the operations defined in **v2.Encrypt** and **v2.Decrypt** for a formal
+definition.
 
 ## v2.public
 
@@ -439,16 +485,14 @@ Given a message `m`, key `k`, and optional footer `f`.
 
 1. Set header `h` to `v2.local.`
 2. Generate 24 random bytes from the OS's CSPRNG.
-3. Calculate BLAKE2b of the message `m` with the output of step 2
-   as the key, with an output length of 24. This will be our nonce, `n`.
-   * This step is to ensure that an RNG failure does not result
-     in a nonce-misuse condition that breaks the security of
-     our stream cipher.
-4. Pack `h`, `n`, and `f` together using PAE (see (#authentication-padding)).
+3. Calculate BLAKE2b of the message `m` with the output of step 2 as the key,
+   with an output length of 24. This will be our nonce, `n`.
+   * This step is to ensure that an RNG failure does not result in a
+     nonce-misuse condition that breaks the security of our stream cipher.
+4. Pack `h`, `n`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `preAuth`.
-5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface
-   such as the one provided in libsodium.
-   (See below for pseudocode.)
+5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface such as
+   the one provided in libsodium. (See below for pseudocode.)
 6. If `f` is:
    * Empty: return h || b64(n || c)
    * Non-empty: return h || b64(n || c) || `.` || base64url(f)
@@ -468,16 +512,17 @@ Figure: Step 5: PASETO v2 encryption (calculating `c`)
 
 Given a message `m`, key `k`, and optional footer `f`.
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
-2. Verify that the message begins with `v2.local.`, otherwise throw an exception.
-   This constant will be referred to as `h`.
+1. If `f` is not empty, implementations **MAY** verify that the value appended
+   to the token matches some expected string `f`, provided they do so using a
+   constant-time string compare function.
+2. Verify that the message begins with `v2.local.`, otherwise throw an
+   exception. This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from base64url to raw binary. Set:
    * `n` to the leftmost 24 bytes
    * `c` to the middle remainder of the payload, excluding `n`.
-5. Pack `h`, `n`, and `f` together using PAE (see (#authentication-padding)).
-   We'll call this `preAuth`
+5. Pack `h`, `n`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)). We'll call this `preAuth`
 8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
    (See below for pseudocode.)
 9. If decryption failed, throw an exception. Otherwise, return `p`.
@@ -498,7 +543,8 @@ Given a message `m`, Ed25519 secret key `sk`, and
 optional footer `f` (which defaults to empty string):
 
 1. Set `h` to `v2.public.`
-2. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+2. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)).
    We'll call this `m2`.
 3. Sign `m2` using Ed25519 `sk`. We'll call this `sig`.
    (See below for pseudocode.)
@@ -520,15 +566,17 @@ Figure: Step 3: Generating an Ed25519 with libsodium
 Given a signed message `sm`, public key `pk`, and optional footer `f`
 (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception.
-2. Verify that the message begins with `v2.public.`, otherwise throw an exception.
-   This constant will be referred to as `h`.
+1. If `f` is not empty, implementations **MAY** verify that the value appended
+   to the token matches some expected string `f`, provided they do so using a
+   constant-time string compare function.
+2. Verify that the message begins with `v2.public.`, otherwise throw an
+   exception. This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from base64url to raw binary. Set:
    * `s` to the rightmost 64 bytes
    * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, and `f` together using PAE (see (#authentication-padding)).
+4. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   (#authentication-padding)).
    We'll call this `m2`.
 5. Use Ed25519 to verify that the signature is valid for the message:
    (See below for pseudocode.)
@@ -545,20 +593,7 @@ Figure: Step 5: Validating the Ed25519 signature using libsodium.
 
 # Payload Processing
 
-All PASETO payloads **MUST** be a JSON-encoded object represented as a UTF-8 encoded
-string. The topmost JSON object should be an object, map, or associative array
-(depending on the language of choice), not a flat array.
-
-> **Valid**:
->
-> * `{"foo":"bar"}`
-> * `{"foo":"bar","baz":12345,"678":["a","b","c"]}`
->
-> **Invalid**:
->
-> * `[{"foo":"bar"}]`
-> * `["foo"]`
-> * `{0: "test"}`
+All PASETO payloads **MUST** be a JSON object [@!RFC8259].
 
 If non-UTF-8 character sets are desired for some fields, implementors are
 encouraged to use [Base64url](https://tools.ietf.org/html/rfc4648#page-7)
@@ -567,8 +602,9 @@ the actual payloads.
 
 ## Registered Claims
 
-The following keys are reserved for use within PASETO. Users **SHOULD NOT** write
-arbitrary/invalid data to any keys in a top-level PASETO in the list below:
+The following keys are reserved for use within PASETO. Users **SHOULD NOT**
+write arbitrary/invalid data to any keys in a top-level PASETO in the list
+below:
 
 | Key  | Name      | Type   | Example                             |
 | ---- | ----------| ------ | ----------------------------------- |
@@ -579,88 +615,106 @@ arbitrary/invalid data to any keys in a top-level PASETO in the list below:
 | nbf | Not Before | DtTime | {"nbf":"2038-04-01T00:00:00+00:00"} |
 | iat | Issued At  | DtTime | {"iat":"2038-03-17T00:00:00+00:00"} |
 | jti | Token ID   | string | {"jti":"87IFSGFgPNtQNNuw0AtuLttP"}  |
+| kid | Key-ID     | string | {"kid":"stored-in-the-footer"}      |
 
 In the table above, DtTime means an ISO 8601 compliant DateTime string.
+See [#keyid-support] for special rules about `kid` claims.
 
-Any other claims can be freely used. These keys are only reserved in the top-level
-JSON object.
+Any other claims can be freely used. These keys are only reserved in the
+top-level JSON object.
 
 The keys in the above table are case-sensitive.
 
-Implementors **SHOULD** provide some means to discourage setting invalid/arbitrary data
-to these reserved claims.
+Implementors (i.e. library designers) **SHOULD** provide some means to
+discourage setting invalid/arbitrary data to these reserved claims.
+
+For example: Storing any string that isn't a valid ISO 8601 DateTime in the
+`exp` claim should result in an exception or error state (depending on the
+programming language in question).
 
 ### Key-ID Support
 
 Some systems need to support key rotation, but since the payloads of a *local*
-token are always encrypted, it is impractical to store the key id in the payload.
+token are always encrypted, it is impractical to store the key id in the
+payload.
 
 Instead, users should store Key-ID claims (*kid*) in the unencrypted footer.
 
-For example, a footer of {"kid":"gandalf0"} can be read without needing
-to first decrypt the token (which would in turn allow the user to know
-which key to use to decrypt the token).
+For example, a footer of {"kid":"gandalf0"} can be read without needing to first
+decrypt the token (which would in turn allow the user to know which key to use
+to decrypt the token).
 
-Implementations should feel free to provide a means to extract the footer from a token,
-before authentication and decryption. This is possible for *local* tokens because
-the contents of the footer are *not* encrypted. However, the authenticity of the
-footer is only assured after the authentication tag is verified.
+Implementations **SHOULD** provide a means to extract the footer from a PASETO
+before authentication and decryption. This is possible for *local* tokens
+because the contents of the footer are *not* encrypted. However, the
+authenticity of the footer is only assured after the authentication tag is
+verified.
 
-While a key identifier can generally be safely used for selecting the cryptographic
-key used to decrypt and/or verify payloads before verification, provided that the
-`key-id` is a public number that is associated with a particular key which is not
-supplied by attackers, any other fields stored in the footer **MUST** be distrusted
-until the payload has been verified.
+While a key identifier can generally be safely used for selecting the
+cryptographic key used to decrypt and/or verify payloads before verification,
+provided that the *kid* is a public number that is associated with a particular
+key which is not supplied by attackers, any other fields stored in the footer
+**MUST** be distrusted until the payload has been verified.
 
-IMPORTANT: Key identifiers **MUST** be independent of the actual keys
-used by Paseto.
+IMPORTANT: Key identifiers **MUST** be independent of the actual keys used by
+PASETO.
 
-For example, the user **MUST NOT** store the public key in the footer for
-a **public** token and have the recipient use the provided public key.
-Doing so would allow an attacker to replace the public key with
-one of their own choosing, which will cause the recipient to
-accept any signature for any message as valid, which defeats the
-security goals of public-key cryptography.
+A fingerprint of the key is allowed as long as it is impractical for an attacker
+to recover the key from said fingerprint.
 
-Instead, it's recommended that implementors and users use a unique
-identifier for each key (independent of the cryptographic key's contents)
-that is used in a database or other key-value store to select
-the appropriate cryptographic key. These search operations **MUST** fail
-closed if no valid key is found for the given key identifier.
+For example, the user **MUST NOT** store the public key in the footer for a
+**public** token and have the recipient use the provided public key. Doing so
+would allow an attacker to replace the public key with one of their own
+choosing, which will cause the recipient to accept any signature for any message
+as valid, therefore defeating the security goals of public-key cryptography.
+
+Instead, it's recommended that implementors and users use a unique identifier
+for each key (independent of the cryptographic key's contents) that is used in a
+database or other key-value store to select the appropriate cryptographic key.
+These search operations **MUST** fail closed if no valid key is found for the
+given key identifier.
 
 # AEAD_XChaCha20_Poly1305
 
-XChaCha20-Poly1305 is a variant of the ChaCha20-Poly1305 AEAD construction
-as defined in [@!RFC7539] that uses a 192-bit nonce instead of a 64-bit
-nonce.
+XChaCha20-Poly1305 is a variant of the ChaCha20-Poly1305 AEAD construction as
+defined in [@!RFC7539] that uses a 192-bit nonce instead of a 64-bit nonce.
 
 The algorithm for XChaCha20-Poly1305 is as follows:
 
-1. Calculate a subkey from the first 16 bytes of the nonce and the key,
-   using HChaCha20.
-2. Use the subkey and remaining 8 bytes of the nonce (prefixed with 4
-   NUL bytes) with AEAD_CHACHA20_POLY1305 from [@!RFC7539] as normal.
+1. Calculate a subkey from the first 16 bytes of the nonce and the key, using
+   HChaCha20 ((#hchacha20)).
+2. Use the subkey and remaining 8 bytes of the nonce (prefixed with 4 NUL
+   bytes) with AEAD_CHACHA20_POLY1305 from [@!RFC7539] as normal.
+
+XChaCha20-Poly1305 implementations already exist in
+[libsodium](https://download.libsodium.org/doc/secret-key_cryptography/xchacha20-poly1305_construction.html),
+[Monocypher](https://github.com/LoupVaillant/Monocypher),
+[xsecretbox](https://github.com/jedisct1/xsecretbox),
+and a standalone [Go](https://github.com/aead/chacha20) library.
 
 ## Motivation for XChaCha20-Poly1305
 
-As long as ChaCha20-Poly1305 is a secure AEAD cipher and ChaCha is a
-secure pseudorandom function (PRF), XChaCha20-Poly1305 is secure.
+As long as ChaCha20-Poly1305 is a secure AEAD cipher and ChaCha is a secure
+pseudorandom function (PRF), XChaCha20-Poly1305 is secure.
 
-The nonce used by the original ChaCha20-Poly1305 is too short to safely
-use with random strings for long-lived keys.
+The nonce used by the original ChaCha20-Poly1305 is too short to safely use with
+random strings for long-lived keys.
 
-With XChaCha20-Poly1305, users can safely generate a random
-192-bit nonce for each message and not worry about nonce-reuse
-vulnerabilities.
+With XChaCha20-Poly1305, users can safely generate a random 192-bit nonce for
+each message and not worry about nonce-reuse vulnerabilities.
 
 ## HChaCha20
 
 **HChaCha20** is an intermediary step towards XChaCha20 based on the
-construction and security proof used to create [XSalsa20](https://cr.yp.to/snuffle/xsalsa-20110204.pdf),
-an extended-nonce Salsa20 variant used in [NaCl](https://nacl.cr.yp.to).
+construction and security proof used to create
+[XSalsa20](https://cr.yp.to/snuffle/xsalsa-20110204.pdf), an extended-nonce
+Salsa20 variant used in [NaCl](https://nacl.cr.yp.to).
 
 HChaCha20 is initialized the same way as the ChaCha cipher, except that
 HChaCha20 uses a 128-bit nonce and has no counter.
+
+Consider the two figures below, where each non-whitespace character represents
+one nibble of information about the ChaCha states (all numbers little-endian): 
 
 ~~~
 cccccccc  cccccccc  cccccccc  cccccccc
@@ -680,9 +734,9 @@ Figure: HChaCha20 State: c=constant k=key n=nonce
 
 After initialization, proceed through the ChaCha rounds as usual.
 
-Once the 20 ChaCha rounds have been completed, the first 128 bits and last
-128 bits of the keystream (both little-endian) are concatenated, and this
-256-bit subkey is returned.
+Once the 20 ChaCha rounds have been completed, the first 128 bits and last 128
+bits of the keystream (both little-endian) are concatenated, and this 256-bit
+subkey is returned.
 
 ### Test Vector for the HChaCha20 Block Function
 
@@ -723,20 +777,20 @@ Figure: Resultant HChaCha20 subkey
 
 # Intended Use-Cases for PASETO
 
-Like JWTs, PASETOs are intended to be single-use tokens, as there is no
-build-in mechanism to prevent replay attacks within the token lifetime.
+Like JWTs, PASETOs are intended to be single-use tokens, as there is no built-in
+mechanism to prevent replay attacks within the token lifetime.
 
-* **local** tokens are intended for tamper-resistant encrypted cookies or
-  HTTP request parameters. A resonable example would be long-term authentication
+* **local** tokens are intended for tamper-resistant encrypted cookies or HTTP
+  request parameters. A resonable example would be long-term authentication
   cookies which re-establish a new session cookie if a user checked the
-  "remember me on this computer" box when authenticating. To accomplish
-  this, the server would look use the `jti` claim in a database lookup
-  to find the appropriate user to associate this session with. After each
-  new browsing session, the `jti` would be rotated in the database and
-  a fresh cookie would be stored in tbe browser.
-* **public** tokens are intended for one-time authentication claims from
-  a third party. For example, **public** PASETO would be suitable for
-  a protocol like OpenID Connect.
+  "remember me on this computer" box when authenticating. To accomplish this,
+  the server would look use the `jti` claim in a database lookup to find the
+  appropriate user to associate this session with. After each new browsing
+  session, the `jti` would be rotated in the database and a fresh cookie would
+  be stored in tbe browser.
+* **public** tokens are intended for one-time authentication claims from a third
+  party. For example, **public** PASETO would be suitable for a protocol like
+  OpenID Connect.
 
 # Security Considerations
 
@@ -751,15 +805,15 @@ have insecure default settings.
 If a severe security vulnerability is ever discovered in one of the specified
 versions, a new version of the protocol that is not affected should be decided
 by a team of cryptography engineers familiar with the vulnerability in question.
-This prevents users from having to rewrite and/or reconfigure their implementations
-to side-step the vulnerability.
+This prevents users from having to rewrite and/or reconfigure their
+implementations to side-step the vulnerability.
 
-PASETO implementors should only support the two most recent protocol
-versions (currently **v1** and **v2**) at any given time.
+PASETO implementors should only support the two most recent protocol versions
+(currently **v1** and **v2**) at any given time.
 
-PASETO users should beware that, although footers are authenticated,
-they are never encrypted. Therefore, sensitive information **MUST NOT**
-be stored in a footer.
+PASETO users should beware that, although footers are authenticated, they are
+never encrypted. Therefore, sensitive information **MUST NOT** be stored in a
+footer.
 
 Furthermore, PASETO users should beware that, if footers are employed to
 implement Key Identification (**kid**), the values stored in the footer
@@ -770,19 +824,18 @@ PASETO has no built-in mechanism to resist replay attacks within the token's
 lifetime. Users **SHOULD NOT** attempt to use PASETO to obviate the need for
 server-side data storage when designing web applications.
 
-PASETO's cryptography features requires the availability of a secure
-random number generator, such as the getrandom(2) syscall on newer Linux
-distributions, /dev/urandom on most Unix-like systems, and CryptGenRandom
-on Windows computers.
+PASETO's cryptography features requires the availability of a secure random
+number generator, such as the getrandom(2) syscall on newer Linux distributions,
+/dev/urandom on most Unix-like systems, and CryptGenRandom on Windows computers.
 
 The use of userspace pseudo-random number generators, even if seeded by the
-operating system's cryptographically secure pseudo-random number generator,
-is discouraged.
+operating system's cryptographically secure pseudo-random number generator, is
+discouraged.
 
 # IANA Considerations
 
-The IANA should reserve a new "PASETO Headers" registry for the purpose
-of this document and superseding RFCs.
+The IANA should reserve a new "PASETO Headers" registry for the purpose of this
+document and superseding RFCs.
 
 This document defines a suite of string prefixes for PASETO tokens, called
 "PASETO Headers" (see (#paseto-message-format)), which consists of two parts:
@@ -790,12 +843,12 @@ This document defines a suite of string prefixes for PASETO tokens, called
 * **version**, with values **v1**, **v2** defined above
 * **purpose**, with the values of **local** or **public**
 
-These two values are concatenated with a single character separator, the
-ASCII period character **.**.
+These two values are concatenated with a single character separator, the ASCII
+period character **.**.
 
-Initial values for the "PASETO Headers" registry are given below;
-future assignments are to be made through Expert Review [@!RFC8126],
-such as the [CFRG].
+Initial values for the "PASETO Headers" registry are given below; future
+assignments are to be made through Expert Review [@!RFC8126], such as the
+[CFRG].
 
 | Value     | PASETO Header Meaning | Definition  |
 | --------- | --------------------- | ----------- |
@@ -811,13 +864,13 @@ Table: PASETO Headers and their respective meanings
 
 # PASETO Test Vectors
 
-Note: When a nonce is given below, it refers to the value before being
-hashed with the message. Typically this value is provided by a secure
-random number generator.
+Note: When a nonce is given below, it refers to the value before being hashed
+with the message. Typically this value is provided by a secure random number
+generator.
 
-Note: Signing may result in a different token each time, but the given
-token and public key pair should validate successfully. The private key
-that corresponds to this public key is as follows:
+Note: Signing may result in a different token each time, but the given token and
+public key pair should validate successfully. The private key that corresponds
+to this public key is as follows:
 
 ~~~
 -----BEGIN RSA PRIVATE KEY-----
