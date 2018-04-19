@@ -28,11 +28,11 @@
 
 .# Abstract
 
-Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically
-secure, compact, and URL-safe representation of claims that may be
-transferred between two parties. The claims in a PASETO are encoded in
-JavaScript Object Notation (JSON), version-tagged, and either encrypted using
-shared-key cryptography or signed using public-key cryptography.
+Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically secure,
+compact, and URL-safe representation of claims that may be transferred between
+two parties. The claims are encoded in JavaScript Object Notation (JSON),
+version-tagged, and either encrypted using shared-key cryptography or signed
+using public-key cryptography.
 
 {mainmatter}
 
@@ -40,10 +40,10 @@ shared-key cryptography or signed using public-key cryptography.
 
 A Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
 compact, and URL-safe representation of claims intended for space-constrained
-environments such as HTTP Cookies, HTTP Authorization headers, and URI
-query parameters. A PASETO encodes claims to be transmitted in a JSON
-[@!RFC8259] object, and is either encrypted symmetrically or signed using
-public-key cryptography.
+environments such as HTTP Cookies, HTTP Authorization headers, and URI query
+parameters. A PASETO encodes claims to be transmitted in a JSON [@!RFC8259]
+object, and is either encrypted symmetrically or signed using public-key
+cryptography.
 
 ## Difference Between PASETO and JOSE
 
@@ -113,9 +113,8 @@ In this document. `b64()` refers to this unpadded variant of base64url.
 
 ## Authentication Padding
 
-Multi-part messages (e.g. header, content, footer) are encoded
-in a specific manner before being passed to the appropriate
-cryptographic function.
+Multi-part messages (e.g. header, content, footer) are encoded in a specific
+manner before being passed to the appropriate cryptographic function.
 
 In `local` mode, this encoding is applied to the additional associated data
 (AAD). In `public` mode, which is not encrypted, this encoding is applied to the
