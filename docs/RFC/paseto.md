@@ -30,7 +30,7 @@
 
 Platform-Agnostic SEcurity TOkens (PASETOs) provide a cryptographically secure,
 compact, and URL-safe representation of claims that may be transferred between
-two parties. The claims in a PASETO are encoded as a JavaScript Object (JSON),
+two parties. The claims are encoded in JavaScript Object Notation (JSON),
 version-tagged, and either encrypted using shared-key cryptography or signed
 using public-key cryptography.
 
@@ -42,7 +42,8 @@ A Platform-Agnostic SEcurity TOken (PASETO) is a cryptographically secure,
 compact, and URL-safe representation of claims intended for space-constrained
 environments such as HTTP Cookies, HTTP Authorization headers, and URI query
 parameters. A PASETO encodes claims to be transmitted in a JSON [@!RFC8259]
-object, and is either encrypted or signed using public-key cryptography.
+object, and is either encrypted symmetrically or signed using public-key
+cryptography.
 
 ## Difference Between PASETO and JOSE
 
@@ -95,9 +96,13 @@ values: **local**, **public**.
 * **local**: shared-key authenticated encryption
 * **public**: public-key digital signatures; **not encrypted**
 
+The **payload** is a string that contains the token's data. In a `local` token,
+this data is encrypted with a symmetric cipher. In a `public` token, this data
+is *unencrypted*.
+
 Any optional data can be appended to the **footer**. This data is authenticated
 through inclusion in the calculation of the authentication tag along with the
-header and payload. The **footer** MUST NOT be encrypted.
+header and payload. The **footer** **MUST NOT** be encrypted.
 
 ## Base64 Encoding
 
@@ -109,14 +114,14 @@ In this document. `b64()` refers to this unpadded variant of base64url.
 ## Authentication Padding
 
 Multi-part messages (e.g. header, content, footer) are encoded in a specific
-manner before being passed to the respective cryptographic function.
+manner before being passed to the appropriate cryptographic function.
 
 In `local` mode, this encoding is applied to the additional associated data
 (AAD). In `public` mode, which is not encrypted, this encoding is applied to the
 components of the token, with respect to the protocol version being followed.
 
-We will refer to it as **PAE** in this document (short for Pre-Authentication
-Encoding).
+We will refer to this process as **PAE** in this document (short for
+Pre-Authentication Encoding).
 
 ### PAE Definition
 
@@ -173,8 +178,8 @@ As a result, partially controlled plaintext cannot be used to create a
 collision. Either the number of pieces will differ, or the length of one of the
 fields (which is prefixed to user-controlled input) will differ, or both.
 
-Due to the length being expressed as an unsigned 64-bit integer, it remains
-infeasible to generate/transmit enough data to create an integer overflow.
+Due to the length being expressed as an unsigned 64-bit integer, it is
+infeasible to encode enough data to create an integer overflow.
 
 This is not used to encode data prior to decryption, and no decoding function
 is provided or specified. This merely exists to prevent canonicalization
@@ -232,7 +237,7 @@ likely available on legacy systems. **v1** **SHOULD NOT** be used when all
 systems are able to use **v2**. **v1** **MAY** be used when when compatibility
 requirements include systems unable to use cryptographic primitives from **v2**.
 
-**v1** messages **MUST** use a **purpose**  value of either **local** or
+**v1** messages **MUST** use a **purpose** value of either **local** or
 **public**.
 
 ## v1.local
