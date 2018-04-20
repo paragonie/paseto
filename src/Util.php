@@ -140,7 +140,7 @@ abstract class Util
         /** @var array<int, string> $pieces */
         $pieces = \explode('.', $payload);
         if (\count($pieces) > 3) {
-            return (string) \array_pop($pieces);
+            return Base64UrlSafe::decode((string) \array_pop($pieces));
         }
         return '';
     }
