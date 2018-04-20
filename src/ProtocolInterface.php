@@ -61,13 +61,13 @@ interface ProtocolInterface
      *
      * @param string $data
      * @param SymmetricKey $key
-     * @param string $footer
+     * @param string|null $footer
      * @return string
      */
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = ''
+        string $footer = null
     ): string;
 
     /**
@@ -89,12 +89,12 @@ interface ProtocolInterface
      *
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
-     * @param string $footer
+     * @param string|null $footer
      * @return string
      */
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = ''
+        string $footer = null
     ): string;
 }

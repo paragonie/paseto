@@ -157,17 +157,17 @@ class Version1 implements ProtocolInterface
      *
      * @param string $data
      * @param SymmetricKey $key
-     * @param string $footer
+     * @param string|null $footer
      * @return string
      * @throws PasetoException
      * @throws \TypeError
      */
-    public static function decrypt(string $data, SymmetricKey $key, string $footer = ''): string
+    public static function decrypt(string $data, SymmetricKey $key, string $footer = null): string
     {
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
         }
-        if (empty($footer)) {
+        if (\is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
         } else {
@@ -177,7 +177,7 @@ class Version1 implements ProtocolInterface
             $data,
             self::HEADER . '.local.',
             $key,
-            $footer
+            (string) $footer
         );
     }
 
@@ -215,17 +215,17 @@ class Version1 implements ProtocolInterface
      *
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
-     * @param string $footer
+     * @param string|null $footer
      * @return string
      * @throws PasetoException
      * @throws \TypeError
      */
-    public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string
+    public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = null): string
     {
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
         }
-        if (empty($footer)) {
+        if (\is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
             $signMsg = Util::removeFooter($signMsg);
         } else {

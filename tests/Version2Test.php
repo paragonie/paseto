@@ -79,7 +79,6 @@ class Version2Test extends TestCase
                 Version2::decrypt($encrypted, $key);
                 $this->fail('Missing footer');
             } catch (PasetoException $ex) {
-            } catch (\SodiumException $ex) {
             }
         }
 
