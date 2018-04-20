@@ -36,7 +36,7 @@ binary string. The most significant bit MUST be cleared for interoperability
 with programming languages that do not have unsigned integer support.
 
 The first 8 bytes of the output will be the number of pieces. Typically
-this is a small number (3 to 5). This is calculated by `LE64()` of the
+this is a small number (3 or 4). This is calculated by `LE64()` of the
 size of the array.
 
 Next, for each piece provided, the length of the piece is encoded via
