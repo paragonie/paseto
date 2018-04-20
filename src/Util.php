@@ -132,6 +132,24 @@ abstract class Util
      * token payload.
      *
      * @param string $payload
+     * @return string
+     * @throws \TypeError
+     */
+    public static function removeFooter(string $payload): string
+    {
+        $pieces = \explode('.', $payload);
+        if (\count($pieces) > 3) {
+            return \implode('.', \array_slice($pieces, 0, 3));
+        }
+        return $payload;
+    }
+
+    /**
+     * If a footer was included with the message, first verify that
+     * it's equivalent to the one we expect, then remove it from the
+     * token payload.
+     *
+     * @param string $payload
      * @param string $footer
      * @return string
      * @throws PasetoException
