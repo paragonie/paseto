@@ -134,9 +134,9 @@ class Version2Test extends TestCase
             $this->assertInternalType('string', $signed);
             $this->assertSame('v2.public.', Binary::safeSubstr($signed, 0, 10));
             try {
-                Version2::verify($signed, $publicKey);
+                Version2::verify($signed, $publicKey, '');
                 $this->fail('Missing footer');
-            } catch (\Exception $ex) {
+            } catch (PasetoException $ex) {
             }
             $decode = Version2::verify($signed, $publicKey, 'footer');
             $this->assertInternalType('string', $decode);

@@ -218,10 +218,10 @@ class Version2 implements ProtocolInterface
         }
         if (\is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
-            $signMsg = Util::removeFooter($signMsg);
         } else {
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         }
+        $signMsg = Util::removeFooter($signMsg);
         /** @var string $footer */
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
