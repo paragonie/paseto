@@ -137,7 +137,7 @@ class Version2 implements ProtocolInterface
      *
      * @param string $data
      * @param SymmetricKey $key
-     * @param string $footer
+     * @param string|null $footer
      * @return string
      *
      * @throws PasetoException
@@ -147,16 +147,22 @@ class Version2 implements ProtocolInterface
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = ''
+        string $footer = null
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
         }
+        if (\is_null($footer)) {
+            $footer = Util::extractFooter($data);
+            $data = Util::removeFooter($data);
+        } else {
+            $data = Util::validateAndRemoveFooter($data, $footer);
+        }
         return self::aeadDecrypt(
-            Util::validateAndRemoveFooter($data, $footer),
+            $data,
             self::HEADER . '.local.',
             $key,
-            $footer
+            (string) $footer
         );
     }
 
@@ -197,7 +203,7 @@ class Version2 implements ProtocolInterface
      *
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
-     * @param string $footer
+     * @param string|null $footer
      * @return string
      * @throws PasetoException
      * @throws \TypeError
@@ -205,12 +211,18 @@ class Version2 implements ProtocolInterface
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = ''
+        string $footer = null
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
         }
-        $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
+        if (\is_null($footer)) {
+            $footer = Util::extractFooter($signMsg);
+            $signMsg = Util::removeFooter($signMsg);
+        } else {
+            $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
+        }
+        /** @var string $footer */
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {

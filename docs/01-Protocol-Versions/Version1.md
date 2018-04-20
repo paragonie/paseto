@@ -60,16 +60,25 @@ Given a message `m`, key `k`, and optional footer `f`
 Given a message `m`, key `k`, and optional footer `f`
 (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception. 
-2. Verify that the message begins with `v1.local.`, otherwise throw an exception.
-   This constant will be referred to as `h`.
+
+1. If `f` is not empty, implementations **MAY** verify that the value appended
+   to the token matches some expected string `f`, provided they do so using a
+   constant-time string compare function.
+2. Verify that the message begins with `v1.local.`, otherwise throw an
+   exception. This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
-   between `m` and `f`) from base64url to raw binary. Set:
+   between `m` and `f`) from b64 to raw binary. Set:
    * `n` to the leftmost 32 bytes
    * `t` to the rightmost 48 bytes
    * `c` to the middle remainder of the payload, excluding `n` and `t`
-4. Split the keys using the leftmost 32 bytes of `n` as the HKDF salt:
+4. Split the key (`k`) into an Encryption key (`Ek`) and an Authentication key
+   (`Ak`), using the leftmost 16 bytes of `n` as the HKDF salt.
+   * For encryption keys, the **info** parameter for HKDF **MUST** be set to
+     **paseto-encryption-key**.
+   * For authentication keys, the **info** parameter for HKDF **MUST** be set to
+     **paseto-auth-key-for-aead**.
+   * The output length **MUST** be 32 for both keys.
+   
    ```
    Ek = hkdf_sha384(
        len = 32
@@ -84,15 +93,15 @@ Given a message `m`, key `k`, and optional footer `f`
        salt = n[0:16]
    );
    ```
-5. Pack `h`, `n`, `c`, and `f` together using
-   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
-   (pre-authentication encoding). We'll call this `preAuth`.
-6. Recalculate HASH-HMAC384 of `preAuth` using `Ak` as the key.
-   We'll call this `t2`.
-7. Compare `t` with `t2` using a constant-time string compare function.
-   If they are not identical, throw an exception.
-8. Decrypt `c` using `AES-256-CTR`, using `Ek` as the key and
-   the rightmost 16 bytes of `n` as the nonce, and return this value.
+5. Pack `h`, `n`, `c`, and `f` together (in that order) using
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
+   We'll call this `preAuth`.
+6. Recalculate HMAC-SHA-384 of `preAuth` using `Ak` as the key. We'll call this
+   `t2`.
+7. Compare `t` with `t2` using a constant-time string compare function. If they
+   are not identical, throw an exception.
+8. Decrypt `c` using `AES-256-CTR`, using `Ek` as the key and the rightmost 16
+   bytes of `n` as the nonce, and return this value.
    ```
    return aes256ctr_decrypt(
        cipherext = c,
@@ -133,23 +142,28 @@ optional footer `f` (which defaults to empty string):
 Given a signed message `sm`, RSA public key `pk`, and optional
 footer `f` (which defaults to empty string):
 
-1. If `f` is not empty, verify that the value appended to the token matches `f`,
-   using a constant-time string compare function. If it does not, throw an exception. 
-2. Verify that the message begins with `v1.public.`, otherwise throw an exception.
-   This constant will be referred to as `h`.
+1. If `f` is not empty, implementations **MAY** verify that the value appended
+   to the token matches some expected string `f`, provided they do so using a
+   constant-time string compare function.
+2. Verify that the message begins with `v1.public.`, otherwise throw an
+   exception. This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
-   between `m` and `f`) from base64url to raw binary. Set:
+   between `m` and `f`) from b64 to raw binary. Set:
    * `s` to the rightmost 256 bytes
-   * `m` to the leftmost remainder of the payload, excluding `s`  
-4. Pack `h`, `m`, and `f` together using
-   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
-   (pre-authentication encoding). We'll call this `m2`.
+   * `m` to the leftmost remainder of the payload, excluding `s`
+4. Pack `h`, `m`, and `f` together (in that order) using PAE (see
+   [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
+   We'll call this `m2`.
 5. Use RSA to verify that the signature is valid for the message:
    ```
    valid = crypto_sign_rsa_verify(
        signature = s,
        message = m2,
-       public_key = pk
+       public_key = pk,
+       padding_mode = "pss",
+       public_exponent = 65537,
+       hash = "sha384"
+       mgf = "mgf1+sha384"
    );
    ```
 6. If the signature is valid, return `m`. Otherwise, throw an exception.

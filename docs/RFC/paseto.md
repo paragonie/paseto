@@ -520,11 +520,11 @@ Given a message `m`, key `k`, and optional footer `f`.
    between `m` and `f`) from base64url to raw binary. Set:
    * `n` to the leftmost 24 bytes
    * `c` to the middle remainder of the payload, excluding `n`.
-5. Pack `h`, `n`, and `f` together (in that order) using PAE (see
+4. Pack `h`, `n`, and `f` together (in that order) using PAE (see
    (#authentication-padding)). We'll call this `preAuth`
-8. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
+5. Decrypt `c` using `XChaCha20-Poly1305`, store the result in `p`.
    (See below for pseudocode.)
-9. If decryption failed, throw an exception. Otherwise, return `p`.
+6. If decryption failed, throw an exception. Otherwise, return `p`.
 
 ~~~
 p = crypto_aead_xchacha20poly1305_decrypt(
