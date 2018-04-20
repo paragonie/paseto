@@ -64,7 +64,11 @@ interface ProtocolInterface
      * @param string $footer
      * @return string
      */
-    public static function decrypt(string $data, SymmetricKey $key, string $footer = ''): string;
+    public static function decrypt(
+        string $data,
+        SymmetricKey $key,
+        string $footer = ''
+    ): string;
 
     /**
      * Sign a message. Public-key digital signatures.
@@ -74,7 +78,11 @@ interface ProtocolInterface
      * @param string $footer
      * @return string
      */
-    public static function sign(string $data, AsymmetricSecretKey $key, string $footer = ''): string;
+    public static function sign(
+        string $data,
+        AsymmetricSecretKey $key,
+        string $footer = ''
+    ): string;
 
     /**
      * Verify a signed message. Public-key digital signatures.
@@ -84,5 +92,9 @@ interface ProtocolInterface
      * @param string $footer
      * @return string
      */
-    public static function verify(string $signMsg, AsymmetricPublicKey $key, string $footer = ''): string;
+    public static function verify(
+        string $signMsg,
+        AsymmetricPublicKey $key,
+        string $footer = ''
+    ): string;
 }

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2
@@ -131,6 +132,7 @@ final class ProtocolCollection
      *
      * @return self
      * @throws InvalidVersionException
+     * @throws SecurityException
      */
     public static function v1(): self
     {
