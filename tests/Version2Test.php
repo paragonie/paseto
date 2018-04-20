@@ -76,7 +76,7 @@ class Version2Test extends TestCase
             $this->assertInternalType('string', $decode);
             $this->assertSame($message, $decode);
             try {
-                Version2::decrypt($encrypted, $key);
+                Version2::decrypt($encrypted, $key, '');
                 $this->fail('Missing footer');
             } catch (PasetoException $ex) {
             }
