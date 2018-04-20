@@ -135,6 +135,25 @@ abstract class Util
      * @return string
      * @throws \TypeError
      */
+    public static function extractFooter(string $payload): string
+    {
+        /** @var array<int, string> $pieces */
+        $pieces = \explode('.', $payload);
+        if (\count($pieces) > 3) {
+            return (string) \array_pop($pieces);
+        }
+        return '';
+    }
+
+    /**
+     * If a footer was included with the message, first verify that
+     * it's equivalent to the one we expect, then remove it from the
+     * token payload.
+     *
+     * @param string $payload
+     * @return string
+     * @throws \TypeError
+     */
     public static function removeFooter(string $payload): string
     {
         $pieces = \explode('.', $payload);

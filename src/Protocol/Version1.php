@@ -167,6 +167,9 @@ class Version1 implements ProtocolInterface
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
         }
+        if (empty($footer)) {
+            $footer = Util::extractFooter($data);
+        }
         return self::aeadDecrypt(
             Util::removeFooter($data),
             self::HEADER . '.local.',
@@ -218,6 +221,9 @@ class Version1 implements ProtocolInterface
     {
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+        }
+        if (empty($footer)) {
+            $footer = Util::extractFooter($signMsg);
         }
         $signMsg = Util::removeFooter($signMsg);
         $expectHeader = self::HEADER . '.public.';
