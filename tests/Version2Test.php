@@ -64,10 +64,9 @@ class Version2Test extends TestCase
             } catch (PasetoException $ex) {
             }
             try {
-                Version2::decrypt($encrypted . 'x', $key);
+                Version2::decrypt($encrypted, $key, 'footer');
                 $this->fail('Footer did not cause expected MAC failure.');
             } catch (PasetoException $ex) {
-            } catch (\SodiumException $ex) {
             }
             $encrypted = Version2::encrypt($message, $key, 'footer');
             $this->assertInternalType('string', $encrypted);

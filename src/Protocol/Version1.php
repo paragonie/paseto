@@ -169,9 +169,12 @@ class Version1 implements ProtocolInterface
         }
         if (empty($footer)) {
             $footer = Util::extractFooter($data);
+            $data = Util::removeFooter($data);
+        } else {
+            $data = Util::validateAndRemoveFooter($data, $footer);
         }
         return self::aeadDecrypt(
-            Util::removeFooter($data),
+            $data,
             self::HEADER . '.local.',
             $key,
             $footer
@@ -224,8 +227,10 @@ class Version1 implements ProtocolInterface
         }
         if (empty($footer)) {
             $footer = Util::extractFooter($signMsg);
+            $signMsg = Util::removeFooter($signMsg);
+        } else {
+            $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         }
-        $signMsg = Util::removeFooter($signMsg);
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {
