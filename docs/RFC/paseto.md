@@ -612,9 +612,10 @@ confusion bugs between different cryptography keys. For example:
 * In object-oriented programming languages, using separate classes for each
   cryptography key object that may share an interface or common base class.
 
-It **MUST NOT** be possible for a user to take a known public key (used by
-*public* tokens), and generate a *local* token with the same key that any PASETO
-implementations will accept.
+Cryptographic keys **MUST** require the user to state a version and a purpose
+for which they will be used. Furthermore, given a cryptographic key, it
+**MUST NOT** be possible for a user to use this key for any version and purpose
+combination other than that which was specified during the creation of this key.
 
 ## Registered Claims
 
