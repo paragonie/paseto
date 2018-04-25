@@ -1,10 +1,16 @@
 FORMATS := html txt
+TARGETS := $(foreach ext,$(FORMATS),draft-paragon-paseto-rfc-01.$(ext))
 
-.PHONY: all clean
-all: $(foreach ext,$(FORMATS),draft-paragon-paseto-rfc-01.$(ext))
+.PHONY: all clean publish
+all: $(TARGETS)
+
+publish: all
+	mkdir -p pages
+	cp $(TARGETS) pages/
 
 clean:
 	rm -f $(foreach ext,$(FORMATS) xml,draft-paragon-paseto-rfc-01.$(ext))
+	rm -rf pages
 
 draft-paragon-paseto-rfc-01.xml: paseto.md
 	mmark -xml2 -page $< $@
