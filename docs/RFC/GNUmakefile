@@ -9,7 +9,7 @@ publish: all
 	cp $(TARGETS) pages/
 
 clean:
-	rm -f $(foreach ext,$(FORMATS) xml,draft-paragon-paseto-rfc-01.$(ext))
+	rm -f $(TARGETS) draft-paragon-paseto-rfc-01.xml
 	rm -rf pages
 
 draft-paragon-paseto-rfc-01.xml: paseto.md
