@@ -5,8 +5,32 @@ php:
 - 7.1
 - 7.2
 
+sudo: required
+addons:
+  apt:
+    sources:
+    - sourceline: deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe
+    - sourceline: deb http://security.ubuntu.com/ubuntu/ xenial-security main restricted universe
+
+    packages:
+    - mmark
+    - xml2rfc
+
 before_install:
 - composer update
 
 script:
 - composer full-test
+- make -C docs/RFC
+
+after_success:
+- make -C docs/RFC publish
+
+deploy:
+  provider: pages
+  local-dir: docs/RFC/pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    branch: master

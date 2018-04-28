@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh -e
 
-mmark -xml2 -page paseto.md > draft-paragon-paseto-rfc-01.xml
-xml2rfc --text draft-paragon-paseto-rfc-01.xml
+make draft-paragon-paseto-rfc-01.txt
 rm draft-paragon-paseto-rfc-01.xml
-
