@@ -117,10 +117,10 @@ abstract class Util
      */
     public static function preAuthEncode(string ...$pieces): string
     {
-        $accumulator = \pack('P', \count($pieces) & PHP_INT_MAX);
+        $accumulator = \ParagonIE_Sodium_Core_Util::store64_le(\count($pieces) & PHP_INT_MAX);
         foreach ($pieces as $piece) {
             $len = Binary::safeStrlen($piece);
-            $accumulator .= \pack('P', $len & PHP_INT_MAX);
+            $accumulator .= \ParagonIE_Sodium_Core_Util::store64_le($len & PHP_INT_MAX);
             $accumulator .= $piece;
         }
         return $accumulator;
