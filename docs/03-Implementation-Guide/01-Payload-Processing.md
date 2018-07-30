@@ -20,6 +20,20 @@ encouraged to use [Base64url](https://tools.ietf.org/html/rfc4648#page-7)
 encoding to preserve the original intended binary data, but still use UTF-8 for
 the actual payloads.
 
+## Type Safety with Cryptographic Keys
+
+PASETO library implementations **MUST** implement some means of preventing type
+confusion bugs between different cryptography keys. For example:
+
+* Prepending each key in memory with a magic byte to serve as a type indicator
+  (distinct for every combination of version and purpose).
+* In object-oriented programming languages, using separate classes for each
+  cryptography key object that may share an interface or common base class.
+
+It **MUST NOT** be possible for a user to take a known public key (used by
+*public* tokens), and generate a *local* token with the same key that any PASETO
+implementations will accept.
+
 ## Registered Claims
 
 The following keys are reserved for use within PASETO. Users SHOULD NOT write

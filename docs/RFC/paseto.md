@@ -276,9 +276,11 @@ Given a message `m`, key `k`, and optional footer `f`
 
 1. Set header `h` to `v1.local.`
 2. Generate 32 random bytes from the OS's CSPRNG.
-3. Calculate `GetNonce()` of `m` and the output of step 2 to get the nonce, `n`.
+3. Optionally, calculate `GetNonce()` of `m` and the output of step 2 to get the
+   nonce, `n`.
    * This step is to ensure that an RNG failure does not result in a
      nonce-misuse condition that breaks the security of our stream cipher.
+   * If this step is omitted, the output of step 2 is `n` instead.
 4. Split the key (`k`) into an Encryption key (`Ek`) and an Authentication key
    (`Ak`), using the leftmost 16 bytes of `n` as the HKDF salt. (See below for
    pseudocode.)
@@ -484,10 +486,11 @@ Given a message `m`, key `k`, and optional footer `f`.
 
 1. Set header `h` to `v2.local.`
 2. Generate 24 random bytes from the OS's CSPRNG.
-3. Calculate BLAKE2b of the message `m` with the output of step 2 as the key,
-   with an output length of 24. This will be our nonce, `n`.
+3. Optionally, calculate BLAKE2b of the message `m` with the output of step 2 as
+   the key, with an output length of 24. This will be our nonce, `n`.
    * This step is to ensure that an RNG failure does not result in a
      nonce-misuse condition that breaks the security of our stream cipher.
+   * If this step is omitted, the output of step 2 is `n` instead.
 4. Pack `h`, `n`, and `f` together (in that order) using PAE (see (#authentication-padding)).
    We'll call this `preAuth`.
 5. Encrypt the message using XChaCha20-Poly1305, using an AEAD interface such as
@@ -598,6 +601,21 @@ If non-UTF-8 character sets are desired for some fields, implementors are
 encouraged to use [Base64url](https://tools.ietf.org/html/rfc4648#page-7)
 encoding to preserve the original intended binary data, but still use UTF-8 for
 the actual payloads.
+
+## Type Safety with Cryptographic Keys
+
+PASETO library implementations **MUST** implement some means of preventing type
+confusion bugs between different cryptography keys. For example:
+
+* Prepending each key in memory with a magic byte to serve as a type indicator
+  (distinct for every combination of version and purpose).
+* In object-oriented programming languages, using separate classes for each
+  cryptography key object that may share an interface or common base class.
+
+Cryptographic keys **MUST** require the user to state a version and a purpose
+for which they will be used. Furthermore, given a cryptographic key, it
+**MUST NOT** be possible for a user to use this key for any version and purpose
+combination other than that which was specified during the creation of this key.
 
 ## Registered Claims
 
@@ -830,6 +848,14 @@ number generator, such as the getrandom(2) syscall on newer Linux distributions,
 The use of userspace pseudo-random number generators, even if seeded by the
 operating system's cryptographically secure pseudo-random number generator, is
 discouraged.
+
+Implementors should use some means of identifying different key types so that
+they cannot be used in the wrong context. Encapsulating each key in a different
+class and type-hinting checking that:
+
+* Only symmetric cryptography keys are used for decrypting *local* tokens
+* Only asymmetric cryptography public keys are used for verifying *public*
+  tokens
 
 # IANA Considerations
 

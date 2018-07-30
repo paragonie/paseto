@@ -4,9 +4,13 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Builder;
+use ParagonIE\Paseto\Exception\InvalidKeyException;
+use ParagonIE\Paseto\Exception\InvalidPurposeException;
+use ParagonIE\Paseto\Exception\InvalidVersionException;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\JsonToken;
 use ParagonIE\Paseto\Keys\{
+    AsymmetricPublicKey,
     AsymmetricSecretKey,
     SymmetricKey
 };
@@ -27,6 +31,56 @@ use PHPUnit\Framework\TestCase;
  */
 class ParserTest extends TestCase
 {
+    /**
+     * @throws \Exception
+     */
+    public function testTypeSafety()
+    {
+        $keypair = sodium_crypto_sign_keypair();
+        $publicKey = new AsymmetricPublicKey(sodium_crypto_sign_publickey($keypair));
+
+        // Let's encrypt a bad oken using the Ed25519 public key
+        $badKey = new SymmetricKey(sodium_crypto_sign_publickey($keypair));
+        $badToken = Version2::encrypt('arbitrary test string', $badKey);
+
+        try {
+            new Parser(
+                ProtocolCollection::v2(),
+                Purpose::local(),
+                $publicKey
+            );
+            $this->fail('Invalid key type was accepted by parser');
+        } catch (PasetoException $ex) {
+            $this->assertInstanceOf(InvalidKeyException::class, $ex);
+        }
+
+        // We have a v1.local parser, the token's version should be invalid:
+        $parser = new Parser(
+            ProtocolCollection::v1(),
+            Purpose::local(),
+            $badKey
+        );
+        try {
+            $parser->parse($badToken);
+            $this->fail('Invalid purpose was accepted by parser');
+        } catch (PasetoException $ex) {
+            $this->assertInstanceOf(InvalidVersionException::class, $ex);
+        }
+
+        // We have a v2.public parser, the token's purpose should be invalid:
+        $parser = new Parser(
+            ProtocolCollection::v2(),
+            Purpose::public(),
+            $publicKey
+        );
+        try {
+            $parser->parse($badToken);
+            $this->fail('Invalid purpose was accepted by parser');
+        } catch (PasetoException $ex) {
+            $this->assertInstanceOf(InvalidPurposeException::class, $ex);
+        }
+    }
+
     /**
      * @covers Parser::parse()
      * @throws PasetoException
