@@ -47,6 +47,8 @@ class Parser
      * @param ReceivingKey|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
      * @throws PasetoException
+     *
+     * @psalm-suppress RedundantConditionGivenDocblockType
      */
     public function __construct(
         ProtocolCollection $allowedVersions = null,
