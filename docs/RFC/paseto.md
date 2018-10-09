@@ -497,7 +497,7 @@ Given a message `m`, key `k`, and optional footer `f`.
    the one provided in libsodium. (See below for pseudocode.)
 6. If `f` is:
    * Empty: return h || b64(n || c)
-   * Non-empty: return h || b64(n || c) || `.` || base64url(f)
+   * Non-empty: return h || b64(n || c) || `.` || b64(f)
    * ...where || means "concatenate"
 
 ~~~
