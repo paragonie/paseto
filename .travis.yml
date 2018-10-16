@@ -22,15 +22,3 @@ before_install:
 script:
 - composer full-test
 - make -C docs/RFC
-
-after_success:
-- make -C docs/RFC publish
-
-deploy:
-  provider: pages
-  local-dir: docs/RFC/pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN
-  keep-history: true
-  on:
-    branch: master
