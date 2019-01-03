@@ -156,3 +156,8 @@ may be more relevant.
 
 The curation of other implementations has been moved to [paseto.io](https://paseto.io).
 See https://github.com/paragonie/paseto-io for the website source code.
+
+## Support Contracts
+
+If your company uses this library in their products or services, you may be
+interested in [purchasing a support contract from Paragon Initiative Enterprises](https://paragonie.com/enterprise).
