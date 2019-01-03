@@ -7,4 +7,8 @@
     <projectFiles>
         <directory name="src" />
     </projectFiles>
+    <issueHandlers>
+        <LessSpecificReturnStatement errorLevel="info" />
+        <MoreSpecificReturnType errorLevel="info" />
+    </issueHandlers>
 </psalm>
