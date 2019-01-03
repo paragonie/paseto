@@ -196,10 +196,10 @@ class Builder
     /**
      * Set the 'iat' claim for the token we're building. (Mutable.)
      *
-     * @param \DateTime|null $time
+     * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function setIssuedAt(\DateTime $time = null): self
+    public function setIssuedAt(\DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new \DateTime('NOW');
@@ -232,10 +232,10 @@ class Builder
     /**
      * Set the 'nbf' claim for the token we're building. (Mutable.)
      *
-     * @param \DateTime|null $time
+     * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function setNotBefore(\DateTime $time = null): self
+    public function setNotBefore(\DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new \DateTime('NOW');
@@ -506,10 +506,10 @@ class Builder
     /**
      * Return a new Builder instance with a changed 'exp' claim.
      *
-     * @param \DateTime|null $time
+     * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function withExpiration(\DateTime $time = null): self
+    public function withExpiration(\DateTimeInterface $time = null): self
     {
         return (clone $this)->setExpiration($time);
     }
@@ -541,10 +541,10 @@ class Builder
     /**
      * Return a new Builder instance with a changed 'iat' claim.
      *
-     * @param \DateTime|null $time
+     * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function withIssuedAt(\DateTime $time = null): self
+    public function withIssuedAt(\DateTimeInterface $time = null): self
     {
         return (clone $this)->setIssuedAt($time);
     }
@@ -574,10 +574,10 @@ class Builder
     /**
      * Return a new Builder instance with a changed 'nbf' claim.
      *
-     * @param \DateTime|null $time
+     * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function withNotBefore(\DateTime $time = null): self
+    public function withNotBefore(\DateTimeInterface $time = null): self
     {
         return (clone $this)->setNotBefore($time);
     }
