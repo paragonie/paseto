@@ -18,7 +18,7 @@ to assist in cross-platform library development.
 4. By default, libraries should only allow the two most recent versions to be used.
    * If there are only two versions, that means `v1` and `v2`.
    * If a future post-quantum `v3` is defined, `v1` should no longer be accepted.
-   * If an additional version `v4` is defined, `v2` should no longer be accepted.
+   * If an additional version `v4` is defined, `v2` should also no longer be accepted.
 5. New versions will be decided and formalized by the PASETO developers. 
    * User-defined homemade protocols are discouraged. If implementors wish to break
      this rule and define their own custom protocol suite, they must NOT continue
