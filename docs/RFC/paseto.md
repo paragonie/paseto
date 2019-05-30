@@ -1084,7 +1084,7 @@ Public Key: -----BEGIN PUBLIC KEY-----
             IpNxkRnAwIMjeTJB/0AIELh0mE5vwdihOCbdV6alUyhKC1+1w/FW6HWc
             p/JG1kKC8DPIidZ78Bbqv9YFzkAbNni5eSBOsXVBKG78Zsc8owIDAQAB
             -----END PUBLIC KEY-----
-Payload:    {"data":"this is a secret message",
+Payload:    {"data":"this is a signed message",
             "exp":"2019-01-01T00:00:00+00:00"}
 Footer:     {"kid":"dYkISylxQeecEcHELfzF88UZrwbLolNiCdpzUHGw9Uqn"}
 ~~~
