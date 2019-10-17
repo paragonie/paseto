@@ -1057,7 +1057,7 @@ Public Key: -----BEGIN PUBLIC KEY-----
             IpNxkRnAwIMjeTJB/0AIELh0mE5vwdihOCbdV6alUyhKC1+1w/FW6HWc
             p/JG1kKC8DPIidZ78Bbqv9YFzkAbNni5eSBOsXVBKG78Zsc8owIDAQAB
             -----END PUBLIC KEY-----
-Payload:    {"data":"this is a secret message",
+Payload:    {"data":"this is a signed message",
             "exp":"2019-01-01T00:00:00+00:00"}
 Footer:
 ~~~
@@ -1084,7 +1084,7 @@ Public Key: -----BEGIN PUBLIC KEY-----
             IpNxkRnAwIMjeTJB/0AIELh0mE5vwdihOCbdV6alUyhKC1+1w/FW6HWc
             p/JG1kKC8DPIidZ78Bbqv9YFzkAbNni5eSBOsXVBKG78Zsc8owIDAQAB
             -----END PUBLIC KEY-----
-Payload:    {"data":"this is a secret message",
+Payload:    {"data":"this is a signed message",
             "exp":"2019-01-01T00:00:00+00:00"}
 Footer:     {"kid":"dYkISylxQeecEcHELfzF88UZrwbLolNiCdpzUHGw9Uqn"}
 ~~~
@@ -1227,5 +1227,5 @@ Public Key:  1eb9dbbb bc047c03 fd70604e 0071f098
              7e16b28b 757225c1 1f00415d 0e20b1a2
 Payload:     {"data":"this is a signed message",
              "exp":"2019-01-01T00:00:00+00:00"}
-Footer:      {"kid":"dYkISylxQeecEcHELfzF88UZrwbLolNiCdpzUHGw9Uqn"}
+Footer:      {"kid":"zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN"}
 ~~~
