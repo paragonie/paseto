@@ -17,14 +17,14 @@ class ValidAt implements ValidationRuleInterface
     /** @var string $failure */
     protected $failure = 'OK';
 
-    /** @var \DateTime $now */
+    /** @var \DateTimeInterface $now */
     protected $now;
 
     /**
      * ValidAt constructor.
-     * @param \DateTime|null $now
+     * @param \DateTimeInterface|null $now
      */
-    public function __construct(\DateTime $now = null)
+    public function __construct(\DateTimeInterface $now = null)
     {
         if (!$now) {
             $now = new \DateTime();
