@@ -149,7 +149,7 @@ class AsymmetricSecretKey implements SendingKey
         switch ($this->protocol::header()) {
             case Version1::HEADER:
                 return new AsymmetricPublicKey(
-                    Version1::RsaGetPublicKey($this->key),
+                    Version1::rsaGetPublicKey($this->key),
                     $this->protocol
                 );
             default:

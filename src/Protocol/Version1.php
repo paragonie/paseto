@@ -441,7 +441,7 @@ class Version1 implements ProtocolInterface
      * @param string $keyData
      * @return string
      */
-    public static function RsaGetPublicKey(string $keyData): string
+    public static function rsaGetPublicKey(string $keyData): string
     {
         $res = \openssl_pkey_get_private($keyData);
         /** @var array<string, string> $pubkey */
