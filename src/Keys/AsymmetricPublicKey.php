@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\{
@@ -37,7 +39,7 @@ class AsymmetricPublicKey implements ReceivingKey
         string $keyMaterial,
         ProtocolInterface $protocol = null
     ) {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version2();
 
         if (\hash_equals($protocol::header(), Version2::HEADER)) {
             $len = Binary::safeStrlen($keyMaterial);

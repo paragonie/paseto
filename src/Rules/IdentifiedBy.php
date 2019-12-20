@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Rules;
 
 use ParagonIE\Paseto\{
@@ -48,7 +50,7 @@ class IdentifiedBy implements ValidationRuleInterface
             if (!\hash_equals($this->id, $jti)) {
                 $this->failure = 'This token was expected to be identified by ' .
                     $this->id . ', but it was identified by ' .
-                    $jti .' instead.';
+                    $jti . ' instead.';
                 return false;
             }
         } catch (PasetoException $ex) {

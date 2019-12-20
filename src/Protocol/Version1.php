@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Protocol;
 
 use ParagonIE\ConstantTime\{
@@ -81,7 +83,7 @@ class Version1 implements ProtocolInterface
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
-        return V1AsymmetricSecretKey::generate(new static);
+        return V1AsymmetricSecretKey::generate(new static());
     }
 
     /**
@@ -92,7 +94,7 @@ class Version1 implements ProtocolInterface
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
-        return V1SymmetricKey::generate(new static);
+        return V1SymmetricKey::generate(new static());
     }
 
     /**

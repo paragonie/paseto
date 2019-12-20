@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
@@ -38,7 +40,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
         ProtocolInterface $protocol = null
     ) {
         $this->key = $keyMaterial;
-        $this->protocol = $protocol ?? new Version2;
+        $this->protocol = $protocol ?? new Version2();
     }
 
     /**
@@ -48,7 +50,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public static function generate(ProtocolInterface $protocol = null): self
     {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version2();
         return new static(
             \random_bytes($protocol::getSymmetricKeyByteLength()),
             $protocol

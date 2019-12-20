@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Keys\Version2;
 
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey as BasePublicKey;

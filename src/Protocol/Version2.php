@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Protocol;
 
 use ParagonIE\ConstantTime\{
@@ -43,7 +45,9 @@ class Version2 implements ProtocolInterface
      * Must be constructable with no arguments so an instance may be passed
      * around in a type safe way.
      */
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * A unique header string with which the protocol can be identified.
@@ -70,7 +74,7 @@ class Version2 implements ProtocolInterface
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
-        return V2AsymmetricSecretKey::generate(new static);
+        return V2AsymmetricSecretKey::generate(new static());
     }
 
     /**
@@ -80,7 +84,7 @@ class Version2 implements ProtocolInterface
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
-        return V2SymmetricKey::generate(new static);
+        return V2SymmetricKey::generate(new static());
     }
 
     /**

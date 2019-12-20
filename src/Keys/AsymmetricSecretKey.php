@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\{
@@ -39,7 +41,7 @@ class AsymmetricSecretKey implements SendingKey
         string $keyData,
         ProtocolInterface $protocol = null
     ) {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version2();
 
         if (\hash_equals($protocol::header(), Version2::HEADER)) {
             $len = Binary::safeStrlen($keyData);
@@ -91,7 +93,7 @@ class AsymmetricSecretKey implements SendingKey
      */
     public static function generate(ProtocolInterface $protocol = null): self
     {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version2();
 
         if (\hash_equals($protocol::header(), Version1::HEADER)) {
             $rsa = Version1::getRsa();

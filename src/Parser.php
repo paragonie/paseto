@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\{
@@ -276,8 +278,8 @@ class Parser
             $expectedPurpose = Purpose::fromReceivingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(
-                    'Invalid purpose. Expected '.$expectedPurpose->rawString()
-                    .', got ' . $purpose->rawString()
+                    'Invalid purpose. Expected ' . $expectedPurpose->rawString()
+                    . ', got ' . $purpose->rawString()
                 );
             }
         }

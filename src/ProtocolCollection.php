@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\SecurityException;
@@ -94,11 +96,12 @@ final class ProtocolCollection
      * @psalm-suppress UndefinedClass  A BC break introduced in Psalm v1.0.2
      *                                 stopped respecting what we were doing.
      */
-    public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface {
+    public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface
+    {
         if (empty(self::$headerLookup)) {
             /** @var ProtocolInterface $protocolClass */
             foreach (self::WHITELIST as $protocolClass) {
-                self::$headerLookup[$protocolClass::header()] = new $protocolClass;
+                self::$headerLookup[$protocolClass::header()] = new $protocolClass();
             }
         }
 
@@ -120,7 +123,7 @@ final class ProtocolCollection
         return new self(...\array_map(
             function (string $p): ProtocolInterface {
                 /** @var ProtocolInterface */
-                $protocol = new $p;
+                $protocol = new $p();
                 return $protocol;
             },
             self::WHITELIST
@@ -136,7 +139,7 @@ final class ProtocolCollection
      */
     public static function v1(): self
     {
-        return new self(new Version1);
+        return new self(new Version1());
     }
 
     /**
@@ -147,6 +150,6 @@ final class ProtocolCollection
      */
     public static function v2(): self
     {
-        return new self(new Version2);
+        return new self(new Version2());
     }
 }
