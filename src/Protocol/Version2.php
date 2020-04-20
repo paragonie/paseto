@@ -158,12 +158,17 @@ class Version2 implements ProtocolInterface
         } else {
             $data = Util::validateAndRemoveFooter($data, $footer);
         }
-        return self::aeadDecrypt(
+        $message = self::aeadDecrypt(
             $data,
             self::HEADER . '.local.',
             $key,
             (string) $footer
         );
+        if (!\is_string($message)) {
+            throw new PasetoException('Invalid message decryption');
+        }
+
+        return $message;
     }
 
     /**
@@ -308,7 +313,9 @@ class Version2 implements ProtocolInterface
      * @param string $header
      * @param SymmetricKey $key
      * @param string $footer
-     * @return string
+     *
+     * @return bool|string
+     *
      * @throws PasetoException
      * @throws \SodiumException
      * @throws \TypeError
@@ -318,7 +325,7 @@ class Version2 implements ProtocolInterface
         string $header,
         SymmetricKey $key,
         string $footer = ''
-    ): string {
+    ) {
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
         if (!\hash_equals($header, $givenHeader)) {
