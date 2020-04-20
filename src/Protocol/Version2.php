@@ -284,15 +284,15 @@ class Version2 implements ProtocolInterface
             $nonce = $nonceForUnitTesting;
         } else {
             $nonce = \random_bytes(
-                \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+                \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
             );
         }
         $nonce = \sodium_crypto_generichash(
             $plaintext,
             $nonce,
-            \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
-        $ciphertext = \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_encrypt(
+        $ciphertext = \sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
             Util::preAuthEncode($header, $nonce, $footer),
             $nonce,
@@ -340,14 +340,14 @@ class Version2 implements ProtocolInterface
         $nonce = Binary::safeSubstr(
             $decoded,
             0,
-            \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
         $ciphertext = Binary::safeSubstr(
             $decoded,
-            \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES,
-            $len - \ParagonIE_Sodium_Compat::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES,
+            $len - \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
-        return \ParagonIE_Sodium_Compat::crypto_aead_xchacha20poly1305_ietf_decrypt(
+        return \sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
             $ciphertext,
             Util::preAuthEncode($header, $nonce, $footer),
             $nonce,
