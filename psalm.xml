@@ -10,5 +10,10 @@
     <issueHandlers>
         <LessSpecificReturnStatement errorLevel="info" />
         <MoreSpecificReturnType errorLevel="info" />
+        <InternalMethod>
+            <errorLevel type="suppress">
+                <referencedMethod name="ParagonIE_Sodium_Core_Util::store64_le" />
+            </errorLevel>
+        </InternalMethod>
     </issueHandlers>
 </psalm>
