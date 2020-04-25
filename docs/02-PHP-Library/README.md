@@ -54,6 +54,8 @@ $token = (new Builder())
     ->setVersion(new Version2())
     ->setPurpose(Purpose::local())
     // Set it to expire in one day
+    ->setIssuedAt()
+    ->setNotBefore()
     ->setExpiration(
         (new DateTime())->add(new DateInterval('P01D'))
     )
