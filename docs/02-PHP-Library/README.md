@@ -80,7 +80,7 @@ use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Rules\{
     IssuedBy,
-    NotExpired
+    ValidAt
 };
 use ParagonIE\Paseto\ProtocolCollection;
 
@@ -93,7 +93,7 @@ $parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
 $parser = (new Parser())
     ->setKey($sharedKey)
     // Adding rules to be checked against the token
-    ->addRule(new NotExpired)
+    ->addRule(new ValidAt)
     ->addRule(new IssuedBy('issuer defined during creation'))
     ->setPurpose(Purpose::local())
     // Only allow version 2
