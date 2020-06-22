@@ -47,7 +47,6 @@ final class PasetoMessage
      * @throws SecurityException
      * @throws InvalidVersionException
      * @throws InvalidPurposeException
-     * @return PasetoMessage
      * @throws \TypeError
      */
     public static function fromString(string $tainted): self
