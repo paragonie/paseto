@@ -31,4 +31,3 @@ before_install:
 
 script:
 - if [ "$FULL_TEST" = 1 ]; then composer full-test; else composer test; fi
-- make -C docs/RFC
