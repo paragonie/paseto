@@ -14,6 +14,8 @@ use PHPUnit\Framework\TestCase;
 
 class Version1Test extends TestCase
 {
+    use TestTrait;
+
     /**
      * @throws \Exception
      * @throws \TypeError
@@ -73,11 +75,11 @@ class Version1Test extends TestCase
 
         foreach ($messages as $message) {
             $encrypted = Version1::encrypt($message, $key);
-            $this->assertIsString( $encrypted);
+            $this->assertIsStringType( $encrypted);
             $this->assertSame('v1.local.', Binary::safeSubstr($encrypted, 0, 9));
 
             $decode = Version1::decrypt($encrypted, $key);
-            $this->assertIsString( $decode);
+            $this->assertIsStringType( $decode);
             $this->assertSame($message, $decode);
 
             // Now with a footer
@@ -92,11 +94,11 @@ class Version1Test extends TestCase
             } catch (PasetoException $ex) {
             }
             $encrypted = Version1::encrypt($message, $key, 'footer');
-            $this->assertIsString( $encrypted);
+            $this->assertIsStringType( $encrypted);
             $this->assertSame('v1.local.', Binary::safeSubstr($encrypted, 0, 9));
 
             $decode = Version1::decrypt($encrypted, $key, 'footer');
-            $this->assertIsString( $decode);
+            $this->assertIsStringType( $decode);
             $this->assertSame($message, $decode);
             try {
                 Version1::decrypt($encrypted, $key, '');
@@ -141,16 +143,16 @@ class Version1Test extends TestCase
 
         foreach ($messages as $message) {
             $signed = Version1::sign($message, $privateKey);
-            $this->assertIsString( $signed);
+            $this->assertIsStringType( $signed);
             $this->assertSame('v1.public.', Binary::safeSubstr($signed, 0, 10));
 
             $decode = Version1::verify($signed, $publicKey);
-            $this->assertIsString( $decode);
+            $this->assertIsStringType( $decode);
             $this->assertSame($message, $decode);
 
             // Now with a footer
             $signed = Version1::sign($message, $privateKey, 'footer');
-            $this->assertIsString( $signed);
+            $this->assertIsStringType( $signed);
             $this->assertSame('v1.public.', Binary::safeSubstr($signed, 0, 10));
             try {
                 Version1::verify($signed, $publicKey, '');
@@ -158,7 +160,7 @@ class Version1Test extends TestCase
             } catch (PasetoException $ex) {
             }
             $decode = Version1::verify($signed, $publicKey, 'footer');
-            $this->assertIsString( $decode);
+            $this->assertIsStringType( $decode);
             $this->assertSame($message, $decode);
         }
 
