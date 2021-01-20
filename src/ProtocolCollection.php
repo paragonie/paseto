@@ -17,7 +17,7 @@ final class ProtocolCollection
 {
     /**
      * Our built-in whitelist of protocol types is defined here.
-     * @const array<int, class-string>
+     * @const array<int, class-string<ProtocolInterface>>
      */
     const WHITELIST = [
         Version1::class,
@@ -96,7 +96,6 @@ final class ProtocolCollection
      */
     public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface {
         if (empty(self::$headerLookup)) {
-            /** @var ProtocolInterface $protocolClass */
             foreach (self::WHITELIST as $protocolClass) {
                 self::$headerLookup[$protocolClass::header()] = new $protocolClass;
             }

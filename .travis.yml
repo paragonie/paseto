@@ -1,10 +1,14 @@
 language: php
 
-php:
-- 7.0
-- 7.1
-- 7.2
-- 7.3
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.0
+    - php: 7.1
+    - php: 7.2
+    - php: 7.3
+    - php: 7.4
+      env: FULL_TEST=1
 
 sudo: required
 addons:
@@ -21,5 +25,5 @@ before_install:
 - composer update
 
 script:
-- composer full-test
+- if [ "$FULL_TEST" = 1 ]; then composer full-test; else composer test; fi
 - make -C docs/RFC
