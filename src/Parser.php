@@ -246,7 +246,7 @@ class Parser
     public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
     {
         if ($checkPurpose) {
-            if (!isset($this->purpose)) {
+            if (is_null($this->purpose)) {
                 throw new InvalidKeyException('Unknown purpose');
             } elseif (!$this->purpose->isReceivingKeyValid($key)) {
                 throw new InvalidKeyException(

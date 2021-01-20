@@ -308,7 +308,7 @@ class Builder
     public function setKey(SendingKey $key, bool $checkPurpose = false): self
     {
         if ($checkPurpose) {
-            if (!isset($this->purpose)) {
+            if (is_null($this->purpose)) {
                 throw new InvalidKeyException('Unknown purpose');
             } elseif (!$this->purpose->isSendingKeyValid($key)) {
                 throw new InvalidKeyException(
