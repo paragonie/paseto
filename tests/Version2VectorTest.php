@@ -34,6 +34,8 @@ class Version2VectorTest extends TestCase
     /** @var SymmetricKey */
     protected $symmetricKey;
 
+    private $beforeCalled = false;
+
     /**
      * This just sets up two asymmetric keys, generated once
      * upon a time, to facilitate the standard test vectors.
@@ -44,9 +46,14 @@ class Version2VectorTest extends TestCase
      * @throws \Error
      * @throws \Exception
      * @throws \TypeError
+     * @before
      */
-    public function setUp()
+    public function before()
     {
+        if ($this->beforeCalled) {
+            return;
+        }
+        $this->beforeCalled = true;
         $this->symmetricKey = new SymmetricKey(
             Hex::decode(
                 '707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f'
