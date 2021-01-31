@@ -422,7 +422,13 @@ class Builder
         $this->setKey($this->key, true);
         $this->setPurpose($this->purpose, true);
 
-        $claims = \json_encode($this->token->getClaims(), JSON_FORCE_OBJECT);
+        $denormalizedClaims = $this->token->getClaims();
+        if ($denormalizedClaims === []) {
+            $claims = \json_encode($denormalizedClaims, JSON_FORCE_OBJECT);
+        } else {
+            $claims = \json_encode($denormalizedClaims);
+        }
+        
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
         switch ($this->purpose) {
