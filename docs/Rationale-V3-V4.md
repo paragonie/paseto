@@ -75,7 +75,9 @@ well for the v4.local proposal.
 For the sake of consistency and easy-to-analyze security designs, in both v3.local
 and v4.local, we now use the entire 32-byte salt in the HKDF step. The nonce
 used by AES-256-CTR and XChaCha20 will be derived from the HKDF output (which
-is now 48 bytes for v3.local and 56 bytes for v4.local).
+is now 48 bytes for v3.local and 56 bytes for v4.local). The first 32 bytes of
+each HKDF output will be used as the key. The remaining bytes will be used as
+the nonce for the underlying cipher.
 
 Local PASETOs in v3 and v4 will always have a predictable storage size, and the
 security of these constructions is more obvious:
