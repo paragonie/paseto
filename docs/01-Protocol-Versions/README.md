@@ -15,10 +15,15 @@ to assist in cross-platform library development.
    without RFC 6979, XMSS) are forbidden.
 3. Public-key cryptography must be IND-CCA2 secure to be considered for inclusion.
    * This means no RSA with PKCS1v1.5 padding, textbook RSA, etc.
-4. By default, libraries should only allow the two most recent versions to be used.
-   * If there are only two versions, that means `v1` and `v2`.
-   * If a future post-quantum `v3` is defined, `v1` should no longer be accepted.
-   * If an additional version `v4` is defined, `v2` should also no longer be accepted.
+4. By default, libraries should only allow the two most recent versions in a family
+   to be used.
+   * The NIST family of versions is `v1` and `v3`.
+   * The Sodium family of versions is `v2` and `v4`.
+   * If a future post-quantum `v5` (NIST) and/or `v6` (Sodium) is defined, 
+     `v1` and `v2` should no longer be accepted.
+   * This is a deviation from the **original** intent of this rule, to encapsulate
+     the fact that we have parallel versions. In the future, we expect this to converge
+     to one family of versions.
 5. New versions will be decided and formalized by the PASETO developers. 
    * User-defined homemade protocols are discouraged. If implementors wish to break
      this rule and define their own custom protocol suite, they must NOT continue
@@ -28,7 +33,7 @@ to assist in cross-platform library development.
 
 # Versions
 
-## Version 1: Compatibility Mode
+## Version 1: NIST Compatibility
 
 See [the version 1 specification](Version1.md) for details. At a glance:
 
@@ -43,7 +48,7 @@ See [the version 1 specification](Version1.md) for details. At a glance:
   * The HMAC covers the header, nonce, and ciphertext
   * Reference implementation in [Version1.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version1.php):
     * See `aeadEncrypt()` for encryption
-    * See `aeadDncrypt()` for decryption
+    * See `aeadDecrypt()` for decryption
 * **`v1.public`**: Asymmetric Authentication (Public-Key Signatures):
   * 2048-bit RSA keys
   * RSASSA-PSS with
@@ -61,7 +66,7 @@ Version 1 is recommended only for legacy systems that cannot use modern cryptogr
 
 See also: [Common implementation details for all versions](Common.md).
 
-## Version 2: Recommended
+## Version 2: Sodium Original
 
 See [the version 2 specification](Version2.md) for details. At a glance:
 
@@ -84,3 +89,21 @@ See [the version 2 specification](Version2.md) for details. At a glance:
     * See `verify()` for signature verification
 
 See also: [Common implementation details for all versions](Common.md).
+
+## Version 3: NIST Modern
+
+* **`v3.local`**: Symmetric Authenticated Encryption:
+    * AES-256-CTR + HMAC-SHA384 (Encrypt-then-MAC)
+    * Key-splitting: HKDF-SHA384
+        * Info for encryption key: `paseto-encryption-key`
+          The encryption key and implicit counter nonce are both returned
+          from HKDF in this version.
+        * Info for authentication key: `paseto-auth-key-for-aead`
+    * 32-byte nonce (no longer prehashed), passed entirely to HKDF.
+    * The HMAC covers the header, nonce, and ciphertext
+* **`v3.public`**: Asymmetric Authentication (Public-Key Signatures):
+    * ECDSA over NIST P-384, with SHA-384,
+      using [RFC 6979 deterministic k-values](https://tools.ietf.org/html/rfc6979).
+
+## Version 4: Sodium Modern
+

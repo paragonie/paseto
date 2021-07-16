@@ -16,7 +16,7 @@ version.purpose.payload.footer
 
 The `version` is a string that represents the current version of the protocol. Currently,
 two versions are specified, which each possess their own ciphersuites. Accepted values:
-`v1`, `v2`.
+`v1`, `v2`, `v3`, `v4`.
 
 The `purpose` is a short string describing the purpose of the token. Accepted values:
 `local`, `public`.
