@@ -128,6 +128,8 @@ implicit assertion `i` (which defaults to empty string):
    (pre-authentication encoding). We'll call this `m2`.
 3. Sign `m2` using ECDSA over P-384 with deterministic nonces ([RFC 6979](https://tools.ietf.org/html/rfc6979))
    with the private key `sk`. We'll call this `sig`.
+   The output of `sig` MUST be in the format `r || s` (where `||`means concatenate),
+   for a total length of 96 bytes.
    ```
    sig = crypto_sign_ecdsa_p384(
        message = m2,
