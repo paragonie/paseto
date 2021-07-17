@@ -126,10 +126,13 @@ implicit assertion `i` (which defaults to empty string):
 2. Pack `h`, `m`, `f`, and `i` together using
    [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
-3. Sign `m2` using ECDSA over P-384 with deterministic nonces ([RFC 6979](https://tools.ietf.org/html/rfc6979))
-   with the private key `sk`. We'll call this `sig`.
+3. Sign `m2` using ECDSA over P-384 with the private key `sk`. We'll call this `sig`.
    The output of `sig` MUST be in the format `r || s` (where `||`means concatenate),
    for a total length of 96 bytes.
+   Signatures **SHOULD** use deterministic nonces ([RFC 6979](https://tools.ietf.org/html/rfc6979))
+   if possible, to mitigate the risk of [k-value reuse](https://blog.trailofbits.com/2020/06/11/ecdsa-handle-with-care/).
+   If RFC 6979 is not available in your programming language, ECDSA **MUST** use a CSPRNG
+   to generate the k-value.
    ```
    sig = crypto_sign_ecdsa_p384(
        message = m2,

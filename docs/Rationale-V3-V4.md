@@ -28,7 +28,8 @@ be adequately served by RSA signatures.
 
 To better meet the needs of applications that are NIST-dependent, PASETO
 v3.public tokens will support ECDSA over NIST's P-384 curve, with SHA-384,
-and RFC 6979 deterministic signatures.
+and (preferably) using RFC 6979 deterministic signatures. (RFC 6979 is a
+**SHOULD**, not a **MUST**, due to library availability issues.)
 
 ### v3.local / v4.public
 

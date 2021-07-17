@@ -11,8 +11,10 @@ to assist in cross-platform library development.
    * The nonce or initialization vector must be covered by the authentication
      tag, not just the ciphertext.
    * Some degree of nonce-misuse resistance should be provided by any future schemes. 
-2. Non-deterministic, stateful, and otherwise dangerous signature schemes (e.g. ECDSA
-   without RFC 6979, XMSS) are forbidden.
+2. Non-deterministic, stateful, and otherwise dangerous signature schemes (e.g. ~~ECDSA
+   without RFC 6979,~~ XMSS) are forbidden.
+   * ECDSA without RFC 6979 is permitted, but *only* when a CSPRNG is reliably available.
+     If this cannot be guaranteed, you **MUST NOT** implement ECDSA without RFC 6979.
 3. Public-key cryptography must be IND-CCA2 secure to be considered for inclusion.
    * This means no RSA with PKCS1v1.5 padding, textbook RSA, etc.
 4. By default, libraries should only allow the two most recent versions in a family
