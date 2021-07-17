@@ -63,7 +63,7 @@ implicit assertion `i` (which defaults to empty string):
 1. If `f` is not empty, implementations **MAY** verify that the value appended
    to the token matches some expected string `f`, provided they do so using a
    constant-time string compare function.
-2. Verify that the message begins with `v1.local.`, otherwise throw an
+2. Verify that the message begins with `v3.local.`, otherwise throw an
    exception. This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from b64 to raw binary. Set:
