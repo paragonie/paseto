@@ -48,6 +48,7 @@ See [the version 1 specification](Version1.md) for details. At a glance:
   * The nonce calculated from HMAC-SHA384(message, `random_bytes(32)`)
     truncated to 32 bytes, during encryption only
   * The HMAC covers the header, nonce, and ciphertext
+      * It also covers the footer, if provided
   * Reference implementation in [Version1.php](https://github.com/paragonie/paseto/blob/master/src/Protocol/Version1.php):
     * See `aeadEncrypt()` for encryption
     * See `aeadDecrypt()` for decryption
@@ -94,6 +95,8 @@ See also: [Common implementation details for all versions](Common.md).
 
 ## Version 3: NIST Modern
 
+See [the version 3 specification](Version3.md) for details. At a glance:
+
 * **`v3.local`**: Symmetric Authenticated Encryption:
     * AES-256-CTR + HMAC-SHA384 (Encrypt-then-MAC)
     * Key-splitting: HKDF-SHA384
@@ -103,9 +106,30 @@ See also: [Common implementation details for all versions](Common.md).
         * Info for authentication key: `paseto-auth-key-for-aead`
     * 32-byte nonce (no longer prehashed), passed entirely to HKDF.
     * The HMAC covers the header, nonce, and ciphertext
+      * It also covers the footer, if provided
+      * It also covers the implicit assertions, if provided
 * **`v3.public`**: Asymmetric Authentication (Public-Key Signatures):
     * ECDSA over NIST P-384, with SHA-384,
-      using [RFC 6979 deterministic k-values](https://tools.ietf.org/html/rfc6979).
+      using [RFC 6979 deterministic k-values](https://tools.ietf.org/html/rfc6979)
+      (if reasonably practical; otherwise a CSPRNG **MUST** be used).
 
 ## Version 4: Sodium Modern
+
+See [the version 4 specification](Version4.md) for details. At a glance:
+
+* **`v4.local`**: Symmetric Authenticated Encryption:
+    * XChaCha20 + BLAKE2b-MAC (Encrypt-then-MAC)
+    * Key-splitting: BLAKE2b
+        * Info for encryption key: `paseto-encryption-key`
+          The encryption key and implicit counter nonce are both returned
+          from BLAKE2b in this version.
+        * Info for authentication key: `paseto-auth-key-for-aead`
+    * 32-byte nonce (no longer prehashed), passed entirely to BLAKE2b.
+    * The BLAKE2b-MAC covers the header, nonce, and ciphertext
+        * It also covers the footer, if provided
+        * It also covers the implicit assertions, if provided
+* **`v4.public`**: Asymmetric Authentication (Public-Key Signatures):
+    * Ed25519 (EdDSA over Curve25519)
+    * Signing: `sodium_crypto_sign_detached()`
+    * Verifying: `sodium_crypto_sign_verify_detached()`
 
