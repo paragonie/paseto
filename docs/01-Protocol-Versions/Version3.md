@@ -163,7 +163,7 @@ implicit assertion `i` (which defaults to empty string):
 4. Pack `h`, `m`, `f`, and `i` together (in that order) using PAE (see
    [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
    We'll call this `m2`.
-5. Use RSA to verify that the signature is valid for the message:
+5. Use ECDSA to verify that the signature is valid for the message:
    ```
    valid = crypto_sign_ecdsa_p384_verify(
        signature = s,
