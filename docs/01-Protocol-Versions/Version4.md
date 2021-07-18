@@ -1,4 +1,4 @@
-# Paseto Version 2
+# Paseto Version 4
 
 ## Encrypt
 
