@@ -90,3 +90,22 @@ security of these constructions is more obvious:
   * Neither of these output sizes reduces the security against collisions.
 * A single key can be used for 2^112 PASETOs before rotation is necessary.
 * The actual nonce passed to AES-CTR and XChaCha is not revealed publicly.
+
+### V3 Signatures Prove Exclusive Ownership (Enhancement)
+
+RSA and ECDSA signatures [do not prove Exclusive Ownership](http://www.bolet.org/~pornin/2005-acns-pornin+stern.pdf).
+This is almost never a problem for most protocols, unless you *expect* this property
+to hold when it doesn't.
+
+Section 3.3 of the paper linked above describes how to achieve Universal Exclusive
+Ownership (UEO) without increasing the signature size: Always include the public
+key in the message that's being signed.
+
+Consequently, `v3.public` PASETOs will include the raw bytes of the public
+key in the PAE step for calculating signatures. The public key is always a
+compressed point (`0x02` or `0x03`, followed by the X coordinate, for a total
+of 49 bytes).
+
+[Ed25519, by design, does not suffer from this](https://eprint.iacr.org/2020/823),
+since Ed25519 already includes public key with the hash function when signing
+messages. Therefore, we can safely omit this extra step in `v4.local` tokens.

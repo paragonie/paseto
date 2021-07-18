@@ -123,9 +123,14 @@ optional footer `f` (which defaults to empty string), and an optional
 implicit assertion `i` (which defaults to empty string):
 
 1. Set `h` to `v3.public.`
-2. Pack `h`, `m`, `f`, and `i` together using
+2. Pack `pk`, `h`, `m`, `f`, and `i` together using
    [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
    (pre-authentication encoding). We'll call this `m2`.
+   * Note: `pk` is the public key corresponding to `sk` (which **MUST** use
+     [point compression](https://www.secg.org/sec1-v2.pdf)). `pk` **MUST** be 49
+     bytes long, and the first byte **MUST** be `0x02` or `0x03` (depending on the
+     sign of the Y coordinate). The remaining bytes **MUST** be the X coordinate,
+     using big-endian byte order.
 3. Sign `m2` using ECDSA over P-384 with the private key `sk`. We'll call this `sig`.
    The output of `sig` MUST be in the format `r || s` (where `||`means concatenate),
    for a total length of 96 bytes.
@@ -147,7 +152,8 @@ implicit assertion `i` (which defaults to empty string):
 
 ## Verify
 
-Given a signed message `sm`, ECDSA public key `pk` (which **MUST** use point compression),
+Given a signed message `sm`, ECDSA public key `pk` (which **MUST** use 
+[point compression](https://www.secg.org/sec1-v2.pdf) (Section 2.3.3)),
 and optional footer `f` (which defaults to empty string), and an optional
 implicit assertion `i` (which defaults to empty string):
 
@@ -160,9 +166,12 @@ implicit assertion `i` (which defaults to empty string):
    between `m` and `f`) from b64 to raw binary. Set:
     * `s` to the rightmost 96 bytes
     * `m` to the leftmost remainder of the payload, excluding `s`
-4. Pack `h`, `m`, `f`, and `i` together (in that order) using PAE (see
+4. Pack `pk`, `h`, `m`, `f`, and `i` together (in that order) using PAE (see
    [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
    We'll call this `m2`.
+   * `pk` **MUST** be 49 bytes long, and the first byte **MUST** be `0x02` or `0x03`
+     (depending on the sign of the Y coordinate). The remaining bytes **MUST** be
+     the X coordinate, using big-endian byte order.
 5. Use ECDSA to verify that the signature is valid for the message:
    ```
    valid = crypto_sign_ecdsa_p384_verify(
