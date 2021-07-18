@@ -111,6 +111,7 @@ class Version1 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
+     * @param string $implicit
      * @return string
      * @throws PasetoException
      * @throws \TypeError
@@ -118,7 +119,8 @@ class Version1 implements ProtocolInterface
     public static function encrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string {
         return self::__encrypt($data, $key, $footer);
     }
@@ -138,6 +140,7 @@ class Version1 implements ProtocolInterface
         string $data,
         SymmetricKey $key,
         string $footer = '',
+        string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
@@ -165,7 +168,8 @@ class Version1 implements ProtocolInterface
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
@@ -197,7 +201,8 @@ class Version1 implements ProtocolInterface
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
@@ -229,7 +234,8 @@ class Version1 implements ProtocolInterface
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');

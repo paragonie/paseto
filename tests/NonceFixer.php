@@ -11,9 +11,10 @@ abstract class NonceFixer {
             string $data,
             SymmetricKey $key,
             string $footer = '',
+            string $implicit = '',
             string $nonceForUnitTesting = ''
         ) use ($protocol): string {
-            return $protocol::__encrypt($data, $key, $footer, $nonceForUnitTesting);
+            return $protocol::__encrypt($data, $key, $footer, $implicit, $nonceForUnitTesting);
         };
     }
 
@@ -38,12 +39,14 @@ abstract class NonceFixer {
                     public static function encrypt(
                         string $data,
                         SymmetricKey $key,
-                        string $footer = ''
+                        string $footer = '',
+                        string $implicit = ''
                     ): string {
                         return NonceFixer::buildUnitTestEncrypt(self::$protocol)->bindTo(null, self::$protocol)(
                             $data,
                             $key,
                             $footer,
+                            $implicit,
                             self::$nonce
                         );
                     }

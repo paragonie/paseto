@@ -97,7 +97,6 @@ abstract class Util
         }
 
         // ORM = first L octets of T
-        /** @var string $orm */
         $orm = Binary::safeSubstr($t, 0, $length);
         return (string) $orm;
     }

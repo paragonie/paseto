@@ -6,13 +6,14 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{
-    SendingKey,
-    ProtocolInterface
-};
+use ParagonIE\Paseto\{Exception\PasetoException, SendingKey, ProtocolInterface};
+use ParagonIE\EasyECC\ECDSA\PublicKey;
+use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\Paseto\Protocol\{
     Version1,
-    Version2
+    Version2,
+    Version3,
+    Version4
 };
 
 /**
@@ -84,6 +85,30 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v3(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version3());
+    }
+
+    /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v4(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version4());
+    }
+
+    /**
      * @param ProtocolInterface $protocol
      * @return self
      * @throws \Exception
@@ -98,6 +123,11 @@ class AsymmetricSecretKey implements SendingKey
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
             return new self($keypair['privatekey'], $protocol);
+        } elseif (\hash_equals($protocol::header(), Version3::HEADER)) {
+            return new self(
+                SecretKey::generate(Version3::CURVE)->exportPem(),
+                $protocol
+            );
         }
         return new self(
             \sodium_crypto_sign_secretkey(
@@ -148,6 +178,13 @@ class AsymmetricSecretKey implements SendingKey
             case Version1::HEADER:
                 return new AsymmetricPublicKey(
                     Version1::RsaGetPublicKey($this->key),
+                    $this->protocol
+                );
+            case Version3::HEADER:
+                /** @var PublicKey $pk */
+                $pk = SecretKey::importPem($this->key)->getPublicKey();
+                return new AsymmetricPublicKey(
+                    $pk->toString(), // Compressed point
                     $this->protocol
                 );
             default:

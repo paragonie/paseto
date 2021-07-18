@@ -148,16 +148,16 @@ class Parser
      * @param string $tainted      Tainted user-provided string.
      * @param bool $skipValidation Don't validate according to the Rules.
      *                             (Does not disable cryptographic security.)
+     * @param string $implicit     Implicit assertions.
      * @return JsonToken
      * @throws PasetoException
      * @throws \TypeError
      */
-    public function parse(string $tainted, bool $skipValidation = false): JsonToken
+    public function parse(string $tainted, bool $skipValidation = false, string $implicit = ''): JsonToken
     {
         $parsed = PasetoMessage::fromString($tainted);
 
         // First, check against the user's specified list of allowed versions.
-        /** @var ProtocolInterface $protocol */
         $protocol = $parsed->header()->protocol();
         if (!$this->allowedVersions->has($protocol)) {
             throw new InvalidVersionException('Disallowed or unsupported version');
@@ -178,14 +178,14 @@ class Parser
             throw new InvalidKeyException('Invalid key type');
         }
 
+        /** @var string|null $decoded */
         // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
             case Purpose::local():
                 /** @var SymmetricKey $key */
                 $key = $this->key;
                 try {
-                    /** @var string $decoded */
-                    $decoded = $protocol::decrypt($tainted, $key, $footer);
+                    $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
@@ -194,8 +194,7 @@ class Parser
                 /** @var AsymmetricPublicKey $key */
                 $key = $this->key;
                 try {
-                    /** @var string $decoded */
-                    $decoded = $protocol::verify($tainted, $key, $footer);
+                    $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
@@ -272,7 +271,6 @@ class Parser
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
         if ($checkKeyType) {
-            /** @var Purpose */
             $expectedPurpose = Purpose::fromReceivingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(
@@ -300,7 +298,6 @@ class Parser
             // No rules defined, so we default to "true".
             return true;
         }
-        /** @var ValidationRuleInterface $rule */
         foreach ($this->rules as $rule) {
             if (!$rule->isValid($token)) {
                 if ($throwOnFailure) {

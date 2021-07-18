@@ -3,12 +3,15 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
+    Exception\PasetoException,
     ReceivingKey,
     SendingKey,
     ProtocolInterface,
     Protocol\Version1,
     Protocol\Version2,
+    Protocol\Version3,
     Util
 };
 
@@ -80,6 +83,18 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v3(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version3());
+    }
+
+    /**
      * @return string
      * @throws \TypeError
      */
@@ -117,13 +132,74 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Split this key into two 256-bit keys and a nonce, using HKDF-SHA384
+     * (with the given salt)
+     *
+     * Used in version 3
+     *
+     * @param string|null $salt
+     * @return array<int, string>
+     *
+     * @throws PasetoException
+     * @throws \TypeError
+     */
+    public function splitV3(string $salt = null): array
+    {
+        $tmp = Util::HKDF(
+            'sha384',
+            $this->key,
+            48,
+            self::INFO_ENCRYPTION,
+            $salt
+        );
+        $encKey = Binary::safeSubstr($tmp, 0, 32);
+        $nonce = Binary::safeSubstr($tmp, 32, 16);
+        $authKey = Util::HKDF(
+            'sha384',
+            $this->key,
+            32,
+            self::INFO_AUTHENTICATION,
+            $salt
+        );
+        return [$encKey, $authKey, $nonce];
+    }
+
+
+    /**
+     * Split this key into two 256-bit keys and a nonce, using BLAKE2b-MAC
+     * (with the given salt)
+     *
+     * Used in version 4
+     *
+     * @param string|null $salt
+     * @return array<int, string>
+     *
+     * @throws \SodiumException
+     */
+    public function splitV4(string $salt = null): array
+    {
+        $tmp = \sodium_crypto_generichash(
+            self::INFO_ENCRYPTION . ($salt ?? ''),
+            $this->key,
+            56
+        );
+        $encKey = Binary::safeSubstr($tmp, 0, 32);
+        $nonce = Binary::safeSubstr($tmp, 32, 24);
+        $authKey = \sodium_crypto_generichash(
+            self::INFO_AUTHENTICATION . ($salt ?? ''),
+            $this->key
+        );
+        return [$encKey, $authKey, $nonce];
+    }
+
+    /**
      * Split this key into two 256-bit keys, using HKDF-SHA384
      * (with the given salt)
      *
      * @param string|null $salt
      * @return array<int, string>
      *
-     * @throws \ParagonIE\Paseto\Exception\PasetoException
+     * @throws PasetoException
      * @throws \TypeError
      */
     public function split(string $salt = null): array
