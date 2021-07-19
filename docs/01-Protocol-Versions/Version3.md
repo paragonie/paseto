@@ -128,9 +128,10 @@ implicit assertion `i` (which defaults to empty string):
    (pre-authentication encoding). We'll call this `m2`.
    * Note: `pk` is the public key corresponding to `sk` (which **MUST** use
      [point compression](https://www.secg.org/sec1-v2.pdf)). `pk` **MUST** be 49
-     bytes long, and the first byte **MUST** be `0x02` or `0x03` (depending on the
-     sign of the Y coordinate). The remaining bytes **MUST** be the X coordinate,
-     using big-endian byte order.
+     bytes long, and the first byte **MUST** be `0x02` or `0x03` (depending on 
+     [the least significant bit of Y](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.202.2977&rep=rep1&type=pdf);
+     section 4.3.6, step 2.2).
+     The remaining bytes **MUST** be the X coordinate, using big-endian byte order.
 3. Sign `m2` using ECDSA over P-384 with the private key `sk`. We'll call this `sig`.
    The output of `sig` MUST be in the format `r || s` (where `||`means concatenate),
    for a total length of 96 bytes.
@@ -149,6 +150,25 @@ implicit assertion `i` (which defaults to empty string):
     * Non-empty: return "`h` || base64url(`m` || `sig`) || `.` || base64url(`f`)"
     * ...where || means "concatenate"
     * Note: `base64url()` means Base64url from RFC 4648 without `=` padding.
+
+### ECDSA Public Key Point Compression
+
+Given a public key consisting of two coordinates (X, Y):
+
+1. Set the header to `0x02`.
+2. Take the least significant bit of `Y` and add it to the header.
+3. Append the X coordinate (in big-endian byte order) to the header.
+
+In pseudocode:
+
+```
+lsb(y):
+   return y[y.length - 1] & 1
+
+pubKeyCompress(x, y):
+   header = [0x02 + lsb(y)]
+   return header.concat(x)
+```
 
 ## Verify
 
