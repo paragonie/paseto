@@ -78,6 +78,15 @@ However, given the real-world requirements of applications and systems that
 must comply with NIST guidance on cryptography algorithms, we've relaxed this
 requirement.
 
+Additionally, deterministic k-values make signers more susceptible to fault
+attacks than randomized signatures. If you're implementing PASETO signing in
+embedded devices, or environments where fault injection may be a practical
+risk, there are two things you can do:
+
+1. Don't use deterministic signatures because of your specific threat model.
+2. Hedged signatures: Inject additional randomness into the RFC 6979 step.
+   This randomness doesn't need to be signed.
+
 #### Questions For Security Auditors 
 
 Due to the risks inherent to ECDSA, security assessors should take care to 
