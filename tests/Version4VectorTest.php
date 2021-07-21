@@ -83,9 +83,9 @@ class Version4VectorTest extends TestCase
      */
     public function testOfficialVectors()
     {
-        $nonce = str_repeat("\0", 24);
-        // $nonce2 = sodium_crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
-        $nonce2 = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
+        $nonce = str_repeat("\0", 32);
+        // $nonce2 = sodium_crypto_generichash('Paragon Initiative Enterprises, LLC', '', 32);
+        $nonce2 = Hex::decode('df654812bac492663825520ba2f6e67cf5ca5bdc13d4e7507a98cc4c2fcc3ad8');
 
         $version4Encrypt = NonceFixer::buildUnitTestEncrypt(new Version4)->bindTo(null, new Version4);
 
@@ -93,28 +93,28 @@ class Version4VectorTest extends TestCase
 
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACbDT5rQo5rjKqw1OBPe4PlZGsFkZNGtE65uYNNa1yOy4cgCbG2VMPAcgFV9pIJ_zhzsVOpnQ8kcTeR52K6ADBbQ_2uzB4VxjCO5fA5jJPq0j8AT0QDxD1K39HpXRK0t_H0kEFX8',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAr68PS4AXe7If_ZgesdkUMvSwscFlAl1pk5HC0e8kApeaqMfGo_7OpBnwJOAbY9V7WU6abu74MmcUE8YWAiaArVI8XJ5hOb_4v9RmDkneN0S92dx0OW4pgy7omxgf3S8c3LlQg',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce),
             'Test Vector 4-E-1'
         );
 
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACbDT5rQo5rjKqw1OBPe4PlZGsEIVM31E8ZuYNNa1yOy4cgCbG2VMPAcgFV9pIJ_zhzsVOpnQ8kcTeR52K6ADBbQ_2uzBjVReST9h8K8N26lW0Qef7KEiFwLSpLWX2lGdILYYhJ8',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAr68PS4AXe7If_ZgesdkUMvS2csCgglvpk5HC0e8kApeaqMfGo_7OpBnwJOAbY9V7WU6abu74MmcUE8YWAiaArVI8XIemu9chy3WVKvRBfg6t8wwYHK0ArLxxfZP73W_vfwt5A',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce),
             'Test Vector 4-E-2'
         );
 
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyziBNj1lBM5SbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgb488ZNd_TuBR2W9yB8bhY9bwitXvm4tP6Wo-_5CKnuNc',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WkwMsYXw6FSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t6-tyebyWG6Ov7kKvBdkrrAJ837lKP3iDag2hzUPHuMKA',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce2),
             'Test Vector 4-E-3'
         );
 
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyzjtBiE9BKZSbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgbrVP9nVUkkqqn4eDTyHkWzwlLoYqjx379Skif_t1EteU',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WiA8rd3wgFSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t4gt6TiLm55vIH8c_lGxxZpE3AWlH4WTR0v45nsWoU3gQ',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce2),
             'Test Vector 4-E-4'
         );
@@ -122,14 +122,14 @@ class Version4VectorTest extends TestCase
         $footer = \json_encode(['kid' => 'zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN']);
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyziBNj1lBM5SbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgblnLvSBF-SG1TUd5e5td_IO7428haPSaduYMSQxAnekE.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WkwMsYXw6FSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t4x-RMNXtQNbz7FvFZ_G-lFpk5RG3EOrwDL6CgDqcerSQ.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce2),
             'Test Vector 4-E-5'
         );
 
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyzjtBiE9BKZSbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgb0dh6JW1LdjXnk6GRCBzoMH63Yy_RO76BDp0dlZuHk3Q.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WiA8rd3wgFSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t6pWSA5HX2wjb3P-xLQg5K5feUCX4P2fpVK3ZLWFbMSxQ.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce2),
             'Test Vector 4-E-6'
         );
@@ -137,7 +137,7 @@ class Version4VectorTest extends TestCase
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $implicit = \json_encode(['test-vector' => '4-E-7']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyziBNj1lBM5SbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgbYCFr4d96DTmSSwMktcMcMIUUzU62oaPKsbHkBKN27sY.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WkwMsYXw6FSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t40KCCWLA7GYL9KFHzKlwY9_RnIfRrMQpueydLEAZGGcA.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
             $version4Encrypt($message, $this->symmetricKey, $footer, $implicit, $nonce2),
             'Test Vector 4-E-7'
         );
@@ -145,7 +145,7 @@ class Version4VectorTest extends TestCase
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $implicit = \json_encode(['test-vector' => '4-E-8']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyzjtBiE9BKZSbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgbztJgsYb0BbisnXxIIpWUpBctN28mpOXVAkNR1yw_AyM.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WiA8rd3wgFSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t5uvqQbMGlLLNYBc7A6_x7oqnpUK5WLvj24eE4DVPDZjw.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
             $version4Encrypt($message, $this->symmetricKey, $footer, $implicit, $nonce2),
             'Test Vector 4-E-8'
         );
@@ -166,6 +166,14 @@ class Version4VectorTest extends TestCase
             'Test Vector 4-S-2'
         );
 
+        $implicit = json_encode(['test-vector' => '4-S-3']);
+        $footer = \json_encode(['kid' => 'zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN']);
+        $this->assertSame(
+            'v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAyMi0wMS0wMVQwMDowMDowMCswMDowMCJ9NPWciuD3d0o5eXJXG5pJy-DiVEoyPYWs1YSTwWHNJq6DZD3je5gf-0M4JR9ipdUSJbIovzmBECeaWmaqcaP0DQ.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            Version4::sign($message, $this->privateKey, $footer, $implicit),
+            'Test Vector 4-S-3'
+        );
+
     }
 
 
@@ -174,76 +182,76 @@ class Version4VectorTest extends TestCase
      */
     public function testEncrypt()
     {
-        $nonce = str_repeat("\0", 24);
-        // $nonce2 = sodium_crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
-        $nonce2 = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
+        $nonce = str_repeat("\0", 32);
+        // $nonce2 = sodium_crypto_generichash('Paragon Initiative Enterprises, LLC', '', 32);
+        $nonce2 = Hex::decode('df654812bac492663825520ba2f6e67cf5ca5bdc13d4e7507a98cc4c2fcc3ad8');
 
         $version4Encrypt = NonceFixer::buildUnitTestEncrypt(new Version4)->bindTo(null, new Version4);
 
         // Empty message, empty footer, empty nonce
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwmvKdnEB4XprW_sL883KSQubmn1-yXYGtQ9SGAUPJVQ',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADkSQPdGD_mRYqjZBajSRjn961Uz9av-lrGGDKkxNQqpA',
             $version4Encrypt('', $this->nullKey, '', '', $nonce),
             'Test Vector 4E-1-1'
         );
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD0ZGbutCbPr_vLRlAAe8IHgvRh8HOJQGmO4S20WqasU',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACpBupoEVz-frC4IBr-KBt4b8PSBnV2vfTo0lB3AZU-rQ',
             $version4Encrypt('', $this->fullKey, '', '', $nonce),
             'Test Vector 4E-1-2'
         );
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiRoI7hm5tgAKcfVZd6DnK0dfENOBGGMqGhFWNi4h75I',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACJ9-FQi28Bj60m8wi4FU0K5kNSrzOWAn0jlvUK52fM_A',
             $version4Encrypt('', $this->symmetricKey,  '', '', $nonce),
             'Test Vector 4E-1-3'
         );
 
         // Empty message, non-empty footer, empty nonce
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAsAD0sNxD1ed-ydXy5zzJYXM2xgCn2EngDJFT8MUSkIY.Q3VvbiBBbHBpbnVz',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQdTeurN12FlbotJr8JaNCzv5hbZnLuVl9aC2q-5kT-w.Q3VvbiBBbHBpbnVz',
             $version4Encrypt('', $this->nullKey, 'Cuon Alpinus', '', $nonce),
             'Test Vector 4E-2-1'
         );
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAActXxAn7iB1h-b9q6YX-qP6qIX3I2YcHX5ts2fzR9OHA.Q3VvbiBBbHBpbnVz',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcPx4ghdniBZafFiuZCmL_gSedqCf3IGKcCCknXejXOw.Q3VvbiBBbHBpbnVz',
             $version4Encrypt('', $this->fullKey, 'Cuon Alpinus',  '', $nonce),
             'Test Vector 4E-2-2'
         );
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAT1WJhYpH3JIL2rj1snlaVOlUwHt3ghnqeZzCvU3CrCg.Q3VvbiBBbHBpbnVz',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADZzpgbhiJCh28Vif71vuWWwxhXdUANjmM7SFaBB2iexg.Q3VvbiBBbHBpbnVz',
             $version4Encrypt('', $this->symmetricKey, 'Cuon Alpinus',  '', $nonce),
             'Test Vector 4E-2-3'
         );
 
         // Non-empty message, empty footer, empty nonce
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAtzKGeN3xftTtixTCIcKilh_cwBeEMGlBB9kpk4NYpbkT1PRSBHEtkpriWLfCbOzfj5vOQS4kv5IZmzuRy7tIrFwZ',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4ZML5wEiTYzwTV8gHA2_RaIetKGSMg6ng6z7V7jEuXo2SJIg-zZvxY5lXDi-Q6bD_GKhb_XpmDtnPnq9pAsUjExs',
             $version4Encrypt('Love is stronger than hate or fear', $this->nullKey, '',  '', $nonce),
             'Test Vector 4E-3-1'
         );
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA58Fxa9f_ubKKJMPyiVAfoojPl0yLI9iEA7vX_OZ8JjSU-thaSqpka5W-2hgdWjGrJ07dZFigyNooSgnrDGQayifb',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAxZcJiVIIu3rXbou4eyn6fpEtTeYj3ZLF_v4TKM3alvEvY9USjTVmxnlGykFk7eN14muvfI5zHG6fbwNYzIxT0TF8',
             $version4Encrypt('Love is stronger than hate or fear', $this->fullKey, '',  '', $nonce),
             'Test Vector 4E-3-2'
         );
         $this->assertSame(
-            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPv3B4uAgt6KbqxdIGbC0P1ZT-EsSd3FA697VPtfmz-68Iih5r0tDbzYjTNn6jThfViB-mOeqJpfRGE_7nNr66FuB',
+            'v4.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnT6y4aSZRR7_IZfB9PctlUN6a0MxGjg114wNNChS7kg4OAYUF216LgLqxsdv3Ilqy63esZ1KFqRNxUDV-KC1n_ZU',
             $version4Encrypt('Love is stronger than hate or fear', $this->symmetricKey, '',  '', $nonce),
             'Test Vector 4E-3-3'
         );
 
         // Non-empty message, non-empty footer, non-empty nonce
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6ZCxFG5bnP3XRtisMJ_Ed4yTebjqY2L8MIeZK56FHipgtBdbBUCNgKOX4yQDsAWpMOErKcsiYj11mF1W1NT552wT.Q3VvbiBBbHBpbnVz',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjwjblm1eIris-mxcK32AHDPALuAlRtnPjBxsHPzJW1HPjQUKVheHoWIOqn9Ln6IYilRgAJrfgtacjkkKIjGAFH7JQ.Q3VvbiBBbHBpbnVz',
             $version4Encrypt('Love is stronger than hate or fear', $this->nullKey, 'Cuon Alpinus', '', $nonce2),
             'Test Vector 4E-4-1'
         );
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGblBKkNnvENjCr6-6jZsv9gVLP4IxAfgBFVCiWNGFgCdJ1Kp9t4CVx9JgrTcdhXXE9pSN86AiYv7DswtVz3TyAHjo3.Q3VvbiBBbHBpbnVz',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOthtd9RITEj35Dr87VatXBc-QpcNuw2T8SVZKmq_DoEiX6TxE5qkOuLxpH8ZLQaBFYIKDBm7n8Efxsd82J7ekIfBMLw.Q3VvbiBBbHBpbnVz',
             $version4Encrypt('Love is stronger than hate or fear', $this->fullKey, 'Cuon Alpinus', '', $nonce2),
             'Test Vector 4E-4-2'
         );
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbWpzFZ6qO87tIoNl1nGcjDhSnhjJGzENFM9HWZTOKCiHjcSrojNEIq7TsjCDTue_0RgdplG6dR2H9Z9SJYTFbFbo_.Q3VvbiBBbHBpbnVz',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtj3r1qul7e8a_KM_mVZNXjwl7hegQhve3g6UG5R_BROP3y5wJv7Egus21a2uKutj07DwAeKOiG1V_6xJJmT2QuWPBE.Q3VvbiBBbHBpbnVz',
             $version4Encrypt('Love is stronger than hate or fear', $this->symmetricKey, 'Cuon Alpinus', '', $nonce2),
             'Test Vector 4E-4-3'
         );
@@ -251,14 +259,14 @@ class Version4VectorTest extends TestCase
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $footer = 'Paragon Initiative Enterprises';
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyziBNj1lBM5SbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgbsw8tjucGmaV4R9AadPpfwmhzXUFSsoz2qGhqMhjEqQo.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WkwMsYXw6FSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t7s-5fnLeq8Tyr9Jnluf-wQErjWBdneFpivTgRz56B-AA.UGFyYWdvbiBJbml0aWF0aXZlIEVudGVycHJpc2Vz',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce2),
             'Test Vector 4E-5'
         );
 
         $footer = \json_encode(['kid' => 'zVhMiPBP9fRf2snEcT7gFTioeA9COcNy9DfgL1W60haN']);
         $this->assertSame(
-            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGbbdHXY_6GoqEZoMNzgSAvDxSyziBNj1lBM5SbbzLZDSPnIa5XKKud4I31Tf1WolQApQZdZPPCN9vOeV7mgeI42JR0kQgblnLvSBF-SG1TUd5e5td_IO7428haPSaduYMSQxAnekE.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
+            'v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WkwMsYXw6FSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t4x-RMNXtQNbz7FvFZ_G-lFpk5RG3EOrwDL6CgDqcerSQ.eyJraWQiOiJ6VmhNaVBCUDlmUmYyc25FY1Q3Z0ZUaW9lQTlDT2NOeTlEZmdMMVc2MGhhTiJ9',
             $version4Encrypt($message, $this->symmetricKey, $footer, '', $nonce2),
             'Test Vector 4E-6'
         );
