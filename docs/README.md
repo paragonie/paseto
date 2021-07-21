@@ -33,7 +33,8 @@ is used in calculating the authentication tag for the payload. It's always base6
    [our standard format](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
 
 Thus, if you want unencrypted, but authenticated, tokens, you can simply set your payload
-to an empty string and your footer to the message you want to authenticate.
+to an empty string and your footer to the message you want to authenticate, and use a
+local token.
 
 Conversely, if you want to support key rotation, you can use the unencrypted footer to store
 the Key-ID.
@@ -59,9 +60,7 @@ so-called "algorithm agility" in favor of pre-negotiated protocols with
 version identifiers.
 
 For `local` tokens, we encrypt them exclusively using authenticated encryption
-with additional data (AEAD) modes that are also nonce-misuse resistant (NMR).
-This means even if implementations fail to use a secure random number generator
-for the large nonces, message confidentiality isn't imperiled.
+with additional data (AEAD) modes.
 
 ### 2. Usability
 

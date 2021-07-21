@@ -24,12 +24,14 @@ a keyed BLAKE2b hash (which acts as HMAC) for the authentication tag.
 We specified RSA for PASETO v1.public tokens, under the assumption that
 applications that must ONLY support NIST algorithms (e.g. because they
 MUST only use FIPS 140-2 validated modules to maintain compliance) would
-be adequately served by RSA signatures.
+be adequately served by RSA signatures. This assumption turned out to be
+incorrect, and elliptic curve cryptography is now preferred.
 
 To better meet the needs of applications that are NIST-dependent, PASETO
 v3.public tokens will support ECDSA over NIST's P-384 curve, with SHA-384,
 and (preferably) using RFC 6979 deterministic signatures. (RFC 6979 is a
-**SHOULD**, not a **MUST**, due to library availability issues.)
+**SHOULD**, not a **MUST**, due to library availability issues and
+[fault attacks](https://eprint.iacr.org/2017/1014).)
 
 #### ECDSA Security
 
@@ -122,11 +124,13 @@ See below for some broader changes.
 
 The initial motivation for hashing the random nonce with the message was
 to create an SIV-like construction to mitigate the consequences of weak
-random number generators, such as OpenSSL's (which isn't fork-safe).
+random number generators, such as OpenSSL's (which isn't 
+[fork-safe](https://github.com/ramsey/uuid/issues/80)).
 
 However, this creates an unfortunate failure mode: If your RNG fails,
 the resultant nonce is a hash of your message, which can be used to
-perform offline attacks on the plaintext.
+perform offline attacks on the plaintext. This was first discovered by
+[Thái Dương](https://twitter.com/XorNinja/status/1157882553610563585).
 
 To avoid this failure mode, neither v3.local nor v4.local will pre-hash 
 the message and random value to derive a nonce. Instead, it will trust
@@ -168,7 +172,13 @@ security of these constructions is more obvious:
   * The HKDF output in v3.local is 384 bits.
   * The HKDF output in v4.local is 448 bits.
   * Neither of these output sizes reduces the security against collisions.
+    (If they were larger than the input domain of 512 bits, that would be a
+    blunder.)
 * A single key can be used for 2^112 PASETOs before rotation is necessary.
+  * The birthday bound for a 256-bit salt is 2^128 (for a 50% chance of
+    a single collision occurring). Setting the safety threshold to 2^-32
+    (which is roughly a 1 in 4 billion chance) for a space of 2^256
+    yields 2^112. 
 * The actual nonce passed to AES-CTR and XChaCha is not revealed publicly.
 
 ### V3 Signatures Prove Exclusive Ownership (Enhancement)
@@ -192,4 +202,5 @@ forcing function so that all PASETO implementations support compressed points
 
 [Ed25519, by design, does not suffer from this](https://eprint.iacr.org/2020/823),
 since Ed25519 already includes public key with the hash function when signing
-messages. Therefore, we can safely omit this extra step in `v4.local` tokens.
+messages. Therefore, we can safely omit this extra step in `v4.public` tokens.
+

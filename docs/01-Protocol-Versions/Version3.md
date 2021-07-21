@@ -15,7 +15,9 @@ implicit assertion `i` (which defaults to empty string):
    to get the nonce, `n`.
 3. Split the key into an Encryption key (`Ek`) and Authentication key (`Ak`),
    using HKDF-HMAC-SHA384, with `n` as the HKDF salt.
-   The derived key will be the leftmost 32 bytes of the first HKDF derivation.
+    * The output length **MUST** be 48 for the first key derivation and 32 for `Ak`.
+    * The derived key will be the leftmost 32 bytes of the first HKDF derivation.
+   
    The remaining 16 bytes will be used as a counter nonce (`n2`):
    ```
    tmp = hkdf_sha384(
@@ -66,7 +68,7 @@ implicit assertion `i` (which defaults to empty string):
 2. Verify that the message begins with `v3.local.`, otherwise throw an
    exception. This constant will be referred to as `h`.
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
-   between `m` and `f`) from b64 to raw binary. Set:
+   between `m` and `f`) from base64url to raw binary. Set:
     * `n` to the leftmost 32 bytes
     * `t` to the rightmost 48 bytes
     * `c` to the middle remainder of the payload, excluding `n` and `t`
@@ -183,7 +185,7 @@ implicit assertion `i` (which defaults to empty string):
 2. Verify that the message begins with `v3.public.`, otherwise throw an
    exception. This constant will be referred to as `h`.
 3. Decode the payload (`sm` sans `h`, `f`, and the optional trailing period
-   between `m` and `f`) from b64 to raw binary. Set:
+   between `m` and `f`) from base64url to raw binary. Set:
     * `s` to the rightmost 96 bytes
     * `m` to the leftmost remainder of the payload, excluding `s`
 4. Pack `pk`, `h`, `m`, `f`, and `i` together (in that order) using PAE (see
