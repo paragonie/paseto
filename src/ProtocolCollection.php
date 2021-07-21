@@ -24,7 +24,7 @@ final class ProtocolCollection
         Version2::class,
     ];
 
-    /** @var array<int, ProtocolInterface> */
+    /** @var array<array-key, ProtocolInterface> */
     private $protocols;
 
     /** @var array<string, ProtocolInterface> */
