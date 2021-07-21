@@ -17,5 +17,6 @@
                 <referencedMethod name="ParagonIE_Sodium_Core_Util::store64_le" />
             </errorLevel>
         </InternalMethod>
+        <UnnecessaryVarAnnotation errorLevel="info" />
     </issueHandlers>
 </psalm>
