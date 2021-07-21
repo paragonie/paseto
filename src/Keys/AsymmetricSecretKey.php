@@ -6,7 +6,10 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{Exception\PasetoException, SendingKey, ProtocolInterface};
+use ParagonIE\Paseto\{
+    SendingKey,
+    ProtocolInterface
+};
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\Paseto\Protocol\{
@@ -42,7 +45,11 @@ class AsymmetricSecretKey implements SendingKey
     ) {
         $protocol = $protocol ?? new Version2;
 
-        if (\hash_equals($protocol::header(), Version2::HEADER)) {
+        if (
+            \hash_equals($protocol::header(), Version2::HEADER)
+                ||
+            \hash_equals($protocol::header(), Version4::HEADER)
+        ) {
             $len = Binary::safeStrlen($keyData);
             if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
                 $keyData = Binary::safeSubstr($keyData, 0, 64);

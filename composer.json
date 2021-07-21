@@ -21,6 +21,7 @@
   },
   "require": {
     "ext-gmp": "*",
+    "ext-json": "*",
     "ext-openssl": "*",
     "php": "^7.1|^8",
     "paragonie/constant_time_encoding": "^2",
