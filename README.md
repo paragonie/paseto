@@ -1,6 +1,6 @@
 # PASETO: Platform-Agnostic Security Tokens
 
-[![Build Status](https://travis-ci.org/paragonie/paseto.svg?branch=master)](https://travis-ci.org/paragonie/paseto)
+[![Build Status](https://github.com/paragonie/paseto/actions/workflows/ci.yml/badge.svg)](https://github.com/paragonie/paseto/actions)
 [![Latest Stable Version](https://poser.pugx.org/paragonie/paseto/v/stable)](https://packagist.org/packages/paragonie/paseto)
 [![Latest Unstable Version](https://poser.pugx.org/paragonie/paseto/v/unstable)](https://packagist.org/packages/paragonie/paseto)
 [![License](https://poser.pugx.org/paragonie/paseto/license)](https://packagist.org/packages/paragonie/paseto)
