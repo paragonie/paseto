@@ -9,7 +9,7 @@
 Paseto is everything you love about JOSE (JWT, JWE, JWS) without any of the
 [many design deficits that plague the JOSE standards](https://paragonie.com/blog/2017/03/jwt-json-web-tokens-is-bad-standard-that-everyone-should-avoid).
 
-What follows is a reference implementation. **Requires PHP 7 or newer.**
+This library is a reference implementation of PASETO.
 
 # What is Paseto?
 
@@ -151,6 +151,15 @@ See [the documentation](https://github.com/paragonie/paseto/tree/master/docs).
 
 The section dedicated to [this PHP implementation](https://github.com/paragonie/paseto/tree/master/docs/02-PHP-Library)
 may be more relevant.
+
+### Requirements
+
+#### PHP PASETO Library Version 1
+
+* Requires PHP 7.0 or newer.
+* For v1 tokens, the OpenSSL extension is required.
+* For v2 tokens, the Sodium extension is strongly recommended (but this library will use
+  [sodium_compat](https://github.com/paragonie/sodium_compat) if it's not).
 
 ## Other Implementations
 
