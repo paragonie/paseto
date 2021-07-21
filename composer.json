@@ -20,7 +20,7 @@
     }
   },
   "require": {
-    "php": "^7|^8",
+    "php": "^7.1|^8",
     "paragonie/constant_time_encoding": "^2",
     "paragonie/sodium_compat": "^1.7",
     "phpseclib/phpseclib": "^2"
