@@ -204,3 +204,34 @@ forcing function so that all PASETO implementations support compressed points
 since Ed25519 already includes public key with the hash function when signing
 messages. Therefore, we can safely omit this extra step in `v4.public` tokens.
 
+## Questions and Answers
+
+### Why Not AES-GCM in `v3.local`?
+
+While it's true that AES-GCM is more broadly supported in environments that use
+NIST and FIPS-approved cryptography, GMAC is neither
+[message-committing nor key-committing](https://eprint.iacr.org/2019/016).
+
+The techniques for turning an AEAD scheme into an AEAD scheme [is well known](https://eprint.iacr.org/2020/1153),
+but it requires publishing an additional SHA2 hash (or KDF output) of the
+key being used.
+
+Using GCM would require us to also publish an additional hash *anyway*. At
+that point, it doesn't offer any clear advantage over CTR+HMAC.
+
+CTR+HMAC (with separate keys and PAE) is a secure construction and provides
+the cryptographic properties we need to use PASETO in threat models where
+multiple keys are used or [partitioning oracles](https://eprint.iacr.org/2020/1491)
+are possible.
+
+### Why P-384 in `v3.public` instead of P-256 or P-521?
+
+Security experts that work heavily with NIST algorithms expressed a
+slight preference for P-384 over P-521 and P-256 when we asked. This is also
+congruent for our choice of SHA-384 as a hash function over SHA-256 or SHA-512.
+
+The [security considerations](#ecdsa-security) for the NIST curves are mostly
+congruent (albeit the ECDLP security and performance differs a bit).
+
+If you want smaller tokens or better performance than P-384, make sure Ed25519
+lands in FIPS 186-5 and use `v4.public` instead.
