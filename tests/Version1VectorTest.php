@@ -37,27 +37,27 @@ class Version1VectorTest extends TestCase
         $this->assertSame(
             'v1.local.WzhIh1MpbqVNXNt7-HbWvL-JwAym3Tomad9Pc2nl7wK87vGraUVvn2bs8BBNo7jbukCNrkVID0jCK2vr5bP18G78j1bOTbBcP9HZzqnraEdspcjd_PvrxDEhj9cS2MG5fmxtvuoHRp3M24HvxTtql9z26KTfPWxJN5bAJaAM6gos8fnfjJO8oKiqQMaiBP_Cqncmqw8',
             $version1Encrypt($message, $symmetricKey, '', '', $nonce),
-            'Test Vector 1.1'
+            'Test Vector 1-E-1'
         );
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2019-01-01T00:00:00+00:00']);
         $this->assertSame(
             'v1.local.w_NOpjgte4bX-2i1JAiTQzHoGUVOgc2yqKqsnYGmaPaCu_KWUkRGlCRnOvZZxeH4HTykY7AE_jkzSXAYBkQ1QnwvKS16uTXNfnmp8IRknY76I2m3S5qsM8klxWQQKFDuQHl8xXV0MwAoeFh9X6vbwIqrLlof3s4PMjRDwKsxYzkMr1RvfDI8emoPoW83q4Q60_xpHaw',
             $version1Encrypt($message, $symmetricKey, '', '', $nonce),
-            'Test Vector 1.2'
+            'Test Vector 1-E-2'
         );
 
         $message = \json_encode(['data' => 'this is a signed message', 'exp' => '2019-01-01T00:00:00+00:00']);
         $this->assertSame(
             'v1.local.4VyfcVcFAOAbB8yEM1j1Ob7Iez5VZJy5kHNsQxmlrAwKUbOtq9cv39T2fC0MDWafX0nQJ4grFZzTdroMvU772RW-X1oTtoFBjsl_3YYHWnwgqzs0aFc3ejjORmKP4KUM339W3syBYyjKIOeWnsFQB6Yef-1ov9rvqt7TmwONUHeJUYk4IK_JEdUeo_uFRqAIgHsiGCg',
             $version1Encrypt($message, $symmetricKey, '', '', $nonce2),
-            'Test Vector 1.3'
+            'Test Vector 1-E-3'
         );
 
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2019-01-01T00:00:00+00:00']);
         $this->assertSame(
             'v1.local.IddlRQmpk6ojcD10z1EYdLexXvYiadtY0MrYQaRnq3dnqKIWcbbpOcgXdMIkm3_3gksirTj81bvWrWkQwcUHilt-tQo7LZK8I6HCK1V78B9YeEqGNeeWXOyWWHoJQIe0d5nTdvejdt2Srz_5Q0QG4oiz1gB_wmv4U5pifedaZbHXUTWXchFEi0etJ4u6tqgxZSklcec',
             $version1Encrypt($message, $symmetricKey, '', '', $nonce2),
-            'Test Vector 1.4'
+            'Test Vector 1-E-4'
         );
 
         $message = \json_encode(['data' => 'this is a signed message', 'exp' => '2019-01-01T00:00:00+00:00']);
@@ -65,14 +65,14 @@ class Version1VectorTest extends TestCase
         $this->assertSame(
             'v1.local.4VyfcVcFAOAbB8yEM1j1Ob7Iez5VZJy5kHNsQxmlrAwKUbOtq9cv39T2fC0MDWafX0nQJ4grFZzTdroMvU772RW-X1oTtoFBjsl_3YYHWnwgqzs0aFc3ejjORmKP4KUM339W3szA28OabR192eRqiyspQ6xPM35NMR-04-FhRJZEWiF0W5oWjPVtGPjeVjm2DI4YtJg.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
             $version1Encrypt($message, $symmetricKey, $footer, '', $nonce2),
-            'Test Vector 1.5'
+            'Test Vector 1-E-5'
         );
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2019-01-01T00:00:00+00:00']);
         $footer = \json_encode(['kid' => 'UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo']);
         $this->assertSame(
             'v1.local.IddlRQmpk6ojcD10z1EYdLexXvYiadtY0MrYQaRnq3dnqKIWcbbpOcgXdMIkm3_3gksirTj81bvWrWkQwcUHilt-tQo7LZK8I6HCK1V78B9YeEqGNeeWXOyWWHoJQIe0d5nTdvcT2vnER6NrJ7xIowvFba6J4qMlFhBnYSxHEq9v9NlzcKsz1zscdjcAiXnEuCHyRSc.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
             $version1Encrypt($message, $symmetricKey, $footer, '', $nonce2),
-            'Test Vector 1.6'
+            'Test Vector 1-E-6'
         );
         $publicKeyText = '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyaTgTt53ph3p5GHgwoGW

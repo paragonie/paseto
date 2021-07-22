@@ -6,7 +6,12 @@ use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Protocol\Version4;
+use ParagonIE\Paseto\Protocol\{
+    Version1,
+    Version2,
+    Version3,
+    Version4
+};
 use ParagonIE\Paseto\ProtocolInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -27,12 +32,40 @@ class KnownAnswerTest extends TestCase
         $this->dir = dirname(__DIR__) . '/docs/03-Implementation-Guide/Test-Vectors';
     }
 
+    public function testV1()
+    {
+        $contents = json_decode(file_get_contents($this->dir . '/v1.json'), true);
+        if (!is_array($contents)) {
+            $this->markTestSkipped('Could not load test vector file');
+        }
+        $this->genericTests(new Version1(), $contents['tests']);
+    }
+
+    public function testV2()
+    {
+        $contents = json_decode(file_get_contents($this->dir . '/v2.json'), true);
+        if (!is_array($contents)) {
+            $this->markTestSkipped('Could not load test vector file');
+        }
+        $this->genericTests(new Version2(), $contents['tests']);
+    }
+
+    public function testV3()
+    {
+        $contents = json_decode(file_get_contents($this->dir . '/v3.json'), true);
+        if (!is_array($contents)) {
+            $this->markTestSkipped('Could not load test vector file');
+        }
+        $this->genericTests(new Version3(), $contents['tests']);
+    }
+
     public function testV4()
     {
         $contents = json_decode(file_get_contents($this->dir . '/v4.json'), true);
         if (!is_array($contents)) {
             $this->markTestSkipped('Could not load test vector file');
         }
+
         $this->genericTests(new Version4(), $contents['tests']);
     }
 
@@ -46,22 +79,27 @@ class KnownAnswerTest extends TestCase
     {
         foreach ($tests as $test) {
             // Load key for this test (from cache, usually):
-            if (isset($test['public-key'])) {
-                $decoded = $protocol::verify(
-                    $test['token'],
-                    $this->cacheKey($protocol, $test['public-key'], true),
-                    $test['footer'] ?? '',
-                    $test['implicit-assertion'] ?? ''
-                );
-            } elseif (isset($test['key'])) {
-                $decoded = $protocol::decrypt(
-                    $test['token'],
-                    $this->cacheKey($protocol, $test['key']),
-                    $test['footer'] ?? '',
-                    $test['implicit-assertion'] ?? ''
-                );
-            } else {
-                $this->fail('Key not provided');
+            try {
+                if (isset($test['public-key'])) {
+                    $decoded = $protocol::verify(
+                        $test['token'],
+                        $this->cacheKey($protocol, $test['public-key'], true),
+                        $test['footer'] ?? '',
+                        $test['implicit-assertion'] ?? ''
+                    );
+                } elseif (isset($test['key'])) {
+                    $decoded = $protocol::decrypt(
+                        $test['token'],
+                        $this->cacheKey($protocol, $test['key']),
+                        $test['footer'] ?? '',
+                        $test['implicit-assertion'] ?? ''
+                    );
+                } else {
+                    $this->fail('Key not provided');
+                }
+            } catch (\Exception $ex) {
+                var_dump($test);
+                throw $ex;
             }
             $this->assertEquals(json_encode($test['payload']), $decoded, $test['name']);
         }
@@ -98,7 +136,7 @@ class KnownAnswerTest extends TestCase
     protected function loadKey(ProtocolInterface $protocol, string $key, bool $public = false)
     {
         if ($public) {
-            return new AsymmetricPublicKey(Hex::decode($key), $protocol);
+            return new AsymmetricPublicKey($key, $protocol);
         }
         return new SymmetricKey(Hex::decode($key), $protocol);
     }

@@ -40,28 +40,28 @@ class Version3VectorTest extends TestCase
         $this->assertSame(
             'v3.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLt5-kR6TZW6LYCBsWla5Tmn_7cLt0zT1OyRnIPjuAYLA0ZdlHrd_BiMIUzVbI7ma_lO6UNJWYiR2v0joy6WvesFN0kAhnZgpPRQVFEJTK2GSwDbWErD1NbI4MbWgC3djoYw4g0kXuZXY5qbkGWugNzOoTKAI',
             $version3Encrypt($message, $symmetricKey, '', '', $nonce),
-            'Test Vector 3.1'
+            'Test Vector 3-E-1'
         );
 
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
             'v3.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLt5-kR6TZW6LYCBsWla5Tmn_7a7dz2z1UyRnIPjuAYLA0ZdlHrd_BiMIUzVbI7ma_lO6UNJWYiR2v0joy6WvesFN0kAh_A0APZdJXUREr7ZyeXfxgyMiT_F08jZiPxbj2opNIw5u9rJO8Y9eOruTakJng3bc',
             $version3Encrypt($message, $symmetricKey, '', '', $nonce),
-            'Test Vector 3.2'
+            'Test Vector 3-E-2'
         );
 
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
             'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0doDkavZyIu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNkvPoevaXFtzOv_tMxxYt_i7afc2avjyDp69TX3lchI-Ed6l7aLMgJvoSzxQZaJuM-E',
             $version3Encrypt($message, $symmetricKey, '', '', $nonce2),
-            'Test Vector 3.3'
+            'Test Vector 3-E-3'
         );
 
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
             'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0duzUdq5ySu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNksGsq5I4rtEgvE-WgP9V2p5j-Am6AzMTnYk--x0jGcBFkJWtSRbvh62QEWu1gYxw8E',
             $version3Encrypt($message, $symmetricKey, '', '', $nonce2),
-            'Test Vector 3.4'
+            'Test Vector 3-E-4'
         );
 
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
@@ -69,30 +69,30 @@ class Version3VectorTest extends TestCase
         $this->assertSame(
             'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0doDkavZyIu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNkuTL6D0bKlatkgbNuYdzL_Ngw8XG9-CfzVF18KL7WFTBaAXuBHJxAaz2ChQZEIOrwM.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
             $version3Encrypt($message, $symmetricKey, $footer, '', $nonce2),
-            'Test Vector 3.5'
+            'Test Vector 3-E-5'
         );
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $footer = \json_encode(['kid' => 'UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo']);
         $this->assertSame(
             'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0duzUdq5ySu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNkvNhmzXOmA4g5FcC1fmqpw5-BrmNDSscZLd-VZEsfofAzzYBltIapOPuOAGDI0sJ8I.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
             $version3Encrypt($message, $symmetricKey, $footer, '', $nonce2),
-            'Test Vector 3.6'
+            'Test Vector 3-E-6'
         );
 
-        $implicit = \json_encode(['test-vector' => '3.7']);
+        $implicit = \json_encode(['test-vector' => '3-E-7']);
         $message = \json_encode(['data' => 'this is a secret message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0doDkavZyIu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNktBxZU5VECLhXPgttF7g4ZL5SwVp2hvPxj3FLkMfw-LpumXpIOUjM_agH1Cm5ZjDsU.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
+            'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0doDkavZyIu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNktkR5lvQgZEoo5SUPbSk-dEpEa9GVDgm05bdwI-TLWIIpFKal0igpgJwWNlpkKwo2M.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
             $version3Encrypt($message, $symmetricKey, $footer, $implicit, $nonce2),
-            'Test Vector 3.7'
+            'Test Vector 3-E-7'
         );
 
-        $implicit = \json_encode(['test-vector' => '3.8']);
+        $implicit = \json_encode(['test-vector' => '3-E-8']);
         $message = \json_encode(['data' => 'this is a hidden message', 'exp' => '2022-01-01T00:00:00+00:00']);
         $this->assertSame(
-            'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0duzUdq5ySu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNktC3vZdXx0vaSJRZmFP5L77IFWF1i_sMFpOgtT56K3tPZSPWPY-3MyOyFx1cdTG4ng.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
+            'v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_Kageg3IiCFuPpx6-8kGD1SdE0duzUdq5ySu4DeN1zq9HtEhw4IU0o_kdeWV-J_U7rJinQ5eCsyDoeGDlyRBoJ5cz3hNksGPtABBONQk8vDq4rCGeXENQ0Tx26j0ymtaZbFGK7upNRyqfEwKKsAt73vAEEZCm8.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9',
             $version3Encrypt($message, $symmetricKey, $footer, $implicit, $nonce2),
-            'Test Vector 3.8'
+            'Test Vector 3-E-8'
         );
 
         // Nothing Up My Sleeves test vector secret key
