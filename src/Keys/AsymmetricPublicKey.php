@@ -95,6 +95,17 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     */
+    public static function v4(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version4());
+    }
+
+    /**
      * @return string
      * @throws \TypeError
      */

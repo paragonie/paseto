@@ -38,8 +38,6 @@ final class ProtocolCollection
      * @param ProtocolInterface ...$protocols
      * @throws \LogicException
      * @throws InvalidVersionException
-     *
-     * @psalm-suppress UnnecessaryVarAnnotation
      */
     public function __construct(ProtocolInterface ...$protocols)
     {
@@ -47,7 +45,6 @@ final class ProtocolCollection
             throw new \LogicException('At least one version is necessary');
         }
 
-        /** @var array<int, ProtocolInterface> $protocols */
         foreach ($protocols as $protocol) {
             self::throwIfUnsupported($protocol);
         }
