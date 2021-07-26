@@ -451,8 +451,8 @@ class Version1 implements ProtocolInterface
         /** @var array<string, string> $pubkey */
         $pubkey = \openssl_pkey_get_details($res);
         return \rtrim(
-            \str_replace("\n", "\r\n", $pubkey['key']),
-            "\r\n"
+            \str_replace("\r\n", "\n", $pubkey['key']),
+            "\n"
         );
     }
 }
