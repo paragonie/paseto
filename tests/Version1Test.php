@@ -29,7 +29,7 @@ class Version1Test extends TestCase
         $this->assertInstanceOf('ParagonIE\Paseto\Keys\AsymmetricSecretKey', $secret);
 
         $this->assertSame(Version1::getSymmetricKeyByteLength(), Binary::safeStrlen($symmetric->raw()));
-        $this->assertGreaterThanOrEqual(1700, Binary::safeStrlen($secret->raw())); // PEM encoded
+        $this->assertGreaterThanOrEqual(1670, Binary::safeStrlen($secret->raw())); // PEM encoded
     }
 
     /**

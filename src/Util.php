@@ -15,6 +15,15 @@ use ParagonIE\Paseto\Exception\PasetoException;
 abstract class Util
 {
     /**
+     * @param string $in
+     * @return string
+     */
+    public static function dos2unix(string $in): string
+    {
+        return str_replace("\r\n", "\n", $in);
+    }
+
+    /**
      * Computes the HKDF key derivation function specified in
      * http://tools.ietf.org/html/rfc5869.
      *

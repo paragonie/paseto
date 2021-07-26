@@ -6,10 +6,7 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{
-    SendingKey,
-    ProtocolInterface
-};
+use ParagonIE\Paseto\{SendingKey, ProtocolInterface, Util};
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\Paseto\Protocol\{
@@ -129,10 +126,10 @@ class AsymmetricSecretKey implements SendingKey
             $rsa = Version1::getRsa();
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
-            return new self($keypair['privatekey'], $protocol);
+            return new self(Util::dos2unix($keypair['privatekey']), $protocol);
         } elseif (\hash_equals($protocol::header(), Version3::HEADER)) {
             return new self(
-                SecretKey::generate(Version3::CURVE)->exportPem(),
+                Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem()),
                 $protocol
             );
         }
