@@ -90,7 +90,10 @@ use ParagonIE\Paseto\ProtocolCollection;
  * @var string $providedToken
  * @var SymmetricKey $sharedKey
  */
-$parser = Parser::getLocal($sharedKey, ProtocolCollection::v2());
+$parser = Parser::getLocal($sharedKey, ProtocolCollection::v2())
+    ->addRule(new ValidAt)
+    ->addRule(new IssuedBy('issuer defined during creation'));
+
 // This is the same as:
 $parser = (new Parser())
     ->setKey($sharedKey)
