@@ -111,6 +111,15 @@ abstract class Util
     }
 
     /**
+     * @param int $long
+     * @return string
+     */
+    public static function longToBytes(int $long): string
+    {
+        return \pack('P', $long);
+    }
+
+    /**
      * Format the Additional Associated Data.
      *
      * Prefix with the length (64-bit unsigned little-endian integer)
@@ -125,10 +134,10 @@ abstract class Util
      */
     public static function preAuthEncode(string ...$pieces): string
     {
-        $accumulator = \ParagonIE_Sodium_Core_Util::store64_le(\count($pieces) & PHP_INT_MAX);
+        $accumulator = self::longToBytes(\count($pieces) & PHP_INT_MAX);
         foreach ($pieces as $piece) {
             $len = Binary::safeStrlen($piece);
-            $accumulator .= \ParagonIE_Sodium_Core_Util::store64_le($len & PHP_INT_MAX);
+            $accumulator .= self::longToBytes($len & PHP_INT_MAX);
             $accumulator .= $piece;
         }
         return $accumulator;
