@@ -100,6 +100,17 @@ class Version3 implements ProtocolInterface
     }
 
     /**
+     * Does this protocol support implicit assertions?
+     * Yes.
+     *
+     * @return bool
+     */
+    public static function supportsImplicitAssertions(): bool
+    {
+        return true;
+    }
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data

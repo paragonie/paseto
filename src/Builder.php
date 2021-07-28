@@ -26,8 +26,8 @@ class Builder
     /** @var string $cached */
     protected $cached = '';
 
-    /** @var array<string, string> */
-    protected $claims = [];
+    /** @var string $implicitAssertions */
+    protected $implicitAssertions = '';
 
     /** @var \Closure|null $unitTestEncrypter -- Do not use this. It's for unit testing! */
     protected $unitTestEncrypter;
@@ -81,6 +81,17 @@ class Builder
     public function get(string $claim)
     {
         return $this->token->get($claim);
+    }
+
+    /**
+     * @return array
+     */
+    public function getImplicitAssertions(): array
+    {
+        if (empty($this->implicitAssertions)) {
+            return [];
+        }
+        return (array) json_decode($this->implicitAssertions, true);
     }
 
     /**
@@ -191,6 +202,28 @@ class Builder
             $time = new \DateTime('NOW');
         }
         return $this->set('exp', $time->format(\DateTime::ATOM));
+    }
+
+    /**
+     * Set the implicit assertions for the constructed PASETO token
+     * (only affects v3/v4).
+     *
+     * @param array $assertions
+     * @return self
+     * @throws PasetoException
+     */
+    public function setImplicitAssertions(array $assertions): self
+    {
+        if (empty($assertions)) {
+            $implicit = '';
+        } else {
+            $implicit = json_encode($assertions);
+        }
+        if (!is_string($implicit)) {
+            throw new PasetoException('Could not serialize as string');
+        }
+        $this->implicitAssertions = $implicit;
+        return $this;
     }
 
     /**
@@ -425,6 +458,16 @@ class Builder
         $claims = \json_encode($this->token->getClaims(), JSON_FORCE_OBJECT);
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
+
+        $implicit = '';
+        if (!empty($this->implicitAssertions)) {
+            if (!$protocol::supportsImplicitAssertions()) {
+                throw new PasetoException(
+                    'This version does not support implicit assertions'
+                );
+            }
+            $implicit = $this->implicitAssertions;
+        }
         switch ($this->purpose) {
             case Purpose::local():
                 if ($this->key instanceof SymmetricKey) {
@@ -443,7 +486,8 @@ class Builder
                     $this->cached = (string) $protocol::encrypt(
                         $claims,
                         $this->key,
-                        $this->token->getFooter()
+                        $this->token->getFooter(),
+                        $implicit
                     );
                     return $this->cached;
                 }
@@ -454,7 +498,8 @@ class Builder
                         $this->cached = (string) $protocol::sign(
                             $claims,
                             $this->key,
-                            $this->token->getFooter()
+                            $this->token->getFooter(),
+                            $implicit
                         );
                         return $this->cached;
                     } catch (\Throwable $ex) {
@@ -536,6 +581,20 @@ class Builder
     public function withFooterArray(array $footer = []): self
     {
         return (clone $this)->setFooterArray($footer);
+    }
+
+    /**
+     * Return a new Builder instance with changed implicit assertions
+     * for the constructed PASETO token (only affects v3/v4).
+     *
+     * @param array $implicit
+     * @return self
+     *
+     * @throws PasetoException
+     */
+    public function withImplicitAssertions(array $implicit): self
+    {
+        return (clone $this)->setImplicitAssertions($implicit);
     }
 
     /**

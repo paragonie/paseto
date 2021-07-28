@@ -56,6 +56,17 @@ class Version2 implements ProtocolInterface
     }
 
     /**
+     * Does this protocol support implicit assertions?
+     * No.
+     *
+     * @return bool
+     */
+    public static function supportsImplicitAssertions(): bool
+    {
+        return false;
+    }
+
+    /**
      * @return int
      */
     public static function getSymmetricKeyByteLength(): int

@@ -30,6 +30,9 @@ class Parser
     /** @var ProtocolCollection */
     protected $allowedVersions;
 
+    /** @var string $implicitAssertions */
+    protected $implicitAssertions = '';
+
     /** @var ReceivingKey $key */
     protected $key;
 
@@ -68,6 +71,17 @@ class Parser
                 }
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getImplicitAssertions(): array
+    {
+        if (empty($this->implicitAssertions)) {
+            return [];
+        }
+        return (array) json_decode($this->implicitAssertions, true);
     }
 
     /**
@@ -148,12 +162,11 @@ class Parser
      * @param string $tainted      Tainted user-provided string.
      * @param bool $skipValidation Don't validate according to the Rules.
      *                             (Does not disable cryptographic security.)
-     * @param string $implicit     Implicit assertions.
      * @return JsonToken
      * @throws PasetoException
      * @throws \TypeError
      */
-    public function parse(string $tainted, bool $skipValidation = false, string $implicit = ''): JsonToken
+    public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
         $parsed = PasetoMessage::fromString($tainted);
 
@@ -176,6 +189,16 @@ class Parser
 
         if (!$purpose->isReceivingKeyValid($this->key)) {
             throw new InvalidKeyException('Invalid key type');
+        }
+
+        $implicit = '';
+        if (!empty($this->implicitAssertions)) {
+            if (!$protocol::supportsImplicitAssertions()) {
+                throw new PasetoException(
+                    'This version does not support implicit assertions'
+                );
+            }
+            $implicit = $this->implicitAssertions;
         }
 
         /** @var string|null $decoded */
@@ -231,6 +254,28 @@ class Parser
     public function setAllowedVersions(ProtocolCollection $whitelist): self
     {
         $this->allowedVersions = $whitelist;
+        return $this;
+    }
+
+    /**
+     * Set the implicit assertions for the constructed PASETO token
+     * (only affects v3/v4).
+     *
+     * @param array $assertions
+     * @return self
+     * @throws PasetoException
+     */
+    public function setImplicitAssertions(array $assertions): self
+    {
+        if (empty($assertions)) {
+            $implicit = '';
+        } else {
+            $implicit = json_encode($assertions);
+        }
+        if (!is_string($implicit)) {
+            throw new PasetoException('Could not serialize as string');
+        }
+        $this->implicitAssertions = $implicit;
         return $this;
     }
 
