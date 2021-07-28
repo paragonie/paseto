@@ -204,6 +204,26 @@ forcing function so that all PASETO implementations support compressed points
 since Ed25519 already includes public key with the hash function when signing
 messages. Therefore, we can safely omit this extra step in `v4.public` tokens.
 
+## Miscellaneous Changes
+
+### Define Mechanism for Extending PASETO for non-JSON Encodings
+
+PASETO serializes its payload as a JSON string. Future documents **MAY** specify using
+PASETO with non-JSON encoding. When this happens, a suffix will be appended to the version tag
+when a non-JSON encoding rule is used.
+
+> For example, a future PASETO-CBOR proposal might define its versions as `v1c`, `v2c`, `v3c`,
+> and `v4c`. The underlying cryptography will be the same as `v1`, `v2`, `v3`, and `v4`
+> respectively. Keys **SHOULD** be portable across different underlying encodings, but tokens
+> **MUST NOT** be transmutable between encodings without access to the symmetric key (`local` tokens)
+> or secret key (`public` tokens).
+
+### Consistent Rules for Footer Parsing
+
+In versions 3 and 4, if a footer is provided, it **MUST** decode to a valid JSON
+string. This ensures that footer processing is consistent across
+PASETO implementations.
+
 ## Questions and Answers
 
 ### Why Not AES-GCM in `v3.local`?

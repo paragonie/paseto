@@ -30,7 +30,7 @@ to assist in cross-platform library development.
    * User-defined homemade protocols are discouraged. If implementors wish to break
      this rule and define their own custom protocol suite, they must NOT continue
      the {`v1`, `v2`, ... } series naming convention.
-   * Any version identifiers that match the regular expression, `/^v[0-9\.]+$/` are
+   * Any version identifiers that match the regular expression, `/^v[0-9\-\.]+/` are
      reserved by the PASETO development team.
 
 # Versions

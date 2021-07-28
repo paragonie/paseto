@@ -70,6 +70,11 @@ For example, if you set the footer to `{"kid":"gandalf0"}`, you can read it with
 needing to first decrypt the token (which would in turn knowing which key to use to
 decrypt the token).
 
+[PASERK](https://github.com/paseto-standard/paserk), a PASETO extension, defines a
+universal and unambiguous way to calculate key identifiers for a PASETO key. See
+[the specification for PASERK's `ID` operation](https://github.com/paseto-standard/paserk/blob/master/operations/ID.md)
+for more information. PASERK is the **RECOMMENDED** way to serialize Key IDs.
+
 Implementations should feel free to provide a means to extract the footer from a token,
 before decryption, since the footer is used in the calculation of the authentication
 tag for the encrypted payload.
