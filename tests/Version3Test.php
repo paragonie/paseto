@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Exception\InvalidVersionException;
 use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version3\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
     Version2,
@@ -106,7 +107,7 @@ class Version3Test extends TestCase
      */
     public function testSign()
     {
-        $privateKey = Version3::generateAsymmetricSecretKey();
+        $privateKey = AsymmetricSecretKey::generate(new Version3());
         $publicKey = $privateKey->getPublicKey();
 
         $year = (int) (\date('Y')) + 1;
@@ -133,13 +134,7 @@ class Version3Test extends TestCase
                 $this->fail('Missing footer');
             } catch (PasetoException $ex) {
             }
-            try {
-                $decode = Version3::verify($signedWithFooter, $publicKey, 'footer');
-            } catch (\Throwable $ex) {
-                // This is only failing in CI, not locally. Let's get it to cough up details.
-                var_dump($signedWithFooter, $publicKey->encode());
-                throw $ex;
-            }
+            $decode = Version3::verify($signedWithFooter, $publicKey, 'footer');
             $this->assertIsStringType($decode);
             $this->assertSame($message, $decode);
         }
