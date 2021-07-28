@@ -101,7 +101,7 @@
       "name": "1-E-9",
       "nonce": "26f7553354482a1d91d4784627854b8da6b8042a7966523c2b404e8dbbe7f7f2",
       "key": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
-      "token": "v1.local.Ab4RRlx09dnkLD_2567Lwta0vjqF5JBd182cohyUWNvh--K5Zq2igF523lQSIU460LFrASOCiFD4azaPep-rx70jPIodEEUpRhD7yKsSkqTwg9h72ghrf9prodqmB65veOWhDTh7QDJc4hkJtIgJkaglLTyFw_QVyQnIS3bBDkIqEcDsaV6wCBT5_UWTI7ssuakVKpY.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24",
+      "token": "v1.local.IddlRQmpk6ojcD10z1EYdLexXvYiadtY0MrYQaRnq3dnqKIWcbbpOcgXdMIkm3_3gksirTj81bvWrWkQwcUHilt-tQo7LZK8I6HCK1V78B9YeEqGNeeWXOyWWHoJQIe0d5nTdvdgNpe3vI21jV2YL7WVG5p63_JxxzLckBu9azQ0GlDMdPxNAxoyvmU1wbpSbRB9Iw4.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24",
       "payload": {
         "data": "this is a secret message",
         "exp": "2019-01-01T00:00:00+00:00"
