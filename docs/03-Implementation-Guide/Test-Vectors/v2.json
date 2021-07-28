@@ -98,6 +98,18 @@
       "implicit-assertion": "discarded-anyway"
     },
     {
+      "name": "2-E-9",
+      "nonce": "45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b",
+      "key": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
+      "token": "v2.local.JN2us_dXqhreXDLIVadYzCDna-_pJzkG3i7JSWSLJ2yuo7dsC3EXoq29EHuMN8srGXwWhfCgqY-iieAS8VQ9lX1iakOENKKqMWL2DsXR8Vdv_1ausNJEIz9lfoPzN9ymBiY2nE0oL-J4YRkprQ.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24",
+      "payload": {
+        "data": "this is a secret message",
+        "exp": "2019-01-01T00:00:00+00:00"
+      },
+      "footer": "arbitrary-string-that-isn't-json",
+      "implicit-assertion": "discarded-anyway"
+    },
+    {
       "name": "2-S-1",
       "public-key": "1eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2",
       "secret-key": "b4cbfb43df4ce210727d953e4a713307fa19bb7d9f85041438d9e11b942a37741eb9dbbbbc047c03fd70604e0071f0987e16b28b757225c11f00415d0e20b1a2",

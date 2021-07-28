@@ -98,6 +98,18 @@
       "implicit-assertion": "{\"test-vector\":\"3-E-8\"}"
     },
     {
+      "name": "3-E-9",
+      "nonce": "26f7553354482a1d91d4784627854b8da6b8042a7966523c2b404e8dbbe7f7f2",
+      "key": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
+      "token": "v3.local.Si-qCrUJU-BITPzWSeSZqK-qbVxhp-q8XzUCEkKXAooKFDEag5_O50OZL8yl-eyGQvyuLrJJNKqymSi25RnJ9NZPbMkGVRgz-j-CunbyQBW71JhzO43mFCV05LQbE3uAQm-89Euv-xhm6WvG6CZKsObmedL5c-Q80-SPxUkPhSocJ-tEL0DZQ9mJJWqao1Fh0qLqlnE.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24",
+      "payload": {
+        "data": "this is a hidden message",
+        "exp": "2022-01-01T00:00:00+00:00"
+      },
+      "footer": "arbitrary-string-that-isn't-json",
+      "implicit-assertion": "{\"test-vector\":\"3-E-9\"}"
+    },
+    {
       "name": "3-S-1",
       "public-key": "02fbcb7c69ee1c60579be7a334134878d9c5c5bf35d552dab63c0140397ed14cef637d7720925c44699ea30e72874c72fb",
       "secret-key": "20347609607477aca8fbfbc5e6218455f3199669792ef8b466faa87bdc67798144c848dd03661eed5ac62461340cea96",
