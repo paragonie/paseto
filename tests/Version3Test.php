@@ -117,24 +117,30 @@ class Version3Test extends TestCase
 
         foreach ($messages as $message) {
             $signed = Version3::sign($message, $privateKey);
-            $this->assertIsStringType( $signed);
+            $this->assertIsStringType($signed);
             $this->assertSame('v3.public.', Binary::safeSubstr($signed, 0, 10));
 
             $decode = Version3::verify($signed, $publicKey);
-            $this->assertIsStringType( $decode);
+            $this->assertIsStringType($decode);
             $this->assertSame($message, $decode);
 
             // Now with a footer
-            $signed = Version3::sign($message, $privateKey, 'footer');
-            $this->assertIsStringType( $signed);
-            $this->assertSame('v3.public.', Binary::safeSubstr($signed, 0, 10));
+            $signedWithFooter = Version3::sign($message, $privateKey, 'footer');
+            $this->assertIsStringType($signedWithFooter);
+            $this->assertSame('v3.public.', Binary::safeSubstr($signedWithFooter, 0, 10));
             try {
-                Version3::verify($signed, $publicKey, '');
+                Version3::verify($signedWithFooter, $publicKey, '');
                 $this->fail('Missing footer');
             } catch (PasetoException $ex) {
             }
-            $decode = Version3::verify($signed, $publicKey, 'footer');
-            $this->assertIsStringType( $decode);
+            try {
+                $decode = Version3::verify($signedWithFooter, $publicKey, 'footer');
+            } catch (\Throwable $ex) {
+                // This is only failing in CI, not locally. Let's get it to cough up details.
+                var_dump($signedWithFooter, $publicKey->encode());
+                throw $ex;
+            }
+            $this->assertIsStringType($decode);
             $this->assertSame($message, $decode);
         }
 
