@@ -144,9 +144,8 @@ abstract class Util
     }
 
     /**
-     * If a footer was included with the message, first verify that
-     * it's equivalent to the one we expect, then remove it from the
-     * token payload.
+     * If a footer was included with the message, extract it.
+     * Otherwise, return an empty string.
      *
      * @param string $payload
      * @return string
@@ -163,9 +162,7 @@ abstract class Util
     }
 
     /**
-     * If a footer was included with the message, first verify that
-     * it's equivalent to the one we expect, then remove it from the
-     * token payload.
+     * If a footer was included with the message, remove it.
      *
      * @param string $payload
      * @return string
