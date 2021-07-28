@@ -5,6 +5,7 @@ namespace ParagonIE\Paseto\Tests;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
     Version1,
@@ -74,34 +75,44 @@ class KnownAnswerTest extends TestCase
      * @param ProtocolInterface $protocol
      * @param array $tests
      * @throws \SodiumException
+     *
+     * @psalm-suppress MixedArrayAccess
      */
     protected function genericTests(ProtocolInterface $protocol, array $tests)
     {
+        $fixedEncrypt = NonceFixer::buildUnitTestEncrypt($protocol)->bindTo(null, $protocol);
         foreach ($tests as $test) {
-            // Load key for this test (from cache, usually):
-            try {
-                if (isset($test['public-key'])) {
-                    $decoded = $protocol::verify(
-                        $test['token'],
-                        $this->cacheKey($protocol, $test['public-key'], true),
-                        $test['footer'] ?? '',
-                        $test['implicit-assertion'] ?? ''
-                    );
-                } elseif (isset($test['key'])) {
-                    $decoded = $protocol::decrypt(
-                        $test['token'],
-                        $this->cacheKey($protocol, $test['key']),
-                        $test['footer'] ?? '',
-                        $test['implicit-assertion'] ?? ''
-                    );
-                } else {
-                    $this->fail('Key not provided');
-                }
-            } catch (\Exception $ex) {
-                var_dump($test);
-                throw $ex;
+            // First, assert that the payload decodes correctly.
+            if (isset($test['public-key'])) {
+                $decoded = $protocol::verify(
+                    $test['token'],
+                    $this->cacheKey($protocol, $test['public-key'], true),
+                    $test['footer'] ?? '',
+                    $test['implicit-assertion'] ?? ''
+                );
+            } elseif (isset($test['key'])) {
+                $decoded = $protocol::decrypt(
+                    $test['token'],
+                    $this->cacheKey($protocol, $test['key']),
+                    $test['footer'] ?? '',
+                    $test['implicit-assertion'] ?? ''
+                );
+            } else {
+                $this->fail('Key not provided');
             }
-            $this->assertEquals(json_encode($test['payload']), $decoded, $test['name']);
+            $this->assertSame(json_encode($test['payload']), $decoded, $test['name']);
+
+            // Next, assert that we get the same token (if local):
+            if (isset($test['key'])) {
+                $encoded = $fixedEncrypt(
+                    json_encode($test['payload']),
+                    $this->cacheKey($protocol, $test['key']),
+                    $test['footer'] ?? '',
+                    $test['implicit-assertion'] ?? '',
+                    Hex::decode($test['nonce'])
+                );
+                $this->assertSame($test['token'], $encoded, $test['name']);
+            }
         }
     }
 

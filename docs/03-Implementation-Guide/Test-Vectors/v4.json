@@ -101,7 +101,7 @@
       "name": "4-E-9",
       "nonce": "df654812bac492663825520ba2f6e67cf5ca5bdc13d4e7507a98cc4c2fcc3ad8",
       "key": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
-      "token": "v4.local.C41k5ILLhNrDdl86Ltf_oZwHDyyKCQgZMLxLAHu7rb4AgucsdqZrJ8Lw_P5Bq1GFAHw82BA_-vzpwtgStKXyGkdT97Q1tLoFs1iVfKmTVisP3ij-v9Pyb3O1AV2BR2SilwqxrwUKlT2kbj6kQQuVVu6Qhn4EQqA6EEr4b_00jzc_TxthTA.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24",
+      "token": "v4.local.32VIErrEkmY4JVILovbmfPXKW9wT1OdQepjMTC_MOtjA4kiqw7_tcaOM5GNEcnTxl60WiA8rd3wgFSNb_UdJPXjpzm0KW9ojM5f4O2mRvE2IcweP-PRdoHjd5-RHCiExR1IK6t6tybdlmnMwcDMw0YxA_gFSE_IUWl78aMtOepFYSWYfQA.YXJiaXRyYXJ5LXN0cmluZy10aGF0LWlzbid0LWpzb24",
       "payload": {
         "data": "this is a hidden message",
         "exp": "2022-01-01T00:00:00+00:00"
