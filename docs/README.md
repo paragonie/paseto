@@ -34,18 +34,8 @@ The `purpose` is a short string describing the purpose of the token. Accepted va
 * `local`: shared-key authenticated encryption
 * `public`: public-key digital signatures; **not encrypted**
 
-#### Versions 3 and 4
-
-In versions 3 and 4, if the `footer` is non-empty, it **MUST** be valid JSON string.
-
-If you wish to use Versions 3 or 4 with arbitrary data, it **MUST** be serialized into
-a JSON string and its value **SHOULD** be base64url-encoded.
-
-#### Versions 1 and 2
-
-In versions 1 and 2, any optional data can be appended to the end. 
-This information is NOT encrypted, but it is used in calculating the authentication tag
-for the payload. It's always base64url-encoded.
+Any optional data can be appended to the end. This information is NOT encrypted, but it is
+used in calculating the authentication tag for the payload. It's always base64url-encoded.
 
  * For local tokens, it's included in the associated data alongside the nonce.
  * For public tokens, it's appended to the message during the actual

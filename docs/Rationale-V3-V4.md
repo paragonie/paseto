@@ -9,11 +9,11 @@ This document aims to capture the rationale for specifying new modes
 
 v2.local was originally specified to use XChaCha20-Poly1305, a boring
 AEAD mode that's obviously secure. However, we've since learned about
-key- and message-commitment, which is an important security property 
+key- and message-commitment, which is an important security property
 in systems with multiple possible symmetric keys.
 
 Since PASETO added footers to support key-ids and key rotation
-strategies, this means we MUST take attacks that depend on 
+strategies, this means we MUST take attacks that depend on
 [random-key robustness](https://eprint.iacr.org/2020/1491) seriously.
 
 PASETO v4.local uses XChaCha20 to encrypt the message, but then uses
@@ -44,33 +44,33 @@ ECDSA is much more dangerous to implement than Ed25519:
    to ensure this, attackers can determine your secret key through
    [lattice attacks](https://eprint.iacr.org/2019/023).
 3. The computing `k^-1 (mod p)` must be constant-time to avoid leaking `k`.
-   * Most bignum libraries **DO NOT** provide a constant-time modular 
-     inverse function, but cryptography libraries often do. This is something
-     a security auditor will need to verify for each implementation.
+    * Most bignum libraries **DO NOT** provide a constant-time modular
+      inverse function, but cryptography libraries often do. This is something
+      a security auditor will need to verify for each implementation.
 
 There are additional worries with ECDSA [with different curves](https://safecurves.cr.yp.to/),
 but we side-step most of these problems by hard-coding *one* NIST curve and
 refusing to support any others. The outstanding problems are:
 
 * The NIST curve P-384 [is not rigid](https://safecurves.cr.yp.to/rigid.html).
-  * If you're concerned about NSA backdoors, don't use v3 (which only uses
-    NIST-approved algorithms). Use v4 instead.
+    * If you're concerned about NSA backdoors, don't use v3 (which only uses
+      NIST-approved algorithms). Use v4 instead.
 * Weierstrass curves (such as P-384) historically did not use a
   [constant-time ladder](https://safecurves.cr.yp.to/ladder.html) or offer
   [complete addition formulas](https://safecurves.cr.yp.to/complete.html).
-  * This is more of a problem for ECDH than ECDSA.
-  * [Complete addition formulas for P-384 exist](https://eprint.iacr.org/2015/1060).
+    * This is more of a problem for ECDH than ECDSA.
+    * [Complete addition formulas for P-384 exist](https://eprint.iacr.org/2015/1060).
 
 There are additional protocol-level security concerns for ECDSA, namely:
 
 * Invalid Curve Attacks, which are known to break ECDH.
-  * This is solved in PASETO through requiring support for 
-  [Point Compression](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.202.2977&rep=rep1&type=pdf).
-  * Implementations **MAY** also optionally support PEM encoding of
-    uncompressed public key points, but if they do, they **MUST** validate
-    that the public key is a point on the curve.
-  * Point compression used to be patented, but it expired. It's high time
-    we stopped avoiding its usage as an industry.
+    * This is solved in PASETO through requiring support for
+      [Point Compression](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.202.2977&rep=rep1&type=pdf).
+    * Implementations **MAY** also optionally support PEM encoding of
+      uncompressed public key points, but if they do, they **MUST** validate
+      that the public key is a point on the curve.
+    * Point compression used to be patented, but it expired. It's high time
+      we stopped avoiding its usage as an industry.
 * Exclusive Ownership. [See below.](#v3-signatures-prove-exclusive-ownership-enhancement)
 
 Because of these concerns, we previously forbid any implementation of ECDSA
@@ -89,25 +89,25 @@ risk, there are two things you can do:
 2. Hedged signatures: Inject additional randomness into the RFC 6979 step.
    This randomness doesn't need to be signed.
 
-#### Questions For Security Auditors 
+#### Questions For Security Auditors
 
-Due to the risks inherent to ECDSA, security assessors should take care to 
+Due to the risks inherent to ECDSA, security assessors should take care to
 cover the following questions in any review of a PASETO implementation that
 supports `v3.public` tokens (in addition to their own investigations).
 
 1. Is RFC 6979 supported and used by the implementation?
-   1. If not, is a cryptographically secure random number generator used?
-   2. If the answer to both questions is "No", fail.
+    1. If not, is a cryptographically secure random number generator used?
+    2. If the answer to both questions is "No", fail.
 2. Is modular inversion (`k^-1 (mod p)`) constant-time?
-   1. If not, fail.
+    1. If not, fail.
 3. Are public keys expressed as compressed points?
-   1. If not, is the public key explicitly validated to be on the correct
-      curve (P-384)?
-   2. If the answer to both questions is "No", fail.
+    1. If not, is the public key explicitly validated to be on the correct
+       curve (P-384)?
+    2. If the answer to both questions is "No", fail.
 4. Does the underlying cryptography library use complete addition formulas
    for NIST P-384?
-   1. If not, investigate how the library ensures that scalar multiplication
-      is constant-time. (This affects the security of key generation.)
+    1. If not, investigate how the library ensures that scalar multiplication
+       is constant-time. (This affects the security of key generation.)
 
 Affirmative answers to these questions should provide assurance that the
 ECDSA implementation is safe to use with P-384, and security auditors can
@@ -124,7 +124,7 @@ See below for some broader changes.
 
 The initial motivation for hashing the random nonce with the message was
 to create an SIV-like construction to mitigate the consequences of weak
-random number generators, such as OpenSSL's (which isn't 
+random number generators, such as OpenSSL's (which isn't
 [fork-safe](https://github.com/ramsey/uuid/issues/80)).
 
 However, this creates an unfortunate failure mode: If your RNG fails,
@@ -132,7 +132,7 @@ the resultant nonce is a hash of your message, which can be used to
 perform offline attacks on the plaintext. This was first discovered by
 [Thái Dương](https://twitter.com/XorNinja/status/1157882553610563585).
 
-To avoid this failure mode, neither v3.local nor v4.local will pre-hash 
+To avoid this failure mode, neither v3.local nor v4.local will pre-hash
 the message and random value to derive a nonce. Instead, it will trust
 the CSPRNG to be secure.
 
@@ -169,16 +169,16 @@ security of these constructions is more obvious:
 
 * The probability space for either mode is 256-bits of salt + 256-bits of key,
   for a total of 512 bits.
-  * The HKDF output in v3.local is 384 bits.
-  * The HKDF output in v4.local is 448 bits.
-  * Neither of these output sizes reduces the security against collisions.
-    (If they were larger than the input domain of 512 bits, that would be a
-    blunder.)
+    * The HKDF output in v3.local is 384 bits.
+    * The HKDF output in v4.local is 448 bits.
+    * Neither of these output sizes reduces the security against collisions.
+      (If they were larger than the input domain of 512 bits, that would be a
+      blunder.)
 * A single key can be used for 2^112 PASETOs before rotation is necessary.
-  * The birthday bound for a 256-bit salt is 2^128 (for a 50% chance of
-    a single collision occurring). Setting the safety threshold to 2^-32
-    (which is roughly a 1 in 4 billion chance) for a space of 2^256
-    yields 2^112. 
+    * The birthday bound for a 256-bit salt is 2^128 (for a 50% chance of
+      a single collision occurring). Setting the safety threshold to 2^-32
+      (which is roughly a 1 in 4 billion chance) for a space of 2^256
+      yields 2^112.
 * The actual nonce passed to AES-CTR and XChaCha is not revealed publicly.
 
 ### V3 Signatures Prove Exclusive Ownership (Enhancement)
@@ -217,12 +217,6 @@ when a non-JSON encoding rule is used.
 > respectively. Keys **SHOULD** be portable across different underlying encodings, but tokens
 > **MUST NOT** be transmutable between encodings without access to the symmetric key (`local` tokens)
 > or secret key (`public` tokens).
-
-### Consistent Rules for Footer Parsing
-
-In versions 3 and 4, if a footer is provided, it **MUST** decode to a valid JSON
-string. This ensures that footer processing is consistent across
-PASETO implementations.
 
 ## Questions and Answers
 
