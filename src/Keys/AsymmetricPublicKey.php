@@ -125,7 +125,7 @@ class AsymmetricPublicKey implements ReceivingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new self($decoded, $version);
+        return new static($decoded, $version);
     }
 
     /**
