@@ -34,6 +34,31 @@ It **MUST NOT** be possible for a user to take a known public key (used by
 *public* tokens), and generate a *local* token with the same key that any PASETO
 implementations will accept.
 
+## Optional Footer
+
+PASETO places no restrictions on the contents of the authenticated footer.
+The footer's contents **MAY** be JSON-encoded (as is the payload), but it
+doesn't have to be.
+
+The footer contents is intended to be free-form and application-specific.
+
+### Storing JSON in the Footer
+
+Implementations that allow users to store JSON-encoded objects in the footer
+**MUST** give users some mechanism to validate the footer before decoding.
+
+Some example parser rules include:
+
+1. Enforcing a maximum length of the JSON-encoded string.
+2. Enforcing a maximum depth of the decoded JSON object.
+   (Recommended default: Only 1-dimensional objects.)
+
+The motivation for these additional rules is to mitigate the following
+security risks:
+
+1. Stack overflows in JSON parsers caused by too much recursion.
+2. Denial-of-Service attacks enabled by hash-table collisions.
+
 ## Registered Claims
 
 The following keys are reserved for use within PASETO. Users SHOULD NOT write
