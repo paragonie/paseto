@@ -151,4 +151,26 @@ final class ProtocolCollection
     {
         return new self(new Version2);
     }
+
+    /**
+     * Get a collection containing protocol version 3.
+     *
+     * @return self
+     * @throws InvalidVersionException
+     */
+    public static function v3(): self
+    {
+        return new self(new Version3);
+    }
+
+    /**
+     * Get a collection containing protocol version 4.
+     *
+     * @return self
+     * @throws InvalidVersionException
+     */
+    public static function v4(): self
+    {
+        return new self(new Version4);
+    }
 }
