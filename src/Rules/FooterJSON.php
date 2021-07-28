@@ -79,12 +79,44 @@ class FooterJSON implements ValidationRuleInterface
             return false;
         }
 
+        $depth = self::calculateDepth($json);
+        if ($depth > $this->maxDepth) {
+            $this->rejectReason = "Maximum stack depth exceeded";
+            return false;
+        }
+
         /** @var array|bool|null $decoded */
         $decoded = json_decode($json, true, $this->maxDepth);
         if (!$decoded) {
             $this->rejectReason = json_last_error_msg();
         }
         return is_array($decoded);
+    }
+
+    /**
+     * @param string $json
+     * @return int
+     */
+    public static function calculateDepth(string $json): int
+    {
+        // Remove quotes quotes first:
+        $stripped = str_replace('\"', '', $json);
+
+        // Strip everything out of quotes:
+        $stripped = preg_replace('#"[^"]+"([:,\\\}\]])#', '$1', $stripped);
+
+        // Remove everything that isn't a map or list definition
+        $stripped = preg_replace('#[^\[\]\\{\\}]#', '', $stripped);
+
+        $previous = '';
+        $depth = 1;
+        while (!empty($stripped) && $stripped !== $previous) {
+            $previous = $stripped;
+            // Remove pairs of tokens
+            $stripped = str_replace(['[]', '{}'], [], $stripped);
+            ++$depth;
+        }
+        return $depth;
     }
 
     /**
