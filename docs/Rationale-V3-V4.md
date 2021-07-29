@@ -158,17 +158,25 @@ half was used as an AES-CTR nonce. This is tricky to analyze and didn't extend
 well for the v4.local proposal.
 
 For the sake of consistency and easy-to-analyze security designs, in both v3.local
-and v4.local, we now use the entire 32-byte salt in the HKDF step. The nonce
-used by AES-256-CTR and XChaCha20 will be derived from the HKDF output (which
-is now 48 bytes for v3.local and 56 bytes for v4.local). The first 32 bytes of
-each HKDF output will be used as the key. The remaining bytes will be used as
-the nonce for the underlying cipher.
+and v4.local, we now use the entire 32-byte random value in the HKDF step.
+
+Instead of being used as a salt, however, it will be appended to the info tag.
+This subtle change allows us to use the 
+[standard security definition for HKDF](https://eprint.iacr.org/2010/264)
+in arguments for PASETO's security, rather than treating it as just a
+pseudo-random function (PRF). This security definition requires only one salt
+to be used, but for many contexts (info tags).
+
+The nonce used by AES-256-CTR and XChaCha20 will be derived from the HKDF output
+(which is now 48 bytes for v3.local and 56 bytes for v4.local). The first 32
+bytes of each HKDF output will be used as the key. The remaining bytes will be 
+used as the nonce for the underlying cipher.
 
 Local PASETOs in v3 and v4 will always have a predictable storage size, and the
 security of these constructions is more obvious:
 
-* The probability space for either mode is 256-bits of salt + 256-bits of key,
-  for a total of 512 bits.
+* The probability space for either mode is 256-bits of randomness + 256-bits of
+  key, for a total of 512 bits.
     * The HKDF output in v3.local is 384 bits.
     * The HKDF output in v4.local is 448 bits.
     * Neither of these output sizes reduces the security against collisions.

@@ -14,7 +14,7 @@ implicit assertion `i` (which defaults to empty string):
 2. Generate 32 random bytes from the OS's CSPRNG
    to get the nonce, `n`.
 3. Split the key into an Encryption key (`Ek`) and Authentication key (`Ak`),
-   using HKDF-HMAC-SHA384, with `n` as the HKDF salt.
+   using HKDF-HMAC-SHA384, with `n` appended to the info rather than the salt.
     * The output length **MUST** be 48 for the first key derivation and 32 for `Ak`.
     * The derived key will be the leftmost 32 bytes of the first HKDF derivation.
    
@@ -23,16 +23,16 @@ implicit assertion `i` (which defaults to empty string):
    tmp = hkdf_sha384(
        len = 48
        ikm = k,
-       info = "paseto-encryption-key",
-       salt = n
+       info = "paseto-encryption-key" || n,
+       salt = NULL
    );
    Ek = tmp[0:32]
    n2 = tmp[32:]
    Ak = hkdf_sha384(
        len = 32
        ikm = k,
-       info = "paseto-auth-key-for-aead",
-       salt = n
+       info = "paseto-auth-key-for-aead" || n,
+       salt = NULL
    );
    ```
 5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and
@@ -61,7 +61,6 @@ Given a message `m`, key `k`, and optional footer `f`
 (which defaults to empty string), and an optional
 implicit assertion `i` (which defaults to empty string):
 
-
 1. If `f` is not empty, implementations **MAY** verify that the value appended
    to the token matches some expected string `f`, provided they do so using a
    constant-time string compare function.
@@ -73,7 +72,7 @@ implicit assertion `i` (which defaults to empty string):
     * `t` to the rightmost 48 bytes
     * `c` to the middle remainder of the payload, excluding `n` and `t`
 4. Split the key (`k`) into an Encryption key (`Ek`) and an Authentication key
-   (`Ak`), `n` as the HKDF salt.
+   (`Ak`), `n` appended to the HKDF info.
     * For encryption keys, the **info** parameter for HKDF **MUST** be set to
       **paseto-encryption-key**.
     * For authentication keys, the **info** parameter for HKDF **MUST** be set to
@@ -86,16 +85,16 @@ implicit assertion `i` (which defaults to empty string):
    tmp = hkdf_sha384(
        len = 48
        ikm = k,
-       info = "paseto-encryption-key",
-       salt = n
+       info = "paseto-encryption-key" || n,
+       salt = NULL
    );
    Ek = tmp[0:32]
    n2 = tmp[32:]
    Ak = hkdf_sha384(
        len = 32
        ikm = k,
-       info = "paseto-auth-key-for-aead",
-       salt = n
+       info = "paseto-auth-key-for-aead" || n,
+       salt = NULL
    );
    ```
 5. Pack `h`, `n`, `c`, `f`, and `i` together (in that order) using
