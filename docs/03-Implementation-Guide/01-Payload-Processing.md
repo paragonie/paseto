@@ -109,8 +109,9 @@ function getJsonDepth(data: string): number {
     let depth = 1;
     
     // Step 6
-    while (stripped.length > 0 && stripped !== previous) { 
-        stripped.split(/(\{\}|\[\])/g).join('');
+    while (stripped.length > 0 && stripped !== previous) {
+        previous = stripped;
+        stripped = stripped.replace(/({}|\[\])/g, '');
         depth++;
     }
     
