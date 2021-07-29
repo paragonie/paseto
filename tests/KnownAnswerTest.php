@@ -3,9 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
     Version1,

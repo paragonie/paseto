@@ -187,7 +187,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
         $authKey = Util::HKDF(
             'sha384',
             $this->key,
-            32,
+            48,
             self::INFO_AUTHENTICATION . ($salt ?? '')
         );
         return [$encKey, $authKey, $nonce];
