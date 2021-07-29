@@ -32,10 +32,10 @@ abstract class Util
         $stripped = preg_replace('/\s+/', '', $stripped);
 
         // Strip everything out of quotes:
-        $stripped = preg_replace('#"[^"]+"([:,\\\}\]])#', '$1', $stripped);
+        $stripped = preg_replace('#"[^"]+"([:,}\]])#', '$1', $stripped);
 
         // Remove everything that isn't a map or list definition
-        $stripped = preg_replace('#[^\[\]\\{\\}]#', '', $stripped);
+        $stripped = preg_replace('#[^\[\]{}]#', '', $stripped);
 
         $previous = '';
         $depth = 1;
@@ -59,10 +59,12 @@ abstract class Util
      */
     public static function countJsonKeys(string $json): int
     {
-        return preg_match_all('#[^\\\\]":#', $json);
+        return preg_match_all('#[^\\\]":#', $json);
     }
 
     /**
+     * Normalize line-endings to UNIX-style (LF rather than CRLF).
+     *
      * @param string $in
      * @return string
      */

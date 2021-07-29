@@ -98,6 +98,8 @@ class FooterJSON implements ValidationRuleInterface
     }
 
     /**
+     * Set the maximum permitted depth for the JSON payload in the footer.
+     *
      * @param int $maxDepth
      * @return self
      */
@@ -108,6 +110,8 @@ class FooterJSON implements ValidationRuleInterface
     }
 
     /**
+     * Set the maximum number of keys in the JSON payload in the footer.
+     *
      * @param int $maxKeys
      * @return self
      */
@@ -118,6 +122,8 @@ class FooterJSON implements ValidationRuleInterface
     }
 
     /**
+     * Set the maximum length of the JSON payload in the footer.
+     *
      * @param int $maxLength
      * @return self
      */
@@ -125,32 +131,5 @@ class FooterJSON implements ValidationRuleInterface
     {
         $this->maxLength = $maxLength;
         return $this;
-    }
-
-    /**
-     * @param int $maxDepth
-     * @return self
-     */
-    public function withMaxDepth(int $maxDepth): self
-    {
-        return (clone $this)->setMaxDepth($maxDepth);
-    }
-
-    /**
-     * @param int $maxKeys
-     * @return self
-     */
-    public function withMaxKeys(int $maxKeys): self
-    {
-        return (clone $this)->setMaxKeys($maxKeys);
-    }
-
-    /**
-     * @param int $maxLength
-     * @return self
-     */
-    public function withMaxLength(int $maxLength): self
-    {
-        return (clone $this)->setMaxLength($maxLength);
     }
 }

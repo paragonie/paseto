@@ -32,8 +32,9 @@ class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * AsymmetricPublicKey constructor.
+     *
      * @param string $keyMaterial
-     * @param ProtocolInterface $protocol
+     * @param ProtocolInterface|null $protocol
      * @throws \Exception
      */
     public function __construct(
@@ -62,6 +63,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v1 public key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -73,6 +76,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v2 public key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -84,6 +89,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v3 public key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -95,6 +102,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v4 public key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -106,6 +115,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Returns the base64url-encoded public key.
+     *
      * @return string
      * @throws \TypeError
      */
@@ -115,6 +126,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a public key from a base64url-encoded string.
+     *
      * @param string $encoded
      * @param ProtocolInterface|null $version
      *
@@ -129,6 +142,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Get the version of PASETO that this key is intended for.
+     *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
@@ -137,6 +152,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Get the raw key contents.
+     *
      * @return string
      */
     public function raw()

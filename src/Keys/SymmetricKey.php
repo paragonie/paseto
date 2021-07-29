@@ -2,8 +2,10 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
-use ParagonIE\ConstantTime\Binary;
+use ParagonIE\ConstantTime\{
+    Base64UrlSafe,
+    Binary
+};
 use ParagonIE\Paseto\{
     Exception\PasetoException,
     ReceivingKey,
@@ -60,6 +62,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v1 symmetric key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -72,6 +76,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v2 symmetric key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -84,6 +90,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v3 symmetric key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -96,6 +104,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v4 symmetric key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -108,6 +118,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Return a base64url-encoded representation of this symmetric key.
+     *
      * @return string
      * @throws \TypeError
      */
@@ -117,6 +129,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a symmetric key from a base64url-encoded string.
+     *
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
@@ -129,6 +143,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Get the version of PASETO that this key is intended for.
+     *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
@@ -137,6 +153,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Get the raw key contents.
+     *
      * @return string
      */
     public function raw(): string
@@ -208,6 +226,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * Split this key into two 256-bit keys, using HKDF-SHA384
      * (with the given salt)
+     *
+     * Used in versions 1 and 2
      *
      * @param string|null $salt
      * @return array<int, string>

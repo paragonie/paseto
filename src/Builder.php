@@ -84,6 +84,19 @@ class Builder
     }
 
     /**
+     * Get the footer contents as an array.
+     *
+     * @return array
+     * @throws PasetoException
+     */
+    public function getFooterArray(): array
+    {
+        return $this->token->getFooterArray();
+    }
+
+    /**
+     * Get the implicit assertions configured for this Builder.
+     *
      * @return array
      */
     public function getImplicitAssertions(): array
@@ -92,15 +105,6 @@ class Builder
             return [];
         }
         return (array) json_decode($this->implicitAssertions, true);
-    }
-
-    /**
-     * @return array
-     * @throws PasetoException
-     */
-    public function getFooterArray(): array
-    {
-        return $this->token->getFooterArray();
     }
 
     /**

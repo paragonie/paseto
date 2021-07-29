@@ -18,7 +18,8 @@ use ParagonIE\Paseto\Exception\InvalidVersionException;
 final class ProtocolCollection
 {
     /**
-     * Our built-in whitelist of protocol types is defined here.
+     * Our built-in allow-list of protocol types is defined here.
+     *
      * @const array<int, class-string<ProtocolInterface>>
      */
     const ALLOWED = [

@@ -6,9 +6,15 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{SendingKey, ProtocolInterface, Util};
-use ParagonIE\EasyECC\ECDSA\PublicKey;
-use ParagonIE\EasyECC\ECDSA\SecretKey;
+use ParagonIE\Paseto\{
+    SendingKey,
+    ProtocolInterface,
+    Util
+};
+use ParagonIE\EasyECC\ECDSA\{
+    PublicKey,
+    SecretKey
+};
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2,
@@ -32,7 +38,7 @@ class AsymmetricSecretKey implements SendingKey
      * AsymmetricSecretKey constructor.
      *
      * @param string $keyData
-     * @param ProtocolInterface $protocol
+     * @param ProtocolInterface|null $protocol
      * @throws \Exception
      * @throws \TypeError
      */
@@ -65,6 +71,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a v1 secret key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -77,6 +85,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a v2 secret key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -89,6 +99,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a v3 secret key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -101,6 +113,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a v4 secret key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -113,7 +127,9 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
-     * @param ProtocolInterface $protocol
+     * Generate a secret key.
+     *
+     * @param ProtocolInterface|null $protocol
      * @return self
      * @throws \Exception
      * @throws \TypeError
@@ -142,6 +158,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Return a base64url-encoded representation of this secret key.
+     *
      * @return string
      * @throws \TypeError
      */
@@ -151,6 +169,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a secret key from a base64url-encoded string.
+     *
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
@@ -164,6 +184,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Get the version of PASETO that this key is intended for.
+     *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
@@ -172,6 +194,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Get the public key that corresponds to this secret key.
+     *
      * @return AsymmetricPublicKey
      * @throws \Exception
      * @throws \TypeError
@@ -200,6 +224,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Get the raw key contents.
+     *
      * @return string
      */
     public function raw()
