@@ -105,6 +105,9 @@ class FooterJSON implements ValidationRuleInterface
         // Remove quotes quotes first:
         $stripped = str_replace('\"', '', $json);
 
+        // Remove whitespace:
+        $stripped = preg_replace('/\s+/', '', $stripped);
+
         // Strip everything out of quotes:
         $stripped = preg_replace('#"[^"]+"([:,\\\}\]])#', '$1', $stripped);
 

@@ -20,6 +20,7 @@ class FooterJSONTest extends TestCase
         $this->assertSame(4, FooterJSON::calculateDepth('{"abc":{"abc":{"abc":"def"}}}'));
         $this->assertSame(2, FooterJSON::calculateDepth('{"abc":"{\"test\":\"foo\"}"}'));
         $this->assertSame(3, FooterJSON::calculateDepth('{"abc":"{\"test\":\"foo\"}","def":[{"abc":"def"}]}'));
+        $this->assertSame(3, FooterJSON::calculateDepth('{"abc":"{\"test\":\"foo\"}" ,"def":[{"abc":"def"}]}'));
         $depth = random_int(1024, 8192);
         $this->assertSame(
             $depth + 1,
