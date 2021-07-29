@@ -15,13 +15,13 @@ implicit assertion `i` (which defaults to empty string):
    to get the nonce, `n`.
 3. Split the key into an Encryption key (`Ek`) and Authentication key (`Ak`),
    using HKDF-HMAC-SHA384, with `n` appended to the info rather than the salt.
-    * The output length **MUST** be 48 for the first key derivation and 32 for `Ak`.
+    * The output length **MUST** be 48 for both key derivations.
     * The derived key will be the leftmost 32 bytes of the first HKDF derivation.
    
    The remaining 16 bytes will be used as a counter nonce (`n2`):
    ```
    tmp = hkdf_sha384(
-       len = 48
+       len = 48,
        ikm = k,
        info = "paseto-encryption-key" || n,
        salt = NULL
@@ -29,7 +29,7 @@ implicit assertion `i` (which defaults to empty string):
    Ek = tmp[0:32]
    n2 = tmp[32:]
    Ak = hkdf_sha384(
-       len = 32
+       len = 48,
        ikm = k,
        info = "paseto-auth-key-for-aead" || n,
        salt = NULL
@@ -77,13 +77,13 @@ implicit assertion `i` (which defaults to empty string):
       **paseto-encryption-key**.
     * For authentication keys, the **info** parameter for HKDF **MUST** be set to
       **paseto-auth-key-for-aead**.
-    * The output length **MUST** be 48 for the first key derivation and 32 for `Ak`.
+    * The output length **MUST** be 48 for both key derivations.
       The leftmost 32 bytes of the first key derivation will produce `Ek`, while
       the remaining 16 bytes will be the AES nonce `n2`.
 
    ```
    tmp = hkdf_sha384(
-       len = 48
+       len = 48,
        ikm = k,
        info = "paseto-encryption-key" || n,
        salt = NULL
@@ -91,7 +91,7 @@ implicit assertion `i` (which defaults to empty string):
    Ek = tmp[0:32]
    n2 = tmp[32:]
    Ak = hkdf_sha384(
-       len = 32
+       len = 48,
        ikm = k,
        info = "paseto-auth-key-for-aead" || n,
        salt = NULL
