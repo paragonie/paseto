@@ -6,6 +6,7 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
+use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Exception\PasetoException;
 
 /**
@@ -14,6 +15,53 @@ use ParagonIE\Paseto\Exception\PasetoException;
  */
 abstract class Util
 {
+    /**
+     * Calculate the depth of a JSON string without passing it to json_decode()
+     *
+     * @param string $json
+     * @return int
+     *
+     * @throws EncodingException
+     */
+    public static function calculateJsonDepth(string $json): int
+    {
+        // Remove quotes quotes first:
+        $stripped = str_replace('\"', '', $json);
+
+        // Remove whitespace:
+        $stripped = preg_replace('/\s+/', '', $stripped);
+
+        // Strip everything out of quotes:
+        $stripped = preg_replace('#"[^"]+"([:,\\\}\]])#', '$1', $stripped);
+
+        // Remove everything that isn't a map or list definition
+        $stripped = preg_replace('#[^\[\]\\{\\}]#', '', $stripped);
+
+        $previous = '';
+        $depth = 1;
+        while (!empty($stripped) && $stripped !== $previous) {
+            $previous = $stripped;
+            // Remove pairs of tokens
+            $stripped = str_replace(['[]', '{}'], [], $stripped);
+            ++$depth;
+        }
+        if (!empty($stripped)) {
+            throw new EncodingException('Invalid JSON string provided');
+        }
+        return $depth;
+    }
+
+    /**
+     * Count the number of instances of `":` without a preceding backslash.
+     *
+     * @param string $json
+     * @return int
+     */
+    public static function countJsonKeys(string $json): int
+    {
+        return preg_match_all('#[^\\\\]":#', $json);
+    }
+
     /**
      * @param string $in
      * @return string

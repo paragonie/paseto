@@ -6,6 +6,7 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Hex
 };
+use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Util;
 use PHPUnit\Framework\TestCase;
 
@@ -15,6 +16,41 @@ use PHPUnit\Framework\TestCase;
  */
 class UtilTest extends TestCase
 {
+    /**
+     * @throws EncodingException
+     */
+    public function testDepth()
+    {
+        $this->assertSame(1, Util::calculateJsonDepth('"abc"'));
+        $this->assertSame(2, Util::calculateJsonDepth('{"abc":"def"}'));
+        $this->assertSame(3, Util::calculateJsonDepth('{"abc":{"abc":"def"}}'));
+        $this->assertSame(4, Util::calculateJsonDepth('{"abc":{"abc":{"abc":"def"}}}'));
+        $this->assertSame(2, Util::calculateJsonDepth('{"abc":"{\"test\":\"foo\"}"}'));
+        $this->assertSame(3, Util::calculateJsonDepth('{"abc":"{\"test\":\"foo\"}","def":[{"abc":"def"}]}'));
+        $this->assertSame(3, Util::calculateJsonDepth('{"abc":"{\"test\":\"foo\"}" ,"def":[{"abc":"def"}]}'));
+        $depth = random_int(1024, 8192);
+        $this->assertSame(
+            $depth + 1,
+            Util::calculateJsonDepth(
+                '{"a":' .
+                str_repeat('[', $depth) .
+                '1, 2, 3' .
+                str_repeat(']', $depth) .
+                '}'
+            )
+        );
+    }
+
+    /**
+     * @throws EncodingException
+     */
+    public function testInvalid()
+    {
+        $this->expectException(EncodingException::class);
+        Util::calculateJsonDepth('{"a":[}');
+    }
+    
+    
     /**
      * @covers Util::HKDF()
      * @ref https://tools.ietf.org/html/rfc5869

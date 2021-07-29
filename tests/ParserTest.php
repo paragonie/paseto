@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Builder;
+use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Exception\InvalidKeyException;
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
 use ParagonIE\Paseto\Exception\InvalidVersionException;
@@ -21,6 +22,7 @@ use ParagonIE\Paseto\Keys\Version2\{
 };
 use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Protocol\Version4;
+use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\ProtocolCollection;
@@ -166,6 +168,113 @@ class ParserTest extends TestCase
             (string) $v2builder,
             'Switching to signing caused a different signature'
         );
+    }
+
+    /**
+     * @param SymmetricKey $key
+     * @param ProtocolInterface|null $v
+     * @return string
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws PasetoException
+     */
+    protected function getDummyToken(SymmetricKey $key, ?ProtocolInterface $v = null): string
+    {
+        if (!$v) {
+            $v = $key->getProtocol();
+        }
+        $builder = (new Builder())
+            ->setVersion($v)
+            ->setPurpose(Purpose::local())
+            ->setKey($key)
+            ->setClaims([
+                'a' => 'b',
+                'c' => 'd',
+                'e' => [
+                    'f' => 1,
+                    'g' => [
+                        'x' => 234
+                    ],
+                    'h' => 'ijk'
+                ],
+                'l' => json_encode(['pq' => 'rs'])
+            ]);
+        return $builder->toString();
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testLimitedJsonClaimCount(): void
+    {
+        // Setup
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $dummy = $this->getDummyToken($v2key);
+
+        $parser = (new Parser())
+            ->setAllowedVersions(ProtocolCollection::v2())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key)
+            ->setMaxClaimCount(16);
+
+        // OK
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($dummy));
+
+        $this->expectException(EncodingException::class);
+        $parser->setMaxClaimCount(2)->parse($dummy);
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testLimitedJsonClaimDepth(): void
+    {
+        // Setup
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $dummy = $this->getDummyToken($v2key);
+
+        $parser = (new Parser())
+            ->setAllowedVersions(ProtocolCollection::v2())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key)
+            ->setMaxClaimDepth(16);
+
+        // OK
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($dummy));
+
+        $this->expectException(EncodingException::class);
+        $parser->setMaxClaimDepth(3)->parse($dummy);
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testLimitedJsonLength(): void
+    {
+        // Setup
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $dummy = $this->getDummyToken($v2key);
+
+        $parser = (new Parser())
+            ->setAllowedVersions(ProtocolCollection::v2())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key)
+            ->setMaxJsonLength(8192);
+
+        // OK
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($dummy));
+
+        $this->expectException(EncodingException::class);
+        $parser->setMaxJsonLength(16)->parse($dummy);
     }
 
     /**

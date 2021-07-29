@@ -15,6 +15,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Parsing\PasetoMessage;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
@@ -35,6 +36,15 @@ class Parser
 
     /** @var ReceivingKey $key */
     protected $key;
+
+    /** @var ?int $maxClaimCount */
+    protected $maxClaimCount = null;
+
+    /** @var ?int $maxClaimDepth */
+    protected $maxClaimDepth = null;
+
+    /** @var ?int $maxJsonLength */
+    protected $maxJsonLength = null;
 
     /** @var Purpose|null $purpose */
     protected $purpose;
@@ -228,6 +238,10 @@ class Parser
         if (!isset($decoded)) {
             throw new PasetoException('Unsupported purpose or version.');
         }
+
+        // Throw if the claims were invalid:
+        $this->throwIfClaimsJsonInvalid($decoded);
+
         /** @var array<string, string>|bool $claims */
         $claims = \json_decode((string) $decoded, true);
         if (!\is_array($claims)) {
@@ -280,6 +294,42 @@ class Parser
     }
 
     /**
+     * Limit the length of the decoded JSON payload containing the claims.
+     *
+     * @param int|null $length
+     * @return self
+     */
+    public function setMaxJsonLength(?int $length = null): self
+    {
+        $this->maxJsonLength = $length;
+        return $this;
+    }
+
+    /**
+     * Limit the maximum number of claims in the decoded JSON payload.
+     *
+     * @param int|null $maximum
+     * @return self
+     */
+    public function setMaxClaimCount(?int $maximum = null): self
+    {
+        $this->maxClaimCount = $maximum;
+        return $this;
+    }
+
+    /**
+     * Limit the maximum depth of the decoded JSON payload containign the claims.
+     *
+     * @param int|null $maximum
+     * @return self
+     */
+    public function setMaxClaimDepth(?int $maximum = null): self
+    {
+        $this->maxClaimDepth = $maximum;
+        return $this;
+    }
+
+    /**
      * Specify the key for the token we are going to parse.
      *
      * @param ReceivingKey $key
@@ -327,6 +377,37 @@ class Parser
 
         $this->purpose = $purpose;
         return $this;
+    }
+
+    /**
+     * @throws EncodingException
+     */
+    public function throwIfClaimsJsonInvalid(string $jsonString): void
+    {
+        if (!is_null($this->maxJsonLength)) {
+            $length = Binary::safeStrlen($jsonString);
+            if ($length > $this->maxJsonLength) {
+                throw new EncodingException(
+                    "Claims length is too long ({$length} > {$this->maxJsonLength}"
+                );
+            }
+        }
+        if (!is_null($this->maxClaimCount)) {
+            $count = Util::countJsonKeys($jsonString);
+            if ($count > $this->maxClaimCount) {
+                throw new EncodingException(
+                    "Too many claims in this token ({$count} > {$this->maxClaimCount}"
+                );
+            }
+        }
+        if (!is_null($this->maxClaimDepth)) {
+            $depth = Util::calculateJsonDepth($jsonString);
+            if ($depth > $this->maxClaimDepth) {
+                throw new EncodingException(
+                    "Too many layers of claims ({$depth} > {$this->maxClaimDepth}"
+                );
+            }
+        }
     }
 
     /**

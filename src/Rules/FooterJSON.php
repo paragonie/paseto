@@ -5,6 +5,7 @@ namespace ParagonIE\Paseto\Rules;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\JsonToken;
+use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\ValidationRuleInterface;
 
 /**
@@ -60,6 +61,8 @@ class FooterJSON implements ValidationRuleInterface
      *
      * @param JsonToken $token
      * @return bool
+     *
+     * @throws EncodingException
      */
     public function isValid(JsonToken $token): bool
     {
@@ -74,13 +77,13 @@ class FooterJSON implements ValidationRuleInterface
             return false;
         }
 
-        $count = self::countKeys($json);
+        $count = Util::countJsonKeys($json);
         if ($count > $this->maxKeys) {
             $this->rejectReason = "Footer has too many keys ({$count}, when the maximum allowed is {$this->maxKeys})";
             return false;
         }
 
-        $depth = self::calculateDepth($json);
+        $depth = Util::calculateJsonDepth($json);
         if ($depth > $this->maxDepth) {
             $this->rejectReason = "Maximum stack depth exceeded";
             return false;
@@ -92,51 +95,6 @@ class FooterJSON implements ValidationRuleInterface
             $this->rejectReason = json_last_error_msg();
         }
         return is_array($decoded);
-    }
-
-    /**
-     * @param string $json
-     * @return int
-     *
-     * @throws EncodingException
-     */
-    public static function calculateDepth(string $json): int
-    {
-        // Remove quotes quotes first:
-        $stripped = str_replace('\"', '', $json);
-
-        // Remove whitespace:
-        $stripped = preg_replace('/\s+/', '', $stripped);
-
-        // Strip everything out of quotes:
-        $stripped = preg_replace('#"[^"]+"([:,\\\}\]])#', '$1', $stripped);
-
-        // Remove everything that isn't a map or list definition
-        $stripped = preg_replace('#[^\[\]\\{\\}]#', '', $stripped);
-
-        $previous = '';
-        $depth = 1;
-        while (!empty($stripped) && $stripped !== $previous) {
-            $previous = $stripped;
-            // Remove pairs of tokens
-            $stripped = str_replace(['[]', '{}'], [], $stripped);
-            ++$depth;
-        }
-        if (!empty($stripped)) {
-            throw new EncodingException('Invalid JSON string provided');
-        }
-        return $depth;
-    }
-
-    /**
-     * Count the number of instances of `":` without a preceding backslash.
-     *
-     * @param string $json
-     * @return int
-     */
-    public static function countKeys(string $json): int
-    {
-        return preg_match_all('#[^\\\\]":#', $json);
     }
 
     /**
