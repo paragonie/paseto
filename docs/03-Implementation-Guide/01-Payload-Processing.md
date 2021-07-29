@@ -70,7 +70,8 @@ upper limit, so you're forced to take matters into your own hands.
 A simple way of enforcing the maximum depth of a JSON string without having
 to parse it with your JSON library is to employ the following algorithm:
 
-1. Create a copy of the JSON string with all `\"` sequences removed.
+1. Create a copy of the JSON string with all `\"` sequences and whitespace
+   characters removed.
    This will prevent weird edge cases in step 2.
 2. Use a regular expression to remove all quoted strings and their contents.
    For example, replacing `/"[^"]+?"([:,\}\]])/` with the first match will 
@@ -91,13 +92,13 @@ An example of this logic implemented in TypeScript is below:
 ```typescript
 function getJsonDepth(data: string): number {
     // Step 1
-    let stripped = data.replace(/\\"/, '');
+    let stripped = data.replace(/\\"/g, '').replace(/\s+/g, '');
     
     // Step 2
-    stripped = stripped.replace(/"[^"]+"([:,\}\]])/, '$1');
+    stripped = stripped.replace(/"[^"]+"([:,\}\]])/g, '$1');
     
     // Step 3
-    stripped = stripped.replace(/[^\[\{\}\]]/, '');
+    stripped = stripped.replace(/[^\[\{\}\]]/g, '');
     
     // Step 4
     if (stripped.length === 0) {
@@ -109,7 +110,7 @@ function getJsonDepth(data: string): number {
     
     // Step 6
     while (stripped.length > 0 && stripped !== previous) { 
-        stripped.split(/(\{\}|\[\])/).join('');
+        stripped.split(/(\{\}|\[\])/g).join('');
         depth++;
     }
     
