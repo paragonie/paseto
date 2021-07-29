@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Rules;
 
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\JsonToken;
 use ParagonIE\Paseto\ValidationRuleInterface;
 
@@ -96,6 +97,8 @@ class FooterJSON implements ValidationRuleInterface
     /**
      * @param string $json
      * @return int
+     *
+     * @throws EncodingException
      */
     public static function calculateDepth(string $json): int
     {
@@ -115,6 +118,9 @@ class FooterJSON implements ValidationRuleInterface
             // Remove pairs of tokens
             $stripped = str_replace(['[]', '{}'], [], $stripped);
             ++$depth;
+        }
+        if (!empty($stripped)) {
+            throw new EncodingException('Invalid JSON string provided');
         }
         return $depth;
     }
