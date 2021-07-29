@@ -62,6 +62,9 @@ implicit assertion `i` (which defaults to empty string).
    constant-time string compare function.
 2. Verify that the message begins with `v4.local.`, otherwise throw an
    exception. This constant will be referred to as `h`.
+   * **Future-proofing**: If a future PASETO variant allows for encodings other
+     than JSON (e.g., CBOR), future implementations **MAY** also permit those 
+     values at this step (e.g. `v4c.local.`).
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from base64url to raw binary. Set:
     * `n` to the leftmost 32 bytes

@@ -6,19 +6,18 @@ Throw an exception. We don't do this in version 3.
 
 ## Encrypt
 
-Given a message `m`, key `k`, and optional footer `f`
-(which defaults to empty string), and an optional
-implicit assertion `i` (which defaults to empty string):
+Given a message `m`, key `k`, and optional footer `f` (which defaults to empty 
+string), and an optional implicit assertion `i` (which defaults to empty string):
 
 1. Set header `h` to `v3.local.`
-2. Generate 32 random bytes from the OS's CSPRNG
-   to get the nonce, `n`.
+2. Generate 32 random bytes from the OS's CSPRNG to get the nonce, `n`.
 3. Split the key into an Encryption key (`Ek`) and Authentication key (`Ak`),
    using HKDF-HMAC-SHA384, with `n` appended to the info rather than the salt.
     * The output length **MUST** be 48 for both key derivations.
     * The derived key will be the leftmost 32 bytes of the first HKDF derivation.
    
-   The remaining 16 bytes will be used as a counter nonce (`n2`):
+   The remaining 16 bytes of the first key derivation (from which `Ek` is derived)
+   will be used as a counter nonce (`n2`):
    ```
    tmp = hkdf_sha384(
        len = 48,
@@ -35,8 +34,8 @@ implicit assertion `i` (which defaults to empty string):
        salt = NULL
    );
    ```
-5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and
-   `n2` as the nonce. We'll call this `c`:
+5. Encrypt the message using `AES-256-CTR`, using `Ek` as the key and `n2` as the nonce.
+   We'll call the encrypted output of this step `c`:
    ```
    c = aes256ctr_encrypt(
        plaintext = m,
@@ -46,7 +45,7 @@ implicit assertion `i` (which defaults to empty string):
    ```
 6. Pack `h`, `n`, `c`, `f`, and `i` together using
    [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding)
-   (pre-authentication encoding). We'll call this `preAuth`
+   (pre-authentication encoding). We'll call this `preAuth`.
 7. Calculate HMAC-SHA384 of the output of `preAuth`, using `Ak` as the
    authentication key. We'll call this `t`.
 8. If `f` is:
@@ -64,8 +63,15 @@ implicit assertion `i` (which defaults to empty string):
 1. If `f` is not empty, implementations **MAY** verify that the value appended
    to the token matches some expected string `f`, provided they do so using a
    constant-time string compare function.
+   * If `f` is allowed to be a JSON-encoded blob, implementations **SHOULD** allow
+     users to provide guardrails against invalid JSON tokens.
+     See [this document](../03-Implementation-Guide/01-Payload-Processing.md#optional-footer)
+     for specific guidance and example code.
 2. Verify that the message begins with `v3.local.`, otherwise throw an
    exception. This constant will be referred to as `h`.
+   * **Future-proofing**: If a future PASETO variant allows for encodings other
+     than JSON (e.g., CBOR), future implementations **MAY** also permit those
+     values at this step (e.g. `v3c.local.`).
 3. Decode the payload (`m` sans `h`, `f`, and the optional trailing period
    between `m` and `f`) from base64url to raw binary. Set:
     * `n` to the leftmost 32 bytes
@@ -100,13 +106,14 @@ implicit assertion `i` (which defaults to empty string):
 5. Pack `h`, `n`, `c`, `f`, and `i` together (in that order) using
    [PAE](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
    We'll call this `preAuth`.
-6. Recalculate HMAC-SHA-384 of `preAuth` using `Ak` as the key. We'll call this
-   `t2`.
+6. Recalculate HMAC-SHA-384 of `preAuth` using `Ak` as the key. We'll call this `t2`.
 7. Compare `t` with `t2` using a constant-time string compare function. If they
    are not identical, throw an exception.
    * You **MUST** use a constant-time string compare function to be compliant.
      If you do not have one available to you in your programming language/framework,
      you MUST use [Double HMAC](https://paragonie.com/blog/2015/11/preventing-timing-attacks-on-string-comparison-with-double-hmac-strategy).
+   * Common utilities that were not intended for cryptographic comparisons, such as 
+     Java's `Array.equals()` or PHP's `==` operator, are explicitly forbidden.
 8. Decrypt `c` using `AES-256-CTR`, using `Ek` as the key and `n2` as the nonce,
    then return the plaintext.
    ```
@@ -119,9 +126,9 @@ implicit assertion `i` (which defaults to empty string):
 
 ## Sign
 
-Given a message `m`, 384-bit ECDSA secret key `sk`, and
-optional footer `f` (which defaults to empty string), and an optional
-implicit assertion `i` (which defaults to empty string):
+Given a message `m`, 384-bit ECDSA secret key `sk`, an optional footer `f` 
+(which defaults to empty string), and an optional implicit assertion `i`
+(which defaults to empty string):
 
 1. Set `h` to `v3.public.`
 2. Pack `pk`, `h`, `m`, `f`, and `i` together using
@@ -133,13 +140,15 @@ implicit assertion `i` (which defaults to empty string):
      [the least significant bit of Y](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.202.2977&rep=rep1&type=pdf);
      section 4.3.6, step 2.2).
      The remaining bytes **MUST** be the X coordinate, using big-endian byte order.
-3. Sign `m2` using ECDSA over P-384 with the private key `sk`. We'll call this `sig`.
-   The output of `sig` MUST be in the format `r || s` (where `||`means concatenate),
-   for a total length of 96 bytes.
-   Signatures **SHOULD** use deterministic nonces ([RFC 6979](https://tools.ietf.org/html/rfc6979))
-   if possible, to mitigate the risk of [k-value reuse](https://blog.trailofbits.com/2020/06/11/ecdsa-handle-with-care/).
-   If RFC 6979 is not available in your programming language, ECDSA **MUST** use a CSPRNG
-   to generate the k-value.
+3. Sign `m2` using ECDSA over P-384 and SHA-384 with the private key `sk`.
+   We'll call this `sig`. The output of `sig` MUST be in the format `r || s`
+   (where `||`means concatenate), for a total length of 96 bytes.
+   * Signatures **SHOULD** use deterministic nonces ([RFC 6979](https://tools.ietf.org/html/rfc6979))
+     if possible, to mitigate the risk of [k-value reuse](https://blog.trailofbits.com/2020/06/11/ecdsa-handle-with-care/).
+   * If RFC 6979 is not available in your programming language, ECDSA **MUST** use a CSPRNG
+     to generate the k-value.
+   * Hedged signatures (RFC 6979 + additional randomness to provide resilience to fault attacks)
+     are allowed.
    ```
    sig = crypto_sign_ecdsa_p384(
        message = m2,
