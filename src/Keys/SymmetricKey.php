@@ -180,8 +180,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
             'sha384',
             $this->key,
             48,
-            self::INFO_ENCRYPTION,
-            $salt
+            self::INFO_ENCRYPTION . ($salt ?? '')
         );
         $encKey = Binary::safeSubstr($tmp, 0, 32);
         $nonce = Binary::safeSubstr($tmp, 32, 16);
@@ -189,8 +188,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
             'sha384',
             $this->key,
             32,
-            self::INFO_AUTHENTICATION,
-            $salt
+            self::INFO_AUTHENTICATION . ($salt ?? '')
         );
         return [$encKey, $authKey, $nonce];
     }
