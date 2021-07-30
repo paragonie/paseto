@@ -8,11 +8,18 @@ use ParagonIE\ConstantTime\{
 };
 use ParagonIE\Paseto\{
     SendingKey,
-    ProtocolInterface
+    ProtocolInterface,
+    Util
+};
+use ParagonIE\EasyECC\ECDSA\{
+    PublicKey,
+    SecretKey
 };
 use ParagonIE\Paseto\Protocol\{
     Version1,
-    Version2
+    Version2,
+    Version3,
+    Version4
 };
 
 /**
@@ -31,7 +38,7 @@ class AsymmetricSecretKey implements SendingKey
      * AsymmetricSecretKey constructor.
      *
      * @param string $keyData
-     * @param ProtocolInterface $protocol
+     * @param ProtocolInterface|null $protocol
      * @throws \Exception
      * @throws \TypeError
      */
@@ -41,7 +48,11 @@ class AsymmetricSecretKey implements SendingKey
     ) {
         $protocol = $protocol ?? new Version2;
 
-        if (\hash_equals($protocol::header(), Version2::HEADER)) {
+        if (
+            \hash_equals($protocol::header(), Version2::HEADER)
+                ||
+            \hash_equals($protocol::header(), Version4::HEADER)
+        ) {
             $len = Binary::safeStrlen($keyData);
             if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
                 $keyData = Binary::safeSubstr($keyData, 0, 64);
@@ -60,6 +71,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a v1 secret key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -72,6 +85,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a v2 secret key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -84,7 +99,37 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
-     * @param ProtocolInterface $protocol
+     * Initialize a v3 secret key.
+     *
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v3(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version3());
+    }
+
+    /**
+     * Initialize a v4 secret key.
+     *
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v4(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version4());
+    }
+
+    /**
+     * Generate a secret key.
+     *
+     * @param ProtocolInterface|null $protocol
      * @return self
      * @throws \Exception
      * @throws \TypeError
@@ -97,7 +142,12 @@ class AsymmetricSecretKey implements SendingKey
             $rsa = Version1::getRsa();
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
-            return new self($keypair['privatekey'], $protocol);
+            return new self(Util::dos2unix($keypair['privatekey']), $protocol);
+        } elseif (\hash_equals($protocol::header(), Version3::HEADER)) {
+            return new self(
+                Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem()),
+                $protocol
+            );
         }
         return new self(
             \sodium_crypto_sign_secretkey(
@@ -108,6 +158,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Return a base64url-encoded representation of this secret key.
+     *
      * @return string
      * @throws \TypeError
      */
@@ -117,6 +169,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Initialize a secret key from a base64url-encoded string.
+     *
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
@@ -126,10 +180,12 @@ class AsymmetricSecretKey implements SendingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new self($decoded, $version);
+        return new static($decoded, $version);
     }
 
     /**
+     * Get the version of PASETO that this key is intended for.
+     *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
@@ -138,6 +194,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Get the public key that corresponds to this secret key.
+     *
      * @return AsymmetricPublicKey
      * @throws \Exception
      * @throws \TypeError
@@ -150,6 +208,13 @@ class AsymmetricSecretKey implements SendingKey
                     Version1::RsaGetPublicKey($this->key),
                     $this->protocol
                 );
+            case Version3::HEADER:
+                /** @var PublicKey $pk */
+                $pk = SecretKey::importPem($this->key)->getPublicKey();
+                return new AsymmetricPublicKey(
+                    $pk->toString(), // Compressed point
+                    $this->protocol
+                );
             default:
                 return new AsymmetricPublicKey(
                     \sodium_crypto_sign_publickey_from_secretkey($this->key),
@@ -159,6 +224,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Get the raw key contents.
+     *
      * @return string
      */
     public function raw()

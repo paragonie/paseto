@@ -4,10 +4,12 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Builder;
+use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Exception\InvalidKeyException;
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
 use ParagonIE\Paseto\Exception\InvalidVersionException;
 use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Exception\RuleViolation;
 use ParagonIE\Paseto\JsonToken;
 use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
@@ -19,9 +21,12 @@ use ParagonIE\Paseto\Keys\Version2\{
     SymmetricKey as V2SymmetricKey
 };
 use ParagonIE\Paseto\Parser;
+use ParagonIE\Paseto\Protocol\Version4;
+use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\ProtocolCollection;
+use ParagonIE\Paseto\Rules\FooterJSON;
 use ParagonIE\Paseto\Rules\NotExpired;
 use PHPUnit\Framework\TestCase;
 
@@ -166,6 +171,113 @@ class ParserTest extends TestCase
     }
 
     /**
+     * @param SymmetricKey $key
+     * @param ProtocolInterface|null $v
+     * @return string
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws PasetoException
+     */
+    protected function getDummyToken(SymmetricKey $key, ?ProtocolInterface $v = null): string
+    {
+        if (!$v) {
+            $v = $key->getProtocol();
+        }
+        $builder = (new Builder())
+            ->setVersion($v)
+            ->setPurpose(Purpose::local())
+            ->setKey($key)
+            ->setClaims([
+                'a' => 'b',
+                'c' => 'd',
+                'e' => [
+                    'f' => 1,
+                    'g' => [
+                        'x' => 234
+                    ],
+                    'h' => 'ijk'
+                ],
+                'l' => json_encode(['pq' => 'rs'])
+            ]);
+        return $builder->toString();
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testLimitedJsonClaimCount(): void
+    {
+        // Setup
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $dummy = $this->getDummyToken($v2key);
+
+        $parser = (new Parser())
+            ->setAllowedVersions(ProtocolCollection::v2())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key)
+            ->setMaxClaimCount(16);
+
+        // OK
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($dummy));
+
+        $this->expectException(EncodingException::class);
+        $parser->setMaxClaimCount(2)->parse($dummy);
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testLimitedJsonClaimDepth(): void
+    {
+        // Setup
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $dummy = $this->getDummyToken($v2key);
+
+        $parser = (new Parser())
+            ->setAllowedVersions(ProtocolCollection::v2())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key)
+            ->setMaxClaimDepth(16);
+
+        // OK
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($dummy));
+
+        $this->expectException(EncodingException::class);
+        $parser->setMaxClaimDepth(3)->parse($dummy);
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testLimitedJsonLength(): void
+    {
+        // Setup
+        $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $dummy = $this->getDummyToken($v2key);
+
+        $parser = (new Parser())
+            ->setAllowedVersions(ProtocolCollection::v2())
+            ->setPurpose(Purpose::local())
+            ->setKey($v2key)
+            ->setMaxJsonLength(8192);
+
+        // OK
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($dummy));
+
+        $this->expectException(EncodingException::class);
+        $parser->setMaxJsonLength(16)->parse($dummy);
+    }
+
+    /**
      * @throws PasetoException
      * @throws \ParagonIE\Paseto\Exception\InvalidPurposeException
      * @throws \ParagonIE\Paseto\Exception\SecurityException
@@ -192,6 +304,81 @@ class ParserTest extends TestCase
                 $f['footer'],
                 Parser::extractFooter($f['token'])
             );
+        }
+    }
+
+    /**
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
+     * @throws InvalidVersionException
+     * @throws PasetoException
+     */
+    public function testFooterJSON()
+    {
+        $expires = (new \DateTime('NOW'))
+            ->add(new \DateInterval('P01D'));
+        $key = SymmetricKey::generate(new Version4());
+        $builder = (new Builder())
+            ->setKey($key)
+            ->setPurpose(Purpose::local())
+            ->setVersion(new Version4())
+            ->setExpiration($expires)
+            ->setFooterArray(['a' => 1]);
+
+        $parser = (new Parser(ProtocolCollection::v4(), Purpose::local(), $key))
+            ->addRule(new FooterJSON(2, 4096, 4));
+
+        // This should be OK:
+        $in = $builder->toString();
+        $this->assertInstanceOf(JsonToken::class, $parser->parse($in));
+
+        $builder->setFooterArray(['a' => 1, 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 5]);
+        $in = $builder->toString();
+        try {
+            $parser->parse($in);
+            $this->fail('Failed to catch rule violation: too many keys');
+        } catch (RuleViolation $ex) {
+            $this->assertStringContainsString('Footer has too many keys', $ex->getMessage());
+        }
+
+        $builder->setFooterArray(['a' => ['b' => 2]]);
+        $in = $builder->toString();
+        try {
+            $parser->parse($in);
+            $this->fail('Failed to catch rule violation: too many keys');
+        } catch (RuleViolation $ex) {
+            $this->assertStringContainsString('Maximum stack depth exceeded', $ex->getMessage());
+        }
+
+        $parser = (new Parser(ProtocolCollection::v4(), Purpose::local(), $key))
+            ->addRule(new FooterJSON(2, 8192, 128));
+
+        $junk = [];
+        for ($i = 0; $i < 257; ++$i) {
+            $junk['a' . $i] = 0;
+        }
+        $builder->setFooterArray($junk);
+        $in = $builder->toString();
+        try {
+            $parser->parse($in);
+            $this->fail('Failed to catch rule violation: too many keys');
+        } catch (RuleViolation $ex) {
+            $this->assertStringContainsString('Footer has too many keys', $ex->getMessage());
+        }
+        $parser = (new Parser(ProtocolCollection::v4(), Purpose::local(), $key))
+            ->addRule(new FooterJSON(2, 1024, 128));
+
+        $junk = [];
+        for ($i = 0; $i < 257; ++$i) {
+            $junk['a' . $i] = 0;
+        }
+        $builder->setFooterArray($junk);
+        $in = $builder->toString();
+        try {
+            $parser->parse($in);
+            $this->fail('Failed to catch rule violation: too long');
+        } catch (RuleViolation $ex) {
+            $this->assertStringContainsString('Footer is too long', $ex->getMessage());
         }
     }
 

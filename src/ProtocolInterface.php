@@ -28,6 +28,13 @@ interface ProtocolInterface
     public static function header(): string;
 
     /**
+     * Does this protocol support implicit assertions?
+     *
+     * @return bool
+     */
+    public static function supportsImplicitAssertions(): bool;
+
+    /**
      * @return AsymmetricSecretKey
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey;
@@ -48,12 +55,14 @@ interface ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
+     * @param string $implicit
      * @return string
      */
     public static function encrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string;
 
     /**
@@ -62,12 +71,14 @@ interface ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string|null $footer
+     * @param string $implicit
      * @return string
      */
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string;
 
     /**
@@ -76,12 +87,14 @@ interface ProtocolInterface
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
+     * @param string $implicit
      * @return string
      */
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string;
 
     /**
@@ -90,11 +103,13 @@ interface ProtocolInterface
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
      * @param string|null $footer
+     * @param string $implicit
      * @return string
      */
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string;
 }

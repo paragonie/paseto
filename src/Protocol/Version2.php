@@ -56,6 +56,17 @@ class Version2 implements ProtocolInterface
     }
 
     /**
+     * Does this protocol support implicit assertions?
+     * No.
+     *
+     * @return bool
+     */
+    public static function supportsImplicitAssertions(): bool
+    {
+        return false;
+    }
+
+    /**
      * @return int
      */
     public static function getSymmetricKeyByteLength(): int
@@ -97,7 +108,8 @@ class Version2 implements ProtocolInterface
     public static function encrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string {
         return self::__encrypt($data, $key, $footer);
     }
@@ -118,6 +130,7 @@ class Version2 implements ProtocolInterface
         string $data,
         SymmetricKey $key,
         string $footer = '',
+        string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
@@ -147,7 +160,8 @@ class Version2 implements ProtocolInterface
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
@@ -185,7 +199,8 @@ class Version2 implements ProtocolInterface
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
@@ -216,7 +231,8 @@ class Version2 implements ProtocolInterface
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
             throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
@@ -227,7 +243,6 @@ class Version2 implements ProtocolInterface
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         }
         $signMsg = Util::removeFooter($signMsg);
-        /** @var string $footer */
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {

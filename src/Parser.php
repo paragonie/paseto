@@ -15,6 +15,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Parsing\PasetoMessage;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
@@ -30,8 +31,20 @@ class Parser
     /** @var ProtocolCollection */
     protected $allowedVersions;
 
+    /** @var string $implicitAssertions */
+    protected $implicitAssertions = '';
+
     /** @var ReceivingKey $key */
     protected $key;
+
+    /** @var ?int $maxClaimCount */
+    protected $maxClaimCount = null;
+
+    /** @var ?int $maxClaimDepth */
+    protected $maxClaimDepth = null;
+
+    /** @var ?int $maxJsonLength */
+    protected $maxJsonLength = null;
 
     /** @var Purpose|null $purpose */
     protected $purpose;
@@ -68,6 +81,17 @@ class Parser
                 }
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getImplicitAssertions(): array
+    {
+        if (empty($this->implicitAssertions)) {
+            return [];
+        }
+        return (array) json_decode($this->implicitAssertions, true);
     }
 
     /**
@@ -157,7 +181,6 @@ class Parser
         $parsed = PasetoMessage::fromString($tainted);
 
         // First, check against the user's specified list of allowed versions.
-        /** @var ProtocolInterface $protocol */
         $protocol = $parsed->header()->protocol();
         if (!$this->allowedVersions->has($protocol)) {
             throw new InvalidVersionException('Disallowed or unsupported version');
@@ -178,14 +201,24 @@ class Parser
             throw new InvalidKeyException('Invalid key type');
         }
 
+        $implicit = '';
+        if (!empty($this->implicitAssertions)) {
+            if (!$protocol::supportsImplicitAssertions()) {
+                throw new PasetoException(
+                    'This version does not support implicit assertions'
+                );
+            }
+            $implicit = $this->implicitAssertions;
+        }
+
+        /** @var string|null $decoded */
         // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
             case Purpose::local():
                 /** @var SymmetricKey $key */
                 $key = $this->key;
                 try {
-                    /** @var string $decoded */
-                    $decoded = $protocol::decrypt($tainted, $key, $footer);
+                    $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
@@ -194,8 +227,7 @@ class Parser
                 /** @var AsymmetricPublicKey $key */
                 $key = $this->key;
                 try {
-                    /** @var string $decoded */
-                    $decoded = $protocol::verify($tainted, $key, $footer);
+                    $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
                 } catch (\Throwable $ex) {
                     throw new PasetoException('An error occurred', 0, $ex);
                 }
@@ -206,6 +238,10 @@ class Parser
         if (!isset($decoded)) {
             throw new PasetoException('Unsupported purpose or version.');
         }
+
+        // Throw if the claims were invalid:
+        $this->throwIfClaimsJsonInvalid($decoded);
+
         /** @var array<string, string>|bool $claims */
         $claims = \json_decode((string) $decoded, true);
         if (!\is_array($claims)) {
@@ -232,6 +268,64 @@ class Parser
     public function setAllowedVersions(ProtocolCollection $whitelist): self
     {
         $this->allowedVersions = $whitelist;
+        return $this;
+    }
+
+    /**
+     * Set the implicit assertions for the constructed PASETO token
+     * (only affects v3/v4).
+     *
+     * @param array $assertions
+     * @return self
+     * @throws PasetoException
+     */
+    public function setImplicitAssertions(array $assertions): self
+    {
+        if (empty($assertions)) {
+            $implicit = '';
+        } else {
+            $implicit = json_encode($assertions);
+        }
+        if (!is_string($implicit)) {
+            throw new PasetoException('Could not serialize as string');
+        }
+        $this->implicitAssertions = $implicit;
+        return $this;
+    }
+
+    /**
+     * Limit the length of the decoded JSON payload containing the claims.
+     *
+     * @param int|null $length
+     * @return self
+     */
+    public function setMaxJsonLength(?int $length = null): self
+    {
+        $this->maxJsonLength = $length;
+        return $this;
+    }
+
+    /**
+     * Limit the maximum number of claims in the decoded JSON payload.
+     *
+     * @param int|null $maximum
+     * @return self
+     */
+    public function setMaxClaimCount(?int $maximum = null): self
+    {
+        $this->maxClaimCount = $maximum;
+        return $this;
+    }
+
+    /**
+     * Limit the maximum depth of the decoded JSON payload containign the claims.
+     *
+     * @param int|null $maximum
+     * @return self
+     */
+    public function setMaxClaimDepth(?int $maximum = null): self
+    {
+        $this->maxClaimDepth = $maximum;
         return $this;
     }
 
@@ -272,7 +366,6 @@ class Parser
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
         if ($checkKeyType) {
-            /** @var Purpose */
             $expectedPurpose = Purpose::fromReceivingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(
@@ -284,6 +377,37 @@ class Parser
 
         $this->purpose = $purpose;
         return $this;
+    }
+
+    /**
+     * @throws EncodingException
+     */
+    public function throwIfClaimsJsonInvalid(string $jsonString): void
+    {
+        if (!is_null($this->maxJsonLength)) {
+            $length = Binary::safeStrlen($jsonString);
+            if ($length > $this->maxJsonLength) {
+                throw new EncodingException(
+                    "Claims length is too long ({$length} > {$this->maxJsonLength}"
+                );
+            }
+        }
+        if (!is_null($this->maxClaimCount)) {
+            $count = Util::countJsonKeys($jsonString);
+            if ($count > $this->maxClaimCount) {
+                throw new EncodingException(
+                    "Too many claims in this token ({$count} > {$this->maxClaimCount}"
+                );
+            }
+        }
+        if (!is_null($this->maxClaimDepth)) {
+            $depth = Util::calculateJsonDepth($jsonString);
+            if ($depth > $this->maxClaimDepth) {
+                throw new EncodingException(
+                    "Too many layers of claims ({$depth} > {$this->maxClaimDepth}"
+                );
+            }
+        }
     }
 
     /**
@@ -300,7 +424,6 @@ class Parser
             // No rules defined, so we default to "true".
             return true;
         }
-        /** @var ValidationRuleInterface $rule */
         foreach ($this->rules as $rule) {
             if (!$rule->isValid($token)) {
                 if ($throwOnFailure) {

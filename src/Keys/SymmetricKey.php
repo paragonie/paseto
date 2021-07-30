@@ -2,13 +2,19 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\Base64UrlSafe;
+use ParagonIE\ConstantTime\{
+    Base64UrlSafe,
+    Binary
+};
 use ParagonIE\Paseto\{
+    Exception\PasetoException,
     ReceivingKey,
     SendingKey,
     ProtocolInterface,
     Protocol\Version1,
     Protocol\Version2,
+    Protocol\Version3,
+    Protocol\Version4,
     Util
 };
 
@@ -56,6 +62,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v1 symmetric key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -68,6 +76,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v2 symmetric key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -80,6 +90,36 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a v3 symmetric key.
+     *
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v3(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version3());
+    }
+
+    /**
+     * Initialize a v4 symmetric key.
+     *
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     * @throws \TypeError
+     */
+    public static function v4(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version4());
+    }
+
+    /**
+     * Return a base64url-encoded representation of this symmetric key.
+     *
      * @return string
      * @throws \TypeError
      */
@@ -89,6 +129,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Initialize a symmetric key from a base64url-encoded string.
+     *
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
@@ -97,10 +139,12 @@ class SymmetricKey implements ReceivingKey, SendingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new self($decoded, $version);
+        return new static($decoded, $version);
     }
 
     /**
+     * Get the version of PASETO that this key is intended for.
+     *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
@@ -109,6 +153,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Get the raw key contents.
+     *
      * @return string
      */
     public function raw(): string
@@ -117,13 +163,74 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
-     * Split this key into two 256-bit keys, using HKDF-SHA384
+     * Split this key into two 256-bit keys and a nonce, using HKDF-SHA384
      * (with the given salt)
+     *
+     * Used in version 3
      *
      * @param string|null $salt
      * @return array<int, string>
      *
-     * @throws \ParagonIE\Paseto\Exception\PasetoException
+     * @throws PasetoException
+     * @throws \TypeError
+     */
+    public function splitV3(string $salt = null): array
+    {
+        $tmp = Util::HKDF(
+            'sha384',
+            $this->key,
+            48,
+            self::INFO_ENCRYPTION . ($salt ?? '')
+        );
+        $encKey = Binary::safeSubstr($tmp, 0, 32);
+        $nonce = Binary::safeSubstr($tmp, 32, 16);
+        $authKey = Util::HKDF(
+            'sha384',
+            $this->key,
+            48,
+            self::INFO_AUTHENTICATION . ($salt ?? '')
+        );
+        return [$encKey, $authKey, $nonce];
+    }
+
+
+    /**
+     * Split this key into two 256-bit keys and a nonce, using BLAKE2b-MAC
+     * (with the given salt)
+     *
+     * Used in version 4
+     *
+     * @param string|null $salt
+     * @return array<int, string>
+     *
+     * @throws \SodiumException
+     */
+    public function splitV4(string $salt = null): array
+    {
+        $tmp = \sodium_crypto_generichash(
+            self::INFO_ENCRYPTION . ($salt ?? ''),
+            $this->key,
+            56
+        );
+        $encKey = Binary::safeSubstr($tmp, 0, 32);
+        $nonce = Binary::safeSubstr($tmp, 32, 24);
+        $authKey = \sodium_crypto_generichash(
+            self::INFO_AUTHENTICATION . ($salt ?? ''),
+            $this->key
+        );
+        return [$encKey, $authKey, $nonce];
+    }
+
+    /**
+     * Split this key into two 256-bit keys, using HKDF-SHA384
+     * (with the given salt)
+     *
+     * Used in versions 1 and 2
+     *
+     * @param string|null $salt
+     * @return array<int, string>
+     *
+     * @throws PasetoException
      * @throws \TypeError
      */
     public function split(string $salt = null): array

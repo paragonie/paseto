@@ -5,7 +5,9 @@ namespace ParagonIE\Paseto;
 use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Protocol\{
     Version1,
-    Version2
+    Version2,
+    Version3,
+    Version4
 };
 use ParagonIE\Paseto\Exception\InvalidVersionException;
 
@@ -16,12 +18,15 @@ use ParagonIE\Paseto\Exception\InvalidVersionException;
 final class ProtocolCollection
 {
     /**
-     * Our built-in whitelist of protocol types is defined here.
+     * Our built-in allow-list of protocol types is defined here.
+     *
      * @const array<int, class-string<ProtocolInterface>>
      */
-    const WHITELIST = [
+    const ALLOWED = [
         Version1::class,
         Version2::class,
+        Version3::class,
+        Version4::class,
     ];
 
     /** @var array<array-key, ProtocolInterface> */
@@ -41,7 +46,6 @@ final class ProtocolCollection
             throw new \LogicException('At least one version is necessary');
         }
 
-        /** @var ProtocolInterface $protocol */
         foreach ($protocols as $protocol) {
             self::throwIfUnsupported($protocol);
         }
@@ -68,7 +72,7 @@ final class ProtocolCollection
      */
     public static function isValid(ProtocolInterface $protocol): bool
     {
-        return \in_array(\get_class($protocol), self::WHITELIST, true);
+        return \in_array(\get_class($protocol), self::ALLOWED, true);
     }
 
     /**
@@ -96,7 +100,7 @@ final class ProtocolCollection
      */
     public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface {
         if (empty(self::$headerLookup)) {
-            foreach (self::WHITELIST as $protocolClass) {
+            foreach (self::ALLOWED as $protocolClass) {
                 self::$headerLookup[$protocolClass::header()] = new $protocolClass;
             }
         }
@@ -122,7 +126,7 @@ final class ProtocolCollection
                 $protocol = new $p;
                 return $protocol;
             },
-            self::WHITELIST
+            self::ALLOWED
         ));
     }
 
@@ -147,5 +151,27 @@ final class ProtocolCollection
     public static function v2(): self
     {
         return new self(new Version2);
+    }
+
+    /**
+     * Get a collection containing protocol version 3.
+     *
+     * @return self
+     * @throws InvalidVersionException
+     */
+    public static function v3(): self
+    {
+        return new self(new Version3);
+    }
+
+    /**
+     * Get a collection containing protocol version 4.
+     *
+     * @return self
+     * @throws InvalidVersionException
+     */
+    public static function v4(): self
+    {
+        return new self(new Version4);
     }
 }

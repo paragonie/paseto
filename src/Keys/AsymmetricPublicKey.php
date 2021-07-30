@@ -4,7 +4,8 @@ namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\{
     Base64UrlSafe,
-    Binary
+    Binary,
+    Hex
 };
 use ParagonIE\Paseto\{
     ReceivingKey,
@@ -12,7 +13,9 @@ use ParagonIE\Paseto\{
 };
 use ParagonIE\Paseto\Protocol\{
     Version1,
-    Version2
+    Version2,
+    Version3,
+    Version4
 };
 
 /**
@@ -29,8 +32,9 @@ class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * AsymmetricPublicKey constructor.
+     *
      * @param string $keyMaterial
-     * @param ProtocolInterface $protocol
+     * @param ProtocolInterface|null $protocol
      * @throws \Exception
      */
     public function __construct(
@@ -39,9 +43,16 @@ class AsymmetricPublicKey implements ReceivingKey
     ) {
         $protocol = $protocol ?? new Version2;
 
-        if (\hash_equals($protocol::header(), Version2::HEADER)) {
+        if (
+            \hash_equals($protocol::header(), Version2::HEADER)
+                ||
+            \hash_equals($protocol::header(), Version4::HEADER)
+        ) {
             $len = Binary::safeStrlen($keyMaterial);
-            if ($len !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
+            if ($len === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES << 1) {
+                // Try hex-decoding
+                $keyMaterial = Hex::decode($keyMaterial);
+            } else if ($len !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
                 throw new \Exception(
                     'Public keys must be 32 bytes long; ' . $len . ' given.'
                 );
@@ -52,6 +63,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v1 public key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -63,6 +76,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v2 public key.
+     *
      * @param string $keyMaterial
      *
      * @return self
@@ -74,6 +89,34 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a v3 public key.
+     *
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     */
+    public static function v3(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version3());
+    }
+
+    /**
+     * Initialize a v4 public key.
+     *
+     * @param string $keyMaterial
+     *
+     * @return self
+     * @throws \Exception
+     */
+    public static function v4(string $keyMaterial): self
+    {
+        return new self($keyMaterial, new Version4());
+    }
+
+    /**
+     * Returns the base64url-encoded public key.
+     *
      * @return string
      * @throws \TypeError
      */
@@ -83,6 +126,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Initialize a public key from a base64url-encoded string.
+     *
      * @param string $encoded
      * @param ProtocolInterface|null $version
      *
@@ -93,10 +138,12 @@ class AsymmetricPublicKey implements ReceivingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new self($decoded, $version);
+        return new static($decoded, $version);
     }
 
     /**
+     * Get the version of PASETO that this key is intended for.
+     *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
@@ -105,6 +152,8 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * Get the raw key contents.
+     *
      * @return string
      */
     public function raw()
