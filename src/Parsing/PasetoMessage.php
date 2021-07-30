@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Parsing;
 
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
     SecurityException,
     InvalidVersionException,
     InvalidPurposeException
@@ -55,7 +56,10 @@ final class PasetoMessage
         $pieces = \explode('.', $tainted);
         $count = \count($pieces);
         if ($count < 3 || $count > 4) {
-            throw new SecurityException('Truncated or invalid token');
+            throw new SecurityException(
+                'Truncated or invalid token',
+                ExceptionCode::INVALID_NUMBER_OF_PIECES
+            );
         }
 
         $header = new Header($pieces[0], $pieces[1]);

@@ -6,6 +6,7 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
+use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\{
     SendingKey,
     ProtocolInterface,
@@ -58,8 +59,9 @@ class AsymmetricSecretKey implements SendingKey
                 $keyData = Binary::safeSubstr($keyData, 0, 64);
             } elseif ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
                 if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
-                    throw new \Exception(
-                        'Secret keys must be 32 or 64 bytes long; ' . $len . ' given.'
+                    throw new PasetoException(
+                        'Secret keys must be 32 or 64 bytes long; ' . $len . ' given.',
+                        ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
                     );
                 }
                 $keypair = \sodium_crypto_sign_seed_keypair($keyData);

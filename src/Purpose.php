@@ -17,6 +17,7 @@ use ParagonIE\Paseto\Keys\Version2\{
     AsymmetricPublicKey as V2AsymmetricPublicKey,
     SymmetricKey as V2SymmetricKey
 };
+use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
 
 /**
@@ -29,7 +30,7 @@ final class Purpose
      * A whitelist of allowed values/modes. This simulates an enum.
      * @const array<int, string>
      */
-    const WHITELIST = [
+    const ALLOWLIST = [
         'local',
         'public',
     ];
@@ -100,7 +101,7 @@ final class Purpose
     private $purpose;
 
     /**
-     * Allowed values in self::WHITELIST
+     * Allowed values in self::ALLOWLIST
      *
      * @param string $rawString
      * @throws InvalidPurposeException
@@ -108,7 +109,10 @@ final class Purpose
     public function __construct(string $rawString)
     {
         if (!self::isValid($rawString)) {
-            throw new InvalidPurposeException('Unknown purpose: ' . $rawString);
+            throw new InvalidPurposeException(
+                'Unknown purpose: ' . $rawString,
+                ExceptionCode::PURPOSE_NOT_LOCAL_OR_PUBLIC
+            );
         }
 
         $this->purpose = $rawString;
@@ -192,7 +196,7 @@ final class Purpose
      */
     public static function isValid(string $rawString): bool
     {
-        return \in_array($rawString, self::WHITELIST, true);
+        return \in_array($rawString, self::ALLOWLIST, true);
     }
 
     /**

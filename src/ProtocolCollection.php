@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Protocol\{
     Version1,
@@ -43,7 +44,10 @@ final class ProtocolCollection
     public function __construct(ProtocolInterface ...$protocols)
     {
         if (empty($protocols)) {
-            throw new \LogicException('At least one version is necessary');
+            throw new \LogicException(
+                'At least one version is necessary',
+                ExceptionCode::BAD_VERSION
+            );
         }
 
         foreach ($protocols as $protocol) {
@@ -86,7 +90,8 @@ final class ProtocolCollection
     {
         if (!self::isValid($protocol)) {
             throw new InvalidVersionException(
-                'Unsupported version: ' . $protocol::header()
+                'Unsupported version: ' . $protocol::header(),
+                ExceptionCode::BAD_VERSION
             );
         }
     }
@@ -106,7 +111,10 @@ final class ProtocolCollection
         }
 
         if (!\array_key_exists($headerPart, self::$headerLookup)) {
-            throw new InvalidVersionException('Disallowed or unsupported version');
+            throw new InvalidVersionException(
+                'Disallowed or unsupported version',
+                ExceptionCode::BAD_VERSION
+            );
         }
 
         return self::$headerLookup[$headerPart];
