@@ -26,4 +26,4 @@ Some examples of validation rules that libraries may wish to provide include:
 
 Example implementations of these validators are included in the PHP implementation.
 
-Validation should fail-closed by default (e.g. if invalid data is provided).
+Validation should fail-closed by default (e.g., if invalid data is provided).

@@ -16,7 +16,17 @@ version.purpose.payload.footer
 
 The `version` is a string that represents the current version of the protocol. Currently,
 two versions are specified, which each possess their own ciphersuites. Accepted values:
-`v1`, `v2`.
+`v1`, `v2`, `v3`, `v4`.
+
+PASETO serializes its payload as a JSON string. Future documents **MAY** specify using 
+PASETO with non-JSON encoding. When this happens, a suffix will be appended to the version tag
+when a non-JSON encoding rule is used.
+
+> For example, a future PASETO-CBOR proposal might define its versions as `v1c`, `v2c`, `v3c`,
+> and `v4c`. The underlying cryptography will be the same as `v1`, `v2`, `v3`, and `v4`
+> respectively. Keys **SHOULD** be portable across different underlying encodings, but tokens
+> **MUST NOT** be transmutable between encodings without access to the symmetric key (`local` tokens)
+> or secret key (`public` tokens).
 
 The `purpose` is a short string describing the purpose of the token. Accepted values:
 `local`, `public`.
@@ -24,8 +34,8 @@ The `purpose` is a short string describing the purpose of the token. Accepted va
 * `local`: shared-key authenticated encryption
 * `public`: public-key digital signatures; **not encrypted**
 
-Any optional data can be appended to the end. This information is NOT encrypted, but it
-is used in calculating the authentication tag for the payload. It's always base64url-encoded.
+Any optional data can be appended to the end. This information is NOT encrypted, but it is
+used in calculating the authentication tag for the payload. It's always base64url-encoded.
 
  * For local tokens, it's included in the associated data alongside the nonce.
  * For public tokens, it's appended to the message during the actual
@@ -33,10 +43,22 @@ is used in calculating the authentication tag for the payload. It's always base6
    [our standard format](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding).
 
 Thus, if you want unencrypted, but authenticated, tokens, you can simply set your payload
-to an empty string and your footer to the message you want to authenticate.
+to an empty string, then your footer to the message you want to authenticate, and use a
+local token.
 
 Conversely, if you want to support key rotation, you can use the unencrypted footer to store
 the Key-ID.
+
+If you want public-key encryption, check out [PASERK](https://github.com/paseto-standard/paserk).
+
+### Implicit Assertions
+
+PASETO `v3` and `v4` tokens support a feature called **implicit assertions**, which are used
+in the calculation of the MAC (`local` tokens) or digital signature (`public` tokens), but
+**NOT** stored in the token. (Thus, its implicitness.)
+
+An implicit assertion MUST be provided by the caller explicitly when validating a PASETO token
+if it was provided at the time of creation.
 
 ## Versions and their Respective Purposes
 
@@ -59,9 +81,7 @@ so-called "algorithm agility" in favor of pre-negotiated protocols with
 version identifiers.
 
 For `local` tokens, we encrypt them exclusively using authenticated encryption
-with additional data (AEAD) modes that are also nonce-misuse resistant (NMR).
-This means even if implementations fail to use a secure random number generator
-for the large nonces, message confidentiality isn't imperiled.
+with additional data (AEAD) modes.
 
 ### 2. Usability
 
@@ -95,3 +115,13 @@ Some example use-cases:
      user authentication across multiple browsing sessions.
 2. (`public`): Transparent claims provided by a third party.
    * e.g. Authentication and authorization protocols (OAuth 2, OIDC).
+
+## Does PASETO Guarantee the Order of Keys in Its Payload?
+
+**No.** Consistently guaranteeing a given order to a deserialized JSON string is
+nontrivial across programming languages. You should not rely on this ordering behavior
+when using PASETO.
+
+Although ordering is not guaranteed, the contents will be cryptographically verified,
+and the thing that gets authenticated is a JSON string, not a deserialized object, so
+this non-guarantee will not affect the security of the token.
