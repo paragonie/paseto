@@ -28,7 +28,7 @@ class KnownAnswerTest extends TestCase
     public function setUp(): void
     {
         $this->cacheKey = sodium_crypto_shorthash_keygen();
-        $this->dir = dirname(__DIR__) . '/docs/03-Implementation-Guide/Test-Vectors';
+        $this->dir = __DIR__ . '/test-vectors';
     }
 
     public function testV1()
