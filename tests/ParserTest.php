@@ -28,6 +28,7 @@ use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\ProtocolCollection;
 use ParagonIE\Paseto\Rules\FooterJSON;
 use ParagonIE\Paseto\Rules\NotExpired;
+use PharIo\Version\Version;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -42,10 +43,10 @@ class ParserTest extends TestCase
     public function testTypeSafety()
     {
         $keypair = sodium_crypto_sign_keypair();
-        $publicKey = new AsymmetricPublicKey(sodium_crypto_sign_publickey($keypair));
+        $publicKey = new AsymmetricPublicKey(sodium_crypto_sign_publickey($keypair), new Version2());
 
         // Let's encrypt a bad oken using the Ed25519 public key
-        $badKey = new SymmetricKey(sodium_crypto_sign_publickey($keypair));
+        $badKey = new SymmetricKey(sodium_crypto_sign_publickey($keypair), new Version2());
         $badToken = Version2::encrypt('arbitrary test string', $badKey);
 
         try {
@@ -95,7 +96,7 @@ class ParserTest extends TestCase
      */
     public function testAuthToken()
     {
-        $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version2());
         $v2key = new V2SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
         // $nonce = crypto_generichash('Paragon Initiative Enterprises, LLC', '', 24);
         $nonce = Hex::decode('45742c976d684ff84ebdc0de59809a97cda2f64c84fda19b');
@@ -155,7 +156,7 @@ class ParserTest extends TestCase
 
         // Switch to asymmetric-key crypto:
         $builder->setPurpose(Purpose::public())
-                ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
+                ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version2()), true);
         $v2builder->setPurpose(Purpose::public())
                 ->setKey(new V2AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
@@ -389,7 +390,7 @@ class ParserTest extends TestCase
      */
     public function testTokenSignVerify()
     {
-        $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY');
+        $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version2());
         $publicKey = $secretKey->getPublicKey();
         $parser = new Parser(ProtocolCollection::default(), Purpose::public(), $publicKey);
         $tainted = 'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag';

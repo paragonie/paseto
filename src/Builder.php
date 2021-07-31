@@ -13,7 +13,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
-use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
 /**
@@ -63,7 +63,7 @@ class Builder
             $baseToken = new JsonToken();
         }
         if (!$protocol) {
-            $protocol = new Version2();
+            $protocol = new Version4();
         }
         $this->token = $baseToken;
         $this->version = $protocol;
@@ -125,7 +125,7 @@ class Builder
         JsonToken $baseToken = null
     ): self {
         if (!$version) {
-            $version = new Version2();
+            $version = new Version4();
         }
         $instance = new static($baseToken);
         $instance->key = $key;
@@ -151,7 +151,7 @@ class Builder
         JsonToken $baseToken = null
     ): self {
         if (!$version) {
-            $version = new Version2();
+            $version = new Version4();
         }
         $instance = new static($baseToken);
         $instance->key = $key;
@@ -450,7 +450,7 @@ class Builder
     public function setVersion(ProtocolInterface $version = null): self
     {
         if (!$version) {
-            $version = new Version2();
+            $version = new Version4();
         }
         $this->version = $version;
         return $this;

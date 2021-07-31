@@ -43,7 +43,7 @@ class AsymmetricPublicKey implements ReceivingKey
         string $keyMaterial,
         ProtocolInterface $protocol = null
     ) {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version4;
 
         if (
             \hash_equals($protocol::header(), Version2::HEADER)
