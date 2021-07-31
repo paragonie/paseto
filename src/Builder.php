@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\{
     EncodingException,
+    ExceptionCode,
     InvalidKeyException,
     InvalidPurposeException,
     PasetoException
@@ -224,7 +225,10 @@ class Builder
             $implicit = json_encode($assertions);
         }
         if (!is_string($implicit)) {
-            throw new PasetoException('Could not serialize as string');
+            throw new EncodingException(
+                'Could not serialize as string',
+                ExceptionCode::IMPLICIT_ASSERTION_JSON_ERROR
+            );
         }
         $this->implicitAssertions = $implicit;
         return $this;
@@ -328,7 +332,10 @@ class Builder
     {
         $encoded = \json_encode($footer);
         if (!\is_string($encoded)) {
-            throw new EncodingException('Could not encode array into JSON');
+            throw new EncodingException(
+                'Could not encode array into JSON',
+                ExceptionCode::FOOTER_JSON_ERROR
+            );
         }
         return $this->setFooter($encoded);
     }
@@ -346,13 +353,17 @@ class Builder
     {
         if ($checkPurpose) {
             if (is_null($this->purpose)) {
-                throw new InvalidKeyException('Unknown purpose');
+                throw new InvalidKeyException(
+                    'Unknown purpose',
+                    ExceptionCode::PURPOSE_NOT_DEFINED
+                );
             } elseif (!$this->purpose->isSendingKeyValid($key)) {
                 throw new InvalidKeyException(
                     'Invalid key type. Expected ' .
                         $this->purpose->expectedSendingKeyType() .
                         ', got ' .
-                        \get_class($key)
+                        \get_class($key),
+                    ExceptionCode::PASETO_KEY_TYPE_ERROR
                 );
             }
             switch ($this->purpose) {
@@ -369,7 +380,10 @@ class Builder
                     }
                     break;
                 default:
-                    throw new InvalidKeyException('Unknown purpose');
+                    throw new InvalidKeyException(
+                        'Unknown purpose',
+                        ExceptionCode::PURPOSE_NOT_LOCAL_OR_PUBLIC
+                    );
             }
         }
 
@@ -392,13 +406,18 @@ class Builder
     {
         if ($checkKeyType) {
             if (\is_null($this->key)) {
-                throw new InvalidKeyException('Key cannot be null');
+                throw new InvalidKeyException(
+                    'Key cannot be null',
+                    ExceptionCode::PASETO_KEY_IS_NULL
+                );
             }
             $expectedPurpose = Purpose::fromSendingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(
-                    'Invalid purpose. Expected '.$expectedPurpose->rawString()
-                    .', got ' . $purpose->rawString()
+                    'Invalid purpose. Expected ' .
+                        $expectedPurpose->rawString() .
+                        ', got ' . $purpose->rawString(),
+                    ExceptionCode::PURPOSE_WRONG_FOR_KEY
                 );
             }
         }
@@ -450,10 +469,16 @@ class Builder
             return $this->cached;
         }
         if (\is_null($this->key)) {
-            throw new InvalidKeyException('Key cannot be null');
+            throw new InvalidKeyException(
+                'Key cannot be null',
+                ExceptionCode::PASETO_KEY_IS_NULL
+            );
         }
         if (\is_null($this->purpose)) {
-            throw new InvalidPurposeException('Purpose cannot be null');
+            throw new InvalidPurposeException(
+                'Purpose cannot be null',
+                ExceptionCode::PURPOSE_NOT_DEFINED
+            );
         }
         // Mutual sanity checks
         $this->setKey($this->key, true);
@@ -467,7 +492,8 @@ class Builder
         if (!empty($this->implicitAssertions)) {
             if (!$protocol::supportsImplicitAssertions()) {
                 throw new PasetoException(
-                    'This version does not support implicit assertions'
+                    'This version does not support implicit assertions',
+                    ExceptionCode::IMPLICIT_ASSERTION_NOT_SUPPORTED
                 );
             }
             $implicit = $this->implicitAssertions;
@@ -507,12 +533,19 @@ class Builder
                         );
                         return $this->cached;
                     } catch (\Throwable $ex) {
-                        throw new PasetoException('Signing failed.', 0, $ex);
+                        throw new PasetoException(
+                            'Signing failed.',
+                            ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
+                            $ex
+                        );
                     }
                 }
                 break;
         }
-        throw new PasetoException('Unsupported key/purpose pairing.');
+        throw new PasetoException(
+            'Unsupported key/purpose pairing.',
+            ExceptionCode::PURPOSE_WRONG_FOR_KEY
+        );
     }
 
     /**

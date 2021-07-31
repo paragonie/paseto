@@ -7,6 +7,7 @@ use ParagonIE\ConstantTime\{
     Binary
 };
 use ParagonIE\Paseto\Exception\EncodingException;
+use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\PasetoException;
 
 /**
@@ -46,7 +47,10 @@ abstract class Util
             ++$depth;
         }
         if (!empty($stripped)) {
-            throw new EncodingException('Invalid JSON string provided');
+            throw new EncodingException(
+                'Invalid JSON string provided',
+                ExceptionCode::INVALID_JSON
+            );
         }
         return $depth;
     }
@@ -117,7 +121,8 @@ abstract class Util
         // Sanity-check the desired output length.
         if (empty($length) || $length < 0 || $length > 255 * $digest_length) {
             throw new PasetoException(
-                'Bad output length requested of HKDF.'
+                'Bad output length requested of HKDF.',
+                ExceptionCode::HKDF_BAD_LENGTH
             );
         }
 
@@ -136,7 +141,8 @@ abstract class Util
         // This check is useless, but it serves as a reminder to the spec.
         if (Binary::safeStrlen($prk) < $digest_length) {
             throw new PasetoException(
-                'An unexpected condition occurred in the HKDF internals'
+                'An unexpected condition occurred in the HKDF internals',
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
             );
         }
 
@@ -255,7 +261,10 @@ abstract class Util
             $footer_len
         );
         if (!\hash_equals('.' . $footer, $trailing)) {
-            throw new PasetoException('Invalid message footer');
+            throw new PasetoException(
+                'Invalid message footer',
+                ExceptionCode::FOOTER_MISMATCH_EXPECTED
+            );
         }
         return Binary::safeSubstr($payload, 0, $payload_len - $footer_len);
     }

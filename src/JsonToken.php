@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\{
     EncodingException,
+    ExceptionCode,
     NotFoundException,
     PasetoException
 };
@@ -45,7 +46,10 @@ class JsonToken
         if (\array_key_exists($claim, $this->claims)) {
             return $this->claims[$claim];
         }
-        throw new NotFoundException('Claim not found: ' . $claim);
+        throw new NotFoundException(
+            'Claim not found: ' . $claim,
+            ExceptionCode::SPECIFIED_CLAIM_NOT_FOUND
+        );
     }
 
     /**
@@ -101,7 +105,10 @@ class JsonToken
         /** @var array|bool $decoded */
         $decoded = \json_decode($this->footer, true);
         if (!\is_array($decoded)) {
-            throw new EncodingException('Footer is not a valid JSON document');
+            throw new EncodingException(
+                'Footer is not a valid JSON object',
+                ExceptionCode::FOOTER_JSON_ERROR
+            );
         }
         return $decoded;
     }
@@ -236,7 +243,10 @@ class JsonToken
     {
         $encoded = \json_encode($footer);
         if (!\is_string($encoded)) {
-            throw new EncodingException('Could not encode array into JSON');
+            throw new EncodingException(
+                'Could not encode array into JSON',
+                ExceptionCode::FOOTER_JSON_ERROR
+            );
         }
         return $this->setFooter($encoded);
     }

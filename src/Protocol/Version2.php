@@ -16,6 +16,7 @@ use ParagonIE\Paseto\Keys\Version2\{
     SymmetricKey as V2SymmetricKey
 };
 use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
     InvalidVersionException,
     PasetoException,
     SecurityException
@@ -134,7 +135,10 @@ class Version2 implements ProtocolInterface
         string $nonceForUnitTesting = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         return self::aeadEncrypt(
             $data,
@@ -164,7 +168,10 @@ class Version2 implements ProtocolInterface
         string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         if (\is_null($footer)) {
             $footer = Util::extractFooter($data);
@@ -179,7 +186,10 @@ class Version2 implements ProtocolInterface
             (string) $footer
         );
         if (!\is_string($message)) {
-            throw new PasetoException('Invalid message decryption');
+            throw new PasetoException(
+                'Invalid message decryption',
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
+            );
         }
 
         return $message;
@@ -203,7 +213,10 @@ class Version2 implements ProtocolInterface
         string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         $header = self::HEADER . '.public.';
         $signature = \sodium_crypto_sign_detached(
@@ -235,7 +248,10 @@ class Version2 implements ProtocolInterface
         string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version2)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         if (\is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
@@ -246,7 +262,10 @@ class Version2 implements ProtocolInterface
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {
-            throw new PasetoException('Invalid message header.');
+            throw new PasetoException(
+                'Invalid message header.',
+                ExceptionCode::INVALID_HEADER
+            );
         }
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
@@ -268,7 +287,10 @@ class Version2 implements ProtocolInterface
             $key->raw()
         );
         if (!$valid) {
-            throw new PasetoException('Invalid signature for this message');
+            throw new PasetoException(
+                'Invalid signature for this message',
+                ExceptionCode::INVALID_SIGNATURE
+            );
         }
         return $message;
     }
@@ -344,12 +366,19 @@ class Version2 implements ProtocolInterface
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
         if (!\hash_equals($header, $givenHeader)) {
-            throw new PasetoException('Invalid message header.');
+            throw new PasetoException(
+                'Invalid message header.',
+                ExceptionCode::INVALID_HEADER
+            );
         }
         try {
             $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
         } catch (\Throwable $ex) {
-            throw new PasetoException('Invalid encoding detected', 0, $ex);
+            throw new PasetoException(
+                'Invalid encoding detected',
+                ExceptionCode::INVALID_BASE64URL,
+                $ex
+            );
         }
         $len = Binary::safeStrlen($decoded);
         $nonce = Binary::safeSubstr(

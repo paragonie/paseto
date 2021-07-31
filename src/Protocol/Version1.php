@@ -16,6 +16,7 @@ use ParagonIE\Paseto\Keys\Version1\{
     SymmetricKey as V1SymmetricKey
 };
 use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
     InvalidVersionException,
     PasetoException,
     SecurityException
@@ -155,7 +156,10 @@ class Version1 implements ProtocolInterface
         string $nonceForUnitTesting = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         return self::aeadEncrypt(
             $data,
@@ -183,7 +187,10 @@ class Version1 implements ProtocolInterface
         string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         if (\is_null($footer)) {
             $footer = Util::extractFooter($data);
@@ -216,7 +223,10 @@ class Version1 implements ProtocolInterface
         string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         $header = self::HEADER . '.public.';
         $rsa = self::getRsa();
@@ -249,7 +259,10 @@ class Version1 implements ProtocolInterface
         string $implicit = ''
     ): string {
         if (!($key->getProtocol() instanceof Version1)) {
-            throw new InvalidVersionException('The given key is not intended for this version of PASETO.');
+            throw new InvalidVersionException(
+                'The given key is not intended for this version of PASETO.',
+                ExceptionCode::WRONG_KEY_FOR_VERSION
+            );
         }
         if (\is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
@@ -260,7 +273,10 @@ class Version1 implements ProtocolInterface
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!\hash_equals($expectHeader, $givenHeader)) {
-            throw new PasetoException('Invalid message header.');
+            throw new PasetoException(
+                'Invalid message header.',
+                ExceptionCode::INVALID_HEADER
+            );
         }
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
@@ -274,7 +290,10 @@ class Version1 implements ProtocolInterface
             $signature
         );
         if (!$valid) {
-            throw new PasetoException('Invalid signature for this message');
+            throw new PasetoException(
+                'Invalid signature for this message',
+                ExceptionCode::INVALID_SIGNATURE
+            );
         }
         return $message;
     }
@@ -317,7 +336,10 @@ class Version1 implements ProtocolInterface
             Binary::safeSubstr($nonce, 16, 16)
         );
         if (!\is_string($ciphertext)) {
-            throw new PasetoException('Encryption failed.');
+            throw new PasetoException(
+                'Encryption failed.',
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
+            );
         }
         $mac = \hash_hmac(
             self::HASH_ALGO,
@@ -353,12 +375,19 @@ class Version1 implements ProtocolInterface
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
         if (!\hash_equals($header, $givenHeader)) {
-            throw new PasetoException('Invalid message header.');
+            throw new PasetoException(
+                'Invalid message header.',
+                ExceptionCode::INVALID_HEADER
+            );
         }
         try {
             $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
         } catch (\Throwable $ex) {
-            throw new PasetoException('Invalid encoding detected', 0, $ex);
+            throw new PasetoException(
+                'Invalid encoding detected',
+                ExceptionCode::INVALID_BASE64URL,
+                $ex
+            );
         }
         $len = Binary::safeStrlen($decoded);
         $nonce = Binary::safeSubstr($decoded, 0, self::NONCE_SIZE);
@@ -380,7 +409,10 @@ class Version1 implements ProtocolInterface
             true
         );
         if (!\hash_equals($calc, $mac)) {
-            throw new SecurityException('Invalid MAC for given ciphertext.');
+            throw new SecurityException(
+                'Invalid MAC for given ciphertext.',
+                ExceptionCode::INVALID_MAC
+            );
         }
 
         /** @var string|bool $plaintext */
@@ -392,7 +424,10 @@ class Version1 implements ProtocolInterface
             Binary::safeSubstr($nonce, 16, 16)
         );
         if (!\is_string($plaintext)) {
-            throw new PasetoException('Encryption failed.');
+            throw new PasetoException(
+                'Encryption failed.',
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
+            );
         }
 
         return $plaintext;
@@ -442,7 +477,8 @@ class Version1 implements ProtocolInterface
         } elseif (CRYPT_RSA_EXPONENT != 65537) {
             throw new SecurityException(
                 'RSA Public Exponent must be equal to 65537; it is set to ' .
-                CRYPT_RSA_EXPONENT
+                CRYPT_RSA_EXPONENT,
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
             );
         }
         self::$checked = true;

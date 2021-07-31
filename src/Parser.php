@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\{
     EncodingException,
+    ExceptionCode,
     InvalidKeyException,
     InvalidPurposeException,
     InvalidVersionException,
@@ -183,7 +184,10 @@ class Parser
         // First, check against the user's specified list of allowed versions.
         $protocol = $parsed->header()->protocol();
         if (!$this->allowedVersions->has($protocol)) {
-            throw new InvalidVersionException('Disallowed or unsupported version');
+            throw new InvalidVersionException(
+                'Disallowed or unsupported version',
+                ExceptionCode::BAD_VERSION
+            );
         }
 
         /** @var Purpose $purpose */
@@ -193,19 +197,26 @@ class Parser
         // $this->purpose is not mandatory, but if it's set, verify against it.
         if (isset($this->purpose)) {
             if (!$this->purpose->equals($purpose)) {
-                throw new InvalidPurposeException('Disallowed or unsupported purpose');
+                throw new InvalidPurposeException(
+                    'Disallowed or unsupported purpose',
+                    ExceptionCode::PURPOSE_WRONG_FOR_PARSER
+                );
             }
         }
 
         if (!$purpose->isReceivingKeyValid($this->key)) {
-            throw new InvalidKeyException('Invalid key type');
+            throw new InvalidKeyException(
+                'Invalid key type',
+                ExceptionCode::PASETO_KEY_TYPE_ERROR
+            );
         }
 
         $implicit = '';
         if (!empty($this->implicitAssertions)) {
             if (!$protocol::supportsImplicitAssertions()) {
                 throw new PasetoException(
-                    'This version does not support implicit assertions'
+                    'This version does not support implicit assertions',
+                    ExceptionCode::IMPLICIT_ASSERTION_NOT_SUPPORTED
                 );
             }
             $implicit = $this->implicitAssertions;
@@ -220,7 +231,11 @@ class Parser
                 try {
                     $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
                 } catch (\Throwable $ex) {
-                    throw new PasetoException('An error occurred', 0, $ex);
+                    throw new PasetoException(
+                        'An error occurred',
+                        ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
+                        $ex
+                    );
                 }
                 break;
             case Purpose::public():
@@ -229,23 +244,33 @@ class Parser
                 try {
                     $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
                 } catch (\Throwable $ex) {
-                    throw new PasetoException('An error occurred', 0, $ex);
+                    throw new PasetoException(
+                        'An error occurred',
+                        ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
+                        $ex
+                    );
                 }
                 break;
         }
 
         // Did we get data?
         if (!isset($decoded)) {
-            throw new PasetoException('Unsupported purpose or version.');
+            throw new PasetoException(
+                'Unsupported purpose or version.',
+                ExceptionCode::PURPOSE_NOT_LOCAL_OR_PUBLIC
+            );
         }
 
         // Throw if the claims were invalid:
         $this->throwIfClaimsJsonInvalid($decoded);
 
         /** @var array<string, string>|bool $claims */
-        $claims = \json_decode((string) $decoded, true);
+        $claims = \json_decode((string) $decoded, true, ($this->maxClaimDepth ?? 512));
         if (!\is_array($claims)) {
-            throw new EncodingException('Not a JSON token.');
+            throw new EncodingException(
+                'Not a JSON token.',
+                ExceptionCode::PAYLOAD_JSON_ERROR
+            );
         }
 
         // Let's build the token object.
@@ -287,7 +312,10 @@ class Parser
             $implicit = json_encode($assertions);
         }
         if (!is_string($implicit)) {
-            throw new PasetoException('Could not serialize as string');
+            throw new PasetoException(
+                'Could not serialize as string',
+                ExceptionCode::IMPLICIT_ASSERTION_JSON_ERROR
+            );
         }
         $this->implicitAssertions = $implicit;
         return $this;
@@ -341,13 +369,17 @@ class Parser
     {
         if ($checkPurpose) {
             if (is_null($this->purpose)) {
-                throw new InvalidKeyException('Unknown purpose');
+                throw new InvalidKeyException(
+                    'Unknown purpose',
+                    ExceptionCode::PURPOSE_NOT_DEFINED
+                );
             } elseif (!$this->purpose->isReceivingKeyValid($key)) {
                 throw new InvalidKeyException(
                     'Invalid key type. Expected ' .
                         $this->purpose->expectedReceivingKeyType() .
                         ', got ' .
-                        \get_class($key)
+                        \get_class($key),
+                    ExceptionCode::PASETO_KEY_TYPE_ERROR
                 );
             }
         }
@@ -369,8 +401,10 @@ class Parser
             $expectedPurpose = Purpose::fromReceivingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(
-                    'Invalid purpose. Expected '.$expectedPurpose->rawString()
-                    .', got ' . $purpose->rawString()
+                    'Invalid purpose. Expected ' .
+                        $expectedPurpose->rawString() .
+                        ', got ' . $purpose->rawString(),
+                    ExceptionCode::PURPOSE_WRONG_FOR_KEY
                 );
             }
         }
@@ -388,7 +422,8 @@ class Parser
             $length = Binary::safeStrlen($jsonString);
             if ($length > $this->maxJsonLength) {
                 throw new EncodingException(
-                    "Claims length is too long ({$length} > {$this->maxJsonLength}"
+                    "Claims length is too long ({$length} > {$this->maxJsonLength}",
+                    ExceptionCode::CLAIM_JSON_TOO_LONG
                 );
             }
         }
@@ -396,7 +431,8 @@ class Parser
             $count = Util::countJsonKeys($jsonString);
             if ($count > $this->maxClaimCount) {
                 throw new EncodingException(
-                    "Too many claims in this token ({$count} > {$this->maxClaimCount}"
+                    "Too many claims in this token ({$count} > {$this->maxClaimCount}",
+                    ExceptionCode::CLAIM_JSON_TOO_MANY_KEYs
                 );
             }
         }
@@ -404,7 +440,8 @@ class Parser
             $depth = Util::calculateJsonDepth($jsonString);
             if ($depth > $this->maxClaimDepth) {
                 throw new EncodingException(
-                    "Too many layers of claims ({$depth} > {$this->maxClaimDepth}"
+                    "Too many layers of claims ({$depth} > {$this->maxClaimDepth}",
+                    ExceptionCode::CLAIM_JSON_TOO_DEEP
                 );
             }
         }
@@ -427,7 +464,10 @@ class Parser
         foreach ($this->rules as $rule) {
             if (!$rule->isValid($token)) {
                 if ($throwOnFailure) {
-                    throw new RuleViolation($rule->getFailureMessage());
+                    throw new RuleViolation(
+                        $rule->getFailureMessage(),
+                        ExceptionCode::PARSER_RULE_FAILED
+                    );
                 }
                 return false;
             }

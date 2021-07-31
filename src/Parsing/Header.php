@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Parsing;
 
 use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
     Exception\InvalidPurposeException,
     Exception\InvalidVersionException,
     Exception\SecurityException,
@@ -56,7 +57,10 @@ final class Header
         $count = \count($pieces);
         if ($count !== 3 or $pieces[2] !== '') {
             // we expect "version.purpose." format
-            throw new SecurityException('Truncated or invalid header');
+            throw new SecurityException(
+                'Truncated or invalid header',
+                ExceptionCode::INVALID_HEADER
+            );
         }
 
         return new Header($pieces[0], $pieces[1]);

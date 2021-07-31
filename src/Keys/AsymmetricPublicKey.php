@@ -8,6 +8,8 @@ use ParagonIE\ConstantTime\{
     Hex
 };
 use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
+    Exception\PasetoException,
     ReceivingKey,
     ProtocolInterface
 };
@@ -53,8 +55,9 @@ class AsymmetricPublicKey implements ReceivingKey
                 // Try hex-decoding
                 $keyMaterial = Hex::decode($keyMaterial);
             } else if ($len !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
-                throw new \Exception(
-                    'Public keys must be 32 bytes long; ' . $len . ' given.'
+                throw new PasetoException(
+                    'Public keys must be 32 bytes long; ' . $len . ' given.',
+                    ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
                 );
             }
         }
