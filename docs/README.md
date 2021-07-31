@@ -27,8 +27,10 @@ use ParagonIE\Paseto\Protocol\Version2;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 
 /**
+ * We assume the same key $sharedKey was used from above.
  * @var SymmetricKey $sharedKey
  */
+ 
 $token = Version2::sign('some arbitrary data', $sharedKey);
 ```
 
@@ -45,6 +47,7 @@ use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version2;
 
 /**
+ * We assume the same key $sharedKey was used from above.
  * @var SymmetricKey $sharedKey
  */
 $token = Builder::getLocal($sharedKey, new Version2());
@@ -87,6 +90,9 @@ use ParagonIE\Paseto\Rules\{
 use ParagonIE\Paseto\ProtocolCollection;
 
 /**
+ * We assume the same key $sharedKey was used from above.
+ * $providedToken is $token (as a string) from the previous snippet.
+ *
  * @var string $providedToken
  * @var SymmetricKey $sharedKey
  */
