@@ -6,8 +6,8 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
     Exception\PasetoException,
     SendingKey,
     ProtocolInterface,

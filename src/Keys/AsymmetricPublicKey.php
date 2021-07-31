@@ -7,8 +7,8 @@ use ParagonIE\ConstantTime\{
     Binary,
     Hex
 };
-use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
     Exception\PasetoException,
     ReceivingKey,
     ProtocolInterface
