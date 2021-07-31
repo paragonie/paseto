@@ -9,6 +9,7 @@ use ParagonIE\ConstantTime\{
 };
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\{
+    Exception\PasetoException,
     ReceivingKey,
     ProtocolInterface
 };
