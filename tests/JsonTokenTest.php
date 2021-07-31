@@ -41,18 +41,18 @@ class JsonTokenTest extends TestCase
         NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
 
         $this->assertSame(
-            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA',
+            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6hs4MANpkKEzSOVPaHQVrE_TyDA7Pe37zn1qQykJeCi6_WZVov-PkRU5F6ANACIZKUXgzN9gucaifEsf4TFPuDoiz_k0PwaUM222jY1TPwYUHvx50GN4veVKo-aFbctcZjqg6MA',
             (string) $builder,
             'Auth, no footer'
         );
         $footer = (string) \json_encode(['key-id' => 'gandalf0']);
         $this->assertSame(
-            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4nZ9JDgBVa-L9vW26CMc57aw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6hs4MANpkKEzSOVPaHQVrE_TyDA7Pe37zn1qQykJeCi6_WZVov-PkRU5F6ANACIZKUXgzN9gucaifEsf4TFPuDoiz_k0AMr750FXTBgsZercGCHkWLxy62xRbZTIHlIGaxDekO4.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Auth, footer'
         );
         $this->assertSame(
-            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4n7EbGufWuqilYvYXMCiYbaA',
+            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6hs4MANpkKEzSOVPaHQVrE_TyDA7Pe37zn1qQykJeCi6_WZVov-PkRU5F6ANACIZKUXgzN9gucaifEsf4TFPuDoiz_k0PwaUM222jY1TPwYUHvx50GN4veVKo-aFbctcZjqg6MA',
             (string) $builder->setFooter(''),
             'Auth, removed footer'
         );
@@ -61,17 +61,17 @@ class JsonTokenTest extends TestCase
         $builder->setPurpose(Purpose::public())
                 ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
-            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
+            'v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9_LCndxFrGmFDZbUAgixuWRPZv7J67DA6AT69KfJU2APR8J-APE1RxlKrdFyumd2h_GjcU4tdNgHlgZpuKf3BCQ',
             (string) $builder,
             'Sign, no footer'
         );
         $this->assertSame(
-            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9Hzr4d37ny_OVLHxKACtO3tgVACqE2VHMR0InSWhaVC8-aw-Po1oVtPUeMoLUzPTr3qRQiuzl44WTGR8nfGiQBw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9GZ1yMhB9oF0coCoSXk6K2lPkbFwPbXuLAXw3j0_ZXOdTWUM8Y1sjOUFjJHOQo6PLMAqfldyiC7G1XJEEbuvrAg.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder->setFooter($footer),
             'Sign, footer'
         );
         $this->assertSame(
-            'v2.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9BAOu3lUQMVHnBcPSkuORw51yiGGQ3QFUMoJO9U0gRAdAOPQEZFsd0YM_GZuBcmrXEOD1Re-Ila8vfPrfM5S6Ag',
+            'v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9_LCndxFrGmFDZbUAgixuWRPZv7J67DA6AT69KfJU2APR8J-APE1RxlKrdFyumd2h_GjcU4tdNgHlgZpuKf3BCQ',
             (string) $builder->setFooter(''),
             'Sign, removed footer'
         );
@@ -153,7 +153,7 @@ class JsonTokenTest extends TestCase
         NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
 
         $this->assertSame(
-            'v2.local.3fNxan9FHjedQRSONRnT7Ce_KhhpB0NrlHwAGsCb54x0FhrjBfeNN4uPHFiO5H0iPCZSjwfEkkfiGeYpE6KAfr1Zm3G-VTe4lcXtgDyKATYULT-zLPfshRqisk4nZ9JDgBVa-L9vW26CMc57aw.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
+            'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6hs4MANpkKEzSOVPaHQVrE_TyDA7Pe37zn1qQykJeCi6_WZVov-PkRU5F6ANACIZKUXgzN9gucaifEsf4TFPuDoiz_k0AMr750FXTBgsZercGCHkWLxy62xRbZTIHlIGaxDekO4.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',
             (string) $builder,
             'Auth, footer'
         );

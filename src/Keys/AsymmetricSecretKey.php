@@ -48,7 +48,7 @@ class AsymmetricSecretKey implements SendingKey
         string $keyData,
         ProtocolInterface $protocol = null
     ) {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version4;
 
         if (
             \hash_equals($protocol::header(), Version2::HEADER)
@@ -139,7 +139,7 @@ class AsymmetricSecretKey implements SendingKey
      */
     public static function generate(ProtocolInterface $protocol = null): self
     {
-        $protocol = $protocol ?? new Version2;
+        $protocol = $protocol ?? new Version4;
 
         if (\hash_equals($protocol::header(), Version1::HEADER)) {
             $rsa = Version1::getRsa();
