@@ -236,11 +236,23 @@ class Version3 implements ProtocolInterface
         $easyEcc = new EasyECC(self::CURVE);
         // PASETO v3 - Sign - Step 2 & 3:
         $pk = Hex::decode($key->getPublicKey()->raw());
+        if (Binary::safeStrlen($pk) !== 49) {
+            throw new PasetoException(
+                'Invalid public key length: ' . Binary::safeStrlen($pk),
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
+            );
+        }
         $signature = Hex::decode($easyEcc->sign(
             Util::preAuthEncode($pk, $header, $data, $footer, $implicit),
             SecretKey::importPem($key->raw()),
             true
         ));
+        if (Binary::safeStrlen($signature) !== 96) {
+            throw new PasetoException(
+                'Invalid signature length: ' . Binary::safeStrlen($signature),
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
+            );
+        }
         // PASETO v3 - Sign - Step 4:
         return (new PasetoMessage(
             Header::fromString($header),
@@ -303,6 +315,12 @@ class Version3 implements ProtocolInterface
 
         // PASETO v3 - Verify - Step 4 & 5:
         $pk = Hex::decode($key->raw());
+        if (Binary::safeStrlen($pk) !== 49) {
+            throw new PasetoException(
+                'Invalid public key length: ' . Binary::safeStrlen($pk),
+                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
+            );
+        }
         $valid = $easyEcc->verify(
             Util::preAuthEncode($pk, $givenHeader, $message, $footer, $implicit),
             PublicKey::fromString($key->raw(), 'P384'),
