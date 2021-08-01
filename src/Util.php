@@ -6,9 +6,26 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\Exception\EncodingException;
-use ParagonIE\Paseto\Exception\ExceptionCode;
-use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Exception\{
+    EncodingException,
+    ExceptionCode,
+    PasetoException
+};
+use function array_slice,
+    count,
+    explode,
+    hash_equals,
+    hash_hmac,
+    hash_hkdf,
+    implode,
+    is_callable,
+    is_null,
+    pack,
+    preg_replace,
+    preg_match_all,
+    str_repeat,
+    str_replace;
+use TypeError;
 
 /**
  * Class Util
@@ -93,7 +110,7 @@ abstract class Util
      * @return string
      * @psalm-suppress MixedInferredReturnType This always returns a string!
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function HKDF(
         string $hash,
@@ -104,18 +121,18 @@ abstract class Util
     ): string {
         static $nativeHKDF = null;
         if ($nativeHKDF === null) {
-            $nativeHKDF = \is_callable('\\hash_hkdf');
+            $nativeHKDF = is_callable('hash_hkdf');
         }
         if ($nativeHKDF) {
             /**
              * @psalm-suppress UndefinedFunction
              * This is wrapped in an is_callable() check.
              */
-            return (string) \hash_hkdf($hash, $ikm, $length, $info, $salt ?? '');
+            return (string) hash_hkdf($hash, $ikm, $length, $info, $salt ?? '');
         }
 
         $digest_length = Binary::safeStrlen(
-            \hash_hmac($hash, '', '', true)
+            hash_hmac($hash, '', '', true)
         );
 
         // Sanity-check the desired output length.
@@ -127,14 +144,14 @@ abstract class Util
         }
 
         // "if [salt] not provided, is set to a string of HashLen zeroes."
-        if (\is_null($salt)) {
-            $salt = \str_repeat("\x00", $digest_length);
+        if (is_null($salt)) {
+            $salt = str_repeat("\x00", $digest_length);
         }
 
         // HKDF-Extract:
         // PRK = HMAC-Hash(salt, IKM)
         // The salt is the HMAC key.
-        $prk = \hash_hmac($hash, $ikm, $salt, true);
+        $prk = hash_hmac($hash, $ikm, $salt, true);
 
         // HKDF-Expand:
 
@@ -151,7 +168,7 @@ abstract class Util
         $last_block = '';
         for ($block_index = 1; Binary::safeStrlen($t) < $length; ++$block_index) {
             // T(i) = HMAC-Hash(PRK, T(i-1) | info | 0x??)
-            $last_block = \hash_hmac(
+            $last_block = hash_hmac(
                 $hash,
                 $last_block . $info . \chr($block_index),
                 $prk,
@@ -172,7 +189,7 @@ abstract class Util
      */
     public static function longToBytes(int $long): string
     {
-        return \pack('P', $long);
+        return pack('P', $long);
     }
 
     /**
@@ -210,8 +227,8 @@ abstract class Util
     public static function extractFooter(string $payload): string
     {
         /** @var array<int, string> $pieces */
-        $pieces = \explode('.', $payload);
-        if (\count($pieces) > 3) {
+        $pieces = explode('.', $payload);
+        if (count($pieces) > 3) {
             return Base64UrlSafe::decode((string) \array_pop($pieces));
         }
         return '';
@@ -226,9 +243,9 @@ abstract class Util
      */
     public static function removeFooter(string $payload): string
     {
-        $pieces = \explode('.', $payload);
-        if (\count($pieces) > 3) {
-            return \implode('.', \array_slice($pieces, 0, 3));
+        $pieces = explode('.', $payload);
+        if (count($pieces) > 3) {
+            return implode('.', array_slice($pieces, 0, 3));
         }
         return $payload;
     }
@@ -260,7 +277,7 @@ abstract class Util
             $payload_len - $footer_len,
             $footer_len
         );
-        if (!\hash_equals('.' . $footer, $trailing)) {
+        if (!hash_equals('.' . $footer, $trailing)) {
             throw new PasetoException(
                 'Invalid message footer',
                 ExceptionCode::FOOTER_MISMATCH_EXPECTED

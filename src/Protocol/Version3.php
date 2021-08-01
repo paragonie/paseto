@@ -24,6 +24,7 @@ use ParagonIE\Paseto\Exception\{
     SecurityException
 };
 use ParagonIE\EasyECC\EasyECC;
+use ParagonIE\EasyECC\Exception\InvalidPublicKeyException;
 use ParagonIE\EasyECC\ECDSA\{
     PublicKey,
     SecretKey
@@ -36,6 +37,18 @@ use ParagonIE\Paseto\Parsing\{
     Header,
     PasetoMessage
 };
+use Exception;
+use SodiumException;
+use TypeError;
+use Throwable;
+use function hash_equals,
+    hash_hmac,
+    is_null,
+    is_string,
+    openssl_decrypt,
+    openssl_encrypt,
+    random_bytes,
+    sodium_memzero;
 
 /**
  * Class Version1
@@ -72,8 +85,8 @@ class Version3 implements ProtocolInterface
 
     /**
      * @return AsymmetricSecretKey
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
@@ -82,8 +95,8 @@ class Version3 implements ProtocolInterface
 
     /**
      * @return SymmetricKey
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
@@ -97,7 +110,7 @@ class Version3 implements ProtocolInterface
      */
     public static function header(): string
     {
-        return self::HEADER;
+        return (string) static::HEADER;
     }
 
     /**
@@ -119,7 +132,9 @@ class Version3 implements ProtocolInterface
      * @param string $footer
      * @param string $implicit
      * @return string
+     *
      * @throws PasetoException
+     * @throws SodiumException
      */
     public static function encrypt(
         string $data,
@@ -139,8 +154,10 @@ class Version3 implements ProtocolInterface
      * @param string $implicit
      * @param string $nonceForUnitTesting
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     protected static function __encrypt(
         string $data,
@@ -173,8 +190,10 @@ class Version3 implements ProtocolInterface
      * @param string|null $footer
      * @param string $implicit
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function decrypt(
         string $data,
@@ -189,7 +208,7 @@ class Version3 implements ProtocolInterface
             );
         }
         // PASETO v3 - Decrypt - Step 1:
-        if (\is_null($footer)) {
+        if (is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
         } else {
@@ -214,10 +233,10 @@ class Version3 implements ProtocolInterface
      * @return string
      *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      * @throws InvalidVersionException
      * @throws SecurityException
-     * @throws \SodiumException
+     * @throws SodiumException
      */
     public static function sign(
         string $data,
@@ -270,10 +289,11 @@ class Version3 implements ProtocolInterface
      * @param string $implicit
      * @return string
      *
+     * @throws ASN1ParserException
      * @throws InvalidVersionException
      * @throws PasetoException
-     * @throws ASN1ParserException
-     * @throws \SodiumException
+     * @throws SodiumException
+     * @throws InvalidPublicKeyException
      */
     public static function verify(
         string $signMsg,
@@ -288,7 +308,7 @@ class Version3 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        if (\is_null($footer)) {
+        if (is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
         } else {
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
@@ -350,8 +370,10 @@ class Version3 implements ProtocolInterface
      * @param string $implicit
      * @param string $nonceForUnitTesting
      * @return string
+     *
      * @throws PasetoException
      * @throws SecurityException
+     * @throws SodiumException
      */
     public static function aeadEncrypt(
         string $plaintext,
@@ -365,35 +387,35 @@ class Version3 implements ProtocolInterface
         if ($nonceForUnitTesting) {
             $nonce = $nonceForUnitTesting;
         } else {
-            $nonce = \random_bytes(self::NONCE_SIZE);
+            $nonce = random_bytes(self::NONCE_SIZE);
         }
         // PASETO v3 - Encrypt - Step 3:
         list($encKey, $authKey, $nonce2) = $key->splitV3($nonce);
 
         /** @var string|bool $ciphertext */
         // PASETO v3 - Encrypt - Step 4:
-        $ciphertext = \openssl_encrypt(
+        $ciphertext = openssl_encrypt(
             $plaintext,
             self::CIPHER_MODE,
             $encKey,
             OPENSSL_RAW_DATA,
             $nonce2
         );
-        \sodium_memzero($encKey);
-        if (!\is_string($ciphertext)) {
+        sodium_memzero($encKey);
+        if (!is_string($ciphertext)) {
             throw new PasetoException(
                 'Encryption failed.',
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
             );
         }
         // PASETO v3 - Encrypt - Step 5 & 6:
-        $mac = \hash_hmac(
+        $mac = hash_hmac(
             self::HASH_ALGO,
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey,
             true
         );
-        \sodium_memzero($authKey);
+        sodium_memzero($authKey);
 
         // PASETO v3 - Encrypt - Step 7:
         return (new PasetoMessage(
@@ -412,8 +434,10 @@ class Version3 implements ProtocolInterface
      * @param string $footer
      * @param string $implicit
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function aeadDecrypt(
         string $message,
@@ -426,7 +450,7 @@ class Version3 implements ProtocolInterface
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
 
         // PASETO v3 - Decrypt - Step 2:
-        if (!\hash_equals($header, $givenHeader)) {
+        if (!hash_equals($header, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER
@@ -435,8 +459,10 @@ class Version3 implements ProtocolInterface
 
         // PASETO v3 - Decrypt - Step 3:
         try {
-            $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
-        } catch (\Throwable $ex) {
+            $decoded = Base64UrlSafe::decode(
+                Binary::safeSubstr($message, $expectedLen)
+            );
+        } catch (Throwable $ex) {
             throw new PasetoException(
                 'Invalid encoding detected',
                 ExceptionCode::INVALID_BASE64URL,
@@ -456,16 +482,16 @@ class Version3 implements ProtocolInterface
         list($encKey, $authKey, $nonce2) = $key->splitV3($nonce);
 
         // PASETO v3 - Decrypt - Step 5 & 6:
-        $calc = \hash_hmac(
+        $calc = hash_hmac(
             self::HASH_ALGO,
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey,
             true
         );
-        \sodium_memzero($authKey);
+        sodium_memzero($authKey);
 
         // PASETO v3 - Decrypt - Step 7:
-        if (!\hash_equals($calc, $mac)) {
+        if (!hash_equals($calc, $mac)) {
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
                 ExceptionCode::INVALID_MAC
@@ -474,16 +500,16 @@ class Version3 implements ProtocolInterface
 
         // PASETO v3 - Decrypt - Step 8:
         /** @var string|bool $plaintext */
-        $plaintext = \openssl_decrypt(
+        $plaintext = openssl_decrypt(
             $ciphertext,
             self::CIPHER_MODE,
             $encKey,
             OPENSSL_RAW_DATA,
             $nonce2
         );
-        \sodium_memzero($encKey);
+        sodium_memzero($encKey);
 
-        if (!\is_string($plaintext)) {
+        if (!is_string($plaintext)) {
             throw new PasetoException(
                 'Encryption failed.',
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR

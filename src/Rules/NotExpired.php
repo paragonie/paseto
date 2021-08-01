@@ -7,6 +7,8 @@ use ParagonIE\Paseto\{
     ValidationRuleInterface
 };
 use ParagonIE\Paseto\Exception\PasetoException;
+use DateTime;
+use DateTimeInterface;
 
 /**
  * Class NotExpired
@@ -17,17 +19,17 @@ class NotExpired implements ValidationRuleInterface
     /** @var string $failure */
     protected $failure = 'OK';
 
-    /** @var \DateTimeInterface $now */
+    /** @var DateTimeInterface $now */
     protected $now;
 
     /**
      * NotExpired constructor.
-     * @param \DateTimeInterface|null $now Allows "now" to be overwritten for unit testing
+     * @param DateTimeInterface|null $now Allows "now" to be overwritten for unit testing
      */
-    public function __construct(\DateTimeInterface $now = null)
+    public function __construct(DateTimeInterface $now = null)
     {
         if (!$now) {
-            $now = new \DateTime();
+            $now = new DateTime();
         }
         $this->now = $now;
     }

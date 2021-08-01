@@ -7,6 +7,7 @@ use ParagonIE\Paseto\{
     ValidationRuleInterface
 };
 use ParagonIE\Paseto\Exception\PasetoException;
+use function hash_equals;
 
 /**
  * Class IdentifiedBy
@@ -45,7 +46,7 @@ class IdentifiedBy implements ValidationRuleInterface
     {
         try {
             $issuer = $token->getIssuer();
-            if (!\hash_equals($this->issuer, $issuer)) {
+            if (!hash_equals($this->issuer, $issuer)) {
                 $this->failure = 'This token was expected to be identified by ' .
                     $this->issuer . ', but it was identified by ' .
                     $issuer .' instead.';

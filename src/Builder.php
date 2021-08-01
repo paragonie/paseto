@@ -16,6 +16,15 @@ use ParagonIE\Paseto\Keys\{
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 
+use Closure;
+use DateTime;
+use DateTimeInterface;
+use Throwable;
+use function is_null,
+    is_string,
+    json_decode,
+    json_encode;
+
 /**
  * Class Builder
  * @package ParagonIE\Paseto
@@ -30,7 +39,7 @@ class Builder
     /** @var string $implicitAssertions */
     protected $implicitAssertions = '';
 
-    /** @var \Closure|null $unitTestEncrypter -- Do not use this. It's for unit testing! */
+    /** @var Closure|null $unitTestEncrypter -- Do not use this. It's for unit testing! */
     protected $unitTestEncrypter;
 
     /** @var SendingKey|null $key */
@@ -237,15 +246,15 @@ class Builder
     /**
      * Set the 'iat' claim for the token we're building. (Mutable.)
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setIssuedAt(\DateTimeInterface $time = null): self
+    public function setIssuedAt(DateTimeInterface $time = null): self
     {
         if (!$time) {
-            $time = new \DateTime('NOW');
+            $time = new DateTime('NOW');
         }
-        return $this->set('iat', $time->format(\DateTime::ATOM));
+        return $this->set('iat', $time->format(DateTime::ATOM));
     }
 
     /**
@@ -273,15 +282,15 @@ class Builder
     /**
      * Set the 'nbf' claim for the token we're building. (Mutable.)
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setNotBefore(\DateTimeInterface $time = null): self
+    public function setNotBefore(DateTimeInterface $time = null): self
     {
         if (!$time) {
-            $time = new \DateTime('NOW');
+            $time = new DateTime('NOW');
         }
-        return $this->set('nbf', $time->format(\DateTime::ATOM));
+        return $this->set('nbf', $time->format(DateTime::ATOM));
     }
 
     /**
@@ -330,8 +339,8 @@ class Builder
      */
     public function setFooterArray(array $footer = []): self
     {
-        $encoded = \json_encode($footer);
-        if (!\is_string($encoded)) {
+        $encoded = json_encode($footer);
+        if (!is_string($encoded)) {
             throw new EncodingException(
                 'Could not encode array into JSON',
                 ExceptionCode::FOOTER_JSON_ERROR
@@ -405,7 +414,7 @@ class Builder
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
         if ($checkKeyType) {
-            if (\is_null($this->key)) {
+            if (is_null($this->key)) {
                 throw new InvalidKeyException(
                     'Key cannot be null',
                     ExceptionCode::PASETO_KEY_IS_NULL
@@ -468,13 +477,13 @@ class Builder
         if (!empty($this->cached)) {
             return $this->cached;
         }
-        if (\is_null($this->key)) {
+        if (is_null($this->key)) {
             throw new InvalidKeyException(
                 'Key cannot be null',
                 ExceptionCode::PASETO_KEY_IS_NULL
             );
         }
-        if (\is_null($this->purpose)) {
+        if (is_null($this->purpose)) {
             throw new InvalidPurposeException(
                 'Purpose cannot be null',
                 ExceptionCode::PURPOSE_NOT_DEFINED
@@ -484,7 +493,7 @@ class Builder
         $this->setKey($this->key, true);
         $this->setPurpose($this->purpose, true);
 
-        $claims = \json_encode($this->token->getClaims(), JSON_FORCE_OBJECT);
+        $claims = json_encode($this->token->getClaims(), JSON_FORCE_OBJECT);
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
 
@@ -532,7 +541,7 @@ class Builder
                             $implicit
                         );
                         return $this->cached;
-                    } catch (\Throwable $ex) {
+                    } catch (Throwable $ex) {
                         throw new PasetoException(
                             'Signing failed.',
                             ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
@@ -748,7 +757,7 @@ class Builder
     {
         try {
             return $this->toString();
-        } catch (\Throwable $ex) {
+        } catch (Throwable $ex) {
             return '';
         }
     }

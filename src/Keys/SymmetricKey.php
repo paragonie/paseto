@@ -18,6 +18,11 @@ use ParagonIE\Paseto\{
     Util
 };
 
+use Exception;
+use TypeError;
+use function random_bytes,
+    sodium_crypto_generichash;
+
 /**
  * Class SymmetricKey
  * @package ParagonIE\Paseto\Keys
@@ -51,12 +56,13 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param ProtocolInterface|null $protocol
      *
      * @return SymmetricKey
+     * @throws Exception
      */
     public static function generate(ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
         return new static(
-            \random_bytes($protocol::getSymmetricKeyByteLength()),
+            random_bytes($protocol::getSymmetricKeyByteLength()),
             $protocol
         );
     }
@@ -67,8 +73,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v1(string $keyMaterial): self
     {
@@ -81,8 +87,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v2(string $keyMaterial): self
     {
@@ -95,8 +101,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v3(string $keyMaterial): self
     {
@@ -109,8 +115,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v4(string $keyMaterial): self
     {
@@ -121,7 +127,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * Return a base64url-encoded representation of this symmetric key.
      *
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function encode(): string
     {
@@ -134,7 +140,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
@@ -172,7 +178,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @return array<int, string>
      *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function splitV3(string $salt = null): array
     {
@@ -207,14 +213,14 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public function splitV4(string $salt = null): array
     {
-        $tmp = \sodium_crypto_generichash(
+        $tmp = sodium_crypto_generichash(
             self::INFO_ENCRYPTION . ($salt ?? ''),
             $this->key,
             56
         );
         $encKey = Binary::safeSubstr($tmp, 0, 32);
         $nonce = Binary::safeSubstr($tmp, 32, 24);
-        $authKey = \sodium_crypto_generichash(
+        $authKey = sodium_crypto_generichash(
             self::INFO_AUTHENTICATION . ($salt ?? ''),
             $this->key
         );

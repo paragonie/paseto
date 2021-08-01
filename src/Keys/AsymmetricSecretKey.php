@@ -23,6 +23,13 @@ use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
 };
+use Exception;
+use TypeError;
+use function hash_equals,
+    sodium_crypto_sign_keypair,
+    sodium_crypto_sign_publickey_from_secretkey,
+    sodium_crypto_sign_secretkey,
+    sodium_crypto_sign_seed_keypair;
 
 /**
  * Class AsymmetricSecretKey
@@ -41,8 +48,8 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @param string $keyData
      * @param ProtocolInterface|null $protocol
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public function __construct(
         string $keyData,
@@ -51,9 +58,9 @@ class AsymmetricSecretKey implements SendingKey
         $protocol = $protocol ?? new Version4;
 
         if (
-            \hash_equals($protocol::header(), Version2::HEADER)
+            hash_equals($protocol::header(), Version2::HEADER)
                 ||
-            \hash_equals($protocol::header(), Version4::HEADER)
+            hash_equals($protocol::header(), Version4::HEADER)
         ) {
             $len = Binary::safeStrlen($keyData);
             if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
@@ -65,7 +72,7 @@ class AsymmetricSecretKey implements SendingKey
                         ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
                     );
                 }
-                $keypair = \sodium_crypto_sign_seed_keypair($keyData);
+                $keypair = sodium_crypto_sign_seed_keypair($keyData);
                 $keyData = Binary::safeSubstr($keypair, 0, 64);
             }
         }
@@ -93,8 +100,8 @@ class AsymmetricSecretKey implements SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v2(string $keyMaterial): self
     {
@@ -107,8 +114,8 @@ class AsymmetricSecretKey implements SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v3(string $keyMaterial): self
     {
@@ -121,8 +128,8 @@ class AsymmetricSecretKey implements SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v4(string $keyMaterial): self
     {
@@ -134,27 +141,27 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @param ProtocolInterface|null $protocol
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generate(ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
 
-        if (\hash_equals($protocol::header(), Version1::HEADER)) {
+        if (hash_equals($protocol::header(), Version1::HEADER)) {
             $rsa = Version1::getRsa();
             /** @var array<string, string> $keypair */
             $keypair = $rsa->createKey(2048);
             return new self(Util::dos2unix($keypair['privatekey']), $protocol);
-        } elseif (\hash_equals($protocol::header(), Version3::HEADER)) {
+        } elseif (hash_equals($protocol::header(), Version3::HEADER)) {
             return new self(
                 Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem()),
                 $protocol
             );
         }
         return new self(
-            \sodium_crypto_sign_secretkey(
-                \sodium_crypto_sign_keypair()
+            sodium_crypto_sign_secretkey(
+                sodium_crypto_sign_keypair()
             ),
             $protocol
         );
@@ -177,8 +184,9 @@ class AsymmetricSecretKey implements SendingKey
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     *
+     * @throws Exception
+     * @throws TypeError
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
@@ -200,8 +208,9 @@ class AsymmetricSecretKey implements SendingKey
      * Get the public key that corresponds to this secret key.
      *
      * @return AsymmetricPublicKey
-     * @throws \Exception
-     * @throws \TypeError
+     *
+     * @throws Exception
+     * @throws TypeError
      */
     public function getPublicKey(): AsymmetricPublicKey
     {
@@ -220,7 +229,7 @@ class AsymmetricSecretKey implements SendingKey
                 );
             default:
                 return new AsymmetricPublicKey(
-                    \sodium_crypto_sign_publickey_from_secretkey($this->key),
+                    sodium_crypto_sign_publickey_from_secretkey($this->key),
                     $this->protocol
                 );
         }

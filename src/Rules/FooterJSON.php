@@ -7,6 +7,9 @@ use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\JsonToken;
 use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\ValidationRuleInterface;
+use function is_array,
+    json_decode,
+    json_last_error_msg;
 
 /**
  * Class FooterJSON

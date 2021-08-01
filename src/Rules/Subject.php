@@ -7,6 +7,7 @@ use ParagonIE\Paseto\{
     ValidationRuleInterface
 };
 use ParagonIE\Paseto\Exception\PasetoException;
+use function hash_equals;
 
 /**
  * Class Subject
@@ -45,7 +46,7 @@ class Subject implements ValidationRuleInterface
     {
         try {
             $subject = $token->getSubject();
-            if (!\hash_equals($this->subject, $subject)) {
+            if (!hash_equals($this->subject, $subject)) {
                 $this->failure = 'This token was not related to ' .
                     $this->subject . ' (expected); its subject is ' .
                     $subject . ' instead.';

@@ -29,6 +29,18 @@ use ParagonIE\Paseto\Parsing\{
     Header,
     PasetoMessage
 };
+use Exception;
+use SodiumException;
+use Throwable;
+use TypeError;
+use function hash_equals,
+    is_null,
+    is_string,
+    sodium_crypto_generichash,
+    sodium_crypto_aead_xchacha20poly1305_ietf_decrypt,
+    sodium_crypto_aead_xchacha20poly1305_ietf_encrypt,
+    sodium_crypto_sign_detached,
+    sodium_crypto_sign_verify_detached;
 
 /**
  * Class Version1
@@ -53,7 +65,7 @@ class Version2 implements ProtocolInterface
      */
     public static function header(): string
     {
-        return self::HEADER;
+        return (string) static::HEADER;
     }
 
     /**
@@ -77,8 +89,8 @@ class Version2 implements ProtocolInterface
 
     /**
      * @return AsymmetricSecretKey
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
@@ -87,8 +99,8 @@ class Version2 implements ProtocolInterface
 
     /**
      * @return SymmetricKey
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
@@ -101,10 +113,12 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
+     * @param string $implicit (Unused)
      * @return string
+     *
      * @throws PasetoException
-     * @throws \SodiumException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function encrypt(
         string $data,
@@ -121,11 +135,13 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
+     * @param string $implicit (Unused)
      * @param string $nonceForUnitTesting
      * @return string
+     *
      * @throws PasetoException
-     * @throws \SodiumException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     protected static function __encrypt(
         string $data,
@@ -155,11 +171,12 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string|null $footer
+     * @param string $implicit (Unused)
      * @return string
      *
      * @throws PasetoException
-     * @throws \SodiumException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function decrypt(
         string $data,
@@ -173,7 +190,7 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        if (\is_null($footer)) {
+        if (is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
         } else {
@@ -185,7 +202,7 @@ class Version2 implements ProtocolInterface
             $key,
             (string) $footer
         );
-        if (!\is_string($message)) {
+        if (!is_string($message)) {
             throw new PasetoException(
                 'Invalid message decryption',
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
@@ -201,10 +218,12 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
+     * @param string $implicit (Unused)
      * @return string
      *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function sign(
         string $data,
@@ -219,7 +238,7 @@ class Version2 implements ProtocolInterface
             );
         }
         $header = self::HEADER . '.public.';
-        $signature = \sodium_crypto_sign_detached(
+        $signature = sodium_crypto_sign_detached(
             Util::preAuthEncode($header, $data, $footer),
             $key->raw()
         );
@@ -237,9 +256,12 @@ class Version2 implements ProtocolInterface
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
      * @param string|null $footer
+     * @param string $implicit (Unused)
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function verify(
         string $signMsg,
@@ -253,7 +275,7 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        if (\is_null($footer)) {
+        if (is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
         } else {
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
@@ -261,7 +283,7 @@ class Version2 implements ProtocolInterface
         $signMsg = Util::removeFooter($signMsg);
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
-        if (!\hash_equals($expectHeader, $givenHeader)) {
+        if (!hash_equals($expectHeader, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER
@@ -281,7 +303,7 @@ class Version2 implements ProtocolInterface
             $len - SODIUM_CRYPTO_SIGN_BYTES
         );
 
-        $valid = \sodium_crypto_sign_verify_detached(
+        $valid = sodium_crypto_sign_verify_detached(
             $signature,
             Util::preAuthEncode($givenHeader, $message, $footer),
             $key->raw()
@@ -320,16 +342,16 @@ class Version2 implements ProtocolInterface
         if ($nonceForUnitTesting) {
             $nonce = $nonceForUnitTesting;
         } else {
-            $nonce = \random_bytes(
-                \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            $nonce = random_bytes(
+                SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
             );
         }
-        $nonce = \sodium_crypto_generichash(
+        $nonce = sodium_crypto_generichash(
             $plaintext,
             $nonce,
-            \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
-        $ciphertext = \sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
+        $ciphertext = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
             Util::preAuthEncode($header, $nonce, $footer),
             $nonce,
@@ -350,12 +372,11 @@ class Version2 implements ProtocolInterface
      * @param string $header
      * @param SymmetricKey $key
      * @param string $footer
-     *
      * @return bool|string
      *
      * @throws PasetoException
-     * @throws \SodiumException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function aeadDecrypt(
         string $message,
@@ -365,7 +386,7 @@ class Version2 implements ProtocolInterface
     ) {
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
-        if (!\hash_equals($header, $givenHeader)) {
+        if (!hash_equals($header, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER
@@ -373,7 +394,7 @@ class Version2 implements ProtocolInterface
         }
         try {
             $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
-        } catch (\Throwable $ex) {
+        } catch (Throwable $ex) {
             throw new PasetoException(
                 'Invalid encoding detected',
                 ExceptionCode::INVALID_BASE64URL,
@@ -384,14 +405,14 @@ class Version2 implements ProtocolInterface
         $nonce = Binary::safeSubstr(
             $decoded,
             0,
-            \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
         $ciphertext = Binary::safeSubstr(
             $decoded,
-            \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES,
-            $len - \SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
+            SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES,
+            $len - SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
-        return \sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
+        return sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
             $ciphertext,
             Util::preAuthEncode($header, $nonce, $footer),
             $nonce,

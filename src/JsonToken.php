@@ -9,6 +9,13 @@ use ParagonIE\Paseto\Exception\{
     PasetoException
 };
 use ParagonIE\Paseto\Traits\RegisteredClaims;
+use DateTime;
+use DateTimeInterface;
+use function array_key_exists,
+    is_array,
+    is_string,
+    json_decode,
+    json_encode;
 
 /**
  * Class JsonToken
@@ -43,7 +50,7 @@ class JsonToken
      */
     public function get(string $claim)
     {
-        if (\array_key_exists($claim, $this->claims)) {
+        if (array_key_exists($claim, $this->claims)) {
             return $this->claims[$claim];
         }
         throw new NotFoundException(
@@ -81,7 +88,7 @@ class JsonToken
      */
     public function getExpiration(): \DateTime
     {
-        return new \DateTime((string) $this->get('exp'));
+        return new DateTime((string) $this->get('exp'));
     }
 
     /**
@@ -103,8 +110,8 @@ class JsonToken
     public function getFooterArray(): array
     {
         /** @var array|bool $decoded */
-        $decoded = \json_decode($this->footer, true);
-        if (!\is_array($decoded)) {
+        $decoded = json_decode($this->footer, true);
+        if (!is_array($decoded)) {
             throw new EncodingException(
                 'Footer is not a valid JSON object',
                 ExceptionCode::FOOTER_JSON_ERROR
@@ -121,7 +128,7 @@ class JsonToken
      */
     public function getIssuedAt(): \DateTime
     {
-        return new \DateTime((string) $this->get('iat'));
+        return new DateTime((string) $this->get('iat'));
     }
 
     /**
@@ -154,7 +161,7 @@ class JsonToken
      */
     public function getNotBefore(): \DateTime
     {
-        return new \DateTime((string) $this->get('nbf'));
+        return new DateTime((string) $this->get('nbf'));
     }
 
     /**
@@ -214,7 +221,7 @@ class JsonToken
     public function setExpiration(\DateTimeInterface $time = null): self
     {
         if (!$time) {
-            $time = new \DateTime('NOW');
+            $time = new DateTime('NOW');
         }
         $this->claims['exp'] = $time->format(\DateTime::ATOM);
         return $this;
@@ -241,8 +248,8 @@ class JsonToken
      */
     public function setFooterArray(array $footer = []): self
     {
-        $encoded = \json_encode($footer);
-        if (!\is_string($encoded)) {
+        $encoded = json_encode($footer);
+        if (!is_string($encoded)) {
             throw new EncodingException(
                 'Could not encode array into JSON',
                 ExceptionCode::FOOTER_JSON_ERROR
@@ -257,12 +264,12 @@ class JsonToken
      * @param \DateTimeInterface|null $time
      * @return self
      */
-    public function setIssuedAt(\DateTimeInterface $time = null): self
+    public function setIssuedAt(DateTimeInterface $time = null): self
     {
         if (!$time) {
-            $time = new \DateTime('NOW');
+            $time = new DateTime('NOW');
         }
-        $this->claims['iat'] = $time->format(\DateTime::ATOM);
+        $this->claims['iat'] = $time->format(DateTime::ATOM);
         return $this;
     }
 
@@ -299,7 +306,7 @@ class JsonToken
     public function setNotBefore(\DateTimeInterface $time = null): self
     {
         if (!$time) {
-            $time = new \DateTime('NOW');
+            $time = new DateTime('NOW');
         }
         $this->claims['nbf'] = $time->format(\DateTime::ATOM);
         return $this;

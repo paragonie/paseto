@@ -19,6 +19,9 @@ use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
 };
+use Exception;
+use TypeError;
+use function hash_equals;
 
 /**
  * Class AsymmetricPublicKey
@@ -37,7 +40,8 @@ class AsymmetricPublicKey implements ReceivingKey
      *
      * @param string $keyMaterial
      * @param ProtocolInterface|null $protocol
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function __construct(
         string $keyMaterial,
@@ -46,9 +50,9 @@ class AsymmetricPublicKey implements ReceivingKey
         $protocol = $protocol ?? new Version4;
 
         if (
-            \hash_equals($protocol::header(), Version2::HEADER)
+            hash_equals($protocol::header(), Version2::HEADER)
                 ||
-            \hash_equals($protocol::header(), Version4::HEADER)
+            hash_equals($protocol::header(), Version4::HEADER)
         ) {
             $len = Binary::safeStrlen($keyMaterial);
             if ($len === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES << 1) {
@@ -133,10 +137,10 @@ class AsymmetricPublicKey implements ReceivingKey
      *
      * @param string $encoded
      * @param ProtocolInterface|null $version
-     *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     *
+     * @throws Exception
+     * @throws TypeError
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {

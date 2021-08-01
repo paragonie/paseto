@@ -17,8 +17,19 @@ use ParagonIE\Paseto\Keys\Version2\{
     AsymmetricPublicKey as V2AsymmetricPublicKey,
     SymmetricKey as V2SymmetricKey
 };
+use ParagonIE\Paseto\Keys\Version3\{
+    AsymmetricSecretKey as V3AsymmetricSecretKey,
+    AsymmetricPublicKey as V3AsymmetricPublicKey,
+    SymmetricKey as V3SymmetricKey
+};
+use ParagonIE\Paseto\Keys\Version4\{
+    AsymmetricSecretKey as V4AsymmetricSecretKey,
+    AsymmetricPublicKey as V4AsymmetricPublicKey,
+    SymmetricKey as V4SymmetricKey
+};
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
+use function get_class, hash_equals, in_array;
 
 /**
  * Class Purpose
@@ -53,9 +64,13 @@ final class Purpose
         SymmetricKey::class => 'local',
         V1SymmetricKey::class => 'local',
         V2SymmetricKey::class => 'local',
+        V3SymmetricKey::class => 'local',
+        V4SymmetricKey::class => 'local',
         AsymmetricSecretKey::class => 'public',
         V1AsymmetricSecretKey::class => 'public',
-        V2AsymmetricSecretKey::class => 'public'
+        V2AsymmetricSecretKey::class => 'public',
+        V3AsymmetricSecretKey::class => 'public',
+        V4AsymmetricSecretKey::class => 'public',
     ];
 
     /**
@@ -76,9 +91,13 @@ final class Purpose
         SymmetricKey::class => 'local',
         V1SymmetricKey::class => 'local',
         V2SymmetricKey::class => 'local',
+        V3SymmetricKey::class => 'local',
+        V4SymmetricKey::class => 'local',
         AsymmetricPublicKey::class => 'public',
         V1AsymmetricPublicKey::class => 'public',
-        V2AsymmetricPublicKey::class => 'public'
+        V2AsymmetricPublicKey::class => 'public',
+        V3AsymmetricPublicKey::class => 'public',
+        V4AsymmetricPublicKey::class => 'public',
     ];
 
     /**
@@ -122,7 +141,6 @@ final class Purpose
      * Create a local purpose.
      *
      * @return self
-     * @throws InvalidPurposeException
      */
     public static function local(): self
     {
@@ -133,7 +151,6 @@ final class Purpose
      * Create a public purpose.
      *
      * @return self
-     * @throws InvalidPurposeException
      */
     public static function public(): self
     {
@@ -155,7 +172,7 @@ final class Purpose
             self::$sendingKeyToPurpose = self::SENDING_KEY_MAP;
         }
 
-        return new self(self::$sendingKeyToPurpose[\get_class($key)]);
+        return new self(self::$sendingKeyToPurpose[get_class($key)]);
     }
 
     /**
@@ -173,7 +190,7 @@ final class Purpose
             self::$sendingKeyToPurpose = self::RECEIVING_KEY_MAP;
         }
 
-        return new self(self::$receivingKeyToPurpose[\get_class($key)]);
+        return new self(self::$receivingKeyToPurpose[get_class($key)]);
     }
 
     /**
@@ -184,7 +201,7 @@ final class Purpose
      */
     public function equals(self $purpose): bool
     {
-        return \hash_equals($purpose->purpose, $this->purpose);
+        return hash_equals($purpose->purpose, $this->purpose);
     }
 
     /**
@@ -196,7 +213,7 @@ final class Purpose
      */
     public static function isValid(string $rawString): bool
     {
-        return \in_array($rawString, self::ALLOWLIST, true);
+        return in_array($rawString, self::ALLOWLIST, true);
     }
 
     /**

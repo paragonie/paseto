@@ -11,6 +11,11 @@ use ParagonIE\Paseto\Protocol\{
     Version4
 };
 use ParagonIE\Paseto\Exception\InvalidVersionException;
+use function array_key_exists,
+    array_map,
+    get_class,
+    in_array;
+use LogicException;
 
 /**
  * Class ProtocolCollection
@@ -38,13 +43,13 @@ final class ProtocolCollection
 
     /**
      * @param ProtocolInterface ...$protocols
-     * @throws \LogicException
+     * @throws LogicException
      * @throws InvalidVersionException
      */
     public function __construct(ProtocolInterface ...$protocols)
     {
         if (empty($protocols)) {
-            throw new \LogicException(
+            throw new LogicException(
                 'At least one version is necessary',
                 ExceptionCode::BAD_VERSION
             );
@@ -65,7 +70,7 @@ final class ProtocolCollection
      */
     public function has(ProtocolInterface $protocol): bool
     {
-        return \in_array($protocol, $this->protocols);
+        return in_array($protocol, $this->protocols);
     }
 
     /**
@@ -76,7 +81,7 @@ final class ProtocolCollection
      */
     public static function isValid(ProtocolInterface $protocol): bool
     {
-        return \in_array(\get_class($protocol), self::ALLOWED, true);
+        return in_array(get_class($protocol), self::ALLOWED, true);
     }
 
     /**
@@ -110,7 +115,7 @@ final class ProtocolCollection
             }
         }
 
-        if (!\array_key_exists($headerPart, self::$headerLookup)) {
+        if (!array_key_exists($headerPart, self::$headerLookup)) {
             throw new InvalidVersionException(
                 'Disallowed or unsupported version',
                 ExceptionCode::BAD_VERSION
@@ -128,11 +133,9 @@ final class ProtocolCollection
      */
     public static function default(): self
     {
-        return new self(...\array_map(
+        return new self(...array_map(
             function (string $p): ProtocolInterface {
-                /** @var ProtocolInterface */
-                $protocol = new $p;
-                return $protocol;
+                return new $p;
             },
             self::ALLOWED
         ));

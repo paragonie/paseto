@@ -9,6 +9,7 @@ use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     InvalidPurposeException
 };
+use function count, explode;
 
 /**
  * Class PasetoMessage
@@ -53,8 +54,8 @@ final class PasetoMessage
     public static function fromString(string $tainted): self
     {
         /** @var array<int, string> $pieces */
-        $pieces = \explode('.', $tainted);
-        $count = \count($pieces);
+        $pieces = explode('.', $tainted);
+        $count = count($pieces);
         if ($count < 3 || $count > 4) {
             throw new SecurityException(
                 'Truncated or invalid token',
@@ -90,14 +91,13 @@ final class PasetoMessage
      */
     public function toString(): string
     {
-        $message =  $this->header->toString()
-            . Base64UrlSafe::encodeUnpadded($this->payload)
-        ;
+        $message =  $this->header->toString() .
+            Base64UrlSafe::encodeUnpadded($this->payload);
 
         if ($this->footer === '') {
             return $message;
         }
 
-        return $message . "." . Base64UrlSafe::encodeUnpadded($this->footer);
+        return $message . '.' . Base64UrlSafe::encodeUnpadded($this->footer);
     }
 }

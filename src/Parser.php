@@ -19,6 +19,13 @@ use ParagonIE\Paseto\Keys\{
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Parsing\PasetoMessage;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
+use function get_class,
+    is_array,
+    is_null,
+    is_string,
+    json_encode,
+    json_decode;
+use Throwable;
 
 /**
  * Class Parser
@@ -72,7 +79,7 @@ class Parser
     ) {
         $this->allowedVersions = $allowedVersions ?? ProtocolCollection::default();
         $this->purpose = $purpose;
-        if (!\is_null($key)) {
+        if (!is_null($key)) {
             $this->setKey($key, true);
         }
         if (!empty($parserRules)) {
@@ -123,13 +130,11 @@ class Parser
         SymmetricKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        /** @var Parser $instance */
-        $instance = new static(
+        return new static(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::local(),
             $key
         );
-        return $instance;
     }
 
     /**
@@ -146,13 +151,11 @@ class Parser
         AsymmetricPublicKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        /** @var Parser $instance */
-        $instance = new static(
+        return new static(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::public(),
             $key
         );
-        return $instance;
     }
 
     /**
@@ -230,7 +233,7 @@ class Parser
                 $key = $this->key;
                 try {
                     $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
-                } catch (\Throwable $ex) {
+                } catch (Throwable $ex) {
                     throw new PasetoException(
                         'An error occurred',
                         ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
@@ -243,7 +246,7 @@ class Parser
                 $key = $this->key;
                 try {
                     $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
-                } catch (\Throwable $ex) {
+                } catch (Throwable $ex) {
                     throw new PasetoException(
                         'An error occurred',
                         ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
@@ -265,8 +268,8 @@ class Parser
         $this->throwIfClaimsJsonInvalid($decoded);
 
         /** @var array<string, string>|bool $claims */
-        $claims = \json_decode((string) $decoded, true, ($this->maxClaimDepth ?? 512));
-        if (!\is_array($claims)) {
+        $claims = json_decode((string) $decoded, true, ($this->maxClaimDepth ?? 512));
+        if (!is_array($claims)) {
             throw new EncodingException(
                 'Not a JSON token.',
                 ExceptionCode::PAYLOAD_JSON_ERROR
@@ -378,7 +381,7 @@ class Parser
                     'Invalid key type. Expected ' .
                         $this->purpose->expectedReceivingKeyType() .
                         ', got ' .
-                        \get_class($key),
+                        get_class($key),
                     ExceptionCode::PASETO_KEY_TYPE_ERROR
                 );
             }
