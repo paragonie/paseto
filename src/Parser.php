@@ -296,12 +296,12 @@ class Parser
     /**
      * Which protocol versions to permit.
      *
-     * @param ProtocolCollection $whitelist
+     * @param ProtocolCollection $allowlist
      * @return self
      */
-    public function setAllowedVersions(ProtocolCollection $whitelist): self
+    public function setAllowedVersions(ProtocolCollection $allowlist): self
     {
-        $this->allowedVersions = $whitelist;
+        $this->allowedVersions = $allowlist;
         return $this;
     }
 

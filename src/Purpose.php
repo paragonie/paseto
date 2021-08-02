@@ -38,7 +38,7 @@ use function get_class, hash_equals, in_array;
 final class Purpose
 {
     /**
-     * A whitelist of allowed values/modes. This simulates an enum.
+     * An allow-list of allowed values/modes. This simulates an enum.
      * @const array<int, string>
      */
     const ALLOWLIST = [
