@@ -7,6 +7,7 @@ use ParagonIE\Paseto\{
     ValidationRuleInterface
 };
 use ParagonIE\Paseto\Exception\PasetoException;
+use function hash_equals;
 
 /**
  * Class IssuedBy
@@ -38,6 +39,8 @@ class IssuedBy implements ValidationRuleInterface
     }
 
     /**
+     * Does the 'iss' claim match what we expect from the Parser?
+     *
      * @param JsonToken $token
      * @return bool
      */
@@ -45,7 +48,7 @@ class IssuedBy implements ValidationRuleInterface
     {
         try {
             $issuedBy = $token->getIssuer();
-            if (!\hash_equals($this->issuer, $issuedBy)) {
+            if (!hash_equals($this->issuer, $issuedBy)) {
                 $this->failure = 'This token was not issued by ' .
                     $this->issuer . ' (expected); it was issued by ' .
                     $issuedBy . ' instead.';

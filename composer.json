@@ -26,7 +26,7 @@
     "php": "^7.1|^8",
     "paragonie/constant_time_encoding": "^2",
     "paragonie/easy-ecc": "^0.5",
-    "paragonie/sodium_compat": "^1.7",
+    "paragonie/sodium_compat": "^1.16",
     "phpseclib/phpseclib": "^2"
   },
   "require-dev": {

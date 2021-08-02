@@ -5,6 +5,8 @@ namespace ParagonIE\Paseto\Keys\Version3;
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey as BasePublicKey;
 use ParagonIE\Paseto\Protocol\Version3;
 use ParagonIE\Paseto\ProtocolInterface;
+use Exception;
+use TypeError;
 
 /**
  * Class AsymmetricPublicKey
@@ -18,8 +20,8 @@ class AsymmetricPublicKey extends BasePublicKey
      * @param string $keyData
      * @param ProtocolInterface|null $protocol
      *
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public function __construct(string $keyData, ProtocolInterface $protocol = null)
     {

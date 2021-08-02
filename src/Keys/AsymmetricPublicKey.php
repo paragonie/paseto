@@ -19,6 +19,9 @@ use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
 };
+use Exception;
+use TypeError;
+use function hash_equals;
 
 /**
  * Class AsymmetricPublicKey
@@ -37,7 +40,8 @@ class AsymmetricPublicKey implements ReceivingKey
      *
      * @param string $keyMaterial
      * @param ProtocolInterface|null $protocol
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function __construct(
         string $keyMaterial,
@@ -46,9 +50,9 @@ class AsymmetricPublicKey implements ReceivingKey
         $protocol = $protocol ?? new Version4;
 
         if (
-            \hash_equals($protocol::header(), Version2::HEADER)
+            hash_equals($protocol::header(), Version2::HEADER)
                 ||
-            \hash_equals($protocol::header(), Version4::HEADER)
+            hash_equals($protocol::header(), Version4::HEADER)
         ) {
             $len = Binary::safeStrlen($keyMaterial);
             if ($len === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES << 1) {
@@ -69,9 +73,9 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v1 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public static function v1(string $keyMaterial): self
     {
@@ -82,9 +86,9 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v2 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public static function v2(string $keyMaterial): self
     {
@@ -95,9 +99,9 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v3 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public static function v3(string $keyMaterial): self
     {
@@ -108,9 +112,9 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v4 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public static function v4(string $keyMaterial): self
     {
@@ -121,7 +125,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * Returns the base64url-encoded public key.
      *
      * @return string
-     * @throws \TypeError
+     *
+     * @throws TypeError
      */
     public function encode(): string
     {
@@ -133,10 +138,10 @@ class AsymmetricPublicKey implements ReceivingKey
      *
      * @param string $encoded
      * @param ProtocolInterface|null $version
-     *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     *
+     * @throws Exception
+     * @throws TypeError
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
@@ -159,7 +164,7 @@ class AsymmetricPublicKey implements ReceivingKey
      *
      * @return string
      */
-    public function raw()
+    public function raw(): string
     {
         return $this->key;
     }

@@ -31,6 +31,22 @@ use ParagonIE\Paseto\Parsing\{
 };
 use phpseclib\Crypt\RSA;
 
+use Exception;
+use TypeError;
+use Throwable;
+use function define,
+    defined,
+    hash_equals,
+    hash_hmac,
+    is_null,
+    is_string,
+    openssl_decrypt,
+    openssl_encrypt,
+    openssl_pkey_get_details,
+    openssl_pkey_get_private,
+    random_bytes,
+    rtrim;
+
 /**
  * Class Version1
  * @package ParagonIE\Paseto\Protocol
@@ -67,6 +83,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Get the number of bytes in a symmetric key.
+     *
      * @return int
      */
     public static function getSymmetricKeyByteLength(): int
@@ -75,10 +93,11 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Generate an asymmetric secret key for use with v1.public tokens.
+     *
      * @return AsymmetricSecretKey
-     * @throws SecurityException
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
@@ -86,10 +105,12 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Generate a symmetric key for use with v1.local tokens.
+     *
      * @return SymmetricKey
      * @throws SecurityException
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
@@ -103,7 +124,7 @@ class Version1 implements ProtocolInterface
      */
     public static function header(): string
     {
-        return self::HEADER;
+        return (string) static::HEADER;
     }
 
     /**
@@ -126,7 +147,7 @@ class Version1 implements ProtocolInterface
      * @param string $implicit
      * @return string
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function encrypt(
         string $data,
@@ -143,10 +164,13 @@ class Version1 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
+     * @param string $implicit
      * @param string $nonceForUnitTesting
      * @return string
+     *
+     * @throws InvalidVersionException
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     protected static function __encrypt(
         string $data,
@@ -163,7 +187,7 @@ class Version1 implements ProtocolInterface
         }
         return self::aeadEncrypt(
             $data,
-            self::HEADER . '.local.',
+            static::header() . '.local.', // PASETO Version 1 - Encrypt - Step 1
             $key,
             $footer,
             $nonceForUnitTesting
@@ -176,9 +200,12 @@ class Version1 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string|null $footer
+     * @param string $implicit
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
+     * @throws InvalidVersionException
      */
     public static function decrypt(
         string $data,
@@ -192,7 +219,8 @@ class Version1 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        if (\is_null($footer)) {
+        // PASETO Version 1 - Decrypt - Step 1:
+        if (is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
         } else {
@@ -200,9 +228,9 @@ class Version1 implements ProtocolInterface
         }
         return self::aeadDecrypt(
             $data,
-            self::HEADER . '.local.',
+            static::header() . '.local.',
             $key,
-            (string) $footer
+            $footer
         );
     }
 
@@ -212,9 +240,12 @@ class Version1 implements ProtocolInterface
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
+     * @param string $implicit
      * @return string
-     * @throws PasetoException
-     * @throws \TypeError
+     *
+     * @throws TypeError
+     * @throws InvalidVersionException
+     * @throws SecurityException
      */
     public static function sign(
         string $data,
@@ -228,13 +259,16 @@ class Version1 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
+        // PASETO Version 1 - Sign - Step 1:
         $header = self::HEADER . '.public.';
         $rsa = self::getRsa();
         $rsa->loadKey($key->raw());
+        // PASETO Version 1 - Sign - Step 2, 3:
         $signature = $rsa->sign(
             Util::preAuthEncode($header, $data, $footer)
         );
 
+        // PASETO Version 1 - Sign - Step 4:
         return (new PasetoMessage(
             Header::fromString($header),
             $data . $signature,
@@ -248,9 +282,11 @@ class Version1 implements ProtocolInterface
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
      * @param string|null $footer
+     * @param string $implicit
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function verify(
         string $signMsg,
@@ -264,31 +300,40 @@ class Version1 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        if (\is_null($footer)) {
+
+        // PASETO Version 1 - Verify - Step 1:
+        if (is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
         } else {
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         }
         $signMsg = Util::removeFooter($signMsg);
-        $expectHeader = self::HEADER . '.public.';
+
+        // PASETO Version 1 - Verify - Step 2:
+        $expectHeader = static::header() . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
-        if (!\hash_equals($expectHeader, $givenHeader)) {
+        if (!hash_equals($expectHeader, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER
             );
         }
+
+        // PASETO Version 1 - Verify - Step 3:
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
         $message = Binary::safeSubstr($decoded, 0, $len - self::SIGN_SIZE);
         $signature = Binary::safeSubstr($decoded, $len - self::SIGN_SIZE);
 
+        // PASETO Version 1 - Verify - Step 4, 5:
         $rsa = self::getRsa();
         $rsa->loadKey($key->raw());
         $valid = $rsa->verify(
             Util::preAuthEncode($givenHeader, $message, $footer),
             $signature
         );
+
+        // PASETO Version 1 - Verify - Step 6:
         if (!$valid) {
             throw new PasetoException(
                 'Invalid signature for this message',
@@ -309,8 +354,10 @@ class Version1 implements ProtocolInterface
      * @param string $footer
      * @param string $nonceForUnitTesting
      * @return string
+     *
+     * @throws Exception
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function aeadEncrypt(
         string $plaintext,
@@ -319,35 +366,41 @@ class Version1 implements ProtocolInterface
         string $footer = '',
         string $nonceForUnitTesting = ''
     ): string {
+        // PASETO Version 1 - Encrypt -Step 2, 3:
         if ($nonceForUnitTesting) {
             $nonce = self::getNonce($plaintext, $nonceForUnitTesting);
         } else {
-            $nonce = self::getNonce($plaintext, \random_bytes(self::NONCE_SIZE));
+            $nonce = self::getNonce($plaintext, random_bytes(self::NONCE_SIZE));
         }
+        // PASETO Version 1 - Encrypt - Step 4:
         list($encKey, $authKey) = $key->split(
             Binary::safeSubstr($nonce, 0, 16)
         );
+
+        // PASETO Version 1 - Encrypt -Step 5:
         /** @var string|bool $ciphertext */
-        $ciphertext = \openssl_encrypt(
+        $ciphertext = openssl_encrypt(
             $plaintext,
             self::CIPHER_MODE,
             $encKey,
             OPENSSL_RAW_DATA,
             Binary::safeSubstr($nonce, 16, 16)
         );
-        if (!\is_string($ciphertext)) {
+        if (!is_string($ciphertext)) {
             throw new PasetoException(
                 'Encryption failed.',
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
             );
         }
-        $mac = \hash_hmac(
+        // PASETO Version 1 - Encrypt - Step 6, 7:
+        $mac = hash_hmac(
             self::HASH_ALGO,
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer),
             $authKey,
             true
         );
 
+        // PASETO Version 1 - Encrypt - Step 8:
         return (new PasetoMessage(
             Header::fromString($header),
             $nonce . $ciphertext . $mac,
@@ -363,8 +416,9 @@ class Version1 implements ProtocolInterface
      * @param SymmetricKey $key
      * @param string $footer
      * @return string
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function aeadDecrypt(
         string $message,
@@ -372,17 +426,21 @@ class Version1 implements ProtocolInterface
         SymmetricKey $key,
         string $footer = ''
     ): string {
+        // PASETO Version 1 - Decrypt - Step 2:
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
-        if (!\hash_equals($header, $givenHeader)) {
+        if (!hash_equals($header, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER
             );
         }
+        // PASETO Version 1 - Decrypt - Step 3:
         try {
-            $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
-        } catch (\Throwable $ex) {
+            $decoded = Base64UrlSafe::decode(
+                Binary::safeSubstr($message, $expectedLen)
+            );
+        } catch (Throwable $ex) {
             throw new PasetoException(
                 'Invalid encoding detected',
                 ExceptionCode::INVALID_BASE64URL,
@@ -398,32 +456,36 @@ class Version1 implements ProtocolInterface
         );
         $mac = Binary::safeSubstr($decoded, $len - self::MAC_SIZE);
 
+        // PASETO Version 1 - Decrypt - Step 4:
         list($encKey, $authKey) = $key->split(
             Binary::safeSubstr($nonce, 0, 16)
         );
 
-        $calc = \hash_hmac(
+        // PASETO Version 1 - Decrypt - Step 5, 6:
+        $calc = hash_hmac(
             self::HASH_ALGO,
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer),
             $authKey,
             true
         );
-        if (!\hash_equals($calc, $mac)) {
+        // PASETO Version 1 - Decrypt - Step 7:
+        if (!hash_equals($calc, $mac)) {
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
                 ExceptionCode::INVALID_MAC
             );
         }
 
+        // PASETO Version 1 - Decrypt - Step 8:
         /** @var string|bool $plaintext */
-        $plaintext = \openssl_decrypt(
+        $plaintext = openssl_decrypt(
             $ciphertext,
             self::CIPHER_MODE,
             $encKey,
             OPENSSL_RAW_DATA,
             Binary::safeSubstr($nonce, 16, 16)
         );
-        if (!\is_string($plaintext)) {
+        if (!is_string($plaintext)) {
             throw new PasetoException(
                 'Encryption failed.',
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
@@ -440,11 +502,12 @@ class Version1 implements ProtocolInterface
      * @param string $m
      * @param string $n
      * @return string
-     * @throws \TypeError
+     *
+     * @throws TypeError
      */
     public static function getNonce(string $m, string $n): string
     {
-        $nonce = \hash_hmac(self::HASH_ALGO, $m, $n, true);
+        $nonce = hash_hmac(self::HASH_ALGO, $m, $n, true);
         return Binary::safeSubstr($nonce, 0, 32);
     }
 
@@ -465,6 +528,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Is phpseclib configured correctly?
+     *
      * @throws SecurityException
      */
     public static function checkPhpSecLib(): bool
@@ -494,11 +559,11 @@ class Version1 implements ProtocolInterface
      */
     public static function RsaGetPublicKey(string $keyData): string
     {
-        $res = \openssl_pkey_get_private($keyData);
+        $res = openssl_pkey_get_private($keyData);
         /** @var array<string, string> $pubkey */
-        $pubkey = \openssl_pkey_get_details($res);
-        return \rtrim(
-            \str_replace("\r\n", "\n", $pubkey['key']),
+        $pubkey = openssl_pkey_get_details($res);
+        return rtrim(
+            Util::dos2unix($pubkey['key']),
             "\n"
         );
     }

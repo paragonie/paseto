@@ -19,6 +19,14 @@ use ParagonIE\Paseto\Keys\{
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Parsing\PasetoMessage;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
+use function get_class,
+    is_array,
+    is_null,
+    is_string,
+    json_encode,
+    json_decode;
+use TypeError;
+use Throwable;
 
 /**
  * Class Parser
@@ -60,8 +68,8 @@ class Parser
      * @param Purpose|null $purpose
      * @param ReceivingKey|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
-     * @throws PasetoException
      *
+     * @throws PasetoException
      * @psalm-suppress RedundantConditionGivenDocblockType
      */
     public function __construct(
@@ -72,7 +80,7 @@ class Parser
     ) {
         $this->allowedVersions = $allowedVersions ?? ProtocolCollection::default();
         $this->purpose = $purpose;
-        if (!\is_null($key)) {
+        if (!is_null($key)) {
             $this->setKey($key, true);
         }
         if (!empty($parserRules)) {
@@ -85,6 +93,8 @@ class Parser
     }
 
     /**
+     * Get the configured implicit assertions.
+     *
      * @return array
      */
     public function getImplicitAssertions(): array
@@ -96,13 +106,15 @@ class Parser
     }
 
     /**
-     * @param string $tainted
+     * Extract a footer from the PASETO message, as a string.
      *
+     * @param string $tainted
      * @return string
+     *
      * @throws InvalidPurposeException
      * @throws PasetoException
      * @throws SecurityException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function extractFooter(string $tainted): string
     {
@@ -115,21 +127,19 @@ class Parser
      *
      * @param SymmetricKey $key
      * @param ProtocolCollection|null $allowedVersions
+     * @return self
      *
-     * @return Parser
      * @throws PasetoException
      */
     public static function getLocal(
         SymmetricKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        /** @var Parser $instance */
-        $instance = new static(
+        return new static(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::local(),
             $key
         );
-        return $instance;
     }
 
     /**
@@ -138,21 +148,19 @@ class Parser
      *
      * @param AsymmetricPublicKey $key
      * @param ProtocolCollection|null $allowedVersions
+     * @return self
      *
-     * @return Parser
      * @throws PasetoException
      */
     public static function getPublic(
         AsymmetricPublicKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        /** @var Parser $instance */
-        $instance = new static(
+        return new static(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::public(),
             $key
         );
-        return $instance;
     }
 
     /**
@@ -174,8 +182,9 @@ class Parser
      * @param bool $skipValidation Don't validate according to the Rules.
      *                             (Does not disable cryptographic security.)
      * @return JsonToken
+     *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {
@@ -230,7 +239,7 @@ class Parser
                 $key = $this->key;
                 try {
                     $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
-                } catch (\Throwable $ex) {
+                } catch (Throwable $ex) {
                     throw new PasetoException(
                         'An error occurred',
                         ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
@@ -243,7 +252,7 @@ class Parser
                 $key = $this->key;
                 try {
                     $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
-                } catch (\Throwable $ex) {
+                } catch (Throwable $ex) {
                     throw new PasetoException(
                         'An error occurred',
                         ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
@@ -265,8 +274,8 @@ class Parser
         $this->throwIfClaimsJsonInvalid($decoded);
 
         /** @var array<string, string>|bool $claims */
-        $claims = \json_decode((string) $decoded, true, ($this->maxClaimDepth ?? 512));
-        if (!\is_array($claims)) {
+        $claims = json_decode($decoded, true, ($this->maxClaimDepth ?? 512));
+        if (!is_array($claims)) {
             throw new EncodingException(
                 'Not a JSON token.',
                 ExceptionCode::PAYLOAD_JSON_ERROR
@@ -363,6 +372,7 @@ class Parser
      * @param ReceivingKey $key
      * @param bool $checkPurpose
      * @return self
+     *
      * @throws PasetoException
      */
     public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
@@ -378,7 +388,7 @@ class Parser
                     'Invalid key type. Expected ' .
                         $this->purpose->expectedReceivingKeyType() .
                         ', got ' .
-                        \get_class($key),
+                        get_class($key),
                     ExceptionCode::PASETO_KEY_TYPE_ERROR
                 );
             }
@@ -393,6 +403,7 @@ class Parser
      * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
+     *
      * @throws PasetoException
      */
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
@@ -414,6 +425,13 @@ class Parser
     }
 
     /**
+     * This will throw an EncodingException if the claims JSON string
+     * violates one of the configured controls.
+     *
+     * a. String too long
+     * b. Too much recursive depth
+     * c. Too many object keys
+     *
      * @throws EncodingException
      */
     public function throwIfClaimsJsonInvalid(string $jsonString): void
@@ -453,6 +471,7 @@ class Parser
      * @param JsonToken $token
      * @param bool $throwOnFailure
      * @return bool
+     *
      * @throws RuleViolation
      */
     public function validate(JsonToken $token, bool $throwOnFailure = false): bool
