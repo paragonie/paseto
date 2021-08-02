@@ -140,7 +140,7 @@ class Version4 implements ProtocolInterface
      * @param string $nonceForUnitTesting
      * @return string
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     protected static function __encrypt(
         string $data,

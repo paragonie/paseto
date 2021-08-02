@@ -156,9 +156,9 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        return self::aeadEncrypt(
+        return static::aeadEncrypt(
             $data,
-            self::HEADER . '.local.',
+            static::header() . '.local.', // // PASETO v2 - Encrypt - Step 1
             $key,
             $footer,
             $nonceForUnitTesting
@@ -190,6 +190,7 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
+        // PASETO v2 - Decrypt - Step 1:
         if (is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
@@ -198,7 +199,7 @@ class Version2 implements ProtocolInterface
         }
         $message = self::aeadDecrypt(
             $data,
-            self::HEADER . '.local.',
+            static::header() . '.local.',
             $key,
             (string) $footer
         );
@@ -237,12 +238,17 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        $header = self::HEADER . '.public.';
+
+        // PASETO v2 - Sign - Step 1:
+        $header = static::header() . '.public.';
+
+        // PASETO v2 - Sign - Step 2, 3:
         $signature = sodium_crypto_sign_detached(
             Util::preAuthEncode($header, $data, $footer),
             $key->raw()
         );
 
+        // PASETO v2 - Sign - Step 4:
         return (new PasetoMessage(
             Header::fromString($header),
             $data . $signature,
@@ -275,13 +281,17 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
+
+        // PASETO v2 - Verify - Step 1:
         if (is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
         } else {
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         }
         $signMsg = Util::removeFooter($signMsg);
-        $expectHeader = self::HEADER . '.public.';
+
+        // PASETO v2 - Verify - Step 2:
+        $expectHeader = static::header() . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
         if (!hash_equals($expectHeader, $givenHeader)) {
             throw new PasetoException(
@@ -292,6 +302,7 @@ class Version2 implements ProtocolInterface
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
         $len = Binary::safeStrlen($decoded);
 
+        // PASETO v2 - Verify - Step 3:
         // Separate the decoded bundle into the message and signature.
         $message = Binary::safeSubstr(
             $decoded,
@@ -303,11 +314,14 @@ class Version2 implements ProtocolInterface
             $len - SODIUM_CRYPTO_SIGN_BYTES
         );
 
+        // PASETO v2 - Verify - Step 4, 5:
         $valid = sodium_crypto_sign_verify_detached(
             $signature,
             Util::preAuthEncode($givenHeader, $message, $footer),
             $key->raw()
         );
+
+        // PASETO v2 - Verify - Step 6:
         if (!$valid) {
             throw new PasetoException(
                 'Invalid signature for this message',
@@ -329,8 +343,8 @@ class Version2 implements ProtocolInterface
      * @param string $nonceForUnitTesting
      * @return string
      * @throws SecurityException
-     * @throws \SodiumException
-     * @throws \TypeError
+     * @throws SodiumException
+     * @throws TypeError
      */
     public static function aeadEncrypt(
         string $plaintext,
@@ -339,6 +353,8 @@ class Version2 implements ProtocolInterface
         string $footer = '',
         string $nonceForUnitTesting = ''
     ): string {
+
+        // PASETO v2 - Encrypt - Step 2:
         if ($nonceForUnitTesting) {
             $nonce = $nonceForUnitTesting;
         } else {
@@ -346,11 +362,15 @@ class Version2 implements ProtocolInterface
                 SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
             );
         }
+
+        // PASETO v2 - Encrypt - Step 3:
         $nonce = sodium_crypto_generichash(
             $plaintext,
             $nonce,
             SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
+
+        // PASETO v2 - Encrypt - Step 4, 5:
         $ciphertext = sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
             Util::preAuthEncode($header, $nonce, $footer),
@@ -358,6 +378,7 @@ class Version2 implements ProtocolInterface
             $key->raw()
         );
 
+        // PASETO v2 - Encrypt - Step 6:
         return (new PasetoMessage(
             Header::fromString($header),
             $nonce . $ciphertext,
@@ -384,6 +405,7 @@ class Version2 implements ProtocolInterface
         SymmetricKey $key,
         string $footer = ''
     ) {
+        // PASETO v2 - Decrypt - Step 2:
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
         if (!hash_equals($header, $givenHeader)) {
@@ -392,6 +414,8 @@ class Version2 implements ProtocolInterface
                 ExceptionCode::INVALID_HEADER
             );
         }
+
+        // PASETO v2 - Decrypt - Step 3:
         try {
             $decoded = Base64UrlSafe::decode(Binary::safeSubstr($message, $expectedLen));
         } catch (Throwable $ex) {
@@ -412,6 +436,7 @@ class Version2 implements ProtocolInterface
             SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES,
             $len - SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
         );
+        // PASETO v2 - Decrypt - Step 4, 5, 6:
         return sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
             $ciphertext,
             Util::preAuthEncode($header, $nonce, $footer),
