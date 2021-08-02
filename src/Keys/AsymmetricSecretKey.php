@@ -82,6 +82,14 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Wipe secrets before freeing memory
+     */
+    public function __destruct()
+    {
+        Util::wipe($this->key);
+    }
+
+    /**
      * Initialize a v1 secret key.
      *
      * @param string $keyMaterial

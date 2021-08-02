@@ -11,7 +11,8 @@ use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\PasetoException,
     ReceivingKey,
-    ProtocolInterface
+    ProtocolInterface,
+    Util
 };
 use ParagonIE\Paseto\Protocol\{
     Version1,
@@ -67,6 +68,14 @@ class AsymmetricPublicKey implements ReceivingKey
         }
         $this->key = $keyMaterial;
         $this->protocol = $protocol;
+    }
+
+    /**
+     * Wipe secrets before freeing memory
+     */
+    public function __destruct()
+    {
+        Util::wipe($this->key);
     }
 
     /**

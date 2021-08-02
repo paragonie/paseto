@@ -47,8 +47,7 @@ use function hash_equals,
     is_string,
     openssl_decrypt,
     openssl_encrypt,
-    random_bytes,
-    sodium_memzero;
+    random_bytes;
 
 /**
  * Class Version1
@@ -409,7 +408,7 @@ class Version3 implements ProtocolInterface
             OPENSSL_RAW_DATA,
             $nonce2
         );
-        sodium_memzero($encKey);
+        Util::wipe($encKey);
         if (!is_string($ciphertext)) {
             throw new PasetoException(
                 'Encryption failed.',
@@ -423,7 +422,7 @@ class Version3 implements ProtocolInterface
             $authKey,
             true
         );
-        sodium_memzero($authKey);
+        Util::wipe($authKey);
 
         // PASETO Version 3 - Encrypt - Step 7:
         return (new PasetoMessage(
@@ -496,7 +495,7 @@ class Version3 implements ProtocolInterface
             $authKey,
             true
         );
-        sodium_memzero($authKey);
+        Util::wipe($authKey);
 
         // PASETO Version 3 - Decrypt - Step 7:
         if (!hash_equals($calc, $mac)) {
@@ -515,7 +514,7 @@ class Version3 implements ProtocolInterface
             OPENSSL_RAW_DATA,
             $nonce2
         );
-        sodium_memzero($encKey);
+        Util::wipe($encKey);
 
         if (!is_string($plaintext)) {
             throw new PasetoException(

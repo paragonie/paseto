@@ -11,6 +11,8 @@ use ParagonIE\Paseto\Exception\{
     ExceptionCode,
     PasetoException
 };
+use SodiumException;
+use TypeError;
 use function array_pop,
     array_slice,
     count,
@@ -24,9 +26,9 @@ use function array_pop,
     pack,
     preg_replace,
     preg_match_all,
+    sodium_memzero,
     str_repeat,
     str_replace;
-use TypeError;
 
 /**
  * Class Util
@@ -283,5 +285,21 @@ abstract class Util
             );
         }
         return Binary::safeSubstr($payload, 0, $payload_len - $footer_len);
+    }
+
+    /**
+     * Wipe this value from memory.
+     *
+     * @param string $byRef
+     * @return void
+     * @param-out string $byRef
+     */
+    public static function wipe(string &$byRef): void
+    {
+        try {
+            sodium_memzero($byRef);
+        } catch (SodiumException $ex) {
+            $byRef ^= $byRef;
+        }
     }
 }

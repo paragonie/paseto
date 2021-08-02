@@ -54,6 +54,14 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * Wipe secrets before freeing memory
+     */
+    public function __destruct()
+    {
+        Util::wipe($this->key);
+    }
+
+    /**
      * @param ProtocolInterface|null $protocol
      * @return SymmetricKey
      *

@@ -37,7 +37,6 @@ use function hash_equals,
     is_null,
     is_string,
     sodium_crypto_generichash,
-    sodium_memzero,
     sodium_crypto_stream_xchacha20_xor,
     sodium_crypto_sign_detached,
     sodium_crypto_sign_verify_detached;
@@ -378,8 +377,8 @@ class Version4 implements ProtocolInterface
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey
         );
-        sodium_memzero($encKey);
-        sodium_memzero($authKey);
+        Util::wipe($encKey);
+        Util::wipe($authKey);
 
         // PASETO Version 4 - Encrypt - Step 7:
         return (new PasetoMessage(
