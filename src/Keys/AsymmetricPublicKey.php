@@ -75,7 +75,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
+     * @throws Exception
      */
     public static function v1(string $keyMaterial): self
     {
@@ -88,7 +88,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
+     * @throws Exception
      */
     public static function v2(string $keyMaterial): self
     {
@@ -101,7 +101,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
+     * @throws Exception
      */
     public static function v3(string $keyMaterial): self
     {
@@ -114,7 +114,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
+     * @throws Exception
      */
     public static function v4(string $keyMaterial): self
     {
@@ -125,7 +125,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * Returns the base64url-encoded public key.
      *
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function encode(): string
     {
@@ -163,7 +163,7 @@ class AsymmetricPublicKey implements ReceivingKey
      *
      * @return string
      */
-    public function raw()
+    public function raw(): string
     {
         return $this->key;
     }

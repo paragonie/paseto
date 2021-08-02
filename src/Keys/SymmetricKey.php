@@ -19,6 +19,7 @@ use ParagonIE\Paseto\{
 };
 
 use Exception;
+use SodiumException;
 use TypeError;
 use function random_bytes,
     sodium_crypto_generichash;
@@ -209,7 +210,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string|null $salt
      * @return array<int, string>
      *
-     * @throws \SodiumException
+     * @throws SodiumException
      */
     public function splitV4(string $salt = null): array
     {
@@ -237,7 +238,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @return array<int, string>
      *
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function split(string $salt = null): array
     {

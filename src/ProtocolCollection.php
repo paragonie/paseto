@@ -16,6 +16,7 @@ use function array_key_exists,
     get_class,
     in_array;
 use LogicException;
+use TypeError;
 
 /**
  * Class ProtocolCollection
@@ -27,6 +28,7 @@ final class ProtocolCollection
      * Our built-in allow-list of protocol types is defined here.
      *
      * @const array<int, class-string<ProtocolInterface>>
+     * @var array<int, class-string<ProtocolInterface>>
      */
     const ALLOWED = [
         Version1::class,
@@ -111,6 +113,12 @@ final class ProtocolCollection
     public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface {
         if (empty(self::$headerLookup)) {
             foreach (self::ALLOWED as $protocolClass) {
+                if (!method_exists($protocolClass, 'header')) {
+                    throw new TypeError(
+                        "Object {$protocolClass} does not have a header() method",
+                        ExceptionCode::IMPOSSIBLE_CONDITION
+                    );
+                }
                 self::$headerLookup[$protocolClass::header()] = new $protocolClass;
             }
         }

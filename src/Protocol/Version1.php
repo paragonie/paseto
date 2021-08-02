@@ -349,6 +349,7 @@ class Version1 implements ProtocolInterface
      * @param string $nonceForUnitTesting
      * @return string
      *
+     * @throws Exception
      * @throws PasetoException
      * @throws TypeError
      */

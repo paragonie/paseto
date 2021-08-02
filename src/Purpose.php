@@ -250,10 +250,7 @@ final class Purpose
      */
     public function expectedSendingKeyType(): string
     {
-        /** @var string */
-        $keyType = self::EXPECTED_SENDING_KEYS[$this->rawString()];
-
-        return $keyType;
+        return self::EXPECTED_SENDING_KEYS[$this->rawString()];
     }
 
     /**
@@ -264,10 +261,7 @@ final class Purpose
      */
     public function expectedReceivingKeyType(): string
     {
-        /** @var string */
-        $keyType = self::EXPECTED_RECEIVING_KEYS[$this->rawString()];
-
-        return $keyType;
+        return self::EXPECTED_RECEIVING_KEYS[$this->rawString()];
     }
 
     /**

@@ -7,6 +7,7 @@ use ParagonIE\Paseto\{
     ValidationRuleInterface
 };
 use ParagonIE\Paseto\Exception\PasetoException;
+use Exception;
 use DateTime;
 use DateTimeInterface;
 
@@ -44,6 +45,8 @@ class NotExpired implements ValidationRuleInterface
     /**
      * @param JsonToken $token
      * @return bool
+     *
+     * @throws Exception
      */
     public function isValid(JsonToken $token): bool
     {

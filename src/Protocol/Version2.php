@@ -342,6 +342,8 @@ class Version2 implements ProtocolInterface
      * @param string $footer
      * @param string $nonceForUnitTesting
      * @return string
+     *
+     * @throws Exception
      * @throws SecurityException
      * @throws SodiumException
      * @throws TypeError

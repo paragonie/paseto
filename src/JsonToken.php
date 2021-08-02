@@ -9,6 +9,7 @@ use ParagonIE\Paseto\Exception\{
     PasetoException
 };
 use ParagonIE\Paseto\Traits\RegisteredClaims;
+use Exception;
 use DateTime;
 use DateTimeInterface;
 use function array_key_exists,
@@ -83,7 +84,8 @@ class JsonToken
     /**
      * Get the 'exp' claim.
      *
-     * @return \DateTime
+     * @return DateTime
+     * @throws Exception
      * @throws PasetoException
      */
     public function getExpiration(): DateTime
@@ -123,7 +125,8 @@ class JsonToken
     /**
      * Get the 'iat' claim.
      *
-     * @return \DateTime
+     * @return DateTime
+     * @throws Exception
      * @throws PasetoException
      */
     public function getIssuedAt(): DateTime
@@ -156,7 +159,8 @@ class JsonToken
     /**
      * Get the 'nbf' claim.
      *
-     * @return \DateTime
+     * @return DateTime
+     * @throws Exception
      * @throws PasetoException
      */
     public function getNotBefore(): DateTime
@@ -215,15 +219,15 @@ class JsonToken
     /**
      * Set the 'exp' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setExpiration(\DateTimeInterface $time = null): self
+    public function setExpiration(DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
         }
-        $this->claims['exp'] = $time->format(\DateTime::ATOM);
+        $this->claims['exp'] = $time->format(DateTime::ATOM);
         return $this;
     }
 
@@ -261,7 +265,7 @@ class JsonToken
     /**
      * Set the 'iat' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
     public function setIssuedAt(DateTimeInterface $time = null): self
@@ -300,15 +304,15 @@ class JsonToken
     /**
      * Set the 'nbf' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setNotBefore(\DateTimeInterface $time = null): self
+    public function setNotBefore(DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
         }
-        $this->claims['nbf'] = $time->format(\DateTime::ATOM);
+        $this->claims['nbf'] = $time->format(DateTime::ATOM);
         return $this;
     }
 
@@ -361,10 +365,10 @@ class JsonToken
     /**
      * Return a new JsonToken instance with a changed 'exp' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withExpiration(\DateTimeInterface $time = null): self
+    public function withExpiration(DateTimeInterface $time = null): self
     {
         return (clone $this)->setExpiration($time);
     }
@@ -396,10 +400,10 @@ class JsonToken
     /**
      * Return a new JsonToken instance with a changed 'iat' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withIssuedAt(\DateTimeInterface $time = null): self
+    public function withIssuedAt(DateTimeInterface $time = null): self
     {
         return (clone $this)->setIssuedAt($time);
     }
@@ -429,10 +433,10 @@ class JsonToken
     /**
      * Return a new JsonToken instance with a changed 'nbf' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withNotBefore(\DateTimeInterface $time = null): self
+    public function withNotBefore(DateTimeInterface $time = null): self
     {
         return (clone $this)->setNotBefore($time);
     }

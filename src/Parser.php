@@ -25,6 +25,7 @@ use function get_class,
     is_string,
     json_encode,
     json_decode;
+use TypeError;
 use Throwable;
 
 /**
@@ -109,7 +110,7 @@ class Parser
      * @throws InvalidPurposeException
      * @throws PasetoException
      * @throws SecurityException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function extractFooter(string $tainted): string
     {
@@ -178,7 +179,7 @@ class Parser
      *                             (Does not disable cryptographic security.)
      * @return JsonToken
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function parse(string $tainted, bool $skipValidation = false): JsonToken
     {

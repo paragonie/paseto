@@ -9,6 +9,7 @@ use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     InvalidPurposeException
 };
+use TypeError;
 use function count, explode;
 
 /**
@@ -49,7 +50,7 @@ final class PasetoMessage
      * @throws SecurityException
      * @throws InvalidVersionException
      * @throws InvalidPurposeException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function fromString(string $tainted): self
     {
@@ -87,7 +88,7 @@ final class PasetoMessage
 
     /**
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function toString(): string
     {

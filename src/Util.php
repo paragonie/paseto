@@ -208,7 +208,7 @@ abstract class Util
      */
     public static function preAuthEncode(string ...$pieces): string
     {
-        $accumulator = self::longToBytes(\count($pieces) & PHP_INT_MAX);
+        $accumulator = self::longToBytes(count($pieces) & PHP_INT_MAX);
         foreach ($pieces as $piece) {
             $len = Binary::safeStrlen($piece);
             $accumulator .= self::longToBytes($len & PHP_INT_MAX);
@@ -223,7 +223,7 @@ abstract class Util
      *
      * @param string $payload
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function extractFooter(string $payload): string
     {
@@ -240,7 +240,7 @@ abstract class Util
      *
      * @param string $payload
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function removeFooter(string $payload): string
     {
@@ -260,7 +260,7 @@ abstract class Util
      * @param string $footer
      * @return string
      * @throws PasetoException
-     * @throws \TypeError
+     * @throws TypeError
      */
     public static function validateAndRemoveFooter(
         string $payload,

@@ -34,6 +34,7 @@ abstract class ExceptionCode
     const SPECIFIED_CLAIM_NOT_FOUND        = 0x3142EE18;
     const UNSPECIFIED_CRYPTOGRAPHIC_ERROR  = 0x3142EE19;
     const WRONG_KEY_FOR_VERSION            = 0x3142EE1A;
+    const IMPOSSIBLE_CONDITION             = 0x3142EE1B;
 
     /**
      * @param int $code
@@ -78,6 +79,8 @@ abstract class ExceptionCode
                     "but we detected and prevented this invalid data from reaching the JSON parser.";
             case self::INVALID_MAC:
                 return "The message authentication code provided with this message did not match the one we calculated.";
+            case self::IMPOSSIBLE_CONDITION:
+                return "A condition we thought impossible has occurred.";
 
             default:
                 return 'Unknown error code';

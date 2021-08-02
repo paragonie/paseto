@@ -232,11 +232,12 @@ class Version3 implements ProtocolInterface
      * @param string $implicit
      * @return string
      *
-     * @throws PasetoException
-     * @throws TypeError
+     * @throws Exception
      * @throws InvalidVersionException
+     * @throws PasetoException
      * @throws SecurityException
      * @throws SodiumException
+     * @throws TypeError
      */
     public static function sign(
         string $data,
@@ -371,6 +372,7 @@ class Version3 implements ProtocolInterface
      * @param string $nonceForUnitTesting
      * @return string
      *
+     * @throws Exception
      * @throws PasetoException
      * @throws SecurityException
      * @throws SodiumException

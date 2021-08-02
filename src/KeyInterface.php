@@ -19,7 +19,7 @@ interface KeyInterface
     /**
      * @return string
      */
-    public function raw();
+    public function raw(): string;
 
     /**
      * @return array

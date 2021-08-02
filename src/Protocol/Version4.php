@@ -330,6 +330,8 @@ class Version4 implements ProtocolInterface
      * @param string $implicit
      * @param string $nonceForUnitTesting
      * @return string
+     *
+     * @throws Exception
      * @throws PasetoException
      * @throws SecurityException
      */

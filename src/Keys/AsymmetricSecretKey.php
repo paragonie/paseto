@@ -86,8 +86,8 @@ class AsymmetricSecretKey implements SendingKey
      * @param string $keyMaterial
      *
      * @return self
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
     public static function v1(string $keyMaterial): self
     {
@@ -171,7 +171,7 @@ class AsymmetricSecretKey implements SendingKey
      * Return a base64url-encoded representation of this secret key.
      *
      * @return string
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function encode(): string
     {
@@ -240,7 +240,7 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @return string
      */
-    public function raw()
+    public function raw(): string
     {
         return $this->key;
     }

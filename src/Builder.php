@@ -207,10 +207,10 @@ class Builder
     /**
      * Set the 'exp' claim for the token we're building. (Mutable.)
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setExpiration(\DateTimeInterface $time = null): self
+    public function setExpiration(DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -597,10 +597,10 @@ class Builder
     /**
      * Return a new Builder instance with a changed 'exp' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withExpiration(\DateTimeInterface $time = null): self
+    public function withExpiration(DateTimeInterface $time = null): self
     {
         return (clone $this)->setExpiration($time);
     }
@@ -646,10 +646,10 @@ class Builder
     /**
      * Return a new Builder instance with a changed 'iat' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withIssuedAt(\DateTimeInterface $time = null): self
+    public function withIssuedAt(DateTimeInterface $time = null): self
     {
         return (clone $this)->setIssuedAt($time);
     }
@@ -679,10 +679,10 @@ class Builder
     /**
      * Return a new Builder instance with a changed 'nbf' claim.
      *
-     * @param \DateTimeInterface|null $time
+     * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withNotBefore(\DateTimeInterface $time = null): self
+    public function withNotBefore(DateTimeInterface $time = null): self
     {
         return (clone $this)->setNotBefore($time);
     }
