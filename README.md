@@ -17,7 +17,8 @@ for design considerations.
 
 See [the documentation](https://github.com/paragonie/paseto/tree/master/docs).
 
-The [PASETO specification](https://github.com/paseto-standard/paseto-spec) may also be useful.
+The [PASETO specification](https://github.com/paseto-standard/paseto-spec) may also be useful
+for understanding why things are designed the way they are.
 
 ### Requirements
 
