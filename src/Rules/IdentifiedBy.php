@@ -18,16 +18,16 @@ class IdentifiedBy implements ValidationRuleInterface
     /** @var string $failure */
     protected $failure = 'OK';
 
-    /** @var string $issuer */
-    protected $issuer;
+    /** @var string $identifier */
+    protected $identifier;
 
     /**
      * IdentifiedBy constructor.
-     * @param string $issuer
+     * @param string $identifier
      */
-    public function __construct(string $issuer)
+    public function __construct(string $identifier)
     {
-        $this->issuer = $issuer;
+        $this->identifier = $identifier;
     }
 
     /**
@@ -39,17 +39,19 @@ class IdentifiedBy implements ValidationRuleInterface
     }
 
     /**
+     * Does the 'jti' claim match what we expect from the Parser?
+     *
      * @param JsonToken $token
      * @return bool
      */
     public function isValid(JsonToken $token): bool
     {
         try {
-            $issuer = $token->getIssuer();
-            if (!hash_equals($this->issuer, $issuer)) {
+            $identifier = $token->getIssuer();
+            if (!hash_equals($this->identifier, $identifier)) {
                 $this->failure = 'This token was expected to be identified by ' .
-                    $this->issuer . ', but it was identified by ' .
-                    $issuer .' instead.';
+                    $this->identifier . ', but it was identified by ' .
+                    $identifier .' instead.';
                 return false;
             }
         } catch (PasetoException $ex) {

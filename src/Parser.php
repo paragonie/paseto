@@ -68,8 +68,8 @@ class Parser
      * @param Purpose|null $purpose
      * @param ReceivingKey|null $key
      * @param array<int, ValidationRuleInterface> $parserRules
-     * @throws PasetoException
      *
+     * @throws PasetoException
      * @psalm-suppress RedundantConditionGivenDocblockType
      */
     public function __construct(
@@ -93,6 +93,8 @@ class Parser
     }
 
     /**
+     * Get the configured implicit assertions.
+     *
      * @return array
      */
     public function getImplicitAssertions(): array
@@ -104,9 +106,11 @@ class Parser
     }
 
     /**
-     * @param string $tainted
+     * Extract a footer from the PASETO message, as a string.
      *
+     * @param string $tainted
      * @return string
+     *
      * @throws InvalidPurposeException
      * @throws PasetoException
      * @throws SecurityException
@@ -123,8 +127,8 @@ class Parser
      *
      * @param SymmetricKey $key
      * @param ProtocolCollection|null $allowedVersions
+     * @return self
      *
-     * @return Parser
      * @throws PasetoException
      */
     public static function getLocal(
@@ -144,8 +148,8 @@ class Parser
      *
      * @param AsymmetricPublicKey $key
      * @param ProtocolCollection|null $allowedVersions
+     * @return self
      *
-     * @return Parser
      * @throws PasetoException
      */
     public static function getPublic(
@@ -178,6 +182,7 @@ class Parser
      * @param bool $skipValidation Don't validate according to the Rules.
      *                             (Does not disable cryptographic security.)
      * @return JsonToken
+     *
      * @throws PasetoException
      * @throws TypeError
      */
@@ -367,6 +372,7 @@ class Parser
      * @param ReceivingKey $key
      * @param bool $checkPurpose
      * @return self
+     *
      * @throws PasetoException
      */
     public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
@@ -397,6 +403,7 @@ class Parser
      * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
+     *
      * @throws PasetoException
      */
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
@@ -418,6 +425,13 @@ class Parser
     }
 
     /**
+     * This will throw an EncodingException if the claims JSON string
+     * violates one of the configured controls.
+     *
+     * a. String too long
+     * b. Too much recursive depth
+     * c. Too many object keys
+     *
      * @throws EncodingException
      */
     public function throwIfClaimsJsonInvalid(string $jsonString): void
@@ -457,6 +471,7 @@ class Parser
      * @param JsonToken $token
      * @param bool $throwOnFailure
      * @return bool
+     *
      * @throws RuleViolation
      */
     public function validate(JsonToken $token, bool $throwOnFailure = false): bool

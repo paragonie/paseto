@@ -73,8 +73,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v1 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      */
     public static function v1(string $keyMaterial): self
@@ -86,8 +86,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v2 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      */
     public static function v2(string $keyMaterial): self
@@ -99,8 +99,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v3 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      */
     public static function v3(string $keyMaterial): self
@@ -112,8 +112,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v4 public key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      */
     public static function v4(string $keyMaterial): self
@@ -125,6 +125,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * Returns the base64url-encoded public key.
      *
      * @return string
+     *
      * @throws TypeError
      */
     public function encode(): string

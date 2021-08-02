@@ -103,6 +103,7 @@ final class Purpose
     /**
      * Inverse of EXPECTED_SENDING_KEYS, evaluated and statically cached at
      * runtime.
+     *
      * @var array<string, string>
      */
     private static $sendingKeyToPurpose;
@@ -110,6 +111,7 @@ final class Purpose
     /**
      * Inverse of EXPECTED_RECEIVING_KEYS, evaluated and statically cached at
      * runtime.
+     *
      * @var array<string, string>
      */
     private static $receivingKeyToPurpose;
@@ -123,6 +125,7 @@ final class Purpose
      * Allowed values in self::ALLOWLIST
      *
      * @param string $rawString
+     *
      * @throws InvalidPurposeException
      */
     public function __construct(string $rawString)
@@ -161,8 +164,8 @@ final class Purpose
      * Given a SendingKey, retrieve the corresponding Purpose.
      *
      * @param SendingKey $key
-     *
      * @return self
+     *
      * @throws InvalidPurposeException
      */
     public static function fromSendingKey(SendingKey $key): self
@@ -179,8 +182,8 @@ final class Purpose
      * Given a ReceivingKey, retrieve the corresponding Purpose.
      *
      * @param ReceivingKey $key
-     *
      * @return self
+     *
      * @throws InvalidPurposeException
      */
     public static function fromReceivingKey(ReceivingKey $key): self

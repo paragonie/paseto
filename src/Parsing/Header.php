@@ -35,8 +35,8 @@ final class Header
      * @param string $protocol      Tainted user-provided string.
      * @param string $purpose      Tainted user-provided string.
      *
-     * @throws InvalidVersionException
      * @throws InvalidPurposeException
+     * @throws InvalidVersionException
      */
     public function __construct(string $protocol, string $purpose)
     {
@@ -49,6 +49,7 @@ final class Header
      *
      * @param string $tainted      Tainted user-provided string.
      * @return self
+     *
      * @throws SecurityException
      */
     public static function fromString(string $tainted): self
@@ -79,8 +80,7 @@ final class Header
 
     public function toString(): string
     {
-        return $this->protocol->header() . "."
-            . $this->purpose->rawString() . "."
-        ;
+        return $this->protocol->header() . '.' .
+            $this->purpose->rawString() . '.';
     }
 }

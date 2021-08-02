@@ -55,8 +55,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
 
     /**
      * @param ProtocolInterface|null $protocol
-     *
      * @return SymmetricKey
+     *
      * @throws Exception
      */
     public static function generate(ProtocolInterface $protocol = null): self
@@ -74,6 +74,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -88,6 +89,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -102,6 +104,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -116,6 +119,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $keyMaterial
      *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -128,6 +132,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * Return a base64url-encoded representation of this symmetric key.
      *
      * @return string
+     *
      * @throws TypeError
      */
     public function encode(): string
@@ -141,6 +146,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $encoded
      * @param ProtocolInterface|null $version
      * @return self
+     *
      * @throws TypeError
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self

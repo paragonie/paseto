@@ -71,7 +71,10 @@ class Version4 implements ProtocolInterface
     }
 
     /**
+     * Generate an asymmetric secret key for use with v4.public tokens.
+     *
      * @return AsymmetricSecretKey
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -81,7 +84,10 @@ class Version4 implements ProtocolInterface
     }
 
     /**
+     * Generate a symmetric key for use with v4.local tokens.
+     *
      * @return SymmetricKey
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -119,6 +125,7 @@ class Version4 implements ProtocolInterface
      * @param string $footer
      * @param string $implicit
      * @return string
+     *
      * @throws PasetoException
      */
     public static function encrypt(
@@ -139,6 +146,7 @@ class Version4 implements ProtocolInterface
      * @param string $implicit
      * @param string $nonceForUnitTesting
      * @return string
+     *
      * @throws PasetoException
      * @throws TypeError
      */

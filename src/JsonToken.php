@@ -47,6 +47,7 @@ class JsonToken
      *
      * @param string $claim
      * @return mixed
+     *
      * @throws PasetoException
      */
     public function get(string $claim)
@@ -64,6 +65,7 @@ class JsonToken
      * Get the 'aud' claim.
      *
      * @return string
+     *
      * @throws PasetoException
      */
     public function getAudience(): string
@@ -85,6 +87,7 @@ class JsonToken
      * Get the 'exp' claim.
      *
      * @return DateTime
+     *
      * @throws Exception
      * @throws PasetoException
      */
@@ -107,6 +110,7 @@ class JsonToken
      * Get the footer as an array. Assumes JSON.
      *
      * @return array
+     *
      * @throws PasetoException
      */
     public function getFooterArray(): array
@@ -126,6 +130,7 @@ class JsonToken
      * Get the 'iat' claim.
      *
      * @return DateTime
+     *
      * @throws Exception
      * @throws PasetoException
      */
@@ -138,6 +143,7 @@ class JsonToken
      * Get the 'iss' claim.
      *
      * @return string
+     *
      * @throws PasetoException
      */
     public function getIssuer(): string
@@ -149,6 +155,7 @@ class JsonToken
      * Get the 'jti' claim.
      *
      * @return string
+     *
      * @throws PasetoException
      */
     public function getJti(): string
@@ -160,6 +167,7 @@ class JsonToken
      * Get the 'nbf' claim.
      *
      * @return DateTime
+     *
      * @throws Exception
      * @throws PasetoException
      */

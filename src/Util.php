@@ -107,8 +107,8 @@ abstract class Util
      * @param int         $length How many bytes?
      * @param string      $info   What sort of key are we deriving?
      * @param string|null $salt
-     *
      * @return string
+     *
      * @psalm-suppress MixedInferredReturnType This always returns a string!
      * @throws PasetoException
      * @throws TypeError
@@ -180,8 +180,7 @@ abstract class Util
         }
 
         // ORM = first L octets of T
-        $orm = Binary::safeSubstr($t, 0, $length);
-        return (string) $orm;
+        return Binary::safeSubstr($t, 0, $length);
     }
 
     /**
@@ -223,6 +222,7 @@ abstract class Util
      *
      * @param string $payload
      * @return string
+     *
      * @throws TypeError
      */
     public static function extractFooter(string $payload): string
@@ -240,6 +240,7 @@ abstract class Util
      *
      * @param string $payload
      * @return string
+     *
      * @throws TypeError
      */
     public static function removeFooter(string $payload): string
@@ -259,6 +260,7 @@ abstract class Util
      * @param string $payload
      * @param string $footer
      * @return string
+     *
      * @throws PasetoException
      * @throws TypeError
      */

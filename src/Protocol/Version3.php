@@ -84,7 +84,10 @@ class Version3 implements ProtocolInterface
     }
 
     /**
+     * Generate an asymmetric secret key for use with v3.public tokens.
+     *
      * @return AsymmetricSecretKey
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -94,7 +97,10 @@ class Version3 implements ProtocolInterface
     }
 
     /**
+     * Generate a symmetric key for use with v3.local tokens.
+     *
      * @return SymmetricKey
+     *
      * @throws Exception
      * @throws TypeError
      */

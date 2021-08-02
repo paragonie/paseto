@@ -88,7 +88,10 @@ class Version2 implements ProtocolInterface
     }
 
     /**
+     * Generate an asymmetric secret key for use with v2.public tokens.
+     *
      * @return AsymmetricSecretKey
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -98,7 +101,10 @@ class Version2 implements ProtocolInterface
     }
 
     /**
+     * Generate a symmetric key for use with v2.local tokens.
+     *
      * @return SymmetricKey
+     *
      * @throws Exception
      * @throws TypeError
      */

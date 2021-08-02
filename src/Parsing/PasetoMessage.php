@@ -47,9 +47,9 @@ final class PasetoMessage
      * @param string $tainted      Tainted user-provided string.
      * @return self
      *
-     * @throws SecurityException
      * @throws InvalidVersionException
      * @throws InvalidPurposeException
+     * @throws SecurityException
      * @throws TypeError
      */
     public static function fromString(string $tainted): self

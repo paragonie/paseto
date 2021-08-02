@@ -83,6 +83,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Get the number of bytes in a symmetric key.
+     *
      * @return int
      */
     public static function getSymmetricKeyByteLength(): int
@@ -91,6 +93,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Generate an asymmetric secret key for use with v1.public tokens.
+     *
      * @return AsymmetricSecretKey
      * @throws Exception
      * @throws TypeError
@@ -101,6 +105,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Generate a symmetric key for use with v1.local tokens.
+     *
      * @return SymmetricKey
      * @throws SecurityException
      * @throws Exception
@@ -522,6 +528,8 @@ class Version1 implements ProtocolInterface
     }
 
     /**
+     * Is phpseclib configured correctly?
+     *
      * @throws SecurityException
      */
     public static function checkPhpSecLib(): bool

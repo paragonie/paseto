@@ -2,15 +2,17 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
-use ParagonIE\Paseto\Exception\ExceptionCode;
-use ParagonIE\Paseto\Exception\SecurityException;
+use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
+    InvalidVersionException,
+    SecurityException
+};
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2,
     Version3,
     Version4
 };
-use ParagonIE\Paseto\Exception\InvalidVersionException;
 use function array_key_exists,
     array_map,
     get_class,
@@ -45,6 +47,7 @@ final class ProtocolCollection
 
     /**
      * @param ProtocolInterface ...$protocols
+     *
      * @throws LogicException
      * @throws InvalidVersionException
      */
@@ -90,8 +93,9 @@ final class ProtocolCollection
      * Throws if the given protocol is unsupported
      *
      * @param ProtocolInterface $protocol
-     * @throws InvalidVersionException
      * @return void
+     *
+     * @throws InvalidVersionException
      */
     public static function throwIfUnsupported(ProtocolInterface $protocol)
     {
@@ -104,11 +108,12 @@ final class ProtocolCollection
     }
 
     /**
+     * Return the PASETO protocol version for a given header snippet
+     *
      * @param string $headerPart
+     *
      * @return ProtocolInterface
      * @throws InvalidVersionException
-     * @psalm-suppress UndefinedClass  A BC break introduced in Psalm v1.0.2
-     *                                 stopped respecting what we were doing.
      */
     public static function protocolFromHeaderPart(string $headerPart): ProtocolInterface {
         if (empty(self::$headerLookup)) {
@@ -137,6 +142,7 @@ final class ProtocolCollection
      * Get a collection of all supported protocols
      *
      * @return self
+     *
      * @throws InvalidVersionException
      */
     public static function default(): self
@@ -153,6 +159,7 @@ final class ProtocolCollection
      * Get a collection containing protocol version 1.
      *
      * @return self
+     *
      * @throws InvalidVersionException
      * @throws SecurityException
      */
@@ -165,6 +172,7 @@ final class ProtocolCollection
      * Get a collection containing protocol version 2.
      *
      * @return self
+     *
      * @throws InvalidVersionException
      */
     public static function v2(): self
@@ -176,6 +184,7 @@ final class ProtocolCollection
      * Get a collection containing protocol version 3.
      *
      * @return self
+     *
      * @throws InvalidVersionException
      */
     public static function v3(): self
@@ -187,6 +196,7 @@ final class ProtocolCollection
      * Get a collection containing protocol version 4.
      *
      * @return self
+     *
      * @throws InvalidVersionException
      */
     public static function v4(): self

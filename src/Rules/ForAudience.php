@@ -39,6 +39,8 @@ class ForAudience implements ValidationRuleInterface
     }
 
     /**
+     * Does the 'aud' claim match what we expect from the Parser?
+     *
      * @param JsonToken $token
      * @return bool
      */

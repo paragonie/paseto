@@ -39,6 +39,8 @@ class IssuedBy implements ValidationRuleInterface
     }
 
     /**
+     * Does the 'iss' claim match what we expect from the Parser?
+     *
      * @param JsonToken $token
      * @return bool
      */

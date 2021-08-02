@@ -15,7 +15,6 @@ use ParagonIE\Paseto\Keys\{
 };
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
-
 use Closure;
 use DateTime;
 use DateTimeInterface;
@@ -86,6 +85,7 @@ class Builder
      *
      * @param string $claim
      * @return mixed
+     *
      * @throws PasetoException
      */
     public function get(string $claim)
@@ -97,6 +97,7 @@ class Builder
      * Get the footer contents as an array.
      *
      * @return array
+     *
      * @throws PasetoException
      */
     public function getFooterArray(): array
@@ -124,8 +125,8 @@ class Builder
      * @param SymmetricKey $key
      * @param ProtocolInterface|null $version
      * @param JsonToken|null $baseToken
+     * @return self
      *
-     * @return Builder
      * @throws PasetoException
      */
     public static function getLocal(
@@ -150,8 +151,8 @@ class Builder
      * @param AsymmetricSecretKey $key
      * @param ProtocolInterface|null $version
      * @param JsonToken|null $baseToken
+     * @return self
      *
-     * @return Builder
      * @throws PasetoException
      */
     public static function getPublic(
@@ -224,6 +225,7 @@ class Builder
      *
      * @param array $assertions
      * @return self
+     *
      * @throws PasetoException
      */
     public function setImplicitAssertions(array $assertions): self
@@ -335,6 +337,7 @@ class Builder
      *
      * @param array $footer
      * @return self
+     *
      * @throws PasetoException
      */
     public function setFooterArray(array $footer = []): self
@@ -356,6 +359,7 @@ class Builder
      * @param SendingKey $key
      * @param bool $checkPurpose
      * @return self
+     *
      * @throws PasetoException
      */
     public function setKey(SendingKey $key, bool $checkPurpose = false): self
@@ -408,6 +412,7 @@ class Builder
      * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
+     *
      * @throws InvalidKeyException
      * @throws InvalidPurposeException
      */
@@ -469,6 +474,7 @@ class Builder
      * Get the token as a string.
      *
      * @return string
+     *
      * @throws PasetoException
      * @psalm-suppress MixedInferredReturnType
      */
@@ -705,6 +711,7 @@ class Builder
      * @param SendingKey $key
      * @param bool $checkPurpose
      * @return self
+     *
      * @throws PasetoException
      */
     public function withKey(SendingKey $key, bool $checkPurpose = false): self
@@ -720,6 +727,7 @@ class Builder
      * @param Purpose $purpose
      * @param bool $checkKeyType
      * @return self
+     *
      * @throws InvalidKeyException
      * @throws InvalidPurposeException
      */
@@ -732,8 +740,7 @@ class Builder
      * Return a new Builder instance with the specified JsonToken object.
      *
      * @param JsonToken $token
-     *
-     * @return Builder
+     * @return self
      */
     public function withJsonToken(JsonToken $token): self
     {
@@ -751,10 +758,18 @@ class Builder
     }
 
     /**
+     * PHP before 7.4 cannot throw exceptions from __toString().
+     *
      * @return string
+     *
+     * @throws PasetoException
      */
     public function __toString()
     {
+        if (PHP_VERSION_ID >= 70400) {
+            // Don't try to suppress on newer PHP.
+            return $this->toString();
+        }
         try {
             return $this->toString();
         } catch (Throwable $ex) {

@@ -43,6 +43,9 @@ class NotExpired implements ValidationRuleInterface
     }
 
     /**
+     * Does the 'exp' claim match what we expect from the Parser
+     * (i.e. not the future)?
+     *
      * @param JsonToken $token
      * @return bool
      *

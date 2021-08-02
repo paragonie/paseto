@@ -48,6 +48,7 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @param string $keyData
      * @param ProtocolInterface|null $protocol
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -84,8 +85,8 @@ class AsymmetricSecretKey implements SendingKey
      * Initialize a v1 secret key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -98,8 +99,8 @@ class AsymmetricSecretKey implements SendingKey
      * Initialize a v2 secret key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -112,8 +113,8 @@ class AsymmetricSecretKey implements SendingKey
      * Initialize a v3 secret key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -126,8 +127,8 @@ class AsymmetricSecretKey implements SendingKey
      * Initialize a v4 secret key.
      *
      * @param string $keyMaterial
-     *
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -141,6 +142,7 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @param ProtocolInterface|null $protocol
      * @return self
+     *
      * @throws Exception
      * @throws TypeError
      */
@@ -171,6 +173,7 @@ class AsymmetricSecretKey implements SendingKey
      * Return a base64url-encoded representation of this secret key.
      *
      * @return string
+     *
      * @throws TypeError
      */
     public function encode(): string
