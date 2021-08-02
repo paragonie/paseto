@@ -38,7 +38,7 @@ suffixed to the version.
 
 For example, PASETO over CBOR might be defined as `c`, yielding `v4c.local` and `v4c.public`
 when used with Version 4. This will **NOT** change the underlying cryptography (beyond
-the fact that the header is always authenticated).
+the fact that the header is always authenticated, and the suffix exists in the header).
 
 ## Specifying Version and Purpose
 
