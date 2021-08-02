@@ -1,6 +1,15 @@
-# How to use the PHP library
+# PASETO (PHP) Documentation
 
-The first thing you should know about Paseto is that it tries to accomplish
+If you're not already familiar with PASETO, you can learn more about its features
+[here](Features.md). If you were using an older version of PASETO, the
+[migration guide](Migration.md) is worth a read. 
+
+Most of the supporting documentation has been moved to the 
+[PASETO specification](https://github.com/paseto-standard/paseto-spec) repository.
+
+## How to use the PHP library
+
+The first thing you should know about this library is it tries to accomplish
 type-safety by wrapping cryptographic keys inside of objects. For example:
 
 ```php
