@@ -213,9 +213,9 @@ class Builder
     public function setExpiration(\DateTimeInterface $time = null): self
     {
         if (!$time) {
-            $time = new \DateTime('NOW');
+            $time = new DateTime('NOW');
         }
-        return $this->set('exp', $time->format(\DateTime::ATOM));
+        return $this->set('exp', $time->format(DateTime::ATOM));
     }
 
     /**
@@ -371,7 +371,7 @@ class Builder
                     'Invalid key type. Expected ' .
                         $this->purpose->expectedSendingKeyType() .
                         ', got ' .
-                        \get_class($key),
+                        get_class($key),
                     ExceptionCode::PASETO_KEY_TYPE_ERROR
                 );
             }

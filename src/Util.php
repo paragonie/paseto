@@ -11,7 +11,8 @@ use ParagonIE\Paseto\Exception\{
     ExceptionCode,
     PasetoException
 };
-use function array_slice,
+use function array_pop,
+    array_slice,
     count,
     explode,
     hash_equals,
@@ -170,7 +171,7 @@ abstract class Util
             // T(i) = HMAC-Hash(PRK, T(i-1) | info | 0x??)
             $last_block = hash_hmac(
                 $hash,
-                $last_block . $info . \chr($block_index),
+                $last_block . $info . pack('C', $block_index),
                 $prk,
                 true
             );
@@ -229,7 +230,7 @@ abstract class Util
         /** @var array<int, string> $pieces */
         $pieces = explode('.', $payload);
         if (count($pieces) > 3) {
-            return Base64UrlSafe::decode((string) \array_pop($pieces));
+            return Base64UrlSafe::decode((string) array_pop($pieces));
         }
         return '';
     }

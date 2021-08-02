@@ -318,7 +318,7 @@ class Version3 implements ProtocolInterface
         // PASETO v3 - Verify - Step 2:
         $expectHeader = self::HEADER . '.public.';
         $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
-        if (!\hash_equals($expectHeader, $givenHeader)) {
+        if (!hash_equals($expectHeader, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER

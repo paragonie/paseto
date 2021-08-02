@@ -86,7 +86,7 @@ class JsonToken
      * @return \DateTime
      * @throws PasetoException
      */
-    public function getExpiration(): \DateTime
+    public function getExpiration(): DateTime
     {
         return new DateTime((string) $this->get('exp'));
     }
@@ -126,7 +126,7 @@ class JsonToken
      * @return \DateTime
      * @throws PasetoException
      */
-    public function getIssuedAt(): \DateTime
+    public function getIssuedAt(): DateTime
     {
         return new DateTime((string) $this->get('iat'));
     }
@@ -159,7 +159,7 @@ class JsonToken
      * @return \DateTime
      * @throws PasetoException
      */
-    public function getNotBefore(): \DateTime
+    public function getNotBefore(): DateTime
     {
         return new DateTime((string) $this->get('nbf'));
     }

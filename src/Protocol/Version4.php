@@ -357,7 +357,7 @@ class Version4 implements ProtocolInterface
             $nonce2,
             $encKey
         );
-        if (!\is_string($ciphertext)) {
+        if (!is_string($ciphertext)) {
             throw new PasetoException(
                 'Encryption failed.',
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
@@ -441,7 +441,7 @@ class Version4 implements ProtocolInterface
             $authKey
         );
         // PASETO v4 - Decrypt - Step 7:
-        if (!\hash_equals($calc, $mac)) {
+        if (!hash_equals($calc, $mac)) {
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
                 ExceptionCode::INVALID_MAC
