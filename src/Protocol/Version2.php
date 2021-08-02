@@ -207,7 +207,7 @@ class Version2 implements ProtocolInterface
             $data,
             static::header() . '.local.',
             $key,
-            (string) $footer
+            $footer
         );
         if (!is_string($message)) {
             throw new PasetoException(

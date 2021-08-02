@@ -230,7 +230,7 @@ class Version1 implements ProtocolInterface
             $data,
             static::header() . '.local.',
             $key,
-            (string) $footer
+            $footer
         );
     }
 

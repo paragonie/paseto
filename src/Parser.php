@@ -274,7 +274,7 @@ class Parser
         $this->throwIfClaimsJsonInvalid($decoded);
 
         /** @var array<string, string>|bool $claims */
-        $claims = json_decode((string) $decoded, true, ($this->maxClaimDepth ?? 512));
+        $claims = json_decode($decoded, true, ($this->maxClaimDepth ?? 512));
         if (!is_array($claims)) {
             throw new EncodingException(
                 'Not a JSON token.',

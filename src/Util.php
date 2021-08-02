@@ -125,11 +125,7 @@ abstract class Util
             $nativeHKDF = is_callable('hash_hkdf');
         }
         if ($nativeHKDF) {
-            /**
-             * @psalm-suppress UndefinedFunction
-             * This is wrapped in an is_callable() check.
-             */
-            return (string) hash_hkdf($hash, $ikm, $length, $info, $salt ?? '');
+            return hash_hkdf($hash, $ikm, $length, $info, $salt ?? '');
         }
 
         $digest_length = Binary::safeStrlen(
@@ -230,7 +226,7 @@ abstract class Util
         /** @var array<int, string> $pieces */
         $pieces = explode('.', $payload);
         if (count($pieces) > 3) {
-            return Base64UrlSafe::decode((string) array_pop($pieces));
+            return Base64UrlSafe::decode(array_pop($pieces));
         }
         return '';
     }

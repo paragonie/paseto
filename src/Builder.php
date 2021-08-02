@@ -528,7 +528,7 @@ class Builder
                         $protocol = ($this->unitTestEncrypter)($protocol);
                     }
 
-                    $this->cached = (string) $protocol::encrypt(
+                    $this->cached = $protocol::encrypt(
                         $claims,
                         $this->key,
                         $this->token->getFooter(),
@@ -540,7 +540,7 @@ class Builder
             case Purpose::public():
                 if ($this->key instanceof AsymmetricSecretKey) {
                     try {
-                        $this->cached = (string) $protocol::sign(
+                        $this->cached = $protocol::sign(
                             $claims,
                             $this->key,
                             $this->token->getFooter(),

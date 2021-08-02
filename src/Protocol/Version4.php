@@ -209,7 +209,7 @@ class Version4 implements ProtocolInterface
             $data,
             self::HEADER . '.local.', // PASETO Version 4 - Decrypt - Step 2
             $key,
-            (string) $footer,
+            $footer,
             $implicit
         );
     }

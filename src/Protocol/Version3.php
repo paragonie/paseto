@@ -224,7 +224,7 @@ class Version3 implements ProtocolInterface
             $data,
             self::HEADER . '.local.',
             $key,
-            (string) $footer,
+            $footer,
             $implicit
         );
     }
