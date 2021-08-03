@@ -525,4 +525,27 @@ class Version3 implements ProtocolInterface
 
         return $plaintext;
     }
+
+    /**
+     * Given a compressed point, get the PEM-formatted public key.
+     *
+     * @param string $compressedPoint
+     * @return string
+     *
+     * @throws InvalidPublicKeyException
+     */
+    public static function getPublicKeyPem(string $compressedPoint): string
+    {
+        return Util::dos2unix(PublicKey::fromString($compressedPoint, 'P384')->exportPem());
+    }
+
+    /**
+     * @param string $pemEncoded
+     * @return string
+     * @throws ASN1ParserException
+     */
+    public static function getPublicKeyCompressed(string $pemEncoded): string
+    {
+        return PublicKey::importPem($pemEncoded)->toString();
+    }
 }

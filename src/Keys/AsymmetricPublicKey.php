@@ -65,6 +65,13 @@ class AsymmetricPublicKey implements ReceivingKey
                     ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
                 );
             }
+        } elseif (hash_equals($protocol::header(), Version3::HEADER)) {
+            $len = Binary::safeStrlen($keyMaterial);
+            if ($len === 98) {
+                $keyMaterial = Version3::getPublicKeyPem($keyMaterial);
+            } elseif ($len === 49) {
+                $keyMaterial = Version3::getPublicKeyPem(Hex::encode($keyMaterial));
+            }
         }
         $this->key = $keyMaterial;
         $this->protocol = $protocol;
