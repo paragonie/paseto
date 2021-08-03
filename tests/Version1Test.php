@@ -54,6 +54,19 @@ class Version1Test extends TestCase
         );
     }
 
+    public function testPublicKeyEncode()
+    {
+        $sk = AsymmetricSecretKey::generate();
+        $pk = $sk->getPublicKey();
+
+        $encoded = $pk->encode();
+        $decoded = AsymmetricPublicKey::fromEncodedString($encoded, new Version1());
+        $this->assertSame(
+            $pk->raw(),
+            $decoded->raw()
+        );
+    }
+
     /**
      * @covers Version1::decrypt()
      * @covers Version1::encrypt()

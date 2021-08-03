@@ -32,6 +32,19 @@ class Version2Test extends TestCase
         $this->assertSame(64, Binary::safeStrlen($secret->raw()));
     }
 
+    public function testPublicKeyEncode()
+    {
+        $sk = AsymmetricSecretKey::generate();
+        $pk = $sk->getPublicKey();
+
+        $encoded = $pk->encode();
+        $decoded = AsymmetricPublicKey::fromEncodedString($encoded, new Version2());
+        $this->assertSame(
+            $pk->raw(),
+            $decoded->raw()
+        );
+    }
+
     /**
      * @covers Version2::decrypt()
      * @covers Version2::encrypt()

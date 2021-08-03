@@ -14,6 +14,7 @@ use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
+use FG\ASN1\Exception\ParserException;
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2,
@@ -143,9 +144,17 @@ class AsymmetricPublicKey implements ReceivingKey
      * @return string
      *
      * @throws TypeError
+     * @throws ParserException
      */
     public function encode(): string
     {
+        if (hash_equals($this->protocol::header(), Version3::HEADER)) {
+            return Base64UrlSafe::encodeUnpadded(
+                Hex::decode(
+                    Version3::getPublicKeyCompressed($this->key)
+                )
+            );
+        }
         return Base64UrlSafe::encodeUnpadded($this->key);
     }
 
@@ -161,8 +170,32 @@ class AsymmetricPublicKey implements ReceivingKey
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
-        $decoded = Base64UrlSafe::decode($encoded);
+        if (hash_equals($version::header(), Version3::HEADER)) {
+            $decoded = Version3::getPublicKeyPem(
+                Hex::encode(
+                    Base64UrlSafe::decode($encoded)
+                )
+            );
+        } else {
+            $decoded = Base64UrlSafe::decode($encoded);
+        }
         return new static($decoded, $version);
+    }
+
+    /**
+     * @return string
+     */
+    public function toHexString(): string
+    {
+        if (hash_equals($this->protocol::header(), Version3::HEADER)) {
+            if (Binary::safeStrlen($this->key) === 98) {
+                return $this->key;
+            }
+            if (Binary::safeStrlen($this->key) !== 49) {
+                return Version3::getPublicKeyCompressed($this->key);
+            }
+        }
+        return Hex::encode($this->key);
     }
 
     /**
