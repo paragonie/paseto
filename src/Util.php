@@ -293,6 +293,8 @@ abstract class Util
      * @param string $byRef
      * @return void
      * @param-out string $byRef
+     *
+     * @psalm-suppress ReferenceConstraintViolation
      */
     public static function wipe(string &$byRef): void
     {

@@ -175,6 +175,9 @@ class AsymmetricPublicKey implements ReceivingKey
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
+        if (!$version) {
+            $version = new Version4();
+        }
         if (hash_equals($version::header(), Version3::HEADER)) {
             $decodeString = Base64UrlSafe::decode($encoded);
             $length = Binary::safeStrlen($encoded);
