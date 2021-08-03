@@ -235,7 +235,7 @@ class AsymmetricSecretKey implements SendingKey
                 /** @var PublicKey $pk */
                 $pk = SecretKey::importPem($this->key)->getPublicKey();
                 return new AsymmetricPublicKey(
-                    $pk->toString(), // Compressed point
+                    PublicKey::importPem($pk->exportPem())->toString(), // Compressed point
                     $this->protocol
                 );
             default:

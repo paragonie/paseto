@@ -149,6 +149,11 @@ class AsymmetricPublicKey implements ReceivingKey
     public function encode(): string
     {
         if (hash_equals($this->protocol::header(), Version3::HEADER)) {
+            if (Binary::safeStrlen($this->key) === 49) {
+                Base64UrlSafe::encodeUnpadded($this->key);
+            } elseif (Binary::safeStrlen($this->key) === 98) {
+                Base64UrlSafe::encodeUnpadded(Hex::decode($this->key));
+            }
             return Base64UrlSafe::encodeUnpadded(
                 Hex::decode(
                     Version3::getPublicKeyCompressed($this->key)
@@ -171,11 +176,15 @@ class AsymmetricPublicKey implements ReceivingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         if (hash_equals($version::header(), Version3::HEADER)) {
-            $decoded = Version3::getPublicKeyPem(
-                Hex::encode(
-                    Base64UrlSafe::decode($encoded)
-                )
-            );
+            $decodeString = Base64UrlSafe::decode($encoded);
+            $length = Binary::safeStrlen($encoded);
+            if ($length === 98) {
+                $decoded = Version3::getPublicKeyPem($decodeString);
+            } elseif ($length === 49) {
+                $decoded = Version3::getPublicKeyPem(Hex::encode($decodeString));
+            } else {
+                $decoded = $decodeString;
+            }
         } else {
             $decoded = Base64UrlSafe::decode($encoded);
         }
@@ -184,6 +193,7 @@ class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * @return string
+     * @throws ParserException
      */
     public function toHexString(): string
     {
