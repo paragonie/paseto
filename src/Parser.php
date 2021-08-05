@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use Exception;
 use ParagonIE\Paseto\Exception\{
     EncodingException,
     ExceptionCode,
@@ -17,7 +18,9 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Parsing\NonExpiringSupport;
 use ParagonIE\Paseto\Parsing\PasetoMessage;
+use ParagonIE\Paseto\Rules\NotExpired;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 use function get_class,
     is_array,
@@ -35,6 +38,7 @@ use Throwable;
  */
 class Parser
 {
+    use NonExpiringSupport;
     use RegisteredClaims;
 
     /** @var ProtocolCollection */
@@ -476,15 +480,31 @@ class Parser
      */
     public function validate(JsonToken $token, bool $throwOnFailure = false): bool
     {
-        if (empty($this->rules)) {
+        $rules = $this->rules;
+        if (!$this->nonExpiring) {
+            // By default, we disallow expired tokens
+            $rules[] = new NotExpired();
+        }
+        if (empty($rules)) {
             // No rules defined, so we default to "true".
             return true;
         }
-        foreach ($this->rules as $rule) {
-            if (!$rule->isValid($token)) {
+
+        foreach ($rules as $rule) {
+            try {
+                if (!$rule->isValid($token)) {
+                    if ($throwOnFailure) {
+                        throw new RuleViolation(
+                            $rule->getFailureMessage(),
+                            ExceptionCode::PARSER_RULE_FAILED
+                        );
+                    }
+                    return false;
+                }
+            } catch (Exception $ex) {
                 if ($throwOnFailure) {
                     throw new RuleViolation(
-                        $rule->getFailureMessage(),
+                        $ex->getMessage(),
                         ExceptionCode::PARSER_RULE_FAILED
                     );
                 }

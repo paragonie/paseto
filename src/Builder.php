@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use DateInterval;
 use ParagonIE\Paseto\Exception\{
     EncodingException,
     ExceptionCode,
@@ -13,6 +14,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
+use ParagonIE\Paseto\Parsing\NonExpiringSupport;
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 use Closure;
@@ -30,6 +32,7 @@ use function is_null,
  */
 class Builder
 {
+    use NonExpiringSupport;
     use RegisteredClaims;
 
     /** @var string $cached */
@@ -499,7 +502,15 @@ class Builder
         $this->setKey($this->key, true);
         $this->setPurpose($this->purpose, true);
 
-        $claims = json_encode($this->token->getClaims(), JSON_FORCE_OBJECT);
+        $claimsArray = $this->token->getClaims();
+
+        // PASETO tokens expire by default (unless otherwise specified).
+        if (!$this->nonExpiring && !array_key_exists('exp', $claimsArray)) {
+            $claimsArray['exp'] = (new DateTime('NOW'))
+                ->add(new DateInterval('PT01H'))
+                ->format(DateTime::ATOM);
+        }
+        $claims = json_encode($claimsArray, JSON_FORCE_OBJECT);
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
 
