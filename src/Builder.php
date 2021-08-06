@@ -8,6 +8,7 @@ use ParagonIE\Paseto\Exception\{
     ExceptionCode,
     InvalidKeyException,
     InvalidPurposeException,
+    NotFoundException,
     PasetoException
 };
 use ParagonIE\Paseto\Keys\{
@@ -30,7 +31,7 @@ use function is_null,
  * Class Builder
  * @package ParagonIE\Paseto
  */
-class Builder
+class Builder extends PasetoBase
 {
     use NonExpiringSupport;
     use RegisteredClaims;
@@ -81,6 +82,64 @@ class Builder
         if ($key) {
             $this->setKey($key);
         }
+    }
+
+    /**
+     * Fetch a key (either from $this->key directly, or by its Key ID if we've
+     * stored a KeyRing), then make sure it's an Asymmetric Secret Key.
+     *
+     * @return AsymmetricSecretKey
+     *
+     * @throws InvalidKeyException
+     * @throws NotFoundException
+     * @throws PasetoException
+     */
+    public function fetchSecretKey(): AsymmetricSecretKey
+    {
+        if ($this->key instanceof SendingKeyRingRing) {
+            $footer = $this->token->getFooterArray();
+            $index = (string) static::KEY_ID_FOOTER_CLAIM;
+            $keyId = (string) ($footer[$index] ?? '');
+            $key = $this->key->fetchKey($keyId);
+        } else {
+            $key = $this->key;
+        }
+        if (!($key instanceof AsymmetricSecretKey)) {
+            throw new InvalidKeyException(
+                "Only symmetric keys can be used for local tokens.",
+                ExceptionCode::PURPOSE_WRONG_FOR_KEY
+            );
+        }
+        return $key;
+    }
+
+    /**
+     * Fetch a key (either from $this->key directly, or by its Key ID if we've
+     * stored a KeyRing), then make sure it's a Symmetric Key.
+     *
+     * @return SymmetricKey
+     *
+     * @throws InvalidKeyException
+     * @throws NotFoundException
+     * @throws PasetoException
+     */
+    public function fetchSymmetricKey(): SymmetricKey
+    {
+        if ($this->key instanceof SendingKeyRingRing) {
+            $footer = $this->token->getFooterArray();
+            $index = (string) static::KEY_ID_FOOTER_CLAIM;
+            $keyId = (string) ($footer[$index] ?? '');
+            $key = $this->key->fetchKey($keyId);
+        } else {
+            $key = $this->key;
+        }
+        if (!($key instanceof SymmetricKey)) {
+            throw new InvalidKeyException(
+                "Only symmetric keys can be used for local tokens.",
+                ExceptionCode::PURPOSE_WRONG_FOR_KEY
+            );
+        }
+        return $key;
     }
 
     /**
@@ -138,7 +197,33 @@ class Builder
         JsonToken $baseToken = null
     ): self {
         if (!$version) {
-            $version = new Version4();
+            $version = $key->getProtocol();
+        }
+        $instance = new static($baseToken);
+        $instance->key = $key;
+        $instance->version = $version;
+        $instance->purpose = Purpose::local();
+        return $instance;
+    }
+
+    /**
+     * Get a Builder instance configured for local usage.
+     * (i.e. shared-key authenticated encryption)
+     *
+     * @param SendingKeyRingRing $key
+     * @param ProtocolInterface|null $version
+     * @param JsonToken|null $baseToken
+     * @return self
+     *
+     * @throws PasetoException
+     */
+    public static function getLocalWithKeyRing(
+        SendingKeyRingRing $key,
+        ProtocolInterface  $version = null,
+        JsonToken          $baseToken = null
+    ): self {
+        if (!$version) {
+            $version = $key->getProtocol();
         }
         $instance = new static($baseToken);
         $instance->key = $key;
@@ -164,7 +249,33 @@ class Builder
         JsonToken $baseToken = null
     ): self {
         if (!$version) {
-            $version = new Version4();
+            $version = $key->getProtocol();
+        }
+        $instance = new static($baseToken);
+        $instance->key = $key;
+        $instance->version = $version;
+        $instance->purpose = Purpose::public();
+        return $instance;
+    }
+
+    /**
+     * Get a Builder instance configured for remote usage.
+     * (i.e. public-key digital signatures)
+     *
+     * @param SendingKeyRingRing $key
+     * @param ProtocolInterface|null $version
+     * @param JsonToken|null $baseToken
+     * @return self
+     *
+     * @throws PasetoException
+     */
+    public static function getPublicWithKeyRing(
+        SendingKeyRingRing $key,
+        ProtocolInterface  $version = null,
+        JsonToken          $baseToken = null
+    ): self {
+        if (!$version) {
+            $version = $key->getProtocol();
         }
         $instance = new static($baseToken);
         $instance->key = $key;
@@ -367,6 +478,11 @@ class Builder
      */
     public function setKey(SendingKey $key, bool $checkPurpose = false): self
     {
+        if ($key instanceof SendingKeyRingRing) {
+            /** We'll need to do more checks at build time {@link toString()} */
+            $this->key = $key;
+            return $this;
+        }
         if ($checkPurpose) {
             if (is_null($this->purpose)) {
                 throw new InvalidKeyException(
@@ -421,6 +537,12 @@ class Builder
      */
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
+        if ($this->key instanceof SendingKeyRingRing) {
+            /** We'll need to do more checks at build time {@link toString()} */
+            $this->cached = '';
+            $this->purpose = $purpose;
+            return $this;
+        }
         if ($checkKeyType) {
             if (is_null($this->key)) {
                 throw new InvalidKeyException(
@@ -526,47 +648,42 @@ class Builder
         }
         switch ($this->purpose) {
             case Purpose::local():
-                if ($this->key instanceof SymmetricKey) {
-                    /**
-                     * During unit tests, perform last-minute dependency
-                     * injection to swap $protocol for a conjured up version.
-                     * This new version can access a protected method on our
-                     * actual $protocol, giving unit tests the ability to
-                     * manually set a pre-decided nonce.
-                     */
-                    if (isset($this->unitTestEncrypter)) {
-                        /** @var ProtocolInterface */
-                        $protocol = ($this->unitTestEncrypter)($protocol);
-                    }
-
-                    $this->cached = $protocol::encrypt(
+                $key = $this->fetchSymmetricKey();
+                /**
+                 * During unit tests, perform last-minute dependency
+                 * injection to swap $protocol for a conjured up version.
+                 * This new version can access a protected method on our
+                 * actual $protocol, giving unit tests the ability to
+                 * manually set a pre-decided nonce.
+                 */
+                if (isset($this->unitTestEncrypter)) {
+                    /** @var ProtocolInterface */
+                    $protocol = ($this->unitTestEncrypter)($protocol);
+                }
+                $this->cached = $protocol::encrypt(
+                    $claims,
+                    $key,
+                    $this->token->getFooter(),
+                    $implicit
+                );
+                return $this->cached;
+            case Purpose::public():
+                $key = $this->fetchSecretKey();
+                try {
+                    $this->cached = $protocol::sign(
                         $claims,
-                        $this->key,
+                        $key,
                         $this->token->getFooter(),
                         $implicit
                     );
                     return $this->cached;
+                } catch (Throwable $ex) {
+                    throw new PasetoException(
+                        'Signing failed.',
+                        ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
+                        $ex
+                    );
                 }
-                break;
-            case Purpose::public():
-                if ($this->key instanceof AsymmetricSecretKey) {
-                    try {
-                        $this->cached = $protocol::sign(
-                            $claims,
-                            $this->key,
-                            $this->token->getFooter(),
-                            $implicit
-                        );
-                        return $this->cached;
-                    } catch (Throwable $ex) {
-                        throw new PasetoException(
-                            'Signing failed.',
-                            ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
-                            $ex
-                        );
-                    }
-                }
-                break;
         }
         throw new PasetoException(
             'Unsupported key/purpose pairing.',

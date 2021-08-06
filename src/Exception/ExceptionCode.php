@@ -35,6 +35,8 @@ abstract class ExceptionCode
     const UNSPECIFIED_CRYPTOGRAPHIC_ERROR  = 0x3142EE19;
     const WRONG_KEY_FOR_VERSION            = 0x3142EE1A;
     const IMPOSSIBLE_CONDITION             = 0x3142EE1B;
+    const INVOKED_RAW_ON_MULTIKEY          = 0x3142EE1C;
+    const KEY_NOT_IN_KEYRING               = 0x3142EE1D;
 
     /**
      * @param int $code
@@ -81,6 +83,12 @@ abstract class ExceptionCode
                 return "The message authentication code provided with this message did not match the one we calculated.";
             case self::IMPOSSIBLE_CONDITION:
                 return "A condition we thought impossible has occurred.";
+            case self::INVOKED_RAW_ON_MULTIKEY:
+                return "The raw() method was invoked on a SendingKeyMap or ReceivingKeyMap object, " .
+                    "instead of the actual key. This is an error. Invoke fetch() to get the underling key " .
+                    "and pass that instead.";
+            case self::KEY_NOT_IN_KEYRING:
+                return "The key you requested is not in this keyring.";
 
             default:
                 return 'Unknown error code';

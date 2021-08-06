@@ -1,0 +1,226 @@
+<?php
+declare(strict_types=1);
+namespace ParagonIE\Paseto\Tests;
+
+use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Keys\{
+    AsymmetricSecretKey,
+    SymmetricKey
+};
+use ParagonIE\Paseto\Protocol\{
+    Version1,
+    Version2,
+    Version3,
+    Version4
+};
+use ParagonIE\Paseto\{
+    Builder,
+    Parser,
+    JsonToken,
+    ProtocolInterface,
+    ReceivingKeyRingRing,
+    SendingKeyRingRing
+};
+use PHPUnit\Framework\TestCase;
+
+/**
+ * @covers Builder
+ * @covers Parser
+ * @covers ReceivingKeyRingRing
+ * @covers SendingKeyRingRing
+ */
+class MultiKeyTest extends TestCase
+{
+    /** @var ProtocolInterface[] $versions */
+    protected $versions;
+
+    public function setUp(): void
+    {
+        $this->versions = [new Version1, new Version2, new Version3, new Version4];
+    }
+
+    protected function getReceivingKeyring(ProtocolInterface $v): array
+    {
+        $sk = AsymmetricSecretKey::generate($v);
+        $rKeyring = (new ReceivingKeyRingRing())
+            ->setVersion($v)
+            ->addKey('gandalf0', SymmetricKey::generate($v))
+            ->addKey('legolas1', $sk->getPublicKey());
+        return [$sk, $rKeyring];
+    }
+
+    protected function getSendingKeyring(ProtocolInterface $v): SendingKeyRingRing
+    {
+        return (new SendingKeyRingRing())
+            ->setVersion($v)
+            ->addKey('gandalf0', SymmetricKey::generate($v))
+            ->addKey('legolas1', AsymmetricSecretKey::generate($v));
+    }
+
+    /**
+     * @throws PasetoException
+     */
+    public function testKeyRings(): void
+    {
+        foreach ($this->versions as $v) {
+            $this->doReceivingTest($v);
+            $this->doSendingTest($v);
+        }
+    }
+
+    /**
+     * @param ProtocolInterface $v
+     * @throws PasetoException
+     */
+    protected function doReceivingTest(ProtocolInterface $v): void
+    {
+        /**
+         * @var AsymmetricSecretKey $sk
+         * @var ReceivingKeyRingRing $keyring
+         */
+        list($sk, $keyring) = $this->getReceivingKeyring($v);
+
+        // These need to pass the type checks
+        $localKey = $keyring->fetchKey('gandalf0');
+        $this->assertInstanceOf(SymmetricKey::class, $localKey);
+        $localBuilder = Builder::getLocal($localKey);
+        $publicBuilder = Builder::getPublic($sk);
+
+        // Set some things
+        $localBuilder->setSubject('foo');
+        $publicBuilder->setSubject('foo');
+        $localBuilder->setFooterArray(['kid' => 'gandalf0']);
+        $publicBuilder->setFooterArray(['kid' => 'legolas1']);
+
+        // Build a token
+        $localToken = $localBuilder->toString();
+        $publicToken = $publicBuilder->toString();
+
+        // Now let's set up a parser:
+        $localParser = Parser::getLocalWithKeyring($keyring);
+        $publicParser = Parser::getPublicWithKeyring($keyring);
+
+        // Do the tokens we built parse?
+        $parseLocal  = $localParser->parse($localToken);
+        $parsePublic = $publicParser->parse($publicToken);
+        $this->assertInstanceOf(JsonToken::class, $parseLocal);
+        $this->assertInstanceOf(JsonToken::class, $parsePublic);
+        $this->assertSame('foo', $parseLocal->getSubject());
+        $this->assertSame('foo', $parsePublic->getSubject());
+
+        // Now let's get crafty:
+        $fail = false;
+        try {
+            $localParser->parse($publicToken);
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted invalid token");
+
+        $fail = false;
+        try {
+            $publicParser->parse($localToken);
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted invalid token");
+
+        // Remember these? Let's swap their values:
+        $localBuilder->setFooterArray(['kid' => 'legolas1']);
+        $publicBuilder->setFooterArray(['kid' => 'gandalf0']);
+        $badLocalToken = $localBuilder->toString();
+        $badPublicToken = $publicBuilder->toString();
+
+        // Now these should both fail because kid fetches the wrong key:
+        $fail = false;
+        try {
+            $localParser->parse($badLocalToken);
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted token with invalid key ID");
+        $fail = false;
+        try {
+            $publicParser->parse($badPublicToken);
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted token with invalid key ID");
+
+        // Finally, let's set an invalid version (but correct purposE):
+        $header = $v::header() === 'v1' ? 'v4' : 'v1';
+        $badLocalToken = $header . Binary::safeSubstr($localToken, 2);
+        $badPublicToken = $header . Binary::safeSubstr($publicToken, 2);
+
+        $fail = false;
+        try {
+            $localParser->parse($badLocalToken);
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted invalid token version");
+
+        $fail = false;
+        try {
+            $publicParser->parse($badPublicToken);
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted invalid token version");
+    }
+
+    /**
+     * @param ProtocolInterface $v
+     * @throws PasetoException
+     */
+    protected function doSendingTest(ProtocolInterface $v): void
+    {
+        $keyring = $this->getSendingKeyring($v);
+        $localBuilder = Builder::getLocalWithKeyRing($keyring, $v);
+        $publicBuilder = Builder::getPublicWithKeyRing($keyring, $v);
+        $localBuilder->setSubject('foo');
+        $publicBuilder->setSubject('foo');
+
+        $localBuilder->setFooterArray(['kid' => 'gandalf0']);
+        $publicBuilder->setFooterArray(['kid' => 'legolas1']);
+
+        // The absence of an exception being thrown is sufficient proof.
+        $localToken = $localBuilder->toString();
+        $publicToken = $publicBuilder->toString();
+
+        // Now let's switch their Key IDs
+        $localBuilder->setFooterArray(['kid' => 'legolas1']);
+        $publicBuilder->setFooterArray(['kid' => 'gandalf0']);
+
+        // Assert failure
+        $fail = false;
+        try {
+            $localBuilder->toString();
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted an invalid key id");
+
+        $fail = false;
+        try {
+            $publicBuilder->toString();
+        } catch (PasetoException $ex) {
+            $fail = true;
+        }
+        $this->assertTrue($fail, "Parser accepted an invalid key id");
+
+        // Let's initialize a Parser with a congruent keyring
+        $keyring2 = $keyring->deriveReceivingKeyRing();
+        $localParser = Parser::getLocalWithKeyRing($keyring2);
+        $publicParser = Parser::getPublicWithKeyRing($keyring2);
+
+        // Ensure the token we generated parses
+        $parseLocal = $localParser->parse($localToken);
+        $parsePublic = $publicParser->parse($publicToken);
+        $this->assertInstanceOf(JsonToken::class, $parseLocal);
+        $this->assertInstanceOf(JsonToken::class, $parsePublic);
+        $this->assertSame('foo', $parseLocal->getSubject());
+        $this->assertSame('foo', $parsePublic->getSubject());
+    }
+}
