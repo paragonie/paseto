@@ -2,12 +2,14 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use Exception;
 use ParagonIE\Paseto\Exception\{
     EncodingException,
     ExceptionCode,
     InvalidKeyException,
     InvalidPurposeException,
     InvalidVersionException,
+    NotFoundException,
     PasetoException,
     RuleViolation,
     SecurityException
@@ -17,7 +19,9 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Parsing\NonExpiringSupport;
 use ParagonIE\Paseto\Parsing\PasetoMessage;
+use ParagonIE\Paseto\Rules\NotExpired;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 use function get_class,
     is_array,
@@ -33,8 +37,9 @@ use Throwable;
  * @package ParagonIE\Paseto
  * @psalm-suppress PropertyNotSetInConstructor
  */
-class Parser
+class Parser extends PasetoBase
 {
+    use NonExpiringSupport;
     use RegisteredClaims;
 
     /** @var ProtocolCollection */
@@ -143,6 +148,27 @@ class Parser
     }
 
     /**
+     * Get a Parser instance intended for local usage.
+     * (i.e. shard-key authenticated encryption)
+     *
+     * @param ReceivingKeyRingRing $key
+     * @param ProtocolCollection|null $allowedVersions
+     * @return self
+     *
+     * @throws PasetoException
+     */
+    public static function getLocalWithKeyRing(
+        ReceivingKeyRingRing $key,
+        ProtocolCollection   $allowedVersions = null
+    ): self {
+        return new static(
+            $allowedVersions ?? ProtocolCollection::default(),
+            Purpose::local(),
+            $key
+        );
+    }
+
+    /**
      * Get a Parser instance intended for remote usage.
      * (i.e. public-key digital signatures).
      *
@@ -164,6 +190,27 @@ class Parser
     }
 
     /**
+     * Get a Parser instance intended for remote usage.
+     * (i.e. public-key digital signatures).
+     *
+     * @param ReceivingKeyRingRing $key
+     * @param ProtocolCollection|null $allowedVersions
+     * @return self
+     *
+     * @throws PasetoException
+     */
+    public static function getPublicWithKeyRing(
+        ReceivingKeyRingRing $key,
+        ProtocolCollection   $allowedVersions = null
+    ): self {
+        return new static(
+            $allowedVersions ?? ProtocolCollection::default(),
+            Purpose::public(),
+            $key
+        );
+    }
+
+    /**
      * Add a validation rule to be invoked by parse().
      *
      * @param ValidationRuleInterface $rule
@@ -173,6 +220,133 @@ class Parser
     {
         $this->rules[] = $rule;
         return $this;
+    }
+
+    /**
+     * If our footer contains a JSON payload, first perform the necessary safety checks
+     * (string length, number of keys, recursive depth) before attempting json_decode().
+     *
+     * If we end up with a valid payload, and a Key ID (`kid`) is defined, return that.
+     *
+     * Empty / non-JSON payloads result in an empty string.
+     * Malformed or unsafe JSON payloads result in an Exception being thrown.
+     * Missing `kid` results in an empty string.
+     * A non-string `kid` results in an empty string.
+     * Otherwise, return the `kid` to the caller.
+     *
+     * @ref https://github.com/paseto-standard/paseto-spec/blob/master/docs/02-Implementation-Guide/01-Payload-Processing.md#storing-json-in-the-footer
+     *
+     * @param string $data
+     * @return string
+     *
+     * @throws EncodingException
+     * @throws SecurityException
+     */
+    public function extractKeyIdFromFooterJson(string $data): string
+    {
+        $length = Binary::safeStrlen($data);
+        if ($length < 6) {
+            // Too short to be JSON
+            return '';
+        }
+        if ($data[0] !== '{' || $data[$length - 1] !== '}') {
+            // Not JSON
+            return '';
+        }
+
+        // Perform safety checks before invoking json_decode()
+        if (!is_null($this->maxJsonLength) && $length > $this->maxJsonLength) {
+            throw new SecurityException(
+                "Footer JSON is too long",
+                ExceptionCode::FOOTER_JSON_ERROR
+            );
+        }
+        if (!is_null($this->maxClaimDepth)) {
+            if (Util::calculateJsonDepth($data) > $this->maxClaimDepth) {
+                throw new SecurityException(
+                    "Footer JSON is has too much recursion",
+                    ExceptionCode::FOOTER_JSON_ERROR
+                );
+            }
+        }
+        if (!is_null($this->maxClaimCount)) {
+            if (Util::countJsonKeys($data) > $this->maxClaimCount) {
+                throw new SecurityException(
+                    "Footer JSON is has too many keys",
+                    ExceptionCode::FOOTER_JSON_ERROR
+                );
+            }
+        }
+
+        $decoded = json_decode($data, true, $this->maxClaimDepth ?? 512);
+        if (!is_array($decoded)) {
+            return '';
+        }
+
+        // No key id -> ''
+        $index = (string) static::KEY_ID_FOOTER_CLAIM;
+        if (!isset($decoded[$index])) {
+            return '';
+        }
+        // Non-string in key id -> ''
+        if (!is_string($decoded[$index])) {
+            return '';
+        }
+        return $decoded[$index];
+    }
+
+    /**
+     * Fetch a key (either from $this->key directly, or by its Key ID if we've
+     * stored a KeyRing), then make sure it's an Asymmetric Public Key.
+     *
+     * @param string $keyId
+     *
+     * @return AsymmetricPublicKey
+     * @throws InvalidKeyException
+     * @throws NotFoundException
+     * @throws PasetoException
+     */
+    public function fetchPublicKey(string $keyId = ''): AsymmetricPublicKey
+    {
+        if ($this->key instanceof ReceivingKeyRingRing) {
+            $key = $this->key->fetchKey($keyId);
+        } else {
+            $key = $this->key;
+        }
+        if (!($key instanceof AsymmetricPublicKey)) {
+            throw new InvalidKeyException(
+                "Only symmetric keys can be used for local tokens.",
+                ExceptionCode::PURPOSE_WRONG_FOR_KEY
+            );
+        }
+        return $key;
+    }
+
+    /**
+     * Fetch a key (either from $this->key directly, or by its Key ID if we've
+     * stored a KeyRing), then make sure it's a Symmetric Key.
+     *
+     * @param string $keyId
+     *
+     * @return SymmetricKey
+     * @throws InvalidKeyException
+     * @throws NotFoundException
+     * @throws PasetoException
+     */
+    public function fetchSymmetricKey(string $keyId = ''): SymmetricKey
+    {
+        if ($this->key instanceof ReceivingKeyRingRing) {
+            $key = $this->key->fetchKey($keyId);
+        } else {
+            $key = $this->key;
+        }
+        if (!($key instanceof SymmetricKey)) {
+            throw new InvalidKeyException(
+                "Only symmetric keys can be used for local tokens.",
+                ExceptionCode::PURPOSE_WRONG_FOR_KEY
+            );
+        }
+        return $key;
     }
 
     /**
@@ -213,11 +387,13 @@ class Parser
             }
         }
 
-        if (!$purpose->isReceivingKeyValid($this->key)) {
-            throw new InvalidKeyException(
-                'Invalid key type',
-                ExceptionCode::PASETO_KEY_TYPE_ERROR
-            );
+        if (!($this->key instanceof ReceivingKeyRingRing)) {
+            if (!$purpose->isReceivingKeyValid($this->key)) {
+                throw new InvalidKeyException(
+                    'Invalid key type',
+                    ExceptionCode::PASETO_KEY_TYPE_ERROR
+                );
+            }
         }
 
         $implicit = '';
@@ -230,13 +406,15 @@ class Parser
             }
             $implicit = $this->implicitAssertions;
         }
+        $keyId = $this->extractKeyIdFromFooterJson($footer);
 
         /** @var string|null $decoded */
         // Let's verify/decode according to the appropriate method:
         switch ($purpose) {
             case Purpose::local():
-                /** @var SymmetricKey $key */
-                $key = $this->key;
+                // A symmetric key is, by type-safety, suitable for local tokens
+                $key = $this->fetchSymmetricKey($keyId);
+
                 try {
                     $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
                 } catch (Throwable $ex) {
@@ -248,8 +426,8 @@ class Parser
                 }
                 break;
             case Purpose::public():
-                /** @var AsymmetricPublicKey $key */
-                $key = $this->key;
+                // An asymmetric public key is, by type-safety, suitable for public tokens
+                $key = $this->fetchPublicKey($keyId);
                 try {
                     $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
                 } catch (Throwable $ex) {
@@ -377,6 +555,10 @@ class Parser
      */
     public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
     {
+        if ($key instanceof ReceivingKeyRingRing) {
+            $this->key = $key;
+            return $this;
+        }
         if ($checkPurpose) {
             if (is_null($this->purpose)) {
                 throw new InvalidKeyException(
@@ -476,15 +658,31 @@ class Parser
      */
     public function validate(JsonToken $token, bool $throwOnFailure = false): bool
     {
-        if (empty($this->rules)) {
+        $rules = $this->rules;
+        if (!$this->nonExpiring) {
+            // By default, we disallow expired tokens
+            $rules[] = new NotExpired();
+        }
+        if (empty($rules)) {
             // No rules defined, so we default to "true".
             return true;
         }
-        foreach ($this->rules as $rule) {
-            if (!$rule->isValid($token)) {
+
+        foreach ($rules as $rule) {
+            try {
+                if (!$rule->isValid($token)) {
+                    if ($throwOnFailure) {
+                        throw new RuleViolation(
+                            $rule->getFailureMessage(),
+                            ExceptionCode::PARSER_RULE_FAILED
+                        );
+                    }
+                    return false;
+                }
+            } catch (Exception $ex) {
                 if ($throwOnFailure) {
                     throw new RuleViolation(
-                        $rule->getFailureMessage(),
+                        $ex->getMessage(),
                         ExceptionCode::PARSER_RULE_FAILED
                     );
                 }
