@@ -128,3 +128,80 @@ try {
 var_dump($token instanceof JsonToken);
 // bool(true)
 ```
+
+## Key Rings
+
+A key ring is a set of named cryptographic keys.
+
+> Support for key rings is **totally optional.** If you don't need them, don't build support for them
+in your application. If you do need support for them, we've provided a first-class implementation.
+
+Key rings are useful for integrating with multiple third-party identity providers, or adding
+mechanisms to enforce key-rotation with a window of overlap between two keys.
+
+Here's an example:
+
+```php
+<?php
+use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
+use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Protocol\Version4;
+use ParagonIE\Paseto\Purpose;
+use ParagonIE\Paseto\ReceivingKeyRing;
+
+/**
+ * @var SymmetricKey $localKey
+ * @var AsymmetricPublicKey $pk1
+ * @var AsymmetricPublicKey $pk2
+ */
+$keyring = (new ReceivingKeyRing())
+    ->setVersion(new Version4)
+    ->setPurpose(Purpose::public())
+    ->addKey('gandalf0', $pk1)
+    ->addKey('legolas1', $pk2);
+
+$otherKeyring = (new ReceivingKeyRing())
+    ->setVersion(new Version4)
+    ->setPurpose(Purpose::local())
+    ->addKey('boromir2', $localKey);
+```
+
+As you can see, each `KeyRing` object can be locked down to a given version and purpose.
+If you try to add an `AsymmetricPublicKey` to `$otherKeyring`, it will throw an exception.
+
+```
+$otherKeyring->addKey('gandalf0', $pk1); // throws
+```
+
+There is also a `SendingKeyRing` class, which behaves mostly the same way as `ReceivingKeyRing`,
+but only allows Sending Keys (`SymmetricKey`, `AsymmetricSecretKey`).
+
+### Using Key Rings in Builders and Parsers
+
+The Parser and Builder classes both support Key Rings without additional logic necessary.
+Users are only responsible for correctly configuring their Key Ring to specify which version
+and purpose is permitted.
+
+```php
+<?php
+use ParagonIE\Paseto\{
+    Builder,
+    Parser,
+    ReceivingKeyRing,
+    SendingKeyRing
+};
+/**
+ * @var Builder $builder
+ * @var Parser $parser
+ * @var ReceivingKeyRing $rcvKeyRing
+ * @var SendingKeyRing $sendKeyRing
+ */
+
+// Building a token with a SendingKeyRing
+$builder->setKey($sendKeyRing);
+$token = $builder->toString();
+
+// Parsing a token with a ReceivingKeyRing
+$parser->setKey($rcvKeyRing);
+$valid = $parser->parse($token);
+```
