@@ -14,7 +14,8 @@ use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
 };
-use ParagonIE\Paseto\{Builder,
+use ParagonIE\Paseto\{
+    Builder,
     JsonToken,
     Parser,
     ProtocolInterface,
@@ -22,7 +23,8 @@ use ParagonIE\Paseto\{Builder,
     ReceivingKey,
     ReceivingKeyRing,
     SendingKey,
-    SendingKeyRing};
+    SendingKeyRing
+};
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
