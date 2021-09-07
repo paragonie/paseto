@@ -8,7 +8,7 @@ use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Traits\MultiKeyTrait;
 
-class SendingKeyRingRing implements KeyRingInterface, SendingKey
+class SendingKeyRing implements KeyRingInterface, SendingKey
 {
     use MultiKeyTrait;
 
@@ -39,14 +39,14 @@ class SendingKeyRingRing implements KeyRingInterface, SendingKey
     /**
      * Derive a keyring for receiving keys.
      *
-     * @return ReceivingKeyRingRing
+     * @return ReceivingKeyRing
      *
      * @throws InvalidKeyException
      * @throws PasetoException
      */
-    public function deriveReceivingKeyRing(): ReceivingKeyRingRing
+    public function deriveReceivingKeyRing(): ReceivingKeyRing
     {
-        $ret = new ReceivingKeyRingRing();
+        $ret = new ReceivingKeyRing();
         /**
          * @var SymmetricKey|AsymmetricSecretKey $key
          */

@@ -151,15 +151,15 @@ class Parser extends PasetoBase
      * Get a Parser instance intended for local usage.
      * (i.e. shard-key authenticated encryption)
      *
-     * @param ReceivingKeyRingRing $key
+     * @param ReceivingKeyRing $key
      * @param ProtocolCollection|null $allowedVersions
      * @return self
      *
      * @throws PasetoException
      */
     public static function getLocalWithKeyRing(
-        ReceivingKeyRingRing $key,
-        ProtocolCollection   $allowedVersions = null
+        ReceivingKeyRing   $key,
+        ProtocolCollection $allowedVersions = null
     ): self {
         return new static(
             $allowedVersions ?? ProtocolCollection::default(),
@@ -193,15 +193,15 @@ class Parser extends PasetoBase
      * Get a Parser instance intended for remote usage.
      * (i.e. public-key digital signatures).
      *
-     * @param ReceivingKeyRingRing $key
+     * @param ReceivingKeyRing $key
      * @param ProtocolCollection|null $allowedVersions
      * @return self
      *
      * @throws PasetoException
      */
     public static function getPublicWithKeyRing(
-        ReceivingKeyRingRing $key,
-        ProtocolCollection   $allowedVersions = null
+        ReceivingKeyRing   $key,
+        ProtocolCollection $allowedVersions = null
     ): self {
         return new static(
             $allowedVersions ?? ProtocolCollection::default(),
@@ -308,7 +308,7 @@ class Parser extends PasetoBase
      */
     public function fetchPublicKey(string $keyId = ''): AsymmetricPublicKey
     {
-        if ($this->key instanceof ReceivingKeyRingRing) {
+        if ($this->key instanceof ReceivingKeyRing) {
             $key = $this->key->fetchKey($keyId);
         } else {
             $key = $this->key;
@@ -335,7 +335,7 @@ class Parser extends PasetoBase
      */
     public function fetchSymmetricKey(string $keyId = ''): SymmetricKey
     {
-        if ($this->key instanceof ReceivingKeyRingRing) {
+        if ($this->key instanceof ReceivingKeyRing) {
             $key = $this->key->fetchKey($keyId);
         } else {
             $key = $this->key;
@@ -387,7 +387,7 @@ class Parser extends PasetoBase
             }
         }
 
-        if (!($this->key instanceof ReceivingKeyRingRing)) {
+        if (!($this->key instanceof ReceivingKeyRing)) {
             if (!$purpose->isReceivingKeyValid($this->key)) {
                 throw new InvalidKeyException(
                     'Invalid key type',
@@ -555,7 +555,7 @@ class Parser extends PasetoBase
      */
     public function setKey(ReceivingKey $key, bool $checkPurpose = false): self
     {
-        if ($key instanceof ReceivingKeyRingRing) {
+        if ($key instanceof ReceivingKeyRing) {
             $this->key = $key;
             return $this;
         }

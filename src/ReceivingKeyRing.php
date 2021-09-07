@@ -6,7 +6,7 @@ use ParagonIE\Paseto\Exception\InvalidKeyException;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Traits\MultiKeyTrait;
 
-class ReceivingKeyRingRing implements KeyRingInterface, ReceivingKey
+class ReceivingKeyRing implements KeyRingInterface, ReceivingKey
 {
     use MultiKeyTrait;
 

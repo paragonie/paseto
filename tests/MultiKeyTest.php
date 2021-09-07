@@ -19,16 +19,16 @@ use ParagonIE\Paseto\{
     Parser,
     JsonToken,
     ProtocolInterface,
-    ReceivingKeyRingRing,
-    SendingKeyRingRing
+    ReceivingKeyRing,
+    SendingKeyRing
 };
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers Builder
  * @covers Parser
- * @covers ReceivingKeyRingRing
- * @covers SendingKeyRingRing
+ * @covers ReceivingKeyRing
+ * @covers SendingKeyRing
  */
 class MultiKeyTest extends TestCase
 {
@@ -43,16 +43,16 @@ class MultiKeyTest extends TestCase
     protected function getReceivingKeyring(ProtocolInterface $v): array
     {
         $sk = AsymmetricSecretKey::generate($v);
-        $rKeyring = (new ReceivingKeyRingRing())
+        $rKeyring = (new ReceivingKeyRing())
             ->setVersion($v)
             ->addKey('gandalf0', SymmetricKey::generate($v))
             ->addKey('legolas1', $sk->getPublicKey());
         return [$sk, $rKeyring];
     }
 
-    protected function getSendingKeyring(ProtocolInterface $v): SendingKeyRingRing
+    protected function getSendingKeyring(ProtocolInterface $v): SendingKeyRing
     {
-        return (new SendingKeyRingRing())
+        return (new SendingKeyRing())
             ->setVersion($v)
             ->addKey('gandalf0', SymmetricKey::generate($v))
             ->addKey('legolas1', AsymmetricSecretKey::generate($v));
@@ -77,7 +77,7 @@ class MultiKeyTest extends TestCase
     {
         /**
          * @var AsymmetricSecretKey $sk
-         * @var ReceivingKeyRingRing $keyring
+         * @var ReceivingKeyRing $keyring
          */
         list($sk, $keyring) = $this->getReceivingKeyring($v);
 

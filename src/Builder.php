@@ -96,7 +96,7 @@ class Builder extends PasetoBase
      */
     public function fetchSecretKey(): AsymmetricSecretKey
     {
-        if ($this->key instanceof SendingKeyRingRing) {
+        if ($this->key instanceof SendingKeyRing) {
             $footer = $this->token->getFooterArray();
             $index = (string) static::KEY_ID_FOOTER_CLAIM;
             $keyId = (string) ($footer[$index] ?? '');
@@ -125,7 +125,7 @@ class Builder extends PasetoBase
      */
     public function fetchSymmetricKey(): SymmetricKey
     {
-        if ($this->key instanceof SendingKeyRingRing) {
+        if ($this->key instanceof SendingKeyRing) {
             $footer = $this->token->getFooterArray();
             $index = (string) static::KEY_ID_FOOTER_CLAIM;
             $keyId = (string) ($footer[$index] ?? '');
@@ -210,7 +210,7 @@ class Builder extends PasetoBase
      * Get a Builder instance configured for local usage.
      * (i.e. shared-key authenticated encryption)
      *
-     * @param SendingKeyRingRing $key
+     * @param SendingKeyRing $key
      * @param ProtocolInterface|null $version
      * @param JsonToken|null $baseToken
      * @return self
@@ -218,9 +218,9 @@ class Builder extends PasetoBase
      * @throws PasetoException
      */
     public static function getLocalWithKeyRing(
-        SendingKeyRingRing $key,
-        ProtocolInterface  $version = null,
-        JsonToken          $baseToken = null
+        SendingKeyRing    $key,
+        ProtocolInterface $version = null,
+        JsonToken         $baseToken = null
     ): self {
         if (!$version) {
             $version = $key->getProtocol();
@@ -262,7 +262,7 @@ class Builder extends PasetoBase
      * Get a Builder instance configured for remote usage.
      * (i.e. public-key digital signatures)
      *
-     * @param SendingKeyRingRing $key
+     * @param SendingKeyRing $key
      * @param ProtocolInterface|null $version
      * @param JsonToken|null $baseToken
      * @return self
@@ -270,9 +270,9 @@ class Builder extends PasetoBase
      * @throws PasetoException
      */
     public static function getPublicWithKeyRing(
-        SendingKeyRingRing $key,
-        ProtocolInterface  $version = null,
-        JsonToken          $baseToken = null
+        SendingKeyRing    $key,
+        ProtocolInterface $version = null,
+        JsonToken         $baseToken = null
     ): self {
         if (!$version) {
             $version = $key->getProtocol();
@@ -478,7 +478,7 @@ class Builder extends PasetoBase
      */
     public function setKey(SendingKey $key, bool $checkPurpose = false): self
     {
-        if ($key instanceof SendingKeyRingRing) {
+        if ($key instanceof SendingKeyRing) {
             /** We'll need to do more checks at build time {@link toString()} */
             $this->key = $key;
             return $this;
@@ -537,7 +537,7 @@ class Builder extends PasetoBase
      */
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
-        if ($this->key instanceof SendingKeyRingRing) {
+        if ($this->key instanceof SendingKeyRing) {
             /** We'll need to do more checks at build time {@link toString()} */
             $this->cached = '';
             $this->purpose = $purpose;
