@@ -37,6 +37,7 @@ abstract class ExceptionCode
     const IMPOSSIBLE_CONDITION             = 0x3142EE1B;
     const INVOKED_RAW_ON_MULTIKEY          = 0x3142EE1C;
     const KEY_NOT_IN_KEYRING               = 0x3142EE1D;
+    const UNDEFINED_PROPERTY               = 0x3142EE1E;
 
     /**
      * @param int $code
@@ -89,6 +90,8 @@ abstract class ExceptionCode
                     "and pass that instead.";
             case self::KEY_NOT_IN_KEYRING:
                 return "The key you requested is not in this keyring.";
+            case self::UNDEFINED_PROPERTY:
+                return "An expected property was not defined at runtime.";
 
             default:
                 return 'Unknown error code';

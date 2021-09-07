@@ -8,24 +8,46 @@ use ParagonIE\Paseto\Exception\NotFoundException;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\KeyInterface;
 use ParagonIE\Paseto\ProtocolInterface;
+use ParagonIE\Paseto\Purpose;
+use ParagonIE\Paseto\ReceivingKey;
+use ParagonIE\Paseto\SendingKey;
+use TypeError;
+use function is_null;
 
 /**
  * @var array<string, KeyInterface> $keys
  */
 trait MultiKeyTrait
 {
-    /** @var ProtocolInterface $version */
+    /** @var ?Purpose $purpose */
+    protected $purpose = null;
+
+    /** @var ?ProtocolInterface $version */
     protected $version = null;
 
     /**
-     * The intended version for this protocol. Currently only meaningful
-     * in asymmetric cryptography.
+     * The intended version for this key.
      *
      * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
     {
+        if (is_null($this->version)) {
+            throw new TypeError(
+                "Version must not be NULL.",
+                ExceptionCode::UNDEFINED_PROPERTY
+            );
+        }
         return $this->version;
+    }
+
+    /**
+     * The intended purpose for this key.
+     * @return ?Purpose
+     */
+    public function getPurpose(): ?Purpose
+    {
+        return $this->purpose;
     }
 
     /**
@@ -46,11 +68,44 @@ trait MultiKeyTrait
                 ExceptionCode::IMPOSSIBLE_CONDITION
             );
         }
+
         if (!$key instanceof $type) {
             throw new InvalidKeyException(
                 "The provided key is the wrong type",
                 ExceptionCode::PASETO_KEY_TYPE_ERROR
             );
+        }
+
+        if (!is_null($this->version)) {
+            if (!($key->getProtocol() instanceof $this->version)) {
+                throw new InvalidKeyException(
+                    "The provided key is for the wrong version",
+                    ExceptionCode::WRONG_KEY_FOR_VERSION
+                );
+            }
+        }
+
+        if (!is_null($this->purpose)) {
+            $valid = false;
+            try {
+                if ($key instanceof ReceivingKey) {
+                    $valid = $this->purpose->isReceivingKeyValid($key);
+                } elseif ($key instanceof SendingKey) {
+                    $valid = $this->purpose->isSendingKeyValid($key);
+                }
+            } catch (TypeError $ex) {
+                throw new InvalidKeyException(
+                    "The provided key is not appropriate for the expected purpose.",
+                    ExceptionCode::PURPOSE_WRONG_FOR_KEY,
+                    $ex
+                );
+            }
+            if (!$valid) {
+                throw new InvalidKeyException(
+                    "The provided key is not appropriate for the expected purpose.",
+                    ExceptionCode::PURPOSE_WRONG_FOR_KEY
+                );
+            }
         }
     }
 
@@ -89,6 +144,16 @@ trait MultiKeyTrait
             "Do not invoke raw() on a MultiKey; fetch the specific key instead.",
             ExceptionCode::INVOKED_RAW_ON_MULTIKEY
         );
+    }
+
+    /**
+     * @param Purpose $purpose
+     * @return static
+     */
+    public function setPurpose(Purpose $purpose): self
+    {
+        $this->purpose = $purpose;
+        return $this;
     }
 
     /**

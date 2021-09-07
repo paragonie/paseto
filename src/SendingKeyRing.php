@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use Exception;
 use ParagonIE\Paseto\Exception\InvalidKeyException;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
@@ -16,7 +17,6 @@ class SendingKeyRing implements KeyRingInterface, SendingKey
 
     /** @var array<string, SendingKey> */
     protected $keys = [];
-
 
     /**
      * Add a key to this KeyID.
@@ -43,6 +43,7 @@ class SendingKeyRing implements KeyRingInterface, SendingKey
      *
      * @throws InvalidKeyException
      * @throws PasetoException
+     * @throws Exception
      */
     public function deriveReceivingKeyRing(): ReceivingKeyRing
     {

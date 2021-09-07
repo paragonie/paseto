@@ -14,15 +14,17 @@ use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
 };
-use ParagonIE\Paseto\{
-    Builder,
-    Parser,
+use ParagonIE\Paseto\{Builder,
     JsonToken,
+    Parser,
     ProtocolInterface,
+    Purpose,
+    ReceivingKey,
     ReceivingKeyRing,
-    SendingKeyRing
-};
+    SendingKey,
+    SendingKeyRing};
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 /**
  * @covers Builder
@@ -222,5 +224,271 @@ class MultiKeyTest extends TestCase
         $this->assertInstanceOf(JsonToken::class, $parsePublic);
         $this->assertSame('foo', $parseLocal->getSubject());
         $this->assertSame('foo', $parsePublic->getSubject());
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function typeCheckData()
+    {
+        $v3_lk = Version3::generateSymmetricKey();
+        $v3_sk = Version3::generateAsymmetricSecretKey();
+        $v3_pk = $v3_sk->getPublicKey();
+        $v4_lk = Version4::generateSymmetricKey();
+        $v4_sk = Version4::generateAsymmetricSecretKey();
+        $v4_pk = $v4_sk->getPublicKey();
+
+        return [
+            // Receiving keys, version 3
+            [
+                (new ReceivingKeyRing())->setVersion(new Version3()),
+                $v3_lk,
+                false
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version3()),
+                $v3_sk,
+                true
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version3()),
+                $v3_pk,
+                false
+            ],
+
+            // Receiving keys, version 4
+            [
+                (new ReceivingKeyRing())->setVersion(new Version4()),
+                $v4_lk,
+                false
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version4()),
+                $v4_sk,
+                true
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version4()),
+                $v4_pk,
+                false
+            ],
+
+            // Sending keys, version 3
+            [
+                (new SendingKeyRing())->setVersion(new Version3()),
+                $v3_lk,
+                false
+            ], [
+                (new SendingKeyRing())->setVersion(new Version3()),
+                $v3_sk,
+                false
+            ], [
+                (new SendingKeyRing())->setVersion(new Version3()),
+                $v3_pk,
+                true
+            ],
+            // Sending keys, version 4
+            [
+                (new SendingKeyRing())->setVersion(new Version4()),
+                $v4_lk,
+                false
+            ], [
+                (new SendingKeyRing())->setVersion(new Version4()),
+                $v4_sk,
+                false
+            ], [
+                (new SendingKeyRing())->setVersion(new Version4()),
+                $v4_pk,
+                true
+            ],
+
+            // Type confusion: Receiving, version 4, with v3 key
+            [
+                (new ReceivingKeyRing())->setVersion(new Version4()),
+                $v3_lk,
+                true
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version4()),
+                $v3_sk,
+                true
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version4()),
+                $v3_pk,
+                true
+            ],
+            // Type confusion: Receiving, version 3, with v4 key
+            [
+                (new ReceivingKeyRing())->setVersion(new Version3()),
+                $v4_lk,
+                true
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version3()),
+                $v4_sk,
+                true
+            ], [
+                (new ReceivingKeyRing())->setVersion(new Version3()),
+                $v4_pk,
+                true
+            ],
+
+            // Type confusion: Sending, version 4, with v3 key
+            [
+                (new SendingKeyRing())->setVersion(new Version4()),
+                $v3_lk,
+                true
+            ], [
+                (new SendingKeyRing())->setVersion(new Version4()),
+                $v3_sk,
+                true
+            ], [
+                (new SendingKeyRing())->setVersion(new Version4()),
+                $v3_pk,
+                true
+            ],
+
+            // Type confusion: Sending, version 3, with v4 key
+            [
+                (new SendingKeyRing())->setVersion(new Version3()),
+                $v4_lk,
+                true
+            ], [
+                (new SendingKeyRing())->setVersion(new Version3()),
+                $v4_sk,
+                true
+            ], [
+                (new SendingKeyRing())->setVersion(new Version3()),
+                $v4_pk,
+                true
+            ],
+
+            // Version 3 -- purpose checks -- receiving
+            [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version3()),
+                $v3_lk,
+                false
+            ], [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version3()),
+                $v3_pk,
+                true
+            ], [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version3()),
+                $v3_lk,
+                true
+            ], [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version3()),
+                $v3_pk,
+                false
+            ],
+
+            // Version 4 -- purpose checks -- receiving
+            [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version4()),
+                $v4_lk,
+                false
+            ], [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version4()),
+                $v4_pk,
+                true
+            ], [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version4()),
+                $v4_lk,
+                true
+            ], [
+                (new ReceivingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version4()),
+                $v4_pk,
+                false
+            ],
+
+            // Version 3 -- purpose checks -- sending
+            [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version3()),
+                $v3_lk,
+                false
+            ], [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version3()),
+                $v3_sk,
+                true
+            ], [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version3()),
+                $v3_lk,
+                true
+            ], [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version3()),
+                $v3_sk,
+                false
+            ],
+
+            // Version 4 -- purpose checks -- sending
+            [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version4()),
+                $v4_lk,
+                false
+            ], [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::local())
+                    ->setVersion(new Version4()),
+                $v4_sk,
+                true
+            ], [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version4()),
+                $v4_lk,
+                true
+            ], [
+                (new SendingKeyRing())
+                    ->setPurpose(Purpose::public())
+                    ->setVersion(new Version4()),
+                $v4_sk,
+                false
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider typeCheckData
+     *
+     * @param SendingKeyRing|ReceivingKeyRing $keyring
+     * @param SendingKey|ReceivingKey $key
+     * @param bool $expectFail
+     *
+     * @psalm-suppress PossiblyInvalidArgument
+     * @throws PasetoException
+     */
+    public function testTypeChecks($keyring, $key, bool $expectFail): void
+    {
+        if ($expectFail) {
+            $this->expectException(PasetoException::class);
+        }
+        try {
+            $keyring->addKey('foo', $key);
+            $received = $keyring->fetchKey('foo');
+            $this->assertInstanceOf(get_class($key), $received);
+        } catch (TypeError $ex) {
+            throw new PasetoException('TypeError', 0, $ex);
+        }
     }
 }

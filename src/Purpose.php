@@ -228,11 +228,6 @@ final class Purpose
      */
     public function isSendingKeyValid(SendingKey $key): bool
     {
-        /*
-        if ($key instanceof SendingKeyRing) {
-            return true;
-        }
-        */
         $expectedKeyType = $this->expectedSendingKeyType();
         return $key instanceof $expectedKeyType;
     }
@@ -246,11 +241,6 @@ final class Purpose
      */
     public function isReceivingKeyValid(ReceivingKey $key): bool
     {
-        /*
-        if ($key instanceof ReceivingKeyRing) {
-            return true;
-        }
-        */
         $expectedKeyType = $this->expectedReceivingKeyType();
         return $key instanceof $expectedKeyType;
     }
