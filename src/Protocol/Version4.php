@@ -156,15 +156,21 @@ class Version4 implements ProtocolInterface
         string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
+        /*
+         * PASETO Version 4 - Encrypt - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v4 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version4)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        return self::aeadEncrypt(
+        return static::aeadEncrypt(
             $data,
-            self::HEADER . '.local.', // PASETO Version 4 - Encrypt - Step 1
+            static::header() . '.local.', // PASETO Version 4 - Encrypt - Step 2
             $key,
             $footer,
             $implicit,
@@ -191,22 +197,28 @@ class Version4 implements ProtocolInterface
         string $footer = null,
         string $implicit = ''
     ): string {
+        /*
+         * PASETO Version 4 - Decrypt - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v4 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version4)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        // PASETO Version 4 - Decrypt - Step 1:
+        // PASETO Version 4 - Decrypt - Step 2:
         if (is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
         } else {
             $data = Util::validateAndRemoveFooter($data, $footer);
         }
-        return self::aeadDecrypt(
+        return static::aeadDecrypt(
             $data,
-            self::HEADER . '.local.', // PASETO Version 4 - Decrypt - Step 2
+            static::header() . '.local.', // PASETO Version 4 - Decrypt - Step 3
             $key,
             $footer,
             $implicit
@@ -234,22 +246,28 @@ class Version4 implements ProtocolInterface
         string $footer = '',
         string $implicit = ''
     ): string {
+        /*
+         * PASETO Version 4 - Sign - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v4 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version4)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        // PASETO Version 4 - Sign - Step 1:
-        $header = self::HEADER . '.public.';
+        // PASETO Version 4 - Sign - Step 2:
+        $header = static::header() . '.public.';
 
-        // PASETO Version 3 - Sign - Step 2 & 3:
+        // PASETO Version 4 - Sign - Step 3 & 4:
         $signature = sodium_crypto_sign_detached(
             Util::preAuthEncode($header, $data, $footer, $implicit),
             $key->raw()
         );
 
-        // PASETO Version 4 - Sign - Step 4:
+        // PASETO Version 4 - Sign - Step 5:
         return (new PasetoMessage(
             Header::fromString($header),
             $data . $signature,
@@ -276,27 +294,39 @@ class Version4 implements ProtocolInterface
         string $footer = null,
         string $implicit = ''
     ): string {
+        /*
+         * PASETO Version 4 - Verify - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v4 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version4)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
+
+        // PASETO Version 4 - Verify - Step 2:
         if (is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
         } else {
             $signMsg = Util::validateAndRemoveFooter($signMsg, $footer);
         }
         $signMsg = Util::removeFooter($signMsg);
-        $expectHeader = self::HEADER . '.public.';
-        $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
+        $expectHeader = static::header() . '.public.';
+        $headerLength = Binary::safeStrlen($expectHeader);
+        $givenHeader = Binary::safeSubstr($signMsg, 0, $headerLength);
+        // PASETO Version 4 - Verify - Step 3:
         if (!hash_equals($expectHeader, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
                 ExceptionCode::INVALID_HEADER
             );
         }
-        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
+
+        // PASETO Version 4 - Verify - Step 4:
+        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, $headerLength));
         $len = Binary::safeStrlen($decoded);
 
         // Separate the decoded bundle into the message and signature.
@@ -310,11 +340,14 @@ class Version4 implements ProtocolInterface
             $len - SODIUM_CRYPTO_SIGN_BYTES
         );
 
+        // PASETO Version 4 - Verify - Step 5 & 6:
         $valid = sodium_crypto_sign_verify_detached(
             $signature,
             Util::preAuthEncode($givenHeader, $message, $footer, $implicit),
             $key->raw()
         );
+
+        // PASETO Version 4 - Verify - Step 7:
         if (!$valid) {
             throw new PasetoException(
                 'Invalid signature for this message',
@@ -323,7 +356,6 @@ class Version4 implements ProtocolInterface
         }
         return $message;
     }
-
 
     /**
      * Authenticated Encryption with Associated Data -- Encryption
@@ -350,17 +382,17 @@ class Version4 implements ProtocolInterface
         string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
-        // PASETO Version 4 - Encrypt - Step 2:
+        // PASETO Version 4 - Encrypt - Step 3:
         if ($nonceForUnitTesting) {
             $nonce = $nonceForUnitTesting;
         } else {
             $nonce = random_bytes(self::NONCE_SIZE);
         }
-        // PASETO Version 4 - Encrypt - Step 3:
+        // PASETO Version 4 - Encrypt - Step 4:
         list($encKey, $authKey, $nonce2) = $key->splitV4($nonce);
 
         /** @var string|bool $ciphertext */
-        // PASETO Version 4 - Encrypt - Step 4:
+        // PASETO Version 4 - Encrypt - Step 5:
         $ciphertext = sodium_crypto_stream_xchacha20_xor(
             $plaintext,
             $nonce2,
@@ -372,7 +404,7 @@ class Version4 implements ProtocolInterface
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
             );
         }
-        // PASETO Version 4 - Encrypt - Step 5 & 6:
+        // PASETO Version 4 - Encrypt - Step 6 & 7:
         $mac = sodium_crypto_generichash(
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey
@@ -380,7 +412,7 @@ class Version4 implements ProtocolInterface
         Util::wipe($encKey);
         Util::wipe($authKey);
 
-        // PASETO Version 4 - Encrypt - Step 7:
+        // PASETO Version 4 - Encrypt - Step 8:
         return (new PasetoMessage(
             Header::fromString($header),
             $nonce . $ciphertext . $mac,
@@ -412,7 +444,7 @@ class Version4 implements ProtocolInterface
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
 
-        // PASETO Version 4 - Decrypt - Step 2:
+        // PASETO Version 4 - Decrypt - Step 3:
         if (!hash_equals($header, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
@@ -420,7 +452,7 @@ class Version4 implements ProtocolInterface
             );
         }
 
-        // PASETO Version 4 - Decrypt - Step 3:
+        // PASETO Version 4 - Decrypt - Step 4:
         try {
             $decoded = Base64UrlSafe::decode(
                 Binary::safeSubstr($message, $expectedLen)
@@ -441,15 +473,15 @@ class Version4 implements ProtocolInterface
         );
         $mac = Binary::safeSubstr($decoded, $len - self::MAC_SIZE);
 
-        // PASETO Version 4 - Decrypt - Step 4:
+        // PASETO Version 4 - Decrypt - Step 5:
         list($encKey, $authKey, $nonce2) = $key->splitV4($nonce);
 
-        // PASETO Version 4 - Decrypt - Step 5 & 6:
+        // PASETO Version 4 - Decrypt - Step 6 & 7:
         $calc = sodium_crypto_generichash(
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey
         );
-        // PASETO Version 4 - Decrypt - Step 7:
+        // PASETO Version 4 - Decrypt - Step 8:
         if (!hash_equals($calc, $mac)) {
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
@@ -457,7 +489,7 @@ class Version4 implements ProtocolInterface
             );
         }
 
-        // PASETO Version 4 - Decrypt - Step 8:
+        // PASETO Version 4 - Decrypt - Step 9:
         /** @var string|bool $plaintext */
         $plaintext = sodium_crypto_stream_xchacha20_xor(
             $ciphertext,

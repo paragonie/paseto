@@ -171,15 +171,21 @@ class Version3 implements ProtocolInterface
         string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
+        /*
+         * PASETO Version 3 - Encrypt - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v3 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version3)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        return self::aeadEncrypt(
+        return static::aeadEncrypt(
             $data,
-            self::HEADER . '.local.', // PASETO Version 3 - Encrypt - Step 1
+            static::header() . '.local.', // PASETO Version 3 - Encrypt - Step 2
             $key,
             $footer,
             $implicit,
@@ -206,13 +212,19 @@ class Version3 implements ProtocolInterface
         string $footer = null,
         string $implicit = ''
     ): string {
+        /*
+         * PASETO Version 3 - Decrypt - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v3 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version3)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
-        // PASETO Version 3 - Decrypt - Step 1:
+        // PASETO Version 3 - Decrypt - Step 2:
         if (is_null($footer)) {
             $footer = Util::extractFooter($data);
             $data = Util::removeFooter($data);
@@ -221,7 +233,7 @@ class Version3 implements ProtocolInterface
         }
         return self::aeadDecrypt(
             $data,
-            self::HEADER . '.local.',
+            static::header() . '.local.',
             $key,
             $footer,
             $implicit
@@ -250,6 +262,12 @@ class Version3 implements ProtocolInterface
         string $footer = '',
         string $implicit = ''
     ): string {
+        /*
+         * PASETO Version 3 - Sign - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v3 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version3)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
@@ -257,7 +275,7 @@ class Version3 implements ProtocolInterface
             );
         }
         // PASETO Version 3 - Sign - Step 1:
-        $header = self::HEADER . '.public.';
+        $header = self::header() . '.public.';
         $easyEcc = new EasyECC(self::CURVE);
         // PASETO Version 3 - Sign - Step 2 & 3:
         $pk = Hex::decode($key->getPublicKey()->toHexString());
@@ -307,13 +325,19 @@ class Version3 implements ProtocolInterface
         string $footer = null,
         string $implicit = ''
     ): string {
-        // PASETO Version 3 - Verify - Step 1:
+        /*
+         * PASETO Version 3 - Verify - Step 1
+         *
+         * We already have a type-safety check on local/public. The following check
+         * constrains the key to v3 tokens only.
+         */
         if (!($key->getProtocol() instanceof Version3)) {
             throw new InvalidVersionException(
                 'The given key is not intended for this version of PASETO.',
                 ExceptionCode::WRONG_KEY_FOR_VERSION
             );
         }
+        // PASETO Version 3 - Verify - Step 2:
         if (is_null($footer)) {
             $footer = Util::extractFooter($signMsg);
         } else {
@@ -321,9 +345,10 @@ class Version3 implements ProtocolInterface
         }
         $signMsg = Util::removeFooter($signMsg);
 
-        // PASETO Version 3 - Verify - Step 2:
-        $expectHeader = self::HEADER . '.public.';
-        $givenHeader = Binary::safeSubstr($signMsg, 0, 10);
+        // PASETO Version 3 - Verify - Step 3:
+        $expectHeader = static::header() . '.public.';
+        $headerLength = Binary::safeStrlen($expectHeader);
+        $givenHeader = Binary::safeSubstr($signMsg, 0, $headerLength);
         if (!hash_equals($expectHeader, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
@@ -331,15 +356,15 @@ class Version3 implements ProtocolInterface
             );
         }
 
-        // PASETO Version 3 - Verify - Step 3:
-        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, 10));
+        // PASETO Version 3 - Verify - Step 4:
+        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, $headerLength));
         $len = Binary::safeStrlen($decoded);
         $message = Binary::safeSubstr($decoded, 0, $len - self::SIGN_SIZE);
         $signature = Binary::safeSubstr($decoded, $len - self::SIGN_SIZE);
 
         $easyEcc = new EasyECC(self::CURVE);
 
-        // PASETO Version 3 - Verify - Step 4 & 5:
+        // PASETO Version 3 - Verify - Step 5 & 6:
         $pk = Hex::decode($key->toHexString());
         if (Binary::safeStrlen($pk) !== 49) {
             throw new PasetoException(
@@ -354,7 +379,7 @@ class Version3 implements ProtocolInterface
             true
         );
 
-        // PASETO Version 3 - Verify - Step 6:
+        // PASETO Version 3 - Verify - Step 7:
         if (!$valid) {
             throw new PasetoException(
                 'Invalid signature for this message',
@@ -390,17 +415,17 @@ class Version3 implements ProtocolInterface
         string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
-        // PASETO Version 3 - Encrypt - Step 2:
+        // PASETO Version 3 - Encrypt - Step 3:
         if ($nonceForUnitTesting) {
             $nonce = $nonceForUnitTesting;
         } else {
             $nonce = random_bytes(self::NONCE_SIZE);
         }
-        // PASETO Version 3 - Encrypt - Step 3:
+        // PASETO Version 3 - Encrypt - Step 4:
         list($encKey, $authKey, $nonce2) = $key->splitV3($nonce);
 
         /** @var string|bool $ciphertext */
-        // PASETO Version 3 - Encrypt - Step 4:
+        // PASETO Version 3 - Encrypt - Step 5:
         $ciphertext = openssl_encrypt(
             $plaintext,
             self::CIPHER_MODE,
@@ -415,7 +440,7 @@ class Version3 implements ProtocolInterface
                 ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
             );
         }
-        // PASETO Version 3 - Encrypt - Step 5 & 6:
+        // PASETO Version 3 - Encrypt - Step 6 & 7:
         $mac = hash_hmac(
             self::HASH_ALGO,
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
@@ -424,7 +449,7 @@ class Version3 implements ProtocolInterface
         );
         Util::wipe($authKey);
 
-        // PASETO Version 3 - Encrypt - Step 7:
+        // PASETO Version 3 - Encrypt - Step 8:
         return (new PasetoMessage(
             Header::fromString($header),
             $nonce . $ciphertext . $mac,
@@ -456,7 +481,7 @@ class Version3 implements ProtocolInterface
         $expectedLen = Binary::safeStrlen($header);
         $givenHeader = Binary::safeSubstr($message, 0, $expectedLen);
 
-        // PASETO Version 3 - Decrypt - Step 2:
+        // PASETO Version 3 - Decrypt - Step 3:
         if (!hash_equals($header, $givenHeader)) {
             throw new PasetoException(
                 'Invalid message header.',
@@ -464,7 +489,7 @@ class Version3 implements ProtocolInterface
             );
         }
 
-        // PASETO Version 3 - Decrypt - Step 3:
+        // PASETO Version 3 - Decrypt - Step 4:
         try {
             $decoded = Base64UrlSafe::decode(
                 Binary::safeSubstr($message, $expectedLen)
@@ -485,10 +510,10 @@ class Version3 implements ProtocolInterface
         );
         $mac = Binary::safeSubstr($decoded, $len - self::MAC_SIZE);
 
-        // PASETO Version 3 - Decrypt - Step 4:
+        // PASETO Version 3 - Decrypt - Step 5:
         list($encKey, $authKey, $nonce2) = $key->splitV3($nonce);
 
-        // PASETO Version 3 - Decrypt - Step 5 & 6:
+        // PASETO Version 3 - Decrypt - Step 6 & 7:
         $calc = hash_hmac(
             self::HASH_ALGO,
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
@@ -497,7 +522,7 @@ class Version3 implements ProtocolInterface
         );
         Util::wipe($authKey);
 
-        // PASETO Version 3 - Decrypt - Step 7:
+        // PASETO Version 3 - Decrypt - Step 8:
         if (!hash_equals($calc, $mac)) {
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
@@ -505,7 +530,7 @@ class Version3 implements ProtocolInterface
             );
         }
 
-        // PASETO Version 3 - Decrypt - Step 8:
+        // PASETO Version 3 - Decrypt - Step 9:
         /** @var string|bool $plaintext */
         $plaintext = openssl_decrypt(
             $ciphertext,
