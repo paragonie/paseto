@@ -50,6 +50,8 @@ use function define,
 /**
  * Class Version1
  * @package ParagonIE\Paseto\Protocol
+ *
+ * @deprecated See Version3 instead.
  */
 class Version1 implements ProtocolInterface
 {

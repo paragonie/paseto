@@ -45,6 +45,8 @@ use function hash_equals,
 /**
  * Class Version1
  * @package ParagonIE\Paseto\Protocol
+ *
+ * @deprecated See Version4 instead.
  */
 class Version2 implements ProtocolInterface
 {

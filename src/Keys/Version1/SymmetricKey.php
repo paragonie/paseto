@@ -9,6 +9,8 @@ use ParagonIE\Paseto\ProtocolInterface;
 /**
  * Class SymmetricKey
  * @package ParagonIE\Paseto\Keys\Version1
+ *
+ * @deprecated See Version3 instead.
  */
 class SymmetricKey extends BaseSymmetricKey
 {
