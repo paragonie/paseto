@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Exception\InvalidVersionException;
 use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Keys\AsymmetricPublicKey as BasePK;
 use ParagonIE\Paseto\Keys\Version3\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version3\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version3\SymmetricKey;
@@ -30,6 +31,10 @@ class Version3Test extends TestCase
         $this->assertInstanceOf('ParagonIE\Paseto\Keys\AsymmetricSecretKey', $secret);
         $this->assertSame(Version3::getSymmetricKeyByteLength(), Binary::safeStrlen($symmetric->raw()));
         $this->assertGreaterThanOrEqual(48, Binary::safeStrlen($secret->raw())); // PEM encoded
+
+        $asymmetric2 = new AsymmetricSecretKey("\x7f" . random_bytes(47), new Version3);
+        $pk = $asymmetric2->getPublicKey();
+        $this->assertInstanceOf(BasePK::class, $pk);
     }
 
     public function testPublicKeyEncode()
