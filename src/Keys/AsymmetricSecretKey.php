@@ -230,12 +230,15 @@ class AsymmetricSecretKey implements SendingKey
             case Version3::HEADER:
                 /** @var PublicKey $pk */
                 if (Binary::safeStrlen($this->key) === 48) {
-                    $pk = (new SecretKey(
-                        new GmpMath(),
-                        EccFactory::getNistCurves()->generator384(),
-                        gmp_init(Hex::encode($this->key), 16)
-                    ))->getPublicKey();
+                    $pk = PublicKey::promote(
+                        (new SecretKey(
+                            new GmpMath(),
+                            EccFactory::getNistCurves()->generator384(),
+                            gmp_init(Hex::encode($this->key), 16)
+                        ))->getPublicKey()
+                    );
                 } else {
+                    /** @var PublicKey $pk */
                     $pk = SecretKey::importPem($this->key)->getPublicKey();
                 }
                 return new AsymmetricPublicKey(
