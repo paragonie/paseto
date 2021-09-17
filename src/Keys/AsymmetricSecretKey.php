@@ -2,7 +2,11 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\{Base64UrlSafe, Binary, Hex};
+use ParagonIE\ConstantTime\{
+    Base64UrlSafe,
+    Binary,
+    Hex
+};
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\PasetoException,
@@ -10,9 +14,12 @@ use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
-use ParagonIE\EasyECC\ECDSA\{ConstantTimeMath, PublicKey, SecretKey};
+use ParagonIE\EasyECC\ECDSA\{
+    ConstantTimeMath,
+    PublicKey,
+    SecretKey
+};
 use Mdanter\Ecc\EccFactory;
-use Mdanter\Ecc\Math\GmpMath;
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2,
@@ -232,7 +239,7 @@ class AsymmetricSecretKey implements SendingKey
                 if (Binary::safeStrlen($this->key) === 48) {
                     $pk = PublicKey::promote(
                         (new SecretKey(
-                            new GmpMath(),
+                            new ConstantTimeMath(),
                             EccFactory::getNistCurves()->generator384(),
                             gmp_init(Hex::encode($this->key), 16)
                         ))->getPublicKey()
