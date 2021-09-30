@@ -15,6 +15,14 @@ use ParagonIE\Paseto\Keys\{
 interface ImplicitProtocolInterface extends ProtocolInterface
 {
     /**
+     * Does this protocol support implicit assertions?
+     *
+     * @return bool
+     * @psalm-return true
+     */
+    public static function supportsImplicitAssertions(): bool;
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data

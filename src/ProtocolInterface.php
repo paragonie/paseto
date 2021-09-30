@@ -28,6 +28,13 @@ interface ProtocolInterface
     public static function header(): string;
 
     /**
+     * Does this protocol support implicit assertions?
+     *
+     * @return bool
+     */
+    public static function supportsImplicitAssertions(): bool;
+
+    /**
      * @return AsymmetricSecretKey
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey;

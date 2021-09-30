@@ -106,6 +106,18 @@ class Version4 implements ImplicitProtocolInterface
     }
 
     /**
+     * Does this protocol support implicit assertions?
+     * Yes.
+     *
+     * @return bool
+     * @psalm-return true
+     */
+    public static function supportsImplicitAssertions(): bool
+    {
+        return true;
+    }
+
+    /**
      * Encrypt a message using a shared key.
      *
      * @param string $data
