@@ -118,12 +118,12 @@ class KnownAnswerTest extends TestCase
             $this->assertFalse($test['expect-fail'], 'This test was expected to fail');
 
             // We should have the same plaintext payload:
-            $this->assertSame(json_encode($test['payload']), $decoded, $test['name']);
+            $this->assertSame($test['payload'], $decoded, $test['name']);
 
             // Next, assert that we get the same token (if local):
             if (isset($test['key'])) {
                 $encoded = $fixedEncrypt(
-                    json_encode($test['payload']),
+                    $test['payload'],
                     $this->cacheKey($protocol, $test['key']),
                     $test['footer'] ?? '',
                     $test['implicit-assertion'] ?? '',
