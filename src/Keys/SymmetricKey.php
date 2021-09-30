@@ -189,19 +189,19 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * Used in version 3
      *
-     * @param string|null $salt
+     * @param string $salt
      * @return array<int, string>
      *
      * @throws PasetoException
      * @throws TypeError
      */
-    public function splitV3(string $salt = null): array
+    public function splitV3(string $salt): array
     {
         $tmp = Util::HKDF(
             'sha384',
             $this->key,
             48,
-            self::INFO_ENCRYPTION . ($salt ?? '')
+            self::INFO_ENCRYPTION . $salt
         );
         $encKey = Binary::safeSubstr($tmp, 0, 32);
         $nonce = Binary::safeSubstr($tmp, 32, 16);
@@ -209,7 +209,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
             'sha384',
             $this->key,
             48,
-            self::INFO_AUTHENTICATION . ($salt ?? '')
+            self::INFO_AUTHENTICATION . $salt
         );
         return [$encKey, $authKey, $nonce];
     }
@@ -221,22 +221,22 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * Used in version 4
      *
-     * @param string|null $salt
+     * @param string $salt
      * @return array<int, string>
      *
      * @throws SodiumException
      */
-    public function splitV4(string $salt = null): array
+    public function splitV4(string $salt): array
     {
         $tmp = sodium_crypto_generichash(
-            self::INFO_ENCRYPTION . ($salt ?? ''),
+            self::INFO_ENCRYPTION . $salt,
             $this->key,
             56
         );
         $encKey = Binary::safeSubstr($tmp, 0, 32);
         $nonce = Binary::safeSubstr($tmp, 32, 24);
         $authKey = sodium_crypto_generichash(
-            self::INFO_AUTHENTICATION . ($salt ?? ''),
+            self::INFO_AUTHENTICATION . $salt,
             $this->key
         );
         return [$encKey, $authKey, $nonce];
@@ -248,13 +248,13 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * Used in versions 1 and 2
      *
-     * @param string|null $salt
+     * @param string $salt
      * @return array<int, string>
      *
      * @throws PasetoException
      * @throws TypeError
      */
-    public function split(string $salt = null): array
+    public function split(string $salt): array
     {
         $encKey = Util::HKDF(
             'sha384',
