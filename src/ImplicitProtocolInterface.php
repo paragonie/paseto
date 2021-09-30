@@ -12,48 +12,22 @@ use ParagonIE\Paseto\Keys\{
  * Interface ProtocolInterface
  * @package ParagonIE\Paseto
  */
-interface ProtocolInterface
+interface ImplicitProtocolInterface extends ProtocolInterface
 {
-    /**
-     * Must be constructable with no arguments so an instance may be passed
-     * around in a type safe way.
-     */
-    public function __construct();
-
-    /**
-     * A unique header string with which the protocol can be identified.
-     *
-     * @return string
-     */
-    public static function header(): string;
-
-    /**
-     * @return AsymmetricSecretKey
-     */
-    public static function generateAsymmetricSecretKey(): AsymmetricSecretKey;
-
-    /**
-     * @return SymmetricKey
-     */
-    public static function generateSymmetricKey(): SymmetricKey;
-
-    /**
-     * @return int
-     */
-    public static function getSymmetricKeyByteLength(): int;
-
     /**
      * Encrypt a message using a shared key.
      *
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
+     * @param string $implicit
      * @return string
      */
     public static function encrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string;
 
     /**
@@ -62,12 +36,14 @@ interface ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string|null $footer
+     * @param string $implicit
      * @return string
      */
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string;
 
     /**
@@ -76,12 +52,14 @@ interface ProtocolInterface
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
+     * @param string $implicit
      * @return string
      */
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
-        string $footer = ''
+        string $footer = '',
+        string $implicit = ''
     ): string;
 
     /**
@@ -90,11 +68,13 @@ interface ProtocolInterface
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
      * @param string|null $footer
+     * @param string $implicit
      * @return string
      */
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = null
+        string $footer = null,
+        string $implicit = ''
     ): string;
 }

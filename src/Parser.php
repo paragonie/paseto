@@ -398,7 +398,7 @@ class Parser extends PasetoBase
 
         $implicit = '';
         if (!empty($this->implicitAssertions)) {
-            if (!$protocol::supportsImplicitAssertions()) {
+            if (!($protocol instanceof ImplicitProtocolInterface)) {
                 throw new PasetoException(
                     'This version does not support implicit assertions',
                     ExceptionCode::IMPLICIT_ASSERTION_NOT_SUPPORTED
@@ -416,7 +416,11 @@ class Parser extends PasetoBase
                 $key = $this->fetchSymmetricKey($keyId);
 
                 try {
-                    $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
+                    if ($protocol instanceof ImplicitProtocolInterface) {
+                        $decoded = $protocol::decrypt($tainted, $key, $footer, $implicit);
+                    } else {
+                        $decoded = $protocol::decrypt($tainted, $key, $footer);
+                    }
                 } catch (Throwable $ex) {
                     throw new PasetoException(
                         'An error occurred',
@@ -429,7 +433,11 @@ class Parser extends PasetoBase
                 // An asymmetric public key is, by type-safety, suitable for public tokens
                 $key = $this->fetchPublicKey($keyId);
                 try {
-                    $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
+                    if ($protocol instanceof ImplicitProtocolInterface) {
+                        $decoded = $protocol::verify($tainted, $key, $footer, $implicit);
+                    } else {
+                        $decoded = $protocol::verify($tainted, $key, $footer);
+                    }
                 } catch (Throwable $ex) {
                     throw new PasetoException(
                         'An error occurred',

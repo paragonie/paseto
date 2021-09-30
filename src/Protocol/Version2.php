@@ -69,17 +69,6 @@ class Version2 implements ProtocolInterface
     }
 
     /**
-     * Does this protocol support implicit assertions?
-     * No.
-     *
-     * @return bool
-     */
-    public static function supportsImplicitAssertions(): bool
-    {
-        return false;
-    }
-
-    /**
      * @return int
      */
     public static function getSymmetricKeyByteLength(): int
@@ -119,7 +108,6 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
-     * @param string $implicit (Unused)
      * @return string
      *
      * @throws PasetoException
@@ -129,8 +117,7 @@ class Version2 implements ProtocolInterface
     public static function encrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = '',
-        string $implicit = ''
+        string $footer = ''
     ): string {
         return self::__encrypt($data, $key, $footer);
     }
@@ -141,7 +128,6 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string $footer
-     * @param string $implicit (Unused)
      * @param string $nonceForUnitTesting
      * @return string
      *
@@ -153,7 +139,6 @@ class Version2 implements ProtocolInterface
         string $data,
         SymmetricKey $key,
         string $footer = '',
-        string $implicit = '',
         string $nonceForUnitTesting = ''
     ): string {
         /*
@@ -183,7 +168,6 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param SymmetricKey $key
      * @param string|null $footer
-     * @param string $implicit (Unused)
      * @return string
      *
      * @throws PasetoException
@@ -193,8 +177,7 @@ class Version2 implements ProtocolInterface
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = null,
-        string $implicit = ''
+        string $footer = null
     ): string {
         /*
          * PASETO Version 2 - Decrypt - Step 1
@@ -237,7 +220,6 @@ class Version2 implements ProtocolInterface
      * @param string $data
      * @param AsymmetricSecretKey $key
      * @param string $footer
-     * @param string $implicit (Unused)
      * @return string
      *
      * @throws PasetoException
@@ -247,8 +229,7 @@ class Version2 implements ProtocolInterface
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
-        string $footer = '',
-        string $implicit = ''
+        string $footer = ''
     ): string {
         /*
          * PASETO Version 2 - Sign - Step 1
@@ -286,7 +267,6 @@ class Version2 implements ProtocolInterface
      * @param string $signMsg
      * @param AsymmetricPublicKey $key
      * @param string|null $footer
-     * @param string $implicit (Unused)
      * @return string
      *
      * @throws PasetoException
@@ -296,8 +276,7 @@ class Version2 implements ProtocolInterface
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = null,
-        string $implicit = ''
+        string $footer = null
     ): string {
         /*
          * PASETO Version 2 - Verify - Step 1

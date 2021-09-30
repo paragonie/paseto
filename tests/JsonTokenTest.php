@@ -38,7 +38,7 @@ class JsonTokenTest extends TestCase
             ->set('data', 'this is a signed message')
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'));
 
-        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
+        NonceFixer::buildSetExplicitNonce(true)->bindTo($builder, $builder)($nonce);
 
         $this->assertSame(
             'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6hs4MANpkKEzSOVPaHQVrE_TyDA7Pe37zn1qQykJeCi6_WZVov-PkRU5F6ANACIZKUXgzN9gucaifEsf4TFPuDoiz_k0PwaUM222jY1TPwYUHvx50GN4veVKo-aFbctcZjqg6MA',
@@ -95,7 +95,7 @@ class JsonTokenTest extends TestCase
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
 
-        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
+        NonceFixer::buildSetExplicitNonce(true)->bindTo($builder, $builder)($nonce);
 
         $first = (string) $builder;
         $alt = $builder->with('data', 'this is a different message');
@@ -150,7 +150,7 @@ class JsonTokenTest extends TestCase
             ->setExpiration(new \DateTime('2039-01-01T00:00:00+00:00'))
             ->setFooterArray($footerArray);
 
-        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
+        NonceFixer::buildSetExplicitNonce(true)->bindTo($builder, $builder)($nonce);
 
         $this->assertSame(
             'v4.local.RXQsl21oT_hOvcDeWYCal82i9kyE_aGb6hs4MANpkKEzSOVPaHQVrE_TyDA7Pe37zn1qQykJeCi6_WZVov-PkRU5F6ANACIZKUXgzN9gucaifEsf4TFPuDoiz_k0AMr750FXTBgsZercGCHkWLxy62xRbZTIHlIGaxDekO4.eyJrZXktaWQiOiJnYW5kYWxmMCJ9',

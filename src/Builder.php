@@ -171,9 +171,18 @@ class Builder extends PasetoBase
      * Get the implicit assertions configured for this Builder.
      *
      * @return array
+     *
+     * @throws PasetoException
      */
     public function getImplicitAssertions(): array
     {
+        if (!($this->version instanceof ImplicitProtocolInterface)) {
+            throw new PasetoException(
+                'This version does not support implicit assertions',
+                ExceptionCode::IMPLICIT_ASSERTION_NOT_SUPPORTED
+            );
+        }
+
         if (empty($this->implicitAssertions)) {
             return [];
         }
@@ -344,6 +353,13 @@ class Builder extends PasetoBase
      */
     public function setImplicitAssertions(array $assertions): self
     {
+        if (!($this->version instanceof ImplicitProtocolInterface)) {
+            throw new PasetoException(
+                'This version does not support implicit assertions',
+                ExceptionCode::IMPLICIT_ASSERTION_NOT_SUPPORTED
+            );
+        }
+
         if (empty($assertions)) {
             $implicit = '';
         } else {
@@ -638,7 +654,7 @@ class Builder extends PasetoBase
 
         $implicit = '';
         if (!empty($this->implicitAssertions)) {
-            if (!$protocol::supportsImplicitAssertions()) {
+            if (!($protocol instanceof ImplicitProtocolInterface)) {
                 throw new PasetoException(
                     'This version does not support implicit assertions',
                     ExceptionCode::IMPLICIT_ASSERTION_NOT_SUPPORTED
@@ -649,33 +665,65 @@ class Builder extends PasetoBase
         switch ($this->purpose) {
             case Purpose::local():
                 $key = $this->fetchSymmetricKey();
-                /**
-                 * During unit tests, perform last-minute dependency
-                 * injection to swap $protocol for a conjured up version.
-                 * This new version can access a protected method on our
-                 * actual $protocol, giving unit tests the ability to
-                 * manually set a pre-decided nonce.
-                 */
-                if (isset($this->unitTestEncrypter)) {
-                    /** @var ProtocolInterface */
-                    $protocol = ($this->unitTestEncrypter)($protocol);
-                }
-                $this->cached = $protocol::encrypt(
-                    $claims,
-                    $key,
-                    $this->token->getFooter(),
-                    $implicit
-                );
-                return $this->cached;
-            case Purpose::public():
-                $key = $this->fetchSecretKey();
-                try {
-                    $this->cached = $protocol::sign(
+
+                if ($protocol instanceof ImplicitProtocolInterface) {
+                    /**
+                     * During unit tests, perform last-minute dependency
+                     * injection to swap $protocol for a conjured up version.
+                     * This new version can access a protected method on our
+                     * actual $protocol, giving unit tests the ability to
+                     * manually set a pre-decided nonce.
+                     */
+                    if (isset($this->unitTestEncrypter)) {
+                        /** @var ImplicitProtocolInterface */
+                        $protocol = ($this->unitTestEncrypter)($protocol);
+                    }
+
+                    $this->cached = $protocol::encrypt(
                         $claims,
                         $key,
                         $this->token->getFooter(),
                         $implicit
                     );
+                } else {
+                    /**
+                     * During unit tests, perform last-minute dependency
+                     * injection to swap $protocol for a conjured up version.
+                     * This new version can access a protected method on our
+                     * actual $protocol, giving unit tests the ability to
+                     * manually set a pre-decided nonce.
+                     */
+                    if (isset($this->unitTestEncrypter)) {
+                        /** @var ProtocolInterface */
+                        $protocol = ($this->unitTestEncrypter)($protocol);
+                    }
+
+                    $this->cached = $protocol::encrypt(
+                        $claims,
+                        $key,
+                        $this->token->getFooter()
+                    );
+                }
+
+                return $this->cached;
+            case Purpose::public():
+                $key = $this->fetchSecretKey();
+                try {
+                    if ($protocol instanceof ImplicitProtocolInterface) {
+                        $this->cached = $protocol::sign(
+                            $claims,
+                            $key,
+                            $this->token->getFooter(),
+                            $implicit
+                        );
+                    } else {
+                        $this->cached = $protocol::sign(
+                            $claims,
+                            $key,
+                            $this->token->getFooter()
+                        );
+                    }
+
                     return $this->cached;
                 } catch (Throwable $ex) {
                     throw new PasetoException(

@@ -22,7 +22,7 @@ use ParagonIE\Paseto\Exception\{
     SecurityException
 };
 use ParagonIE\Paseto\{
-    ProtocolInterface,
+    ImplicitProtocolInterface,
     Util
 };
 use ParagonIE\Paseto\Parsing\{
@@ -45,7 +45,7 @@ use function hash_equals,
  * Class Version1
  * @package ParagonIE\Paseto\Protocol
  */
-class Version4 implements ProtocolInterface
+class Version4 implements ImplicitProtocolInterface
 {
     /** @const string HEADER */
     const HEADER = 'v4';
@@ -103,17 +103,6 @@ class Version4 implements ProtocolInterface
     public static function header(): string
     {
         return (string) static::HEADER;
-    }
-
-    /**
-     * Does this protocol support implicit assertions?
-     * Yes.
-     *
-     * @return bool
-     */
-    public static function supportsImplicitAssertions(): bool
-    {
-        return true;
     }
 
     /**

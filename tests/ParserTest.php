@@ -113,10 +113,10 @@ class ParserTest extends TestCase
         $v2token = $v2parser->parse($serialized);
 
         $builder = (Builder::getLocal($key, new Version2(), $token));
-        NonceFixer::buildSetExplicitNonce()->bindTo($builder, $builder)($nonce);
+        NonceFixer::buildSetExplicitNonce(false)->bindTo($builder, $builder)($nonce);
 
         $v2builder = (Builder::getLocal($v2key, new Version2(), $v2token));
-        NonceFixer::buildSetExplicitNonce()->bindTo($v2builder, $v2builder)($nonce);
+        NonceFixer::buildSetExplicitNonce(false)->bindTo($v2builder, $v2builder)($nonce);
 
         $this->assertSame(
             '2039-01-01T00:00:00+00:00',

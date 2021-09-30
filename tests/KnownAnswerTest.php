@@ -13,6 +13,7 @@ use ParagonIE\Paseto\Protocol\{
     Version4
 };
 use ParagonIE\Paseto\ProtocolInterface;
+use ParagonIE\Paseto\ImplicitProtocolInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -85,24 +86,41 @@ class KnownAnswerTest extends TestCase
     protected function genericTests(ProtocolInterface $protocol, array $tests)
     {
         $decoded = null;
-        $fixedEncrypt = NonceFixer::buildUnitTestEncrypt($protocol)->bindTo(null, $protocol);
+
         foreach ($tests as $test) {
             // First, assert that the payload decodes correctly.
             try {
                 if (isset($test['public-key'])) {
-                    $decoded = $protocol::verify(
-                        $test['token'],
-                        $this->cacheKey($protocol, $test['public-key'], true),
-                        $test['footer'] ?? '',
-                        $test['implicit-assertion'] ?? ''
-                    );
+                    if ($protocol instanceof ImplicitProtocolInterface) {
+                        $decoded = $protocol::verify(
+                            $test['token'],
+                            $this->cacheKey($protocol, $test['public-key'], true),
+                            $test['footer'] ?? '',
+                            $test['implicit-assertion']
+                        );
+                    } else {
+                        $decoded = $protocol::verify(
+                            $test['token'],
+                            $this->cacheKey($protocol, $test['public-key'], true),
+                            $test['footer'] ?? '',
+                        );
+                    }
                 } elseif (isset($test['key'])) {
-                    $decoded = $protocol::decrypt(
-                        $test['token'],
-                        $this->cacheKey($protocol, $test['key']),
-                        $test['footer'] ?? '',
-                        $test['implicit-assertion'] ?? ''
-                    );
+                    if ($protocol instanceof ImplicitProtocolInterface) {
+                        $decoded = $protocol::decrypt(
+                            $test['token'],
+                            $this->cacheKey($protocol, $test['key']),
+                            $test['footer'] ?? '',
+                            $test['implicit-assertion']
+                        );
+                    } else {
+                        $decoded = $protocol::decrypt(
+                            $test['token'],
+                            $this->cacheKey($protocol, $test['key']),
+                            $test['footer'] ?? ''
+                        );
+                    }
+
                 } else {
                     $this->fail('Key not provided');
                 }
@@ -120,15 +138,31 @@ class KnownAnswerTest extends TestCase
             // We should have the same plaintext payload:
             $this->assertSame($test['payload'], $decoded, $test['name']);
 
+            if ($protocol instanceof ImplicitProtocolInterface) {
+                $fixedEncrypt = NonceFixer::buildUnitTestImplicitEncrypt($protocol)->bindTo(null, $protocol);
+            } else {
+                $fixedEncrypt = NonceFixer::buildUnitTestNonImplicitEncrypt($protocol)->bindTo(null, $protocol);
+            }
+
             // Next, assert that we get the same token (if local):
             if (isset($test['key'])) {
-                $encoded = $fixedEncrypt(
-                    $test['payload'],
-                    $this->cacheKey($protocol, $test['key']),
-                    $test['footer'] ?? '',
-                    $test['implicit-assertion'] ?? '',
-                    Hex::decode($test['nonce'])
-                );
+                if ($protocol instanceof ImplicitProtocolInterface) {
+                    $encoded = $fixedEncrypt(
+                        $test['payload'],
+                        $this->cacheKey($protocol, $test['key']),
+                        $test['footer'] ?? '',
+                        $test['implicit-assertion'],
+                        Hex::decode($test['nonce'])
+                    );
+                } else {
+                    $encoded = $fixedEncrypt(
+                        $test['payload'],
+                        $this->cacheKey($protocol, $test['key']),
+                        $test['footer'] ?? '',
+                        Hex::decode($test['nonce'])
+                    );
+                }
+
                 $this->assertSame($test['token'], $encoded, $test['name']);
             }
         }

@@ -30,7 +30,7 @@ use ParagonIE\EasyECC\ECDSA\{
     SecretKey
 };
 use ParagonIE\Paseto\{
-    ProtocolInterface,
+    ImplicitProtocolInterface,
     Util
 };
 use ParagonIE\Paseto\Parsing\{
@@ -53,7 +53,7 @@ use function hash_equals,
  * Class Version1
  * @package ParagonIE\Paseto\Protocol
  */
-class Version3 implements ProtocolInterface
+class Version3 implements ImplicitProtocolInterface
 {
     const HEADER = 'v3';
     const CIPHER_MODE = 'aes-256-ctr';
@@ -116,17 +116,6 @@ class Version3 implements ProtocolInterface
     public static function header(): string
     {
         return (string) static::HEADER;
-    }
-
-    /**
-     * Does this protocol support implicit assertions?
-     * Yes.
-     *
-     * @return bool
-     */
-    public static function supportsImplicitAssertions(): bool
-    {
-        return true;
     }
 
     /**
