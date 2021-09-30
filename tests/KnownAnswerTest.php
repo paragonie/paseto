@@ -102,7 +102,7 @@ class KnownAnswerTest extends TestCase
                         $decoded = $protocol::verify(
                             $test['token'],
                             $this->cacheKey($protocol, $test['public-key'], true),
-                            $test['footer'] ?? '',
+                            $test['footer'] ?? ''
                         );
                     }
                 } elseif (isset($test['key'])) {
