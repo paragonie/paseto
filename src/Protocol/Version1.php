@@ -347,6 +347,14 @@ class Version1 implements ProtocolInterface
         // PASETO Version 1 - Verify - Step 4:
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, $headerLength));
         $len = Binary::safeStrlen($decoded);
+
+        if ($len <= self::SIGN_SIZE) {
+            throw new PasetoException(
+                'Invalid message length.',
+                ExceptionCode::INVALID_MESSAGE_LENGTH
+            );
+        }
+
         $message = Binary::safeSubstr($decoded, 0, $len - self::SIGN_SIZE);
         $signature = Binary::safeSubstr($decoded, $len - self::SIGN_SIZE);
 
@@ -473,6 +481,14 @@ class Version1 implements ProtocolInterface
             );
         }
         $len = Binary::safeStrlen($decoded);
+
+        if ($len <= self::NONCE_SIZE + self::MAC_SIZE) {
+            throw new PasetoException(
+                'Invalid message length.',
+                ExceptionCode::INVALID_MESSAGE_LENGTH
+            );
+        }
+
         $nonce = Binary::safeSubstr($decoded, 0, self::NONCE_SIZE);
         $ciphertext = Binary::safeSubstr(
             $decoded,

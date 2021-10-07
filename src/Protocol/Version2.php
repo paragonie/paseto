@@ -333,6 +333,13 @@ class Version2 implements ProtocolInterface
         $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, $headerLength));
         $len = Binary::safeStrlen($decoded);
 
+        if ($len <= SODIUM_CRYPTO_SIGN_BYTES) {
+            throw new PasetoException(
+                'Invalid message length.',
+                ExceptionCode::INVALID_MESSAGE_LENGTH
+            );
+        }
+
         // PASETO Version 2 - Verify - Step 4:
         // Separate the decoded bundle into the message and signature.
         $message = Binary::safeSubstr(
@@ -459,6 +466,14 @@ class Version2 implements ProtocolInterface
             );
         }
         $len = Binary::safeStrlen($decoded);
+
+        if ($len <= SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES) {
+            throw new PasetoException(
+                'Invalid message length.',
+                ExceptionCode::INVALID_MESSAGE_LENGTH
+            );
+        }
+
         $nonce = Binary::safeSubstr(
             $decoded,
             0,
