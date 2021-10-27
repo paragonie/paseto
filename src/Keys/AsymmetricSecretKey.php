@@ -189,6 +189,17 @@ class AsymmetricSecretKey implements SendingKey
      */
     public function encode(): string
     {
+        // V3 secret keys -- coerce as just secret key bytes, no PEM
+        if ($this->protocol instanceof Version3 && Binary::safeStrlen($this->key) > 48) {
+            return Base64UrlSafe::encodeUnpadded(
+                Hex::decode(
+                    gmp_strval(
+                        SecretKey::importPem($this->key)->getSecret(),
+                        16
+                    )
+                )
+            );
+        }
         return Base64UrlSafe::encodeUnpadded($this->key);
     }
 
