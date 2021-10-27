@@ -38,6 +38,7 @@ abstract class ExceptionCode
     const INVOKED_RAW_ON_MULTIKEY          = 0x3142EE1C;
     const KEY_NOT_IN_KEYRING               = 0x3142EE1D;
     const UNDEFINED_PROPERTY               = 0x3142EE1E;
+    const INVALID_MESSAGE_LENGTH           = 0x3142EE1F;
 
     /**
      * @param int $code
@@ -92,6 +93,8 @@ abstract class ExceptionCode
                 return "The key you requested is not in this keyring.";
             case self::UNDEFINED_PROPERTY:
                 return "An expected property was not defined at runtime.";
+            case self::INVALID_MESSAGE_LENGTH:
+                return "The recieved PASETO was too short to be valid.";
 
             default:
                 return 'Unknown error code';
