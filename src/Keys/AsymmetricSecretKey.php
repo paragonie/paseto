@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
 use ParagonIE\ConstantTime\{
+    Base64,
     Base64UrlSafe,
     Binary,
     Hex
@@ -201,6 +202,35 @@ class AsymmetricSecretKey implements SendingKey
             );
         }
         return Base64UrlSafe::encodeUnpadded($this->key);
+    }
+
+    /**
+     * @return string
+     * @throws PasetoException
+     */
+    public function encodePem(): string
+    {
+        switch ($this->protocol::header()) {
+            case 'v1':
+                // Already PEM-encoded!
+                return $this->raw();
+            case 'v3':
+                return Util::dos2unix((new SecretKey(
+                    new ConstantTimeMath(),
+                    EccFactory::getNistCurves()->generator384(),
+                    gmp_init(Hex::encode($this->raw()), 16)
+                ))->exportPem());
+            case 'v2':
+            case 'v4':
+                $encoded = Base64::encode(
+                    Hex::decode('302e020100300506032b657004220420') . $this->raw()
+                );
+                return "-----BEGIN EC PRIVATE KEY-----\n" .
+                    Util::dos2unix(chunk_split($encoded, 64)).
+                    "-----END EC PRIVATE KEY-----";
+            default:
+                throw new PasetoException("Unknown version");
+        }
     }
 
     /**
