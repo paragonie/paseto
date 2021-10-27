@@ -19,7 +19,8 @@ class KeyTest extends TestCase
                 "waAjnoeGiIBT9fmpllDA8TR5lYvfS5zcN5ZcLtFHm4akAuen2cWEWtUYfxMfiGYx\n" .
                 "jIXJ55iqSEuhXlvJ+NNMzBTjPvk/moc=\n" .
                 "-----END EC PRIVATE KEY-----",
-                '03693cc67c4cb985d5de1995947a85426c5b1cdee0cf1337d892c1a0239e8786888053f5f9a99650c0f13479958bdf4b9c'
+                '03693cc67c4cb985d5de1995947a85426c5b1cdee0cf1337d892c1a0239e8786888053f5f9a99650c0f13479958bdf4b9c',
+                'J0lBmb8xnDKoWltpAGmNLr8Vby2wHiVng_nmgmDcyYhKD69XirrwW4Rb4vxbf-Na'
             ],
 
             [
@@ -29,7 +30,8 @@ class KeyTest extends TestCase
                 "DGbupLQde6cyKzHcPj8remWkjkFNiZB+vctHKtn55KeY4D8PViv2l6TVBorzdYjR\n" .
                 "Z7OdnDOTd5S/q4psBWPW5kRZFrX1tOI=\n" .
                 "-----END EC PRIVATE KEY-----",
-                '02ee01396418ef79379f6da709766bdcd4886a8b0eae64f8045a0c66eea4b41d7ba7322b31dc3e3f2b7a65a48e414d8990'
+                '02ee01396418ef79379f6da709766bdcd4886a8b0eae64f8045a0c66eea4b41d7ba7322b31dc3e3f2b7a65a48e414d8990',
+                '7RMC39gz26y1i2KuNoXa9eVuvscIEfF9XPZlzHtO9vGBn1RdqEOFntavf4upt7C2'
             ]
         ];
         foreach ($parameters as $params) {
@@ -37,12 +39,22 @@ class KeyTest extends TestCase
         }
     }
 
-    public function sampleKeyTrail(string $secret, string $public)
+    public function sampleKeyTrail(string $secret, string $public, string $base64): void
     {
         $sk = AsymmetricSecretKey::v3($secret);
         $pk = $sk->getPublicKey();
         $this->assertSame($public, $pk->toHexString());
         $pk2 = AsymmetricPublicKey::fromEncodedString($pk->encode(), new Version3);
         $this->assertSame($public, $pk2->toHexString());
+
+        $skEncode = $sk->encode();
+        $this->assertSame($base64, $skEncode);
+
+        $from = AsymmetricSecretKey::fromEncodedString($skEncode, new Version3);
+        $this->assertSame(
+            $from->encode(),
+            $base64,
+            'Re-encoding fails'
+        );
     }
 }
