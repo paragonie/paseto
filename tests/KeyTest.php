@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
+use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2,
@@ -16,66 +17,94 @@ class KeyTest extends TestCase
 {
     public function pemProvider()
     {
-        $rsa = "-----BEGIN RSA PRIVATE KEY-----\n" .
-            "MIIEogIBAAKCAQEAu74jdb19cuzn1yu/5tMScdXERyTqwl8L14UdURXHr+XN7aUa\n" .
-            "+EttiS7B2DSaLWk4ikhkKBCfo2oMyceK2eJX4QbCGGqsX43aAuqfzRM+/B+g36Ta\n" .
-            "W46+VeoQY+/KSNKlnVsZiQvliiuPkfQXpG/720qyZz8NumI+12jxcyq5Zbit38FM\n" .
-            "WCcAz9pgAILHqz+cPHsI0JOQKWf7duKnzpiiDME7/5CQUdSavkld8t9u+YIZVYiu\n" .
-            "nMA8Ch8D4b2UByCn1eferfiuqbRAbQ7jMvxbrhiFsJ7epeCtQyNL/8VhPoeUXWcY\n" .
-            "2S5/wdogG6S2UItSkXfrrq1ErzLGmBdpQceSRQIDAQABAoIBAE5UOxkxkPh1DRmC\n" .
-            "AFO+tpBV/sksBuJHo3os6Jle++xQdcVzwDfdyHqWznt1HupZXySapWbt4Jzeby10\n" .
-            "mmLjg4S4PBzRzM8lMNNMrpVyNTIdxBHrBstyV8kimeoILp6JfF2Vl6bNFty55fGg\n" .
-            "JIkPy8WneZ2H+iNMQCnBeBNzvNxKI4AA98YHDx7zusvssOfiOJBcZkapy4FGuEQd\n" .
-            "E1hzlCEZOH/kFlC5YSCKZinJBxDDuofMde3WImZg7tch4AHtVhXbkuEz5vJTvSkj\n" .
-            "xLZY/fN92/PMAj0KaLf9ql40CDOoO1fxCs+WNZ8+c52400brow7WoPGmQXCJaUvh\n" .
-            "1oZ/jNUCgYEA+jVSc4QouBDdAJX41NINV4HSLjJIjdyg6fukt6agHlHG25idxoZ6\n" .
-            "C3HDsQ05CbhmLtdbV2SyL8BDabxp+bB6J1HDfpQSUeP5s/1uCXQNxwHaroeHAkbj\n" .
-            "1bbEM448B5C3yzOy+lcW6rL63We0YyUFtJK7atFL+XVzq57zsmszKhMCgYEAwBao\n" .
-            "3ACF6v1Mgd08HCtXlVg0FBD5YBpBVogfIYxIINFx4kJynPV6iylSzVYoah/y58EL\n" .
-            "YqNztrD7rRhQt8kYS1Nk/4TvOjHBtNPC6bLR0PQlzXudcfvoPL6KryKFtFlF8Ool\n" .
-            "pG722U6JZeK87K4+GM72VBcp7qtfKNroFvg6XUcCgYAI5zTT33QDeLYkezGrgP3w\n" .
-            "izILasaiJaOkL8wgrNEtwwMsdTXIBqj5F0c7WZkZ+3HHYOpjJbYhdNnxPT8YH2t5\n" .
-            "rN+IY61U0NjYDU2KOcEmdBKPZBUSGl7BVHd88W3DzM7C8/mkIrENzIuBq6oiHy3\n" .
-            "fDEnD+OAMOm4xaMuSho7+QKBgGzxLQnBXjJdQHPytnG/fyfbY4Xx7o07tszN3OIY\n" .
-            "/ptmTjGlv/0XGE4uvKBqefdecVRRXxStYSY/EC4muTjS2211ObXVfhxCNftJkqUa\n" .
-            "XvckUQBOWIhZ92fkJSGY8b3MV+d/1KOCr4uliDV5t+6AEAXf80LT9FtBZHH2XWUR\n" .
-            "mYBnAoGADYbniwU6Drr+iPKt706N17pQB/47h9ETKFGzbwslno0D3miRSEscY9wX\n" .
-            "rcDqfuZcf03QTIrXzrNpiiiTvkTvybE7Hrtq9qremXbpwGRRSUGEoXesfp1M0irj\n" .
-            "MCAbY+0YcS2FdflNKiYuK/0VyXcmzYtpPK2N7OEihHNwIW/CBdE=\n" .
+        $rsaSecret = "-----BEGIN RSA PRIVATE KEY-----\n" .
+            "MIIEpAIBAAKCAQEAwM+9K1eihqGJrrmYuZ1Yq28tuEX8Y6gFDGob9XEYIyZBkFzf\n" .
+            "FGTl1PZY+b9wuXYdbN85IEj2etr8I62lG6EoVBe+TklU/L1NQ4tHWSUxHFmHrvM+\n" .
+            "iV7qKdE09B9WOXN1bI5ckyl3u7tDRJGxeuFqz/WjFQXEzBxhQ8SIS1LdMyl7uO9N\n" .
+            "eY+/Rx988BV8yRp1eA56xRItwrqgqhbUw8uPRImfPfPz5CAfm2KAL0vP7acsP5/l\n" .
+            "1mQ4qqKhEomHZhfGsMAihEtoFKJsTPDYN8/1Zses8+4TmQ5A6XZCyJOP5RdugiJf\n" .
+            "+s5vz62sl1SH4Ua5/FK4AB5M7KXPe/7H0UnmtwIDAQABAoIBAQCPtYaqmmvh6t7j\n" .
+            "IyRJHJTtWjV6hndik+YHZcMnAj9aW3Y8smv3GGkRfPe+VkkfgoDWF97NSHSmBzgt\n" .
+            "I4zPdiPH4daPJSs6IaJH+LSaJhVfqv9tj5GJ8/uWZX8RgZXTxlG8MrOfYCYE/8NY\n" .
+            "hTsCeqcRD2WZEq6m73QzfXWUptOGAFVjiCBRep5JGI/EMpUCLyqoclDf+tI58xgX\n" .
+            "PFNKUK4Qy3jVOaeWcPY8uWWhG93ImfiFfjU9EyXR62v3+PQf+e60NFbR0Z3YeIAe\n" .
+            "RNRiXIX1ZVznlvCmwHxic9vyzViJgnVqrSaScIgifLXd8omvJySIxMmzdo8haywR\n" .
+            "UgV+5PBpAoGBAPaBF7PPjzzbQPdvnHDa5RC4TU9YOOuy26hpKZaX9DUYlhcabY3x\n" .
+            "kXpIwJadyW3W9+UG1c9US+kS+8DIsqH1Q/BKHevqd4qGgP7IQsneSt6PI15GUUwR\n" .
+            "LaDpdfLZzFTsqM3ElVnOFlqo8ifsUPYT6IM0A4XEr/UHuJqnHYhPbAwzAoGBAMg9\n" .
+            "J1nii7/snem3/hxd9rAD1Vm4qhmKeU1dBVELouZXUQkrkTCsd+hMHAnD+zuKKF9r\n" .
+            "8mGKPhJiVIRFz0Pa5u5+DgcrmttxUzUkxG5bG7xkEEcgWJQ0FgCcOCVtChNfDabJ\n" .
+            "pM+hSR1xNgl9IM4RhAical9xlVpnnGZ8b0wR73dtAoGARY7F3nJaS+TenzO6ZEoQ\n" .
+            "SziGcDZH0ZKl0w7hsmHsgjMO3zQQ5/XbhDMVTSr3FOyNBO551MhHp1w49/xqE7N+\n" .
+            "2UZAzTpbQxaTPdHKruXwIH8pjseu1xUd2AMoyj9VHj2toGqxbibuPeTgeA2CBv41\n" .
+            "JRi/Sbbno+/q0pEHj1hB9+sCgYEAu65uGta3rB1o6a62M/pyhQoiyCTI8oWTKssc\n" .
+            "d5lTh1iiMNkwDhIplYb45MJX0beuHbo9BeWgRnT5yLzyByS/PRzToy7gx/xRREeB\n" .
+            "AfrNZWfYxgHwZIDpeoryKUopnnyCfCkWHDKNKFZ7kqtAu0U5nySUo37/wSvKMVlC\n" .
+            "rGdHL4UCgYB5TyKK52uHR5gkB536JL1yLOQJh1lboojBI8xtLk5CglurwnM7Jyo4\n" .
+            "z35jrPsWsuje6KwldW0LPwsHScAuhAW4rbLTBXD6EuHfQG0MIDlwWv+/1JIaWiq1\n" .
+            "Xch7+gCwqoGd6qthsw/J7bx9Htj8rqFQcbS9Lc+Ynoa+cdZ3PxpsNg==\n" .
             "-----END RSA PRIVATE KEY-----";
+
+        $rsaPublic = "-----BEGIN PUBLIC KEY-----\n" .
+            "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwM+9K1eihqGJrrmYuZ1Y\n" .
+            "q28tuEX8Y6gFDGob9XEYIyZBkFzfFGTl1PZY+b9wuXYdbN85IEj2etr8I62lG6Eo\n" .
+            "VBe+TklU/L1NQ4tHWSUxHFmHrvM+iV7qKdE09B9WOXN1bI5ckyl3u7tDRJGxeuFq\n" .
+            "z/WjFQXEzBxhQ8SIS1LdMyl7uO9NeY+/Rx988BV8yRp1eA56xRItwrqgqhbUw8uP\n" .
+            "RImfPfPz5CAfm2KAL0vP7acsP5/l1mQ4qqKhEomHZhfGsMAihEtoFKJsTPDYN8/1\n" .
+            "Zses8+4TmQ5A6XZCyJOP5RdugiJf+s5vz62sl1SH4Ua5/FK4AB5M7KXPe/7H0Unm\n" .
+            "twIDAQAB\n" .
+            "-----END PUBLIC KEY-----";
+
         return [
-            [new AsymmetricSecretKey($rsa, new Version1), $rsa],
+            [new AsymmetricSecretKey($rsaSecret, new Version1), $rsaSecret, $rsaPublic],
             [
                 AsymmetricSecretKey::fromEncodedString(
                     't6Rbm0ASlC9TnLprftH5iSVq0yo1_7QEdPMiUXbiGFbD2VZn-_XpTgHTuMrH3oiu2eDNo9vVRgvh39Exl5RBGg',
                     new Version2
                 ),
+
                 "-----BEGIN EC PRIVATE KEY-----\n" .
                 "MC4CAQAwBQYDK2VwBCIEILekW5tAEpQvU5y6a37R+YklatMqNf+0BHTzIlF24hhW\n" .
                 "w9lWZ/v16U4B07jKx96IrtngzaPb1UYL4d/RMZeUQRo=\n" .
-                "-----END EC PRIVATE KEY-----"
+                "-----END EC PRIVATE KEY-----",
+
+                "-----BEGIN PUBLIC KEY-----\n" .
+                "MCowBQYDK2VwAyEAw9lWZ/v16U4B07jKx96IrtngzaPb1UYL4d/RMZeUQRo=\n" .
+                "-----END PUBLIC KEY-----"
             ],
             [
                 AsymmetricSecretKey::fromEncodedString(
                     'wqVipiU9_hsPvCayOadBKSHtAK0E3b6tgdTmipTXrLjSFM53nvNcUwtHPmBSU-sT',
                     new Version3
                 ),
+
                 "-----BEGIN EC PRIVATE KEY-----\n" .
                 "MIGkAgEBBDDCpWKmJT3+Gw+8JrI5p0EpIe0ArQTdvq2B1OaKlNesuNIUznee81xT\n" .
                 "C0c+YFJT6xOgBwYFK4EEACKhZANiAAQRNcO/V8llj27Z1RNuzI0Sy/sTF1k4VolI\n" .
                 "vrQjq+b30Kpd5AlLFzLkWOh8SGr1KM9dZj1vlRSWeoVGrXy99zOeu25vetkzYFMa\n" .
                 "v9ZrBkjdv13uTEY5uWuKviAFmzAYnf4=\n" .
-                "-----END EC PRIVATE KEY-----"
+                "-----END EC PRIVATE KEY-----",
+
+                "-----BEGIN PUBLIC KEY-----\n" .
+                "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEETXDv1fJZY9u2dUTbsyNEsv7ExdZOFaJ\n" .
+                "SL60I6vm99CqXeQJSxcy5FjofEhq9SjPXWY9b5UUlnqFRq18vfcznrtub3rZM2BT\n" .
+                "Gr/WawZI3b9d7kxGOblrir4gBZswGJ3+\n" .
+                "-----END PUBLIC KEY-----"
             ],
             [
                 AsymmetricSecretKey::fromEncodedString(
                     't6Rbm0ASlC9TnLprftH5iSVq0yo1_7QEdPMiUXbiGFbD2VZn-_XpTgHTuMrH3oiu2eDNo9vVRgvh39Exl5RBGg',
                     new Version4
                 ),
+
                 "-----BEGIN EC PRIVATE KEY-----\n" .
                 "MC4CAQAwBQYDK2VwBCIEILekW5tAEpQvU5y6a37R+YklatMqNf+0BHTzIlF24hhW\n" .
                 "w9lWZ/v16U4B07jKx96IrtngzaPb1UYL4d/RMZeUQRo=\n" .
-                "-----END EC PRIVATE KEY-----"
+                "-----END EC PRIVATE KEY-----",
+
+                "-----BEGIN PUBLIC KEY-----\n" .
+                "MCowBQYDK2VwAyEAw9lWZ/v16U4B07jKx96IrtngzaPb1UYL4d/RMZeUQRo=\n" .
+                "-----END PUBLIC KEY-----"
             ],
         ];
     }
@@ -83,9 +112,14 @@ class KeyTest extends TestCase
     /**
      * @dataProvider pemProvider
      */
-    public function testExportPem(AsymmetricSecretKey $sk, string $pem)
+    public function testExportPem(AsymmetricSecretKey $sk, string $skPem, string $pkPem)
     {
-        $this->assertSame($pem, $sk->encodePem());
+        $this->assertSame($skPem, $sk->encodePem());
+        $pk = $sk->getPublicKey();
+        $this->assertSame(
+            Util::dos2unix($pk->encodePem()),
+            Util::dos2unix($pkPem)
+        );
     }
 
     public function testV3SampleKeys()

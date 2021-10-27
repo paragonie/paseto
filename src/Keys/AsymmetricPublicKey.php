@@ -2,11 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\{
-    Base64UrlSafe,
-    Binary,
-    Hex
-};
+use ParagonIE\ConstantTime\{Base64, Base64UrlSafe, Binary, Hex};
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\PasetoException,
@@ -15,6 +11,10 @@ use ParagonIE\Paseto\{
     Util
 };
 use FG\ASN1\Exception\ParserException;
+use Mdanter\Ecc\EccFactory;
+use ParagonIE\EasyECC\EasyECC;
+use ParagonIE\EasyECC\ECDSA\ConstantTimeMath;
+use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\Paseto\Protocol\{
     Version1,
     Version2,
@@ -161,6 +161,39 @@ class AsymmetricPublicKey implements ReceivingKey
             );
         }
         return Base64UrlSafe::encodeUnpadded($this->key);
+    }
+
+    /**
+     * Return a PEM-encoded public key
+     *
+     * @return string
+     */
+    public function encodePem(): string
+    {
+        switch ($this->protocol::header()) {
+            case 'v1':
+                // Already PEM-encoded!
+                return $this->raw();
+            case 'v3':
+                if (Binary::safeStrlen($this->key) > 49) {
+                    return $this->key;
+                }
+                return Util::dos2unix(
+                    PublicKey::fromString($this->key, 'P384')
+                        ->exportPem()
+                );
+            case 'v2':
+            case 'v4':
+                $encoded = Base64::encode(
+                    Hex::decode('302a300506032b6570032100') . $this->raw()
+                );
+                return "-----BEGIN PUBLIC KEY-----\n" .
+                    Util::dos2unix(chunk_split($encoded, 64)).
+                    "-----END PUBLIC KEY-----";
+            default:
+                throw new PasetoException("Unknown version");
+        }
+
     }
 
     /**

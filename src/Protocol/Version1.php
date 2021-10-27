@@ -585,6 +585,9 @@ class Version1 implements ProtocolInterface
     public static function RsaGetPublicKey(string $keyData): string
     {
         $res = openssl_pkey_get_private($keyData);
+        if (!$res) {
+            throw new PasetoException("Invalid RSA secret key");
+        }
         /** @var array<string, string> $pubkey */
         $pubkey = openssl_pkey_get_details($res);
         return rtrim(

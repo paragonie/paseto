@@ -205,6 +205,8 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * Return a PEM-encoded secret key
+     *
      * @return string
      * @throws PasetoException
      */
