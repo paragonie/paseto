@@ -464,8 +464,9 @@ class Parser extends PasetoBase
         $token = (new JsonToken())
             ->setFooter($footer)
             ->setClaims($claims);
-        if (!$skipValidation && !empty($this->rules)) {
-            // Validate all of the rules that were specified:
+
+        if (!$skipValidation) {
+            // Validate all the rules that were specified:
             $this->validate($token, true);
         }
         return $token;
