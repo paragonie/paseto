@@ -34,7 +34,7 @@ jobs:
     strategy:
       matrix:
         operating-system: ['ubuntu-latest']
-        php-versions: ['7.4', '8.0']
+        php-versions: ['7.4', '8.0', '8.1']
         phpunit-versions: ['latest']
     steps:
       - name: Checkout
