@@ -93,6 +93,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * @return self
      *
      * @throws Exception
+     *
+     * @deprecated See Version3 instead.
      */
     public static function v1(string $keyMaterial): self
     {
@@ -106,6 +108,8 @@ class AsymmetricPublicKey implements ReceivingKey
      * @return self
      *
      * @throws Exception
+     *
+     * @deprecated See Version4 instead.
      */
     public static function v2(string $keyMaterial): self
     {

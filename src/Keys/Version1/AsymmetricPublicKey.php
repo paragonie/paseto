@@ -11,6 +11,8 @@ use TypeError;
 /**
  * Class AsymmetricPublicKey
  * @package ParagonIE\Paseto\Keys\Version1
+ *
+ * @deprecated See Version3 instead.
  */
 class AsymmetricPublicKey extends BasePublicKey
 {

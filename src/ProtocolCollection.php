@@ -162,6 +162,8 @@ final class ProtocolCollection
      *
      * @throws InvalidVersionException
      * @throws SecurityException
+     *
+     * @deprecated See Version3 instead.
      */
     public static function v1(): self
     {
@@ -174,6 +176,8 @@ final class ProtocolCollection
      * @return self
      *
      * @throws InvalidVersionException
+     *
+     * @deprecated See Version4 instead.
      */
     public static function v2(): self
     {

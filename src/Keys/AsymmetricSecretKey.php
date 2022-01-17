@@ -101,6 +101,8 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @throws Exception
      * @throws TypeError
+     *
+     * @deprecated See Version3 instead.
      */
     public static function v1(string $keyMaterial): self
     {
@@ -115,6 +117,8 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @throws Exception
      * @throws TypeError
+     *
+     * @deprecated See Version4 instead.
      */
     public static function v2(string $keyMaterial): self
     {
