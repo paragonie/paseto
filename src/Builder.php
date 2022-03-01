@@ -298,7 +298,7 @@ class Builder extends PasetoBase
      * Set a claim to an arbitrary value.
      *
      * @param string $claim
-     * @param string $value
+     * @param mixed $value
      *
      * @return self
      */
@@ -423,7 +423,7 @@ class Builder extends PasetoBase
     /**
      * Set an array of claims in one go.
      *
-     * @param array<string, string> $claims
+     * @param array<string, mixed> $claims
      * @return self
      */
     public function setClaims(array $claims): self
@@ -695,7 +695,7 @@ class Builder extends PasetoBase
      * Return a new Builder instance with a changed claim.
      *
      * @param string $claim
-     * @param string $value
+     * @param mixed $value
      * @return self
      */
     public function with(string $claim, $value): self
@@ -720,7 +720,7 @@ class Builder extends PasetoBase
     /**
      * Return a new Builder instance with an array of changed claims.
      *
-     * @param array<string, string> $claims
+     * @param array<string, mixed> $claims
      * @return self
      */
     public function withClaims(array $claims): self
