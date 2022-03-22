@@ -451,7 +451,7 @@ class Parser extends PasetoBase
         // Throw if the claims were invalid:
         $this->throwIfClaimsJsonInvalid($decoded);
 
-        /** @var array<string, string>|bool $claims */
+        /** @var array<string, mixed>|bool $claims */
         $claims = json_decode($decoded, true, ($this->maxClaimDepth ?? 512));
         if (!is_array($claims)) {
             throw new EncodingException(

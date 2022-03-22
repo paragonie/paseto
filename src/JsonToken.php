@@ -26,7 +26,7 @@ class JsonToken
 {
     use RegisteredClaims;
 
-    /** @var array<string, string> */
+    /** @var array<string, mixed> */
     protected $claims = [];
 
     /** @var string $footer */
@@ -191,7 +191,7 @@ class JsonToken
      * Set a claim to an arbitrary value.
      *
      * @param string $claim
-     * @param string $value
+     * @param mixed $value
      * @return self
      */
     public function set(string $claim, $value): self
@@ -215,7 +215,7 @@ class JsonToken
     /**
      * Set an array of claims in one go.
      *
-     * @param array<string, string> $claims
+     * @param array<string, mixed> $claims
      * @return self
      */
     public function setClaims(array $claims): self
@@ -340,7 +340,7 @@ class JsonToken
      * Return a new JsonToken instance with a changed claim.
      *
      * @param string $claim
-     * @param string $value
+     * @param mixed $value
      * @return self
      */
     public function with(string $claim, $value): self
@@ -362,7 +362,7 @@ class JsonToken
     /**
      * Return a new JsonToken instance with an array of changed claims.
      *
-     * @param array<string, string> $claims
+     * @param array<string, mixed> $claims
      * @return self
      */
     public function withClaims(array $claims): self
