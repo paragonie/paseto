@@ -47,7 +47,7 @@ class IdentifiedBy implements ValidationRuleInterface
     public function isValid(JsonToken $token): bool
     {
         try {
-            $identifier = $token->getIssuer();
+            $identifier = $token->getJti();
             if (!hash_equals($this->identifier, $identifier)) {
                 $this->failure = 'This token was expected to be identified by ' .
                     $this->identifier . ', but it was identified by ' .
