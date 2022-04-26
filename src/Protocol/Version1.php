@@ -87,11 +87,11 @@ class Version1 implements ProtocolInterface
     /**
      * Get the number of bytes in a symmetric key.
      *
-     * @return int
+     * @return positive-int
      */
     public static function getSymmetricKeyByteLength(): int
     {
-        return (int) static::SYMMETRIC_KEY_BYTES;
+        return static::SYMMETRIC_KEY_BYTES;
     }
 
     /**

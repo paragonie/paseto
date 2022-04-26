@@ -45,7 +45,7 @@ interface ProtocolInterface
     public static function generateSymmetricKey(): SymmetricKey;
 
     /**
-     * @return int
+     * @return positive-int
      */
     public static function getSymmetricKeyByteLength(): int;
 

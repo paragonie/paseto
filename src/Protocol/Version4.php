@@ -62,11 +62,11 @@ class Version4 implements ProtocolInterface
     }
 
     /**
-     * @return int
+     * @return positive-int
      */
     public static function getSymmetricKeyByteLength(): int
     {
-        return (int) static::SYMMETRIC_KEY_BYTES;
+        return static::SYMMETRIC_KEY_BYTES;
     }
 
     /**
