@@ -259,6 +259,15 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
+     * @param ProtocolInterface $protocol
+     * @return bool
+     */
+    public function isForVersion(ProtocolInterface $protocol): bool
+    {
+        return $this->protocol instanceof $protocol;
+    }
+
+    /**
      * Get the raw key contents.
      *
      * @return string

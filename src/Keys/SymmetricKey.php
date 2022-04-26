@@ -178,6 +178,15 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
+     * @param ProtocolInterface $protocol
+     * @return bool
+     */
+    public function isForVersion(ProtocolInterface $protocol): bool
+    {
+        return $this->protocol instanceof $protocol;
+    }
+
+    /**
      * Get the raw key contents.
      *
      * @return string

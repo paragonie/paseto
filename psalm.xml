@@ -2,7 +2,6 @@
 <psalm
     name="Paseto Static Analysis"
     useDocblockTypes="true"
-    totallyTyped="true"
 >
     <projectFiles>
         <directory name="src" />
