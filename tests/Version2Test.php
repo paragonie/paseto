@@ -10,6 +10,8 @@ use ParagonIE\Paseto\Keys\Version2\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version2\SymmetricKey;
 use ParagonIE\Paseto\Protocol\Version1;
 use ParagonIE\Paseto\Protocol\Version2;
+use ParagonIE\Paseto\Protocol\Version3;
+use ParagonIE\Paseto\Protocol\Version4;
 use PHPUnit\Framework\TestCase;
 
 class Version2Test extends TestCase
@@ -30,6 +32,19 @@ class Version2Test extends TestCase
 
         $this->assertSame(Version2::getSymmetricKeyByteLength(), Binary::safeStrlen($symmetric->raw()));
         $this->assertSame(64, Binary::safeStrlen($secret->raw()));
+
+        $mapping = [
+            [new Version1, false],
+            [new Version2, true],
+            [new Version3, false],
+            [new Version4, false],
+        ];
+        foreach ($mapping as $row) {
+            [$version, $expected] = $row;
+            $this->assertSame($expected, $symmetric->isForVersion($version));
+            $this->assertSame($expected, $secret->isForVersion($version));
+            $this->assertSame($expected, $secret->getPublicKey()->isForVersion($version));
+        }
     }
 
     public function testPublicKeyEncode()
