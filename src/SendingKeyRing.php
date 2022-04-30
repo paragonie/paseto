@@ -3,10 +3,14 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
 use Exception;
-use ParagonIE\Paseto\Exception\InvalidKeyException;
-use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Exception\{
+    InvalidKeyException,
+    PasetoException
+};
+use ParagonIE\Paseto\Keys\{
+    AsymmetricSecretKey,
+    SymmetricKey
+};
 use ParagonIE\Paseto\Traits\MultiKeyTrait;
 
 class SendingKeyRing implements KeyRingInterface, SendingKey

@@ -106,7 +106,7 @@ final class Purpose
      *
      * @var array<string, string>
      */
-    private static $sendingKeyToPurpose;
+    private static $sendingKeyToPurpose = [];
 
     /**
      * Inverse of EXPECTED_RECEIVING_KEYS, evaluated and statically cached at
@@ -114,7 +114,7 @@ final class Purpose
      *
      * @var array<string, string>
      */
-    private static $receivingKeyToPurpose;
+    private static $receivingKeyToPurpose = [];
 
     /**
      * @var string
