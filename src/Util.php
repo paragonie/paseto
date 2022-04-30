@@ -131,7 +131,7 @@ abstract class Util
         }
 
         $digest_length = Binary::safeStrlen(
-            hash_hmac($hash, '', '', true)
+            hash($hash, '', true)
         );
 
         // Sanity-check the desired output length.

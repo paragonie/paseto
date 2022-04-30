@@ -19,8 +19,10 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Parsing\NonExpiringSupport;
-use ParagonIE\Paseto\Parsing\PasetoMessage;
+use ParagonIE\Paseto\Parsing\{
+    NonExpiringSupport,
+    PasetoMessage
+};
 use ParagonIE\Paseto\Rules\NotExpired;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
 use function get_class,

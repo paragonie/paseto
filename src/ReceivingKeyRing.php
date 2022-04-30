@@ -2,8 +2,10 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
-use ParagonIE\Paseto\Exception\InvalidKeyException;
-use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Exception\{
+    InvalidKeyException,
+    PasetoException
+};
 use ParagonIE\Paseto\Traits\MultiKeyTrait;
 
 class ReceivingKeyRing implements KeyRingInterface, ReceivingKey

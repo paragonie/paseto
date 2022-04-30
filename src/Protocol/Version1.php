@@ -421,6 +421,7 @@ class Version1 implements ProtocolInterface
             OPENSSL_RAW_DATA,
             Binary::safeSubstr($nonce, 16, 16)
         );
+        Util::wipe($encKey);
         if (!is_string($ciphertext)) {
             throw new PasetoException(
                 'Encryption failed.',
@@ -434,6 +435,7 @@ class Version1 implements ProtocolInterface
             $authKey,
             true
         );
+        Util::wipe($authKey);
 
         // PASETO Version 1 - Encrypt - Step 9:
         return (new PasetoMessage(
@@ -511,8 +513,11 @@ class Version1 implements ProtocolInterface
             $authKey,
             true
         );
+        Util::wipe($authKey);
+
         // PASETO Version 1 - Decrypt - Step 8:
         if (!hash_equals($calc, $mac)) {
+            Util::wipe($encKey);
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
                 ExceptionCode::INVALID_MAC
@@ -528,6 +533,7 @@ class Version1 implements ProtocolInterface
             OPENSSL_RAW_DATA,
             Binary::safeSubstr($nonce, 16, 16)
         );
+        Util::wipe($encKey);
         if (!is_string($plaintext)) {
             throw new PasetoException(
                 'Encryption failed.',

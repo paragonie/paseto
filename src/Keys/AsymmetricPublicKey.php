@@ -11,9 +11,6 @@ use ParagonIE\Paseto\{
     Util
 };
 use FG\ASN1\Exception\ParserException;
-use Mdanter\Ecc\EccFactory;
-use ParagonIE\EasyECC\EasyECC;
-use ParagonIE\EasyECC\ECDSA\ConstantTimeMath;
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\Paseto\Protocol\{
     Version1,
@@ -148,7 +145,7 @@ class AsymmetricPublicKey implements ReceivingKey
      * @return string
      *
      * @throws TypeError
-     * @throws ParserException
+     * @throws PasetoException
      */
     public function encode(): string
     {
@@ -158,11 +155,15 @@ class AsymmetricPublicKey implements ReceivingKey
             } elseif (Binary::safeStrlen($this->key) === 98) {
                 Base64UrlSafe::encodeUnpadded(Hex::decode($this->key));
             }
-            return Base64UrlSafe::encodeUnpadded(
-                Hex::decode(
-                    Version3::getPublicKeyCompressed($this->key)
-                )
-            );
+            try {
+                return Base64UrlSafe::encodeUnpadded(
+                    Hex::decode(
+                        Version3::getPublicKeyCompressed($this->key)
+                    )
+                );
+            } catch (ParserException $ex) {
+                throw new PasetoException("ASN.1 Parser Exception", 0, $ex);
+            }
         }
         return Base64UrlSafe::encodeUnpadded($this->key);
     }

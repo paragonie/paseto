@@ -405,6 +405,7 @@ class Version4 implements ProtocolInterface
             $nonce2,
             $encKey
         );
+        Util::wipe($encKey);
         if (!is_string($ciphertext)) {
             throw new PasetoException(
                 'Encryption failed.',
@@ -416,7 +417,6 @@ class Version4 implements ProtocolInterface
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey
         );
-        Util::wipe($encKey);
         Util::wipe($authKey);
 
         // PASETO Version 4 - Encrypt - Step 8:
@@ -496,6 +496,7 @@ class Version4 implements ProtocolInterface
             Util::preAuthEncode($header, $nonce, $ciphertext, $footer, $implicit),
             $authKey
         );
+        Util::wipe($authKey);
         // PASETO Version 4 - Decrypt - Step 8:
         if (!hash_equals($calc, $mac)) {
             throw new SecurityException(
@@ -511,6 +512,7 @@ class Version4 implements ProtocolInterface
             $nonce2,
             $encKey
         );
+        Util::wipe($encKey);
         if (!is_string($plaintext)) {
             throw new PasetoException(
                 'Encryption failed.',

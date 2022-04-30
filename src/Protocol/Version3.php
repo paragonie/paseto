@@ -540,6 +540,7 @@ class Version3 implements ProtocolInterface
 
         // PASETO Version 3 - Decrypt - Step 8:
         if (!hash_equals($calc, $mac)) {
+            Util::wipe($encKey);
             throw new SecurityException(
                 'Invalid MAC for given ciphertext.',
                 ExceptionCode::INVALID_MAC
