@@ -18,7 +18,7 @@ class ForAudience implements ValidationRuleInterface
     /** @var string $failure */
     protected $failure = 'OK';
 
-    /** @var string $issuer */
+    /** @var string $audience */
     protected $audience;
 
     /**
