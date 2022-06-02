@@ -18,16 +18,11 @@ use function array_pop,
     count,
     explode,
     hash_equals,
-    hash_hmac,
-    hash_hkdf,
     implode,
-    is_callable,
-    is_null,
     pack,
     preg_replace,
     preg_match_all,
     sodium_memzero,
-    str_repeat,
     str_replace;
 
 /**
