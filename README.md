@@ -20,6 +20,19 @@ See [the documentation](https://github.com/paragonie/paseto/tree/master/docs).
 The [PASETO specification](https://github.com/paseto-standard/paseto-spec) may also be useful
 for understanding why things are designed the way they are.
 
+### PASETO Extensions
+
+#### PASERK
+
+For key wrapping, serialization, and canonical identification, please see the
+[PHP implementation of PASERK](https://github.com/paragonie/paserk-php).
+
+If you're not sure what that means, please refer to the
+[PASERK specification](https://github.com/paseto-standard/paserk).
+
+Since PASERK is a PASETO extension, PASERK support is not automatically included
+with PASETO, but PASETO is bundled with PASERK.
+
 ### Requirements
 
 #### PHP PASETO Library Version 2
