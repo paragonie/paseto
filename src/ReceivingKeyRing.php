@@ -15,7 +15,7 @@ class ReceivingKeyRing implements KeyRingInterface, ReceivingKey
     const KEY_TYPE = ReceivingKey::class;
 
     /** @var array<string, ReceivingKey> */
-    protected $keys = [];
+    protected array $keys = [];
 
     /**
      * Add a key to this KeyID.

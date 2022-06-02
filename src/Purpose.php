@@ -88,7 +88,7 @@ final class Purpose
      *
      * @var array<string, string>
      */
-    private static $sendingKeyToPurpose = [];
+    private static array $sendingKeyToPurpose = [];
 
     /**
      * Inverse of EXPECTED_RECEIVING_KEYS, evaluated and statically cached at
@@ -96,12 +96,12 @@ final class Purpose
      *
      * @var array<string, string>
      */
-    private static $receivingKeyToPurpose = [];
+    private static array $receivingKeyToPurpose = [];
 
     /**
      * @var string
      */
-    private $purpose;
+    private string $purpose;
 
     /**
      * Allowed values in self::ALLOWLIST

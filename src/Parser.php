@@ -45,28 +45,28 @@ class Parser extends PasetoBase
     use RegisteredClaims;
 
     /** @var ProtocolCollection */
-    protected $allowedVersions;
+    protected ProtocolCollection $allowedVersions;
 
     /** @var string $implicitAssertions */
-    protected $implicitAssertions = '';
+    protected string $implicitAssertions = '';
 
     /** @var ReceivingKey $key */
-    protected $key;
+    protected ReceivingKey $key;
 
     /** @var ?int $maxClaimCount */
-    protected $maxClaimCount = null;
+    protected ?int $maxClaimCount = null;
 
     /** @var ?int $maxClaimDepth */
-    protected $maxClaimDepth = null;
+    protected ?int $maxClaimDepth = null;
 
     /** @var ?int $maxJsonLength */
-    protected $maxJsonLength = null;
+    protected ?int $maxJsonLength = null;
 
     /** @var Purpose|null $purpose */
-    protected $purpose;
+    protected ?Purpose $purpose;
 
     /** @var array<int, ValidationRuleInterface> */
-    protected $rules = [];
+    protected array $rules = [];
 
     /**
      * Parser constructor.
@@ -103,13 +103,21 @@ class Parser extends PasetoBase
      * Get the configured implicit assertions.
      *
      * @return array
+     * @throws EncodingException
      */
     public function getImplicitAssertions(): array
     {
         if (empty($this->implicitAssertions)) {
             return [];
         }
-        return (array) json_decode($this->implicitAssertions, true);
+        $decoded = json_decode($this->implicitAssertions, true);
+        if (!is_array($decoded)) {
+            throw new EncodingException(
+                'Implicit Assertion string is not a valid JSON object',
+                ExceptionCode::FOOTER_JSON_ERROR
+            );
+        }
+        return $decoded;
     }
 
     /**

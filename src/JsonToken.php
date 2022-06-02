@@ -27,10 +27,10 @@ class JsonToken
     use RegisteredClaims;
 
     /** @var array<string, mixed> */
-    protected $claims = [];
+    protected array $claims = [];
 
     /** @var string $footer */
-    protected $footer = '';
+    protected string $footer = '';
 
     /**
      * @param Builder $builder
@@ -50,7 +50,7 @@ class JsonToken
      *
      * @throws PasetoException
      */
-    public function get(string $claim)
+    public function get(string $claim): mixed
     {
         if (array_key_exists($claim, $this->claims)) {
             return $this->claims[$claim];
@@ -74,7 +74,7 @@ class JsonToken
     }
 
     /**
-     * Get all of the claims stored in this Paseto.
+     * Get all the claims stored in this Paseto.
      *
      * @return array
      */

@@ -18,14 +18,9 @@ use function count, explode;
  */
 final class PasetoMessage
 {
-    /** @var Header */
-    private $header;
-
-    /** @var string */
-    private $payload;
-
-    /** @var string */
-    private $footer;
+    private Header $header;
+    private string $payload;
+    private string $footer;
 
     /**
      * PasetoMessage constructor.

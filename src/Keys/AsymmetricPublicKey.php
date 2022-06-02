@@ -27,11 +27,8 @@ use function hash_equals;
  */
 class AsymmetricPublicKey implements ReceivingKey
 {
-    /** @var string $key */
-    protected $key = '';
-
-    /** @var ProtocolInterface $protocol */
-    protected $protocol;
+    protected string $key;
+    protected ProtocolInterface $protocol;
 
     /**
      * AsymmetricPublicKey constructor.

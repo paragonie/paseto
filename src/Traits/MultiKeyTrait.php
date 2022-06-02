@@ -20,10 +20,10 @@ use function is_null;
 trait MultiKeyTrait
 {
     /** @var ?Purpose $purpose */
-    protected $purpose = null;
+    protected ?Purpose $purpose = null;
 
     /** @var ?ProtocolInterface $version */
-    protected $version = null;
+    protected ?ProtocolInterface $version = null;
 
     /**
      * The intended version for this key.
@@ -150,7 +150,7 @@ trait MultiKeyTrait
      * @param Purpose $purpose
      * @return static
      */
-    public function setPurpose(Purpose $purpose): self
+    public function setPurpose(Purpose $purpose): static
     {
         $this->purpose = $purpose;
         return $this;
@@ -160,7 +160,7 @@ trait MultiKeyTrait
      * @param ProtocolInterface $version
      * @return static
      */
-    public function setVersion(ProtocolInterface $version): self
+    public function setVersion(ProtocolInterface $version): static
     {
         $this->version = $version;
         return $this;

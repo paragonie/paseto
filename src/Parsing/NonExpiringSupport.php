@@ -5,7 +5,7 @@ namespace ParagonIE\Paseto\Parsing;
 trait NonExpiringSupport
 {
     /** @var bool $nonExpiring */
-    protected $nonExpiring = false;
+    protected bool $nonExpiring = false;
 
     /**
      * Do not set an expiration header by default.
@@ -13,7 +13,7 @@ trait NonExpiringSupport
      * @param bool $nonExpiring
      * @return static
      */
-    public function setNonExpiring(bool $nonExpiring): self
+    public function setNonExpiring(bool $nonExpiring): static
     {
         $this->nonExpiring = $nonExpiring;
         return $this;

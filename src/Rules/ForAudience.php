@@ -15,11 +15,8 @@ use function hash_equals;
  */
 class ForAudience implements ValidationRuleInterface
 {
-    /** @var string $failure */
-    protected $failure = 'OK';
-
-    /** @var string $audience */
-    protected $audience;
+    protected string $failure = 'OK';
+    protected string $audience;
 
     /**
      * ForAudience constructor.

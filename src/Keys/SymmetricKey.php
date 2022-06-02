@@ -8,7 +8,6 @@ use ParagonIE\ConstantTime\{
 };
 use ParagonIE\Paseto\{
     Exception\InvalidVersionException,
-    Exception\PasetoException,
     ReceivingKey,
     SendingKey,
     ProtocolInterface,
@@ -32,11 +31,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     const INFO_ENCRYPTION = 'paseto-encryption-key';
     const INFO_AUTHENTICATION = 'paseto-auth-key-for-aead';
 
-    /** @var string $key */
-    protected $key = '';
-
-    /** @var ProtocolInterface $protocol */
-    protected $protocol;
+    protected string $key = '';
+    protected ProtocolInterface $protocol;
 
     /**
      * SymmetricKey constructor.

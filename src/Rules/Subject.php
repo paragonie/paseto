@@ -15,11 +15,8 @@ use function hash_equals;
  */
 class Subject implements ValidationRuleInterface
 {
-    /** @var string $failure */
-    protected $failure = 'OK';
-
-    /** @var string $subject */
-    protected $subject;
+    protected string $failure = 'OK';
+    protected string $subject;
 
     /**
      * Subject constructor.

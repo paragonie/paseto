@@ -37,25 +37,25 @@ class Builder extends PasetoBase
     use RegisteredClaims;
 
     /** @var string $cached */
-    protected $cached = '';
+    protected string $cached = '';
 
     /** @var string $implicitAssertions */
-    protected $implicitAssertions = '';
+    protected string $implicitAssertions = '';
 
     /** @var Closure|null $unitTestEncrypter -- Do not use this. It's for unit testing! */
     protected $unitTestEncrypter;
 
     /** @var SendingKey|null $key */
-    protected $key = null;
+    protected ?SendingKey $key = null;
 
     /** @var Purpose|null $purpose */
-    protected $purpose;
+    protected ?Purpose $purpose = null;
 
     /** @var ProtocolInterface $version */
-    protected $version;
+    protected ProtocolInterface $version;
 
     /** @var JsonToken $token */
-    protected $token;
+    protected JsonToken $token;
 
     /**
      * Builder constructor.

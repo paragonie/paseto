@@ -38,11 +38,8 @@ use function hash_equals,
  */
 class AsymmetricSecretKey implements SendingKey
 {
-    /** @var string $key */
-    protected $key;
-
-    /** @var ProtocolInterface $protocol */
-    protected $protocol;
+    protected string $key;
+    protected ProtocolInterface $protocol;
 
     /**
      * AsymmetricSecretKey constructor.

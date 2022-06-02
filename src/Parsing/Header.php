@@ -19,15 +19,8 @@ use function count, explode;
  */
 final class Header
 {
-    /**
-     * @var ProtocolInterface
-     */
-    private $protocol;
-
-    /**
-     * @var Purpose
-     */
-    private $purpose;
+    private ProtocolInterface $protocol;
+    private Purpose $purpose;
 
     /**
      * Validate message header strings
@@ -54,7 +47,6 @@ final class Header
      */
     public static function fromString(string $tainted): self
     {
-        /** @var array<int, string> $pieces */
         $pieces = explode('.', $tainted);
         $count = count($pieces);
         if ($count !== 3 or $pieces[2] !== '') {

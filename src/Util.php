@@ -136,7 +136,6 @@ abstract class Util
      */
     public static function extractFooter(string $payload): string
     {
-        /** @var array<int, string> $pieces */
         $pieces = explode('.', $payload);
         if (count($pieces) > 3) {
             return Base64UrlSafe::decode(array_pop($pieces));

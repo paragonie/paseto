@@ -17,11 +17,8 @@ use DateTimeInterface;
  */
 class NotExpired implements ValidationRuleInterface
 {
-    /** @var string $failure */
-    protected $failure = 'OK';
-
-    /** @var DateTimeInterface $now */
-    protected $now;
+    protected string $failure = 'OK';
+    protected DateTimeInterface $now;
 
     /**
      * NotExpired constructor.

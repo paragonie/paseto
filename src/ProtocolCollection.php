@@ -36,10 +36,10 @@ final class ProtocolCollection
     ];
 
     /** @var array<array-key, ProtocolInterface> */
-    private $protocols;
+    private array $protocols;
 
     /** @var array<string, ProtocolInterface> */
-    private static $headerLookup = [];
+    private static array $headerLookup = [];
 
     /**
      * @param ProtocolInterface ...$protocols

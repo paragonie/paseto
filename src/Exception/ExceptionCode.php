@@ -94,7 +94,7 @@ abstract class ExceptionCode
             case self::UNDEFINED_PROPERTY:
                 return "An expected property was not defined at runtime.";
             case self::INVALID_MESSAGE_LENGTH:
-                return "The recieved PASETO was too short to be valid.";
+                return "The received PASETO was too short to be valid.";
 
             default:
                 return 'Unknown error code';
