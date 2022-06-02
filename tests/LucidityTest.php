@@ -7,8 +7,6 @@ use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\KeyInterface;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -27,8 +25,6 @@ class LucidityTest extends TestCase
         $v4_sk = Version4::generateAsymmetricSecretKey();
         $v4_pk = $v4_sk->getPublicKey();
 
-        $v1_lk = new SymmetricKey($v4_lk->raw(), new Version1);
-        $v2_lk = new SymmetricKey($v4_lk->raw(), new Version2);
         $v3_lk = new SymmetricKey($v4_lk->raw(), new Version3);
         return [
             [
@@ -42,21 +38,13 @@ class LucidityTest extends TestCase
             ], [
                 new Version4,
                 $v4_lk,
-                $v1_lk
-            ], [
-                new Version4,
-                $v4_lk,
-                $v2_lk
-            ], [
-                new Version4,
-                $v4_lk,
                 $v3_lk
             ]
         ];
     }
 
     /**
-     * @param Version1|Version2|Version3|Version4 $protocol
+     * @param Version3|Version4 $protocol
      * @param KeyInterface $validKey
      * @param KeyInterface $invalidKey
      *

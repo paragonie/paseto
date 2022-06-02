@@ -9,8 +9,6 @@ use ParagonIE\Paseto\Keys\{
     SymmetricKey
 };
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -41,7 +39,7 @@ class MultiKeyTest extends TestCase
 
     public function setUp(): void
     {
-        $this->versions = [new Version1, new Version2, new Version3, new Version4];
+        $this->versions = [new Version3, new Version4];
     }
 
     protected function getReceivingKeyring(ProtocolInterface $v): array

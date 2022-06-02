@@ -9,8 +9,6 @@ use ParagonIE\Paseto\Keys\Version3\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version3\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version3\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -39,8 +37,6 @@ class Version3Test extends TestCase
         $this->assertInstanceOf(BasePK::class, $pk);
 
         $mapping = [
-            [new Version1, false],
-            [new Version2, false],
             [new Version3, true],
             [new Version4, false],
         ];
@@ -119,13 +115,13 @@ class Version3Test extends TestCase
         }
 
         try {
-            Version2::encrypt('test', $key);
+            Version4::encrypt('test', $key);
             $this->fail('Invalid version accepted');
         } catch (InvalidVersionException $ex) {
         }
         $encrypted = Version3::encrypt('test', $key);
         try {
-            Version2::decrypt($encrypted, $key);
+            Version4::decrypt($encrypted, $key);
             $this->fail('Invalid version accepted');
         } catch (InvalidVersionException $ex) {
         }
@@ -174,13 +170,13 @@ class Version3Test extends TestCase
         }
 
         try {
-            Version2::sign('test', $privateKey);
+            Version4::sign('test', $privateKey);
             $this->fail('Invalid version accepted');
         } catch (InvalidVersionException $ex) {
         }
         $signed = Version3::sign('test', $privateKey);
         try {
-            Version2::verify($signed, $publicKey);
+            Version4::verify($signed, $publicKey);
             $this->fail('Invalid version accepted');
         } catch (InvalidVersionException $ex) {
         }

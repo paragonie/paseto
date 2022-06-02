@@ -7,8 +7,6 @@ use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -30,24 +28,6 @@ class KnownAnswerTest extends TestCase
     {
         $this->cacheKey = sodium_crypto_shorthash_keygen();
         $this->dir = __DIR__ . '/test-vectors';
-    }
-
-    public function testV1()
-    {
-        $contents = json_decode(file_get_contents($this->dir . '/v1.json'), true);
-        if (!is_array($contents)) {
-            $this->markTestSkipped('Could not load test vector file');
-        }
-        $this->genericTests(new Version1(), $contents['tests']);
-    }
-
-    public function testV2()
-    {
-        $contents = json_decode(file_get_contents($this->dir . '/v2.json'), true);
-        if (!is_array($contents)) {
-            $this->markTestSkipped('Could not load test vector file');
-        }
-        $this->genericTests(new Version2(), $contents['tests']);
     }
 
     public function testV3()

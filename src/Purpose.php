@@ -7,16 +7,6 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     SymmetricKey
 };
-use ParagonIE\Paseto\Keys\Version1\{
-    AsymmetricSecretKey as V1AsymmetricSecretKey,
-    AsymmetricPublicKey as V1AsymmetricPublicKey,
-    SymmetricKey as V1SymmetricKey
-};
-use ParagonIE\Paseto\Keys\Version2\{
-    AsymmetricSecretKey as V2AsymmetricSecretKey,
-    AsymmetricPublicKey as V2AsymmetricPublicKey,
-    SymmetricKey as V2SymmetricKey
-};
 use ParagonIE\Paseto\Keys\Version3\{
     AsymmetricSecretKey as V3AsymmetricSecretKey,
     AsymmetricPublicKey as V3AsymmetricPublicKey,
@@ -62,13 +52,9 @@ final class Purpose
      */
     const SENDING_KEY_MAP = [
         SymmetricKey::class => 'local',
-        V1SymmetricKey::class => 'local',
-        V2SymmetricKey::class => 'local',
         V3SymmetricKey::class => 'local',
         V4SymmetricKey::class => 'local',
         AsymmetricSecretKey::class => 'public',
-        V1AsymmetricSecretKey::class => 'public',
-        V2AsymmetricSecretKey::class => 'public',
         V3AsymmetricSecretKey::class => 'public',
         V4AsymmetricSecretKey::class => 'public',
     ];
@@ -89,13 +75,9 @@ final class Purpose
      */
     const RECEIVING_KEY_MAP = [
         SymmetricKey::class => 'local',
-        V1SymmetricKey::class => 'local',
-        V2SymmetricKey::class => 'local',
         V3SymmetricKey::class => 'local',
         V4SymmetricKey::class => 'local',
         AsymmetricPublicKey::class => 'public',
-        V1AsymmetricPublicKey::class => 'public',
-        V2AsymmetricPublicKey::class => 'public',
         V3AsymmetricPublicKey::class => 'public',
         V4AsymmetricPublicKey::class => 'public',
     ];

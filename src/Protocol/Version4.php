@@ -42,7 +42,7 @@ use function hash_equals,
     sodium_crypto_sign_verify_detached;
 
 /**
- * Class Version1
+ * Class Version4
  * @package ParagonIE\Paseto\Protocol
  */
 class Version4 implements ProtocolInterface

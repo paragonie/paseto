@@ -50,7 +50,7 @@ use function hash_equals,
     random_bytes;
 
 /**
- * Class Version1
+ * Class Version3
  * @package ParagonIE\Paseto\Protocol
  */
 class Version3 implements ProtocolInterface

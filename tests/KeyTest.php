@@ -6,8 +6,6 @@ use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
 use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -17,61 +15,7 @@ class KeyTest extends TestCase
 {
     public function pemProvider()
     {
-        $rsaSecret = "-----BEGIN RSA PRIVATE KEY-----\n" .
-            "MIIEpAIBAAKCAQEAwM+9K1eihqGJrrmYuZ1Yq28tuEX8Y6gFDGob9XEYIyZBkFzf\n" .
-            "FGTl1PZY+b9wuXYdbN85IEj2etr8I62lG6EoVBe+TklU/L1NQ4tHWSUxHFmHrvM+\n" .
-            "iV7qKdE09B9WOXN1bI5ckyl3u7tDRJGxeuFqz/WjFQXEzBxhQ8SIS1LdMyl7uO9N\n" .
-            "eY+/Rx988BV8yRp1eA56xRItwrqgqhbUw8uPRImfPfPz5CAfm2KAL0vP7acsP5/l\n" .
-            "1mQ4qqKhEomHZhfGsMAihEtoFKJsTPDYN8/1Zses8+4TmQ5A6XZCyJOP5RdugiJf\n" .
-            "+s5vz62sl1SH4Ua5/FK4AB5M7KXPe/7H0UnmtwIDAQABAoIBAQCPtYaqmmvh6t7j\n" .
-            "IyRJHJTtWjV6hndik+YHZcMnAj9aW3Y8smv3GGkRfPe+VkkfgoDWF97NSHSmBzgt\n" .
-            "I4zPdiPH4daPJSs6IaJH+LSaJhVfqv9tj5GJ8/uWZX8RgZXTxlG8MrOfYCYE/8NY\n" .
-            "hTsCeqcRD2WZEq6m73QzfXWUptOGAFVjiCBRep5JGI/EMpUCLyqoclDf+tI58xgX\n" .
-            "PFNKUK4Qy3jVOaeWcPY8uWWhG93ImfiFfjU9EyXR62v3+PQf+e60NFbR0Z3YeIAe\n" .
-            "RNRiXIX1ZVznlvCmwHxic9vyzViJgnVqrSaScIgifLXd8omvJySIxMmzdo8haywR\n" .
-            "UgV+5PBpAoGBAPaBF7PPjzzbQPdvnHDa5RC4TU9YOOuy26hpKZaX9DUYlhcabY3x\n" .
-            "kXpIwJadyW3W9+UG1c9US+kS+8DIsqH1Q/BKHevqd4qGgP7IQsneSt6PI15GUUwR\n" .
-            "LaDpdfLZzFTsqM3ElVnOFlqo8ifsUPYT6IM0A4XEr/UHuJqnHYhPbAwzAoGBAMg9\n" .
-            "J1nii7/snem3/hxd9rAD1Vm4qhmKeU1dBVELouZXUQkrkTCsd+hMHAnD+zuKKF9r\n" .
-            "8mGKPhJiVIRFz0Pa5u5+DgcrmttxUzUkxG5bG7xkEEcgWJQ0FgCcOCVtChNfDabJ\n" .
-            "pM+hSR1xNgl9IM4RhAical9xlVpnnGZ8b0wR73dtAoGARY7F3nJaS+TenzO6ZEoQ\n" .
-            "SziGcDZH0ZKl0w7hsmHsgjMO3zQQ5/XbhDMVTSr3FOyNBO551MhHp1w49/xqE7N+\n" .
-            "2UZAzTpbQxaTPdHKruXwIH8pjseu1xUd2AMoyj9VHj2toGqxbibuPeTgeA2CBv41\n" .
-            "JRi/Sbbno+/q0pEHj1hB9+sCgYEAu65uGta3rB1o6a62M/pyhQoiyCTI8oWTKssc\n" .
-            "d5lTh1iiMNkwDhIplYb45MJX0beuHbo9BeWgRnT5yLzyByS/PRzToy7gx/xRREeB\n" .
-            "AfrNZWfYxgHwZIDpeoryKUopnnyCfCkWHDKNKFZ7kqtAu0U5nySUo37/wSvKMVlC\n" .
-            "rGdHL4UCgYB5TyKK52uHR5gkB536JL1yLOQJh1lboojBI8xtLk5CglurwnM7Jyo4\n" .
-            "z35jrPsWsuje6KwldW0LPwsHScAuhAW4rbLTBXD6EuHfQG0MIDlwWv+/1JIaWiq1\n" .
-            "Xch7+gCwqoGd6qthsw/J7bx9Htj8rqFQcbS9Lc+Ynoa+cdZ3PxpsNg==\n" .
-            "-----END RSA PRIVATE KEY-----";
-
-        $rsaPublic = "-----BEGIN PUBLIC KEY-----\n" .
-            "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwM+9K1eihqGJrrmYuZ1Y\n" .
-            "q28tuEX8Y6gFDGob9XEYIyZBkFzfFGTl1PZY+b9wuXYdbN85IEj2etr8I62lG6Eo\n" .
-            "VBe+TklU/L1NQ4tHWSUxHFmHrvM+iV7qKdE09B9WOXN1bI5ckyl3u7tDRJGxeuFq\n" .
-            "z/WjFQXEzBxhQ8SIS1LdMyl7uO9NeY+/Rx988BV8yRp1eA56xRItwrqgqhbUw8uP\n" .
-            "RImfPfPz5CAfm2KAL0vP7acsP5/l1mQ4qqKhEomHZhfGsMAihEtoFKJsTPDYN8/1\n" .
-            "Zses8+4TmQ5A6XZCyJOP5RdugiJf+s5vz62sl1SH4Ua5/FK4AB5M7KXPe/7H0Unm\n" .
-            "twIDAQAB\n" .
-            "-----END PUBLIC KEY-----";
-
         return [
-            [new AsymmetricSecretKey($rsaSecret, new Version1), $rsaSecret, $rsaPublic],
-            [
-                AsymmetricSecretKey::fromEncodedString(
-                    't6Rbm0ASlC9TnLprftH5iSVq0yo1_7QEdPMiUXbiGFbD2VZn-_XpTgHTuMrH3oiu2eDNo9vVRgvh39Exl5RBGg',
-                    new Version2
-                ),
-
-                "-----BEGIN EC PRIVATE KEY-----\n" .
-                "MC4CAQAwBQYDK2VwBCIEILekW5tAEpQvU5y6a37R+YklatMqNf+0BHTzIlF24hhW\n" .
-                "w9lWZ/v16U4B07jKx96IrtngzaPb1UYL4d/RMZeUQRo=\n" .
-                "-----END EC PRIVATE KEY-----",
-
-                "-----BEGIN PUBLIC KEY-----\n" .
-                "MCowBQYDK2VwAyEAw9lWZ/v16U4B07jKx96IrtngzaPb1UYL4d/RMZeUQRo=\n" .
-                "-----END PUBLIC KEY-----"
-            ],
             [
                 AsymmetricSecretKey::fromEncodedString(
                     'wqVipiU9_hsPvCayOadBKSHtAK0E3b6tgdTmipTXrLjSFM53nvNcUwtHPmBSU-sT',

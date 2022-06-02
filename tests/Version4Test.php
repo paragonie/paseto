@@ -9,8 +9,6 @@ use ParagonIE\Paseto\Keys\Version4\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version4\AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version4\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -35,8 +33,6 @@ class Version4Test extends TestCase
         $this->assertGreaterThanOrEqual(48, Binary::safeStrlen($secret->raw())); // PEM encoded
 
         $mapping = [
-            [new Version1, false],
-            [new Version2, false],
             [new Version3, false],
             [new Version4, true],
         ];
