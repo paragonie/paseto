@@ -11,7 +11,6 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
-        <DeprecatedClass errorLevel="info" />
         <UnsafeInstantiation errorLevel="info" />
     </issueHandlers>
 </psalm>
