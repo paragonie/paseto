@@ -4,7 +4,7 @@ namespace ParagonIE\Paseto\Tests;
 
 trait TestTrait
 {
-    protected function assertIsStringType($var)
+    protected function assertIsStringType($var): void
     {
         $this->assertTrue(gettype($var) === 'string');
     }

@@ -3,14 +3,23 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\Exception\EncodingException;
-use ParagonIE\Paseto\Exception\InvalidKeyException;
-use ParagonIE\Paseto\Exception\InvalidPurposeException;
-use ParagonIE\Paseto\Exception\InvalidVersionException;
-use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Exception\RuleViolation;
-use ParagonIE\Paseto\JsonToken;
+use ParagonIE\Paseto\{
+    Builder,
+    JsonToken,
+    Parser,
+    ProtocolCollection,
+    ProtocolInterface,
+    Purpose
+};
+use ParagonIE\Paseto\Exception\{
+    EncodingException,
+    InvalidKeyException,
+    InvalidPurposeException,
+    InvalidVersionException,
+    PasetoException,
+    RuleViolation,
+    SecurityException
+};
 use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
@@ -20,14 +29,14 @@ use ParagonIE\Paseto\Keys\Version4\{
     AsymmetricSecretKey as V4AsymmetricSecretKey,
     SymmetricKey as V4SymmetricKey
 };
-use ParagonIE\Paseto\Parser;
 use ParagonIE\Paseto\Protocol\Version4;
-use ParagonIE\Paseto\ProtocolInterface;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\ProtocolCollection;
-use ParagonIE\Paseto\Rules\FooterJSON;
-use ParagonIE\Paseto\Rules\NotExpired;
+use ParagonIE\Paseto\Rules\{
+    FooterJSON,
+    NotExpired
+};
 use PHPUnit\Framework\TestCase;
+use Exception;
+use TypeError;
 
 /**
  * Class ParserTest
@@ -36,7 +45,7 @@ use PHPUnit\Framework\TestCase;
 class ParserTest extends TestCase
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testTypeSafety()
     {
@@ -87,12 +96,13 @@ class ParserTest extends TestCase
 
     /**
      * @covers Parser::parse()
+     *
+     * @throws InvalidKeyException
+     * @throws InvalidPurposeException
      * @throws PasetoException
-     * @throws \Exception
-     * @throws \ParagonIE\Paseto\Exception\RuleViolation
-     * @throws \TypeError
+     * @throws RuleViolation
      */
-    public function testAuthToken()
+    public function testAuthToken(): void
     {
         $key = new SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version4());
         $V4key = new V4SymmetricKey('YELLOW SUBMARINE, BLACK WIZARDRY');
@@ -272,12 +282,11 @@ class ParserTest extends TestCase
     }
 
     /**
+     * @throws InvalidPurposeException
      * @throws PasetoException
-     * @throws \ParagonIE\Paseto\Exception\InvalidPurposeException
-     * @throws \ParagonIE\Paseto\Exception\SecurityException
-     * @throws \TypeError
+     * @throws SecurityException
      */
-    public function testExtractFooter()
+    public function testExtractFooter(): void
     {
         $footers = [
             [
@@ -306,8 +315,9 @@ class ParserTest extends TestCase
      * @throws InvalidPurposeException
      * @throws InvalidVersionException
      * @throws PasetoException
+     * @throws Exception
      */
-    public function testFooterJSON()
+    public function testFooterJSON(): void
     {
         $expires = (new \DateTime('NOW'))
             ->add(new \DateInterval('P01D'));
@@ -378,10 +388,10 @@ class ParserTest extends TestCase
 
     /**
      * @throws PasetoException
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
-    public function testTokenSignVerify()
+    public function testTokenSignVerify(): void
     {
         $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version4());
         $publicKey = $secretKey->getPublicKey();

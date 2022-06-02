@@ -2,8 +2,10 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
+use ParagonIE\Paseto\Keys\{
+    AsymmetricPublicKey,
+    AsymmetricSecretKey
+};
 use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\Protocol\{
     Version3,
@@ -13,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class KeyTest extends TestCase
 {
-    public function pemProvider()
+    public function pemProvider(): array
     {
         return [
             [
@@ -56,7 +58,7 @@ class KeyTest extends TestCase
     /**
      * @dataProvider pemProvider
      */
-    public function testExportPem(AsymmetricSecretKey $sk, string $skPem, string $pkPem)
+    public function testExportPem(AsymmetricSecretKey $sk, string $skPem, string $pkPem): void
     {
         $this->assertSame($skPem, $sk->encodePem());
         $pk = $sk->getPublicKey();
@@ -66,7 +68,7 @@ class KeyTest extends TestCase
         );
     }
 
-    public function testV3SampleKeys()
+    public function testV3SampleKeys(): void
     {
         $parameters = [
             [

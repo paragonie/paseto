@@ -9,6 +9,7 @@ use ParagonIE\ConstantTime\{
 use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Util;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 /**
  * Class UtilTest
@@ -52,7 +53,7 @@ class UtilTest extends TestCase
 
     /**
      * @covers Util::preAuthEncode()
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function testPreAuthEncode()
     {

@@ -2,8 +2,10 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
-use ParagonIE\Paseto\Exception\ExceptionCode;
-use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
+    PasetoException
+};
 use PHPUnit\Framework\TestCase;
 
 class ExceptionHelpfulTest extends TestCase

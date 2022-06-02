@@ -3,10 +3,12 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\JsonToken;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\Exception\PasetoException;
+use ParagonIE\Paseto\{
+    Builder,
+    Exception\PasetoException,
+    JsonToken,
+    Purpose
+};
 use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey

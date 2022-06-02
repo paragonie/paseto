@@ -19,7 +19,7 @@ class LucidityTest extends TestCase
      * @return array[]
      * @throws Exception
      */
-    public function luciditySymmetric()
+    public function luciditySymmetric(): array
     {
         $v4_lk = Version4::generateSymmetricKey();
         $v4_sk = Version4::generateAsymmetricSecretKey();
