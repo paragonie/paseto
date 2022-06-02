@@ -209,7 +209,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public function splitV3(string $salt): array
     {
-        $tmp = Util::HKDF(
+        $tmp = hash_hkdf(
             'sha384',
             $this->key,
             48,
@@ -217,7 +217,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
         );
         $encKey = Binary::safeSubstr($tmp, 0, 32);
         $nonce = Binary::safeSubstr($tmp, 32, 16);
-        $authKey = Util::HKDF(
+        $authKey = hash_hkdf(
             'sha384',
             $this->key,
             48,
@@ -268,14 +268,14 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public function split(string $salt): array
     {
-        $encKey = Util::HKDF(
+        $encKey = hash_hkdf(
             'sha384',
             $this->key,
             32,
             self::INFO_ENCRYPTION,
             $salt
         );
-        $authKey = Util::HKDF(
+        $authKey = hash_hkdf(
             'sha384',
             $this->key,
             32,
