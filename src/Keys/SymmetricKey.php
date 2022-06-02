@@ -204,7 +204,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $salt
      * @return array<int, string>
      *
-     * @throws PasetoException
      * @throws TypeError
      */
     public function splitV3(string $salt): array
@@ -252,37 +251,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
             $this->key
         );
         return [$encKey, $authKey, $nonce];
-    }
-
-    /**
-     * Split this key into two 256-bit keys, using HKDF-SHA384
-     * (with the given salt)
-     *
-     * Used in versions 1 and 2
-     *
-     * @param string $salt
-     * @return array<int, string>
-     *
-     * @throws PasetoException
-     * @throws TypeError
-     */
-    public function split(string $salt): array
-    {
-        $encKey = hash_hkdf(
-            'sha384',
-            $this->key,
-            32,
-            self::INFO_ENCRYPTION,
-            $salt
-        );
-        $authKey = hash_hkdf(
-            'sha384',
-            $this->key,
-            32,
-            self::INFO_AUTHENTICATION,
-            $salt
-        );
-        return [$encKey, $authKey];
     }
 
     /**
