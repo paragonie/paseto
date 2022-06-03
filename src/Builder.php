@@ -86,7 +86,7 @@ class Builder extends PasetoBase
     {
         if ($this->key instanceof SendingKeyRing) {
             $footer = $this->token->getFooterArray();
-            $index = static::KEY_ID_FOOTER_CLAIM;
+            $index = (string) static::KEY_ID_FOOTER_CLAIM;
             $keyId = (string) ($footer[$index] ?? '');
             $key = $this->key->fetchKey($keyId);
         } else {
@@ -115,7 +115,7 @@ class Builder extends PasetoBase
     {
         if ($this->key instanceof SendingKeyRing) {
             $footer = $this->token->getFooterArray();
-            $index = static::KEY_ID_FOOTER_CLAIM;
+            $index = (string) static::KEY_ID_FOOTER_CLAIM;
             $keyId = (string) ($footer[$index] ?? '');
             $key = $this->key->fetchKey($keyId);
         } else {
@@ -187,7 +187,7 @@ class Builder extends PasetoBase
         if (!$version) {
             $version = $key->getProtocol();
         }
-        $instance = new static($baseToken);
+        $instance = new self($baseToken);
         $instance->key = $key;
         $instance->version = $version;
         $instance->purpose = Purpose::local();
@@ -213,7 +213,7 @@ class Builder extends PasetoBase
         if (!$version) {
             $version = $key->getProtocol();
         }
-        $instance = new static($baseToken);
+        $instance = new self($baseToken);
         $instance->key = $key;
         $instance->version = $version;
         $instance->purpose = Purpose::local();
@@ -239,7 +239,7 @@ class Builder extends PasetoBase
         if (!$version) {
             $version = $key->getProtocol();
         }
-        $instance = new static($baseToken);
+        $instance = new self($baseToken);
         $instance->key = $key;
         $instance->version = $version;
         $instance->purpose = Purpose::public();
@@ -265,7 +265,7 @@ class Builder extends PasetoBase
         if (!$version) {
             $version = $key->getProtocol();
         }
-        $instance = new static($baseToken);
+        $instance = new self($baseToken);
         $instance->key = $key;
         $instance->version = $version;
         $instance->purpose = Purpose::public();

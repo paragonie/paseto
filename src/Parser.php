@@ -148,7 +148,7 @@ class Parser extends PasetoBase
         SymmetricKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::local(),
             $key
@@ -169,7 +169,7 @@ class Parser extends PasetoBase
         ReceivingKeyRing   $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::local(),
             $key
@@ -190,7 +190,7 @@ class Parser extends PasetoBase
         AsymmetricPublicKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::public(),
             $key
@@ -211,7 +211,7 @@ class Parser extends PasetoBase
         ReceivingKeyRing   $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::public(),
             $key

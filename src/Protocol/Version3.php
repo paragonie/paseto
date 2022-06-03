@@ -75,11 +75,11 @@ class Version3 implements ProtocolInterface
     }
 
     /**
-     * @return positive-int
+     * @return int
      */
     public static function getSymmetricKeyByteLength(): int
     {
-        return static::SYMMETRIC_KEY_BYTES;
+        return (int) static::SYMMETRIC_KEY_BYTES;
     }
 
     /**
@@ -92,7 +92,7 @@ class Version3 implements ProtocolInterface
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
-        return V3AsymmetricSecretKey::generate(new static);
+        return V3AsymmetricSecretKey::generate(new self());
     }
 
     /**
@@ -105,7 +105,7 @@ class Version3 implements ProtocolInterface
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
-        return V3SymmetricKey::generate(new static);
+        return V3SymmetricKey::generate(new self());
     }
 
     /**

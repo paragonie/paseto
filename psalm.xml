@@ -10,7 +10,4 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
-    <issueHandlers>
-        <UnsafeInstantiation errorLevel="info" />
-    </issueHandlers>
 </psalm>

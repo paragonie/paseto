@@ -218,7 +218,7 @@ class AsymmetricPublicKey implements ReceivingKey
         } else {
             $decoded = Base64UrlSafe::decode($encoded);
         }
-        return new static($decoded, $version);
+        return new self($decoded, $version);
     }
 
     /**

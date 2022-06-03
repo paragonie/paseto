@@ -6,16 +6,15 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{
-    Exception\ExceptionCode,
+use ParagonIE\Paseto\{Exception\ExceptionCode,
     Exception\InvalidVersionException,
+    Exception\PasetoException,
     ReceivingKey,
     SendingKey,
     ProtocolInterface,
     Protocol\Version3,
     Protocol\Version4,
-    Util
-};
+    Util};
 
 use Exception;
 use SodiumException;
@@ -66,8 +65,12 @@ class SymmetricKey implements ReceivingKey, SendingKey
     public static function generate(ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
-        return new static(
-            random_bytes($protocol::getSymmetricKeyByteLength()),
+        $length = $protocol::getSymmetricKeyByteLength();
+        if ($length < 32) {
+            throw new PasetoException("Invalid key length");
+        }
+        return new self(
+            random_bytes($length),
             $protocol
         );
     }
@@ -152,7 +155,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new static($decoded, $version);
+        return new self($decoded, $version);
     }
 
     /**
