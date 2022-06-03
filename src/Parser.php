@@ -37,7 +37,6 @@ use Throwable;
 /**
  * Class Parser
  * @package ParagonIE\Paseto
- * @psalm-suppress PropertyNotSetInConstructor
  */
 class Parser extends PasetoBase
 {
@@ -45,28 +44,28 @@ class Parser extends PasetoBase
     use RegisteredClaims;
 
     /** @var ProtocolCollection */
-    protected $allowedVersions;
+    protected ProtocolCollection $allowedVersions;
 
     /** @var string $implicitAssertions */
-    protected $implicitAssertions = '';
+    protected string $implicitAssertions = '';
 
-    /** @var ReceivingKey $key */
-    protected $key;
+    /** @var ?ReceivingKey $key */
+    protected ?ReceivingKey $key = null;
 
     /** @var ?int $maxClaimCount */
-    protected $maxClaimCount = null;
+    protected ?int $maxClaimCount = null;
 
     /** @var ?int $maxClaimDepth */
-    protected $maxClaimDepth = null;
+    protected ?int $maxClaimDepth = null;
 
     /** @var ?int $maxJsonLength */
-    protected $maxJsonLength = null;
+    protected ?int $maxJsonLength = null;
 
     /** @var Purpose|null $purpose */
-    protected $purpose;
+    protected ?Purpose $purpose;
 
     /** @var array<int, ValidationRuleInterface> */
-    protected $rules = [];
+    protected array $rules = [];
 
     /**
      * Parser constructor.
@@ -77,7 +76,6 @@ class Parser extends PasetoBase
      * @param array<int, ValidationRuleInterface> $parserRules
      *
      * @throws PasetoException
-     * @psalm-suppress RedundantConditionGivenDocblockType
      */
     public function __construct(
         ProtocolCollection $allowedVersions = null,
@@ -103,13 +101,21 @@ class Parser extends PasetoBase
      * Get the configured implicit assertions.
      *
      * @return array
+     * @throws EncodingException
      */
     public function getImplicitAssertions(): array
     {
         if (empty($this->implicitAssertions)) {
             return [];
         }
-        return (array) json_decode($this->implicitAssertions, true);
+        $decoded = json_decode($this->implicitAssertions, true);
+        if (!is_array($decoded)) {
+            throw new EncodingException(
+                'Implicit Assertion string is not a valid JSON object',
+                ExceptionCode::FOOTER_JSON_ERROR
+            );
+        }
+        return $decoded;
     }
 
     /**
@@ -142,7 +148,7 @@ class Parser extends PasetoBase
         SymmetricKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::local(),
             $key
@@ -163,7 +169,7 @@ class Parser extends PasetoBase
         ReceivingKeyRing   $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::local(),
             $key
@@ -184,7 +190,7 @@ class Parser extends PasetoBase
         AsymmetricPublicKey $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::public(),
             $key
@@ -205,7 +211,7 @@ class Parser extends PasetoBase
         ReceivingKeyRing   $key,
         ProtocolCollection $allowedVersions = null
     ): self {
-        return new static(
+        return new self(
             $allowedVersions ?? ProtocolCollection::default(),
             Purpose::public(),
             $key
@@ -389,7 +395,7 @@ class Parser extends PasetoBase
             }
         }
 
-        if (!($this->key instanceof ReceivingKeyRing)) {
+        if (!($this->key instanceof ReceivingKeyRing) && !is_null($this->key)) {
             if (!$purpose->isReceivingKeyValid($this->key)) {
                 throw new InvalidKeyException(
                     'Invalid key type',
@@ -593,7 +599,7 @@ class Parser extends PasetoBase
      */
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
-        if ($checkKeyType) {
+        if ($checkKeyType && !is_null($this->key)) {
             $expectedPurpose = Purpose::fromReceivingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(

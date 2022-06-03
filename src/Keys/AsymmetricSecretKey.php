@@ -10,6 +10,7 @@ use ParagonIE\ConstantTime\{
 };
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
+    Exception\InvalidVersionException,
     Exception\PasetoException,
     SendingKey,
     ProtocolInterface,
@@ -22,8 +23,6 @@ use ParagonIE\EasyECC\ECDSA\{
 };
 use Mdanter\Ecc\EccFactory;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -41,11 +40,8 @@ use function hash_equals,
  */
 class AsymmetricSecretKey implements SendingKey
 {
-    /** @var string $key */
-    protected $key;
-
-    /** @var ProtocolInterface $protocol */
-    protected $protocol;
+    protected string $key;
+    protected ProtocolInterface $protocol;
 
     /**
      * AsymmetricSecretKey constructor.
@@ -62,11 +58,7 @@ class AsymmetricSecretKey implements SendingKey
     ) {
         $protocol = $protocol ?? new Version4;
 
-        if (
-            hash_equals($protocol::header(), Version2::HEADER)
-                ||
-            hash_equals($protocol::header(), Version4::HEADER)
-        ) {
+        if (hash_equals($protocol::header(), Version4::HEADER)) {
             $len = Binary::safeStrlen($keyData);
             if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
                 $keyData = Binary::safeSubstr($keyData, 0, 64);
@@ -94,35 +86,28 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
-     * Initialize a v1 secret key.
+     * This used to initialize a v1 secret key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
      * @return self
      *
-     * @throws Exception
-     * @throws TypeError
-     *
-     * @deprecated See Version3 instead.
+     * @throws InvalidVersionException
      */
     public static function v1(string $keyMaterial): self
     {
-        return new self($keyMaterial, new Version1());
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
-     * Initialize a v2 secret key.
+     * This used to initialize a v2 secret key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
      * @return self
      *
-     * @throws Exception
-     * @throws TypeError
-     *
-     * @deprecated See Version4 instead.
+     * @throws InvalidVersionException
      */
     public static function v2(string $keyMaterial): self
-    {
-        return new self($keyMaterial, new Version2());
+    {throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -165,13 +150,7 @@ class AsymmetricSecretKey implements SendingKey
     public static function generate(ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
-
-        if (hash_equals($protocol::header(), Version1::HEADER)) {
-            $rsa = Version1::getRsa();
-            /** @var array<string, string> $keypair */
-            $keypair = $rsa->createKey(2048);
-            return new self(Util::dos2unix($keypair['privatekey']), $protocol);
-        } elseif (hash_equals($protocol::header(), Version3::HEADER)) {
+        if (hash_equals($protocol::header(), Version3::HEADER)) {
             return new self(
                 Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem()),
                 $protocol
@@ -217,16 +196,12 @@ class AsymmetricSecretKey implements SendingKey
     public function encodePem(): string
     {
         switch ($this->protocol::header()) {
-            case 'v1':
-                // Already PEM-encoded!
-                return $this->raw();
             case 'v3':
                 return Util::dos2unix((new SecretKey(
                     new ConstantTimeMath(),
                     EccFactory::getNistCurves()->generator384(),
                     gmp_init(Hex::encode($this->raw()), 16)
                 ))->exportPem());
-            case 'v2':
             case 'v4':
                 $encoded = Base64::encode(
                     Hex::decode('302e020100300506032b657004220420') . $this->raw()
@@ -252,7 +227,7 @@ class AsymmetricSecretKey implements SendingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new static($decoded, $version);
+        return new self($decoded, $version);
     }
 
     /**
@@ -285,11 +260,6 @@ class AsymmetricSecretKey implements SendingKey
     public function getPublicKey(): AsymmetricPublicKey
     {
         switch ($this->protocol::header()) {
-            case Version1::HEADER:
-                return new AsymmetricPublicKey(
-                    Version1::RsaGetPublicKey($this->key),
-                    $this->protocol
-                );
             case Version3::HEADER:
                 /** @var PublicKey $pk */
                 if (Binary::safeStrlen($this->key) === 48) {

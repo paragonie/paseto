@@ -6,17 +6,15 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{
+use ParagonIE\Paseto\{Exception\ExceptionCode,
+    Exception\InvalidVersionException,
     Exception\PasetoException,
     ReceivingKey,
     SendingKey,
     ProtocolInterface,
-    Protocol\Version1,
-    Protocol\Version2,
     Protocol\Version3,
     Protocol\Version4,
-    Util
-};
+    Util};
 
 use Exception;
 use SodiumException;
@@ -33,11 +31,8 @@ class SymmetricKey implements ReceivingKey, SendingKey
     const INFO_ENCRYPTION = 'paseto-encryption-key';
     const INFO_AUTHENTICATION = 'paseto-auth-key-for-aead';
 
-    /** @var string $key */
-    protected $key = '';
-
-    /** @var ProtocolInterface $protocol */
-    protected $protocol;
+    protected string $key = '';
+    protected ProtocolInterface $protocol;
 
     /**
      * SymmetricKey constructor.
@@ -70,44 +65,40 @@ class SymmetricKey implements ReceivingKey, SendingKey
     public static function generate(ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
-        return new static(
-            random_bytes($protocol::getSymmetricKeyByteLength()),
+        $length = $protocol::getSymmetricKeyByteLength();
+        if ($length < 32) {
+            throw new PasetoException("Invalid key length");
+        }
+        return new self(
+            random_bytes($length),
             $protocol
         );
     }
 
     /**
-     * Initialize a v1 symmetric key.
+     * This used to initialize a v1 symmetric key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
-     *
      * @return self
      *
-     * @throws Exception
-     * @throws TypeError
-     *
-     * @deprecated See Version3 instead.
+     * @throws InvalidVersionException
      */
     public static function v1(string $keyMaterial): self
     {
-        return new self($keyMaterial, new Version1());
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
-     * Initialize a v2 symmetric key.
+     * This used to initialize a v2 symmetric key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
-     *
      * @return self
      *
-     * @throws Exception
-     * @throws TypeError
-     *
-     * @deprecated See Version4 instead.
+     * @throws InvalidVersionException
      */
     public static function v2(string $keyMaterial): self
     {
-        return new self($keyMaterial, new Version2());
+        throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -164,7 +155,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new static($decoded, $version);
+        return new self($decoded, $version);
     }
 
     /**
@@ -205,12 +196,11 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @param string $salt
      * @return array<int, string>
      *
-     * @throws PasetoException
      * @throws TypeError
      */
     public function splitV3(string $salt): array
     {
-        $tmp = Util::HKDF(
+        $tmp = hash_hkdf(
             'sha384',
             $this->key,
             48,
@@ -218,7 +208,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
         );
         $encKey = Binary::safeSubstr($tmp, 0, 32);
         $nonce = Binary::safeSubstr($tmp, 32, 16);
-        $authKey = Util::HKDF(
+        $authKey = hash_hkdf(
             'sha384',
             $this->key,
             48,
@@ -253,37 +243,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
             $this->key
         );
         return [$encKey, $authKey, $nonce];
-    }
-
-    /**
-     * Split this key into two 256-bit keys, using HKDF-SHA384
-     * (with the given salt)
-     *
-     * Used in versions 1 and 2
-     *
-     * @param string $salt
-     * @return array<int, string>
-     *
-     * @throws PasetoException
-     * @throws TypeError
-     */
-    public function split(string $salt): array
-    {
-        $encKey = Util::HKDF(
-            'sha384',
-            $this->key,
-            32,
-            self::INFO_ENCRYPTION,
-            $salt
-        );
-        $authKey = Util::HKDF(
-            'sha384',
-            $this->key,
-            32,
-            self::INFO_AUTHENTICATION,
-            $salt
-        );
-        return [$encKey, $authKey];
     }
 
     /**

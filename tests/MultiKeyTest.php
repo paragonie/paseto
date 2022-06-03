@@ -3,19 +3,18 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey,
     SymmetricKey
 };
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
 use ParagonIE\Paseto\{
     Builder,
+    Exception\InvalidKeyException,
+    Exception\PasetoException,
     JsonToken,
     Parser,
     ProtocolInterface,
@@ -26,6 +25,7 @@ use ParagonIE\Paseto\{
     SendingKeyRing
 };
 use PHPUnit\Framework\TestCase;
+use Exception;
 use TypeError;
 
 /**
@@ -37,13 +37,18 @@ use TypeError;
 class MultiKeyTest extends TestCase
 {
     /** @var ProtocolInterface[] $versions */
-    protected $versions;
+    protected array $versions;
 
     public function setUp(): void
     {
-        $this->versions = [new Version1, new Version2, new Version3, new Version4];
+        $this->versions = [new Version3, new Version4];
     }
 
+    /**
+     * @throws PasetoException
+     * @throws InvalidKeyException
+     * @throws Exception
+     */
     protected function getReceivingKeyring(ProtocolInterface $v): array
     {
         $sk = AsymmetricSecretKey::generate($v);
@@ -54,6 +59,10 @@ class MultiKeyTest extends TestCase
         return [$sk, $rKeyring];
     }
 
+    /**
+     * @throws InvalidKeyException
+     * @throws PasetoException
+     */
     protected function getSendingKeyring(ProtocolInterface $v): SendingKeyRing
     {
         return (new SendingKeyRing())
@@ -229,10 +238,10 @@ class MultiKeyTest extends TestCase
     }
 
     /**
-     * @return array
-     * @throws \Exception
+     * @return array[]
+     * @throws Exception
      */
-    public function typeCheckData()
+    public function typeCheckData(): array
     {
         $v3_lk = Version3::generateSymmetricKey();
         $v3_sk = Version3::generateAsymmetricSecretKey();
@@ -480,8 +489,11 @@ class MultiKeyTest extends TestCase
      * @psalm-suppress PossiblyInvalidArgument
      * @throws PasetoException
      */
-    public function testTypeChecks($keyring, $key, bool $expectFail): void
-    {
+    public function testTypeChecks(
+        SendingKeyRing|ReceivingKeyRing$keyring,
+        SendingKey|ReceivingKey $key,
+        bool $expectFail
+    ): void {
         if ($expectFail) {
             $this->expectException(PasetoException::class);
         }

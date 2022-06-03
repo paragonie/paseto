@@ -15,11 +15,8 @@ use function hash_equals;
  */
 class IssuedBy implements ValidationRuleInterface
 {
-    /** @var string $failure */
-    protected $failure = 'OK';
-
-    /** @var string $issuer */
-    protected $issuer;
+    protected string $failure = 'OK';
+    protected string $issuer;
 
     /**
      * IssuedBy constructor.

@@ -1,30 +1,35 @@
 <?php
 namespace ParagonIE\Paseto\Tests;
 
-use FG\ASN1\Exception\ParserException;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Exception\InvalidVersionException;
-use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Keys\Version4\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\Version4\AsymmetricSecretKey;
-use ParagonIE\Paseto\Keys\Version4\SymmetricKey;
+use ParagonIE\Paseto\Exception\{
+    InvalidVersionException,
+    PasetoException
+};
+use ParagonIE\Paseto\Keys\Version4\{
+    AsymmetricPublicKey,
+    AsymmetricSecretKey,
+    SymmetricKey
+};
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
 use PHPUnit\Framework\TestCase;
+use Error;
+use Exception;
+use SodiumException;
+use TypeError;
 
 class Version4Test extends TestCase
 {
     use TestTrait;
 
     /**
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
-    public function testKeyGen()
+    public function testKeyGen(): void
     {
         $symmetric = Version4::generateSymmetricKey();
         $secret = Version4::generateAsymmetricSecretKey();
@@ -35,8 +40,6 @@ class Version4Test extends TestCase
         $this->assertGreaterThanOrEqual(48, Binary::safeStrlen($secret->raw())); // PEM encoded
 
         $mapping = [
-            [new Version1, false],
-            [new Version2, false],
             [new Version3, false],
             [new Version4, true],
         ];
@@ -49,9 +52,9 @@ class Version4Test extends TestCase
     }
 
     /**
-     * @throws ParserException
+     * @throws PasetoException
      */
-    public function testPublicKeyEncode()
+    public function testPublicKeyEncode(): void
     {
         $sk = AsymmetricSecretKey::generate();
         $pk = $sk->getPublicKey();
@@ -68,12 +71,12 @@ class Version4Test extends TestCase
      * @covers Version4::decrypt()
      * @covers Version4::encrypt()
      *
-     * @throws \Error
-     * @throws \Exception
-     * @throws \SodiumException
-     * @throws \TypeError
+     * @throws Error
+     * @throws Exception
+     * @throws SodiumException
+     * @throws TypeError
      */
-    public function testEncrypt()
+    public function testEncrypt(): void
     {
         $key = new SymmetricKey(random_bytes(32));
         $year = (int) (\date('Y')) + 1;
@@ -135,10 +138,10 @@ class Version4Test extends TestCase
      * @covers Version4::verify()
      *
      * @throws InvalidVersionException
-     * @throws \Exception
-     * @throws \TypeError
+     * @throws Exception
+     * @throws TypeError
      */
-    public function testSign()
+    public function testSign(): void
     {
         $privateKey = Version4::generateAsymmetricSecretKey();
         $publicKey = $privateKey->getPublicKey();

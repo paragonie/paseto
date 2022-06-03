@@ -8,8 +8,6 @@ use ParagonIE\Paseto\Exception\{
     SecurityException
 };
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -33,17 +31,15 @@ final class ProtocolCollection
      * @var array<int, class-string<ProtocolInterface>>
      */
     const ALLOWED = [
-        Version1::class,
-        Version2::class,
         Version3::class,
         Version4::class,
     ];
 
     /** @var array<array-key, ProtocolInterface> */
-    private $protocols;
+    private array $protocols;
 
     /** @var array<string, ProtocolInterface> */
-    private static $headerLookup = [];
+    private static array $headerLookup = [];
 
     /**
      * @param ProtocolInterface ...$protocols
@@ -167,7 +163,7 @@ final class ProtocolCollection
      */
     public static function v1(): self
     {
-        return new self(new Version1);
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -181,7 +177,7 @@ final class ProtocolCollection
      */
     public static function v2(): self
     {
-        return new self(new Version2);
+        throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**

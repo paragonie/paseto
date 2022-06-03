@@ -3,10 +3,12 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Rules;
 
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Exception\EncodingException;
-use ParagonIE\Paseto\JsonToken;
-use ParagonIE\Paseto\Util;
-use ParagonIE\Paseto\ValidationRuleInterface;
+use ParagonIE\Paseto\{
+    Exception\EncodingException,
+    JsonToken,
+    Util,
+    ValidationRuleInterface
+};
 use function is_array,
     json_decode,
     json_last_error_msg;
@@ -18,16 +20,16 @@ use function is_array,
 class FooterJSON implements ValidationRuleInterface
 {
     /** @var int $maxDepth */
-    protected $maxDepth;
+    protected int $maxDepth;
 
     /** @var int $maxKeys */
-    protected $maxKeys;
+    protected int $maxKeys;
 
     /** @var int $maxLength */
-    protected $maxLength;
+    protected int $maxLength;
 
     /** @var string $rejectReason */
-    protected $rejectReason = '';
+    protected string $rejectReason = '';
 
     /**
      * FooterJSON constructor.

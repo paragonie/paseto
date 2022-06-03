@@ -35,12 +35,21 @@ with PASETO, but PASETO is bundled with PASERK.
 
 ### Requirements
 
+#### PHP PASETO Library Version 3
+
+* Requires PHP 8.1 or newer.
+* For v3 tokens, the GMP and OpenSSL extensions are required.
+* For v4 tokens, the Sodium extension is strongly recommended (but this library will use
+  [sodium_compat](https://github.com/paragonie/sodium_compat) if it's not).
+* PASETO Protocol versions: `v3`, `v4`
+
 #### PHP PASETO Library Version 2
 
 * Requires PHP 7.1 or newer.
 * For v3 tokens, the GMP and OpenSSL extensions are required.
 * For v4 tokens, the Sodium extension is strongly recommended (but this library will use
   [sodium_compat](https://github.com/paragonie/sodium_compat) if it's not).
+* PASETO Protocol versions: `v1`, `v2`, `v3`, `v4`
 
 #### PHP PASETO Library Version 1
 
@@ -48,6 +57,7 @@ with PASETO, but PASETO is bundled with PASERK.
 * For v1 tokens, the OpenSSL extension is required.
 * For v2 tokens, the Sodium extension is strongly recommended (but this library will use
   [sodium_compat](https://github.com/paragonie/sodium_compat) if it's not).
+* PASETO Protocol versions: `v1`, `v2`
 
 ## Support Contracts
 

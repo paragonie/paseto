@@ -20,7 +20,7 @@ class SendingKeyRing implements KeyRingInterface, SendingKey
     const KEY_TYPE = SendingKey::class;
 
     /** @var array<string, SendingKey> */
-    protected $keys = [];
+    protected array $keys = [];
 
     /**
      * Add a key to this KeyID.

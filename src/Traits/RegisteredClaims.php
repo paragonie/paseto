@@ -13,7 +13,7 @@ trait RegisteredClaims
      *
      * Adopted from JWT for usability
      */
-    public $registeredClaims = [
+    public array $registeredClaims = [
         'iss' => 'Issuer',
         'sub' => 'Subject',
         'aud' => 'Audience',

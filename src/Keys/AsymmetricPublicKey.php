@@ -2,9 +2,15 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\{Base64, Base64UrlSafe, Binary, Hex};
+use ParagonIE\ConstantTime\{
+    Base64,
+    Base64UrlSafe,
+    Binary,
+    Hex
+};
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
+    Exception\InvalidVersionException,
     Exception\PasetoException,
     ReceivingKey,
     ProtocolInterface,
@@ -13,8 +19,6 @@ use ParagonIE\Paseto\{
 use FG\ASN1\Exception\ParserException;
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\Paseto\Protocol\{
-    Version1,
-    Version2,
     Version3,
     Version4
 };
@@ -28,11 +32,8 @@ use function hash_equals;
  */
 class AsymmetricPublicKey implements ReceivingKey
 {
-    /** @var string $key */
-    protected $key = '';
-
-    /** @var ProtocolInterface $protocol */
-    protected $protocol;
+    protected string $key;
+    protected ProtocolInterface $protocol;
 
     /**
      * AsymmetricPublicKey constructor.
@@ -48,11 +49,7 @@ class AsymmetricPublicKey implements ReceivingKey
     ) {
         $protocol = $protocol ?? new Version4;
 
-        if (
-            hash_equals($protocol::header(), Version2::HEADER)
-                ||
-            hash_equals($protocol::header(), Version4::HEADER)
-        ) {
+        if (hash_equals($protocol::header(), Version4::HEADER)) {
             $len = Binary::safeStrlen($keyMaterial);
             if ($len === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES << 1) {
                 // Try hex-decoding
@@ -84,33 +81,29 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
-     * Initialize a v1 public key.
+     * This used to initialize a v1 public key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
      * @return self
      *
-     * @throws Exception
-     *
-     * @deprecated See Version3 instead.
+     * @throws InvalidVersionException
      */
     public static function v1(string $keyMaterial): self
     {
-        return new self($keyMaterial, new Version1());
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
-     * Initialize a v2 public key.
+     * This used to initialize a v2 public key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
      * @return self
      *
-     * @throws Exception
-     *
-     * @deprecated See Version4 instead.
+     * @throws InvalidVersionException
      */
     public static function v2(string $keyMaterial): self
     {
-        return new self($keyMaterial, new Version2());
+        throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -176,9 +169,6 @@ class AsymmetricPublicKey implements ReceivingKey
     public function encodePem(): string
     {
         switch ($this->protocol::header()) {
-            case 'v1':
-                // Already PEM-encoded!
-                return $this->raw();
             case 'v3':
                 if (Binary::safeStrlen($this->key) > 49) {
                     return $this->key;
@@ -187,7 +177,6 @@ class AsymmetricPublicKey implements ReceivingKey
                     PublicKey::fromString($this->key, 'P384')
                         ->exportPem()
                 );
-            case 'v2':
             case 'v4':
                 $encoded = Base64::encode(
                     Hex::decode('302a300506032b6570032100') . $this->raw()
@@ -229,7 +218,7 @@ class AsymmetricPublicKey implements ReceivingKey
         } else {
             $decoded = Base64UrlSafe::decode($encoded);
         }
-        return new static($decoded, $version);
+        return new self($decoded, $version);
     }
 
     /**

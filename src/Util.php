@@ -18,16 +18,11 @@ use function array_pop,
     count,
     explode,
     hash_equals,
-    hash_hmac,
-    hash_hkdf,
     implode,
-    is_callable,
-    is_null,
     pack,
     preg_replace,
     preg_match_all,
     sodium_memzero,
-    str_repeat,
     str_replace;
 
 /**
@@ -98,90 +93,6 @@ abstract class Util
     }
 
     /**
-     * Computes the HKDF key derivation function specified in
-     * http://tools.ietf.org/html/rfc5869.
-     *
-     * Adapted from defuse/php-encryption
-     * @ref https://github.com/defuse/php-encryption/blob/aa72b8bc85311dbcc56c080823f0be12d78331c7/src/Core.php#L116-L190
-     *
-     * @param string      $hash   Hash Function
-     * @param string      $ikm    Initial Keying Material
-     * @param int         $length How many bytes?
-     * @param string      $info   What sort of key are we deriving?
-     * @param string|null $salt
-     * @return string
-     *
-     * @psalm-suppress MixedInferredReturnType This always returns a string!
-     * @throws PasetoException
-     * @throws TypeError
-     */
-    public static function HKDF(
-        string $hash,
-        string $ikm,
-        int $length,
-        string $info = '',
-        string $salt = null
-    ): string {
-        static $nativeHKDF = null;
-        if ($nativeHKDF === null) {
-            $nativeHKDF = is_callable('hash_hkdf');
-        }
-        if ($nativeHKDF) {
-            return hash_hkdf($hash, $ikm, $length, $info, $salt ?? '');
-        }
-
-        $digest_length = Binary::safeStrlen(
-            hash($hash, '', true)
-        );
-
-        // Sanity-check the desired output length.
-        if (empty($length) || $length < 0 || $length > 255 * $digest_length) {
-            throw new PasetoException(
-                'Bad output length requested of HKDF.',
-                ExceptionCode::HKDF_BAD_LENGTH
-            );
-        }
-
-        // "if [salt] not provided, is set to a string of HashLen zeroes."
-        if (is_null($salt)) {
-            $salt = str_repeat("\x00", $digest_length);
-        }
-
-        // HKDF-Extract:
-        // PRK = HMAC-Hash(salt, IKM)
-        // The salt is the HMAC key.
-        $prk = hash_hmac($hash, $ikm, $salt, true);
-
-        // HKDF-Expand:
-
-        // This check is useless, but it serves as a reminder to the spec.
-        if (Binary::safeStrlen($prk) < $digest_length) {
-            throw new PasetoException(
-                'An unexpected condition occurred in the HKDF internals',
-                ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
-            );
-        }
-
-        // T(0) = ''
-        $t          = '';
-        $last_block = '';
-        for ($block_index = 1; Binary::safeStrlen($t) < $length; ++$block_index) {
-            // T(i) = HMAC-Hash(PRK, T(i-1) | info | 0x??)
-            $last_block = hash_hmac(
-                $hash,
-                $last_block . $info . pack('C', $block_index),
-                $prk,
-                true
-            );
-            // T = T(1) | T(2) | T(3) | ... | T(N)
-            $t .= $last_block;
-        }
-
-        // ORM = first L octets of T
-        return Binary::safeSubstr($t, 0, $length);
-    }
-
-    /**
      * @param int $long
      * @return string
      */
@@ -225,7 +136,6 @@ abstract class Util
      */
     public static function extractFooter(string $payload): string
     {
-        /** @var array<int, string> $pieces */
         $pieces = explode('.', $payload);
         if (count($pieces) > 3) {
             return Base64UrlSafe::decode(array_pop($pieces));
@@ -292,9 +202,7 @@ abstract class Util
      *
      * @param string $byRef
      * @return void
-     * @param-out string $byRef
-     *
-     * @psalm-suppress ReferenceConstraintViolation
+     * @param-out ?string $byRef
      */
     public static function wipe(string &$byRef): void
     {
@@ -302,6 +210,7 @@ abstract class Util
             sodium_memzero($byRef);
         } catch (SodiumException $ex) {
             $byRef ^= $byRef;
+            unset($byRef);
         }
     }
 }

@@ -6,6 +6,10 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
+use ParagonIE\Paseto\{
+    ProtocolInterface,
+    Util
+};
 use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
@@ -20,10 +24,6 @@ use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     PasetoException,
     SecurityException
-};
-use ParagonIE\Paseto\{
-    ProtocolInterface,
-    Util
 };
 use ParagonIE\Paseto\Parsing\{
     Header,
@@ -42,7 +42,7 @@ use function hash_equals,
     sodium_crypto_sign_verify_detached;
 
 /**
- * Class Version1
+ * Class Version4
  * @package ParagonIE\Paseto\Protocol
  */
 class Version4 implements ProtocolInterface
@@ -62,11 +62,11 @@ class Version4 implements ProtocolInterface
     }
 
     /**
-     * @return positive-int
+     * @return int
      */
     public static function getSymmetricKeyByteLength(): int
     {
-        return static::SYMMETRIC_KEY_BYTES;
+        return (int) static::SYMMETRIC_KEY_BYTES;
     }
 
     /**
@@ -79,7 +79,7 @@ class Version4 implements ProtocolInterface
      */
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
-        return V4AsymmetricSecretKey::generate(new static);
+        return V4AsymmetricSecretKey::generate(new self());
     }
 
     /**
@@ -92,7 +92,7 @@ class Version4 implements ProtocolInterface
      */
     public static function generateSymmetricKey(): SymmetricKey
     {
-        return V4SymmetricKey::generate(new static);
+        return V4SymmetricKey::generate(new self());
     }
 
     /**
