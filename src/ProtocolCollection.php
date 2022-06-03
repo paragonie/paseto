@@ -163,7 +163,7 @@ final class ProtocolCollection
      */
     public static function v1(): self
     {
-        throw new InvalidVersionException("Version 1 was removed");
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -177,7 +177,7 @@ final class ProtocolCollection
      */
     public static function v2(): self
     {
-        throw new InvalidVersionException("Version 2 was removed");
+        throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**

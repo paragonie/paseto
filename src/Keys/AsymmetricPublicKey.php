@@ -2,7 +2,12 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\{Base64, Base64UrlSafe, Binary, Hex};
+use ParagonIE\ConstantTime\{
+    Base64,
+    Base64UrlSafe,
+    Binary,
+    Hex
+};
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\InvalidVersionException,
@@ -87,7 +92,7 @@ class AsymmetricPublicKey implements ReceivingKey
      */
     public static function v1(string $keyMaterial): self
     {
-        throw new InvalidVersionException("Version 1 was removed");
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -102,7 +107,7 @@ class AsymmetricPublicKey implements ReceivingKey
      */
     public static function v2(string $keyMaterial): self
     {
-        throw new InvalidVersionException("Version 2 was removed");
+        throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**

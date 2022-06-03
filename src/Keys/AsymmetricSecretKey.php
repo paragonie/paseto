@@ -8,12 +8,14 @@ use ParagonIE\ConstantTime\{
     Binary,
     Hex
 };
-use ParagonIE\Paseto\{Exception\ExceptionCode,
+use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
     Exception\InvalidVersionException,
     Exception\PasetoException,
     SendingKey,
     ProtocolInterface,
-    Util};
+    Util
+};
 use ParagonIE\EasyECC\ECDSA\{
     ConstantTimeMath,
     PublicKey,
@@ -96,7 +98,7 @@ class AsymmetricSecretKey implements SendingKey
      */
     public static function v1(string $keyMaterial): self
     {
-        throw new InvalidVersionException("Version 1 was removed");
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -111,7 +113,7 @@ class AsymmetricSecretKey implements SendingKey
      * @deprecated See Version4 instead.
      */
     public static function v2(string $keyMaterial): self
-    {throw new InvalidVersionException("Version 2 was removed");
+    {throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**

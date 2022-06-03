@@ -39,6 +39,7 @@ abstract class ExceptionCode
     const KEY_NOT_IN_KEYRING               = 0x3142EE1D;
     const UNDEFINED_PROPERTY               = 0x3142EE1E;
     const INVALID_MESSAGE_LENGTH           = 0x3142EE1F;
+    const OBSOLETE_PROTOCOL                = 0x3142EE20;
 
     /**
      * @param int $code
@@ -96,6 +97,8 @@ abstract class ExceptionCode
                 "An expected property was not defined at runtime.",
             self::INVALID_MESSAGE_LENGTH =>
                 "The received PASETO was too short to be valid.",
+            self::OBSOLETE_PROTOCOL =>
+                "The PASETO protocol version you specified was deprecated and then removed from this library.",
             default => 'Unknown error code',
         };
     }

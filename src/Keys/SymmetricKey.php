@@ -7,6 +7,7 @@ use ParagonIE\ConstantTime\{
     Binary
 };
 use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
     Exception\InvalidVersionException,
     ReceivingKey,
     SendingKey,
@@ -85,7 +86,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public static function v1(string $keyMaterial): self
     {
-        throw new InvalidVersionException("Version 1 was removed");
+        throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
@@ -102,7 +103,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public static function v2(string $keyMaterial): self
     {
-        throw new InvalidVersionException("Version 2 was removed");
+        throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
