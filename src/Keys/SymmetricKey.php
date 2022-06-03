@@ -73,16 +73,12 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
-     * Initialize a v1 symmetric key.
+     * This used to initialize a v1 symmetric key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
-     *
      * @return self
      *
-     * @throws Exception
-     * @throws TypeError
-     *
-     * @deprecated See Version3 instead.
+     * @throws InvalidVersionException
      */
     public static function v1(string $keyMaterial): self
     {
@@ -90,16 +86,12 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
-     * Initialize a v2 symmetric key.
+     * This used to initialize a v2 symmetric key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
-     *
      * @return self
      *
-     * @throws Exception
-     * @throws TypeError
-     *
-     * @deprecated See Version4 instead.
+     * @throws InvalidVersionException
      */
     public static function v2(string $keyMaterial): self
     {

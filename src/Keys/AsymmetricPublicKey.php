@@ -81,14 +81,12 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
-     * Initialize a v1 public key.
+     * This used to initialize a v1 public key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
      * @return self
      *
-     * @throws Exception
-     *
-     * @deprecated See Version3 instead.
+     * @throws InvalidVersionException
      */
     public static function v1(string $keyMaterial): self
     {
@@ -96,14 +94,12 @@ class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
-     * Initialize a v2 public key.
+     * This used to initialize a v2 public key, but it was deprecated then removed.
      *
      * @param string $keyMaterial
      * @return self
      *
-     * @throws Exception
-     *
-     * @deprecated See Version4 instead.
+     * @throws InvalidVersionException
      */
     public static function v2(string $keyMaterial): self
     {
