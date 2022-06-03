@@ -40,5 +40,9 @@
     ],
     "static-analysis": "psalm",
     "test": "phpunit"
+  },
+  "suggest": {
+    "ext-sodium": "Better performance for PASETO v4, secure memory zeroing",
+    "paragonie/paserk": "Key serialization, key wrapping, canonical key identification"
   }
 }
