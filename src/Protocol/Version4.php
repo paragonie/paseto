@@ -6,6 +6,10 @@ use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
+use ParagonIE\Paseto\{
+    ProtocolInterface,
+    Util
+};
 use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
@@ -20,10 +24,6 @@ use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     PasetoException,
     SecurityException
-};
-use ParagonIE\Paseto\{
-    ProtocolInterface,
-    Util
 };
 use ParagonIE\Paseto\Parsing\{
     Header,

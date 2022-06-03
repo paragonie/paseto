@@ -2,15 +2,17 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Traits;
 
-use ParagonIE\Paseto\Exception\ExceptionCode;
-use ParagonIE\Paseto\Exception\InvalidKeyException;
-use ParagonIE\Paseto\Exception\NotFoundException;
-use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\KeyInterface;
-use ParagonIE\Paseto\ProtocolInterface;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\ReceivingKey;
-use ParagonIE\Paseto\SendingKey;
+use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
+    Exception\InvalidKeyException,
+    Exception\NotFoundException,
+    Exception\PasetoException,
+    KeyInterface,
+    ProtocolInterface,
+    Purpose,
+    ReceivingKey,
+    SendingKey
+};
 use TypeError;
 use function is_null;
 

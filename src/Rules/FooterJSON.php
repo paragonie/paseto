@@ -3,10 +3,12 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Rules;
 
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Exception\EncodingException;
-use ParagonIE\Paseto\JsonToken;
-use ParagonIE\Paseto\Util;
-use ParagonIE\Paseto\ValidationRuleInterface;
+use ParagonIE\Paseto\{
+    Exception\EncodingException,
+    JsonToken,
+    Util,
+    ValidationRuleInterface
+};
 use function is_array,
     json_decode,
     json_last_error_msg;

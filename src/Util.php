@@ -202,9 +202,7 @@ abstract class Util
      *
      * @param string $byRef
      * @return void
-     * @param-out string $byRef
-     *
-     * @psalm-suppress ReferenceConstraintViolation
+     * @param-out ?string $byRef
      */
     public static function wipe(string &$byRef): void
     {
@@ -212,6 +210,7 @@ abstract class Util
             sodium_memzero($byRef);
         } catch (SodiumException $ex) {
             $byRef ^= $byRef;
+            unset($byRef);
         }
     }
 }

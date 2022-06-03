@@ -49,7 +49,6 @@ final class PasetoMessage
      */
     public static function fromString(string $tainted): self
     {
-        /** @var array<int, string> $pieces */
         $pieces = explode('.', $tainted);
         $count = count($pieces);
         if ($count < 3 || $count > 4) {

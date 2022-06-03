@@ -8,6 +8,22 @@ use ParagonIE\ConstantTime\{
     Binary,
     Hex
 };
+use ParagonIE\EasyECC\{
+    EasyECC,
+    Exception\InvalidPublicKeyException,
+    ECDSA\PublicKey,
+    ECDSA\SecretKey
+};
+use ParagonIE\Paseto\{
+    ProtocolInterface,
+    Util
+};
+use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
+    InvalidVersionException,
+    PasetoException,
+    SecurityException
+};
 use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey,
@@ -16,22 +32,6 @@ use ParagonIE\Paseto\Keys\{
 use ParagonIE\Paseto\Keys\Version3\{
     AsymmetricSecretKey as V3AsymmetricSecretKey,
     SymmetricKey as V3SymmetricKey
-};
-use ParagonIE\Paseto\Exception\{
-    ExceptionCode,
-    InvalidVersionException,
-    PasetoException,
-    SecurityException
-};
-use ParagonIE\EasyECC\EasyECC;
-use ParagonIE\EasyECC\Exception\InvalidPublicKeyException;
-use ParagonIE\EasyECC\ECDSA\{
-    PublicKey,
-    SecretKey
-};
-use ParagonIE\Paseto\{
-    ProtocolInterface,
-    Util
 };
 use ParagonIE\Paseto\Parsing\{
     Header,
@@ -139,7 +139,6 @@ class Version3 implements ProtocolInterface
      * @return string
      *
      * @throws PasetoException
-     * @throws SodiumException
      */
     public static function encrypt(
         string $data,
@@ -161,7 +160,6 @@ class Version3 implements ProtocolInterface
      * @return string
      *
      * @throws PasetoException
-     * @throws SodiumException
      * @throws TypeError
      */
     protected static function __encrypt(
@@ -203,7 +201,6 @@ class Version3 implements ProtocolInterface
      * @return string
      *
      * @throws PasetoException
-     * @throws SodiumException
      * @throws TypeError
      */
     public static function decrypt(
@@ -413,7 +410,6 @@ class Version3 implements ProtocolInterface
      * @throws Exception
      * @throws PasetoException
      * @throws SecurityException
-     * @throws SodiumException
      */
     public static function aeadEncrypt(
         string $plaintext,
@@ -476,7 +472,6 @@ class Version3 implements ProtocolInterface
      * @return string
      *
      * @throws PasetoException
-     * @throws SodiumException
      * @throws TypeError
      */
     public static function aeadDecrypt(

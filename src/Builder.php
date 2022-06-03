@@ -36,25 +36,13 @@ class Builder extends PasetoBase
     use NonExpiringSupport;
     use RegisteredClaims;
 
-    /** @var string $cached */
     protected string $cached = '';
-
-    /** @var string $implicitAssertions */
     protected string $implicitAssertions = '';
-
     /** @var Closure|null $unitTestEncrypter -- Do not use this. It's for unit testing! */
     protected $unitTestEncrypter;
-
-    /** @var SendingKey|null $key */
     protected ?SendingKey $key = null;
-
-    /** @var Purpose|null $purpose */
     protected ?Purpose $purpose = null;
-
-    /** @var ProtocolInterface $version */
     protected ProtocolInterface $version;
-
-    /** @var JsonToken $token */
     protected JsonToken $token;
 
     /**
@@ -98,7 +86,7 @@ class Builder extends PasetoBase
     {
         if ($this->key instanceof SendingKeyRing) {
             $footer = $this->token->getFooterArray();
-            $index = (string) static::KEY_ID_FOOTER_CLAIM;
+            $index = static::KEY_ID_FOOTER_CLAIM;
             $keyId = (string) ($footer[$index] ?? '');
             $key = $this->key->fetchKey($keyId);
         } else {
@@ -127,7 +115,7 @@ class Builder extends PasetoBase
     {
         if ($this->key instanceof SendingKeyRing) {
             $footer = $this->token->getFooterArray();
-            $index = (string) static::KEY_ID_FOOTER_CLAIM;
+            $index = static::KEY_ID_FOOTER_CLAIM;
             $keyId = (string) ($footer[$index] ?? '');
             $key = $this->key->fetchKey($keyId);
         } else {
@@ -150,7 +138,7 @@ class Builder extends PasetoBase
      *
      * @throws PasetoException
      */
-    public function get(string $claim)
+    public function get(string $claim): mixed
     {
         return $this->token->get($claim);
     }
@@ -302,7 +290,7 @@ class Builder extends PasetoBase
      *
      * @return self
      */
-    public function set(string $claim, $value): self
+    public function set(string $claim, mixed $value): self
     {
         $this->token->set($claim, $value);
         return $this;
@@ -370,7 +358,7 @@ class Builder extends PasetoBase
         if (!$time) {
             $time = new DateTime('NOW');
         }
-        return $this->set('iat', $time->format(DateTime::ATOM));
+        return $this->set('iat', $time->format(DateTimeInterface::ATOM));
     }
 
     /**
@@ -406,7 +394,7 @@ class Builder extends PasetoBase
         if (!$time) {
             $time = new DateTime('NOW');
         }
-        return $this->set('nbf', $time->format(DateTime::ATOM));
+        return $this->set('nbf', $time->format(DateTimeInterface::ATOM));
     }
 
     /**
@@ -601,7 +589,6 @@ class Builder extends PasetoBase
      * @return string
      *
      * @throws PasetoException
-     * @psalm-suppress MixedInferredReturnType
      */
     public function toString(): string
     {
@@ -698,7 +685,7 @@ class Builder extends PasetoBase
      * @param mixed $value
      * @return self
      */
-    public function with(string $claim, $value): self
+    public function with(string $claim, mixed $value): self
     {
         $cloned = clone $this;
         $cloned->cached = '';
@@ -886,22 +873,11 @@ class Builder extends PasetoBase
     }
 
     /**
-     * PHP before 7.4 cannot throw exceptions from __toString().
-     *
      * @return string
-     *
      * @throws PasetoException
      */
     public function __toString()
     {
-        if (PHP_VERSION_ID >= 70400) {
-            // Don't try to suppress on newer PHP.
-            return $this->toString();
-        }
-        try {
-            return $this->toString();
-        } catch (Throwable $ex) {
-            return '';
-        }
+        return $this->toString();
     }
 }

@@ -37,7 +37,6 @@ use Throwable;
 /**
  * Class Parser
  * @package ParagonIE\Paseto
- * @psalm-suppress PropertyNotSetInConstructor
  */
 class Parser extends PasetoBase
 {
@@ -50,8 +49,8 @@ class Parser extends PasetoBase
     /** @var string $implicitAssertions */
     protected string $implicitAssertions = '';
 
-    /** @var ReceivingKey $key */
-    protected ReceivingKey $key;
+    /** @var ?ReceivingKey $key */
+    protected ?ReceivingKey $key = null;
 
     /** @var ?int $maxClaimCount */
     protected ?int $maxClaimCount = null;
@@ -77,7 +76,6 @@ class Parser extends PasetoBase
      * @param array<int, ValidationRuleInterface> $parserRules
      *
      * @throws PasetoException
-     * @psalm-suppress RedundantConditionGivenDocblockType
      */
     public function __construct(
         ProtocolCollection $allowedVersions = null,
@@ -397,7 +395,7 @@ class Parser extends PasetoBase
             }
         }
 
-        if (!($this->key instanceof ReceivingKeyRing)) {
+        if (!($this->key instanceof ReceivingKeyRing) && !is_null($this->key)) {
             if (!$purpose->isReceivingKeyValid($this->key)) {
                 throw new InvalidKeyException(
                     'Invalid key type',
@@ -601,7 +599,7 @@ class Parser extends PasetoBase
      */
     public function setPurpose(Purpose $purpose, bool $checkKeyType = false): self
     {
-        if ($checkKeyType) {
+        if ($checkKeyType && !is_null($this->key)) {
             $expectedPurpose = Purpose::fromReceivingKey($this->key);
             if (!$purpose->equals($expectedPurpose)) {
                 throw new InvalidPurposeException(
