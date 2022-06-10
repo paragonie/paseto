@@ -59,8 +59,8 @@ final class PasetoMessage
         }
 
         $header = new Header($pieces[0], $pieces[1]);
-        $payload = Base64UrlSafe::decode($pieces[2]);
-        $footer = $count > 3 ? Base64UrlSafe::decode($pieces[3]) : '';
+        $payload = Base64UrlSafe::decodeNoPadding($pieces[2]);
+        $footer = $count > 3 ? Base64UrlSafe::decodeNoPadding($pieces[3]) : '';
 
         return new self($header, $payload, $footer);
     }

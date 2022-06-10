@@ -154,7 +154,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
-        $decoded = Base64UrlSafe::decode($encoded);
+        $decoded = Base64UrlSafe::decodeNoPadding($encoded);
         return new self($decoded, $version);
     }
 

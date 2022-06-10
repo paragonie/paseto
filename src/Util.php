@@ -138,7 +138,7 @@ abstract class Util
     {
         $pieces = explode('.', $payload);
         if (count($pieces) > 3) {
-            return Base64UrlSafe::decode(array_pop($pieces));
+            return Base64UrlSafe::decodeNoPadding(array_pop($pieces));
         }
         return '';
     }

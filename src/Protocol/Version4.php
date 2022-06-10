@@ -326,9 +326,8 @@ class Version4 implements ProtocolInterface
         }
 
         // PASETO Version 4 - Verify - Step 4:
-        $decoded = Base64UrlSafe::decode(
-            Binary::safeSubstr($signMsg, $headerLength),
-            true
+        $decoded = Base64UrlSafe::decodeNoPadding(
+            Binary::safeSubstr($signMsg, $headerLength)
         );
         $len = Binary::safeStrlen($decoded);
 
@@ -464,9 +463,8 @@ class Version4 implements ProtocolInterface
 
         // PASETO Version 4 - Decrypt - Step 4:
         try {
-            $decoded = Base64UrlSafe::decode(
-                Binary::safeSubstr($message, $expectedLen),
-                true
+            $decoded = Base64UrlSafe::decodeNoPadding(
+                Binary::safeSubstr($message, $expectedLen)
             );
         } catch (Throwable $ex) {
             throw new PasetoException(

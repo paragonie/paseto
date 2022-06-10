@@ -102,7 +102,7 @@ class KnownAnswerTest extends TestCase
             }
 
             // If we're here, the first step did not fail, so let's assert this:
-            $this->assertFalse($test['expect-fail'], 'This test was expected to fail');
+            $this->assertFalse($test['expect-fail'], 'This test was expected to fail: ' . $test['name']);
 
             // We should have the same plaintext payload:
             $this->assertSame($test['payload'], $decoded, $test['name']);
