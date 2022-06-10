@@ -326,7 +326,10 @@ class Version4 implements ProtocolInterface
         }
 
         // PASETO Version 4 - Verify - Step 4:
-        $decoded = Base64UrlSafe::decode(Binary::safeSubstr($signMsg, $headerLength));
+        $decoded = Base64UrlSafe::decode(
+            Binary::safeSubstr($signMsg, $headerLength),
+            true
+        );
         $len = Binary::safeStrlen($decoded);
 
         if ($len <= SODIUM_CRYPTO_SIGN_BYTES) {
@@ -462,7 +465,8 @@ class Version4 implements ProtocolInterface
         // PASETO Version 4 - Decrypt - Step 4:
         try {
             $decoded = Base64UrlSafe::decode(
-                Binary::safeSubstr($message, $expectedLen)
+                Binary::safeSubstr($message, $expectedLen),
+                true
             );
         } catch (Throwable $ex) {
             throw new PasetoException(
