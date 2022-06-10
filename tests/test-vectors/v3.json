@@ -158,6 +158,26 @@
       "payload": null,
       "footer": "arbitrary-string-that-isn't-json",
       "implicit-assertion": "{\"test-vector\":\"3-F-3\"}"
+    },
+    {
+      "name": "3-F-4",
+      "expect-fail": true,
+      "key": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
+      "nonce": "0000000000000000000000000000000000000000000000000000000000000000",
+      "token": "v3.local.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADbfcIURX_0pVZVU1mAESUzrKZAsRm2EsD6yBoZYn6cpVZNzSJOhSDN-sRaWjfLU-yn9OJH1J_B8GKtOQ9gSQlb8yk9Iza7teRdkiR89ZFyvPPsVjjFiepFUVcMa-LP18zV77f_crJrVXWa5PDNRkCSeHfBBeh",
+      "payload": null,
+      "footer": "",
+      "implicit-assertion": ""
+    },
+    {
+      "name": "3-F-5",
+      "expect-fail": true,
+      "nonce": "26f7553354482a1d91d4784627854b8da6b8042a7966523c2b404e8dbbe7f7f2",
+      "key": "707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f",
+      "token": "v3.local.JvdVM1RIKh2R1HhGJ4VLjaa4BCp5ZlI8K0BOjbvn9_LwY78vQnDait-Q-sjhF88dG2B0ROIIykcrGHn8wzPbTrqObHhyoKpjy3cwZQzLdiwRsdEK5SDvl02_HjWKJW2oqGMOQJlkYSIbXOgVuIQL65UMdW9WcjOpmqvjqD40NNzed-XPqn1T3w-bJvitYpUJL_rmihc=.eyJraWQiOiJVYmtLOFk2aXY0R1poRnA2VHgzSVdMV0xmTlhTRXZKY2RUM3pkUjY1WVp4byJ9",
+      "payload": null,
+      "footer": "{\"kid\":\"UbkK8Y6iv4GZhFp6Tx3IWLWLfNXSEvJcdT3zdR65YZxo\"}",
+      "implicit-assertion": ""
     }
   ]
 }
