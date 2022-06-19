@@ -12,6 +12,7 @@ use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\InvalidVersionException,
     Exception\PasetoException,
+    Exception\SecurityException,
     SendingKey,
     ProtocolInterface,
     Util
@@ -62,6 +63,16 @@ class AsymmetricSecretKey implements SendingKey
             $len = Binary::safeStrlen($keyData);
             if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
                 $keyData = Binary::safeSubstr($keyData, 0, 64);
+
+                /* Misuse-resistance: Prevent mismatched public keys
+                 *
+                 * See: https://github.com/MystenLabs/ed25519-unsafe-libs
+                 */
+                $seed = Binary::safeSubstr($keyData, 0, 32);
+                $sk = sodium_crypto_sign_seed_keypair($seed);
+                if (!hash_equals($keyData, $sk)) {
+                    throw new SecurityException("Key mismatch: Public key doesn't belong to private key.");
+                }
             } elseif ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
                 if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
                     throw new PasetoException(
