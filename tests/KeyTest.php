@@ -6,6 +6,8 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricPublicKey,
     AsymmetricSecretKey
 };
+use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\Protocol\{
     Version3,
@@ -115,5 +117,24 @@ class KeyTest extends TestCase
             $base64,
             'Re-encoding fails'
         );
+    }
+
+    public function testInvalidEdDSAKey()
+    {
+        if (!extension_loaded('sodium')) {
+            $this->markTestSkipped('Slow test on sodium_compat');
+        }
+        $keypair1 = sodium_crypto_sign_keypair();
+        $keypair2 = sodium_crypto_sign_keypair();
+
+        $good1 = Binary::safeSubstr($keypair1, 0, 64);
+        $good2 = Binary::safeSubstr($keypair2, 0, 64);
+        $bad = Binary::safeSubstr($keypair1, 0, 32) . Binary::safeSubstr($keypair2, 32, 32);
+
+        new AsymmetricSecretKey($good1, new Version4());
+        new AsymmetricSecretKey($good2, new Version4());
+
+        $this->expectException(SecurityException::class);
+        new AsymmetricSecretKey($bad, new Version4());
     }
 }
