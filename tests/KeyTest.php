@@ -2,8 +2,11 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
+use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\SecurityException;
 use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\AsymmetricSecretKey;
+use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\Protocol\{
     Version1,
@@ -169,5 +172,35 @@ class KeyTest extends TestCase
             $base64,
             'Re-encoding fails'
         );
+    }
+
+    public function ed25519provider()
+    {
+        return [
+            [new Version2],
+            [new Version4],
+        ];
+    }
+
+    /**
+     * @dataProvider ed25519provider
+     */
+    public function testInvalidEdDSAKey(ProtocolInterface $version)
+    {
+        if (!extension_loaded('sodium')) {
+            $this->markTestSkipped('Slow test on sodium_compat');
+        }
+        $keypair1 = sodium_crypto_sign_keypair();
+        $keypair2 = sodium_crypto_sign_keypair();
+
+        $good1 = Binary::safeSubstr($keypair1, 0, 64);
+        $good2 = Binary::safeSubstr($keypair2, 0, 64);
+        $bad = Binary::safeSubstr($keypair1, 0, 32) . Binary::safeSubstr($keypair2, 32, 32);
+
+        new AsymmetricSecretKey($good1, $version);
+        new AsymmetricSecretKey($good2, $version);
+
+        $this->expectException(SecurityException::class);
+        new AsymmetricSecretKey($bad, $version);
     }
 }
