@@ -131,10 +131,10 @@ class KeyTest extends TestCase
         $good2 = Binary::safeSubstr($keypair2, 0, 64);
         $bad = Binary::safeSubstr($keypair1, 0, 32) . Binary::safeSubstr($keypair2, 32, 32);
 
-        new AsymmetricSecretKey($good1, new Version4());
-        new AsymmetricSecretKey($good2, new Version4());
+        (new AsymmetricSecretKey($good1, new Version4()))->assertSecretKeyValid();
+        (new AsymmetricSecretKey($good2, new Version4()))->assertSecretKeyValid();
 
         $this->expectException(SecurityException::class);
-        new AsymmetricSecretKey($bad, new Version4());
+        (new AsymmetricSecretKey($bad, new Version4()))->assertSecretKeyValid();
     }
 }
