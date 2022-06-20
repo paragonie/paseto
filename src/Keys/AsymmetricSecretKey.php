@@ -29,6 +29,7 @@ use ParagonIE\Paseto\Protocol\{
     Version4
 };
 use Exception;
+use SodiumException;
 use TypeError;
 use function hash_equals,
     sodium_crypto_sign_keypair,
@@ -81,26 +82,36 @@ class AsymmetricSecretKey implements SendingKey
                 $keypair = sodium_crypto_sign_seed_keypair($keyData);
                 $keyData = Binary::safeSubstr($keypair, 0, 64);
             }
-
-            /* Misuse-resistance: Prevent mismatched public keys
-             *
-             * See: https://github.com/MystenLabs/ed25519-unsafe-libs
-             */
-            $sk = Binary::safeSubstr(
-                sodium_crypto_sign_seed_keypair(
-                    Binary::safeSubstr($keyData, 0, 32)
-                ),
-                0,
-                64
-            );
-            if (!hash_equals($keyData, $sk)) {
-                throw new SecurityException(
-                    "Key mismatch: Public key doesn't belong to private key."
-                );
-            }
         }
         $this->key = $keyData;
         $this->protocol = $protocol;
+    }
+    /**
+     * Optional check for libraries that load keys from semi-trustworthy sources.
+     *
+     * Misuse-resistance: Prevent mismatched public keys
+     * See: https://github.com/MystenLabs/ed25519-unsafe-libs
+     *
+     * @throws SecurityException
+     * @throws SodiumException
+     */
+    public function assertSecretKeyValid(): void
+    {
+        if (!($this->protocol instanceof Version4)) {
+            return;
+        }
+        $sk = Binary::safeSubstr(
+            sodium_crypto_sign_seed_keypair(
+                Binary::safeSubstr($this->key, 0, 32)
+            ),
+            0,
+            64
+        );
+        if (!hash_equals($this->key, $sk)) {
+            throw new SecurityException(
+                "Key mismatch: Public key doesn't belong to private key."
+            );
+        }
     }
 
     /**
