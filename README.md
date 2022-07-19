@@ -6,7 +6,7 @@
 [![License](https://poser.pugx.org/paragonie/paseto/license)](https://packagist.org/packages/paragonie/paseto)
 [![Downloads](https://img.shields.io/packagist/dt/paragonie/paseto.svg)](https://packagist.org/packages/paragonie/paseto)
 
-Paseto is everything you love about JOSE (JWT, JWE, JWS) without any of the
+Paseto (pɔːsɛtəʊ, paw-set-oh) is everything you love about JOSE (JWT, JWE, JWS) without any of the
 [many design deficits that plague the JOSE standards](https://paragonie.com/blog/2017/03/jwt-json-web-tokens-is-bad-standard-that-everyone-should-avoid).
 
 This library is a reference implementation of PASETO in the PHP language.
