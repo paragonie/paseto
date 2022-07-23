@@ -7,7 +7,11 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey
 };
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Exception\SecurityException;
+use ParagonIE\Paseto\Exception\{
+    PasetoException,
+    SecurityException,
+};
+use ParagonIE\Paseto\Keys\Version4\SymmetricKey;
 use ParagonIE\Paseto\Util;
 use ParagonIE\Paseto\Protocol\{
     Version3,
@@ -136,5 +140,29 @@ class KeyTest extends TestCase
 
         $this->expectException(SecurityException::class);
         (new AsymmetricSecretKey($bad, new Version4()))->assertSecretKeyValid();
+    }
+
+    public function testShortV3SymmetricKey()
+    {
+        $this->expectException(PasetoException::class);
+        new SymmetricKey(random_bytes(31), new Version3());
+    }
+
+    public function testShortV4SymmetricKey()
+    {
+        $this->expectException(PasetoException::class);
+        new SymmetricKey(random_bytes(31), new Version4());
+    }
+
+    public function testLongV3SymmetricKey()
+    {
+        $this->expectException(PasetoException::class);
+        new SymmetricKey(random_bytes(33), new Version3());
+    }
+
+    public function testLongV4SymmetricKey()
+    {
+        $this->expectException(PasetoException::class);
+        new SymmetricKey(random_bytes(33), new Version4());
     }
 }
