@@ -39,13 +39,31 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * @param string $keyMaterial
      * @param ProtocolInterface|null $protocol
+     *
+     * @throws PasetoException
      */
     public function __construct(
         string $keyMaterial,
         ProtocolInterface $protocol = null
     ) {
-        $this->key = $keyMaterial;
         $this->protocol = $protocol ?? new Version4;
+
+        switch ($this->protocol::class) {
+            case Version3::class:
+                if (strlen($keyMaterial) !== Version3::SYMMETRIC_KEY_BYTES) {
+                    throw new PasetoException("Invalid key length");
+                }
+                break;
+            case Version4::class:
+                if (strlen($keyMaterial) !== Version4::SYMMETRIC_KEY_BYTES) {
+                    throw new PasetoException("Invalid key length");
+                }
+                break;
+            default:
+                throw new InvalidVersionException("Unsupported version", ExceptionCode::BAD_VERSION);
+        }
+
+        $this->key = $keyMaterial;
     }
 
     /**
