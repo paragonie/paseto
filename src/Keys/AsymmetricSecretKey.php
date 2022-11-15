@@ -42,6 +42,7 @@ use function hash_equals,
  */
 class AsymmetricSecretKey implements SendingKey
 {
+    protected bool $hasAssertedValid = false;
     protected string $key;
     protected ProtocolInterface $protocol;
 
@@ -80,6 +81,14 @@ class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * @return bool
+     */
+    public function hasAssertedSecretKeyValid(): bool
+    {
+        return $this->hasAssertedValid;
+    }
+
+    /**
      * Optional check for libraries that load keys from semi-trustworthy sources.
      *
      * Misuse-resistance: Prevent mismatched public keys
@@ -105,6 +114,7 @@ class AsymmetricSecretKey implements SendingKey
                 "Key mismatch: Public key doesn't belong to private key."
             );
         }
+        $this->hasAssertedValid = true;
     }
 
     /**
