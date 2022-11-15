@@ -246,6 +246,10 @@ class Version4 implements ProtocolInterface
         string $footer = '',
         string $implicit = ''
     ): string {
+        /* Misuse resistance: Don't permit invalid EdDSA keys */
+        if (!$key->hasAssertedSecretKeyValid()) {
+            $key->assertSecretKeyValid();;
+        }
         /*
          * PASETO Version 4 - Sign - Step 1
          *
