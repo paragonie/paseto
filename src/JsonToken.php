@@ -188,6 +188,17 @@ class JsonToken
     }
 
     /**
+     * Checks to see if an arbitrary claim exists.
+     *
+     * @param string $claim
+     * @return bool
+     */
+    public function has(string $claim): bool
+    {
+        return array_key_exists($claim, $this->claims);
+    }
+    
+    /**
      * Set a claim to an arbitrary value.
      *
      * @param string $claim
