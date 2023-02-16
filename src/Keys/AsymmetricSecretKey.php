@@ -237,11 +237,7 @@ class AsymmetricSecretKey implements SendingKey
     {
         switch ($this->protocol::header()) {
             case 'v3':
-                return Util::dos2unix((new SecretKey(
-                    new ConstantTimeMath(),
-                    EccFactory::getNistCurves()->generator384(),
-                    gmp_init(Hex::encode($this->raw()), 16)
-                ))->exportPem());
+                return $this->key;
             case 'v4':
                 $encoded = Base64::encode(
                     Hex::decode('302e020100300506032b657004220420') . $this->raw()
@@ -267,6 +263,18 @@ class AsymmetricSecretKey implements SendingKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
+
+        if ($version && hash_equals($version::header(), Version3::HEADER) && Binary::safeStrlen($decoded) === 48) {
+            return new self(
+                (new SecretKey(
+                    new ConstantTimeMath(),
+                    EccFactory::getNistCurves()->generator384(),
+                    \gmp_init(Hex::encode($decoded), 16)
+                ))->exportPem(),
+                $version
+            );
+        }
+
         return new self($decoded, $version);
     }
 

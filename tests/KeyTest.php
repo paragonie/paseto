@@ -7,6 +7,9 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey
 };
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\EasyECC\ECDSA\SecretKey;
+use ParagonIE\Paseto\Builder;
+use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Exception\{
     PasetoException,
     SecurityException,
@@ -164,5 +167,20 @@ class KeyTest extends TestCase
     {
         $this->expectException(PasetoException::class);
         new SymmetricKey(random_bytes(33), new Version4());
+    }
+
+    public function testVersion3BuildTokenWithReadingSecretKeyFromEncodedString()
+    {
+        $privateKey = AsymmetricSecretKey::generate(new Version3());
+        $privateKeyEncoded = $privateKey->encode();
+
+        (new Builder())
+            ->setKey(AsymmetricSecretKey::fromEncodedString($privateKeyEncoded, new Version3()))
+            ->setVersion(new Version3())
+            ->setPurpose(Purpose::public())
+            ->setIssuer('Test')
+            ->toString();
+
+        $this->addToAssertionCount(1);
     }
 }
