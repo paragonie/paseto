@@ -2,12 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\{
-    Base64,
-    Base64UrlSafe,
-    Binary,
-    Hex
-};
+use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\InvalidVersionException,
@@ -17,12 +12,10 @@ use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
-use ParagonIE\EasyECC\ECDSA\{
-    ConstantTimeMath,
-    PublicKey,
-    SecretKey
+use ParagonIE\Paseto\Keys\{
+    Version3\AsymmetricSecretKey as V3AsymmetricSecretKey,
+    Version4\AsymmetricSecretKey as V4AsymmetricSecretKey,
 };
-use Mdanter\Ecc\EccFactory;
 use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
@@ -31,16 +24,13 @@ use Exception;
 use SodiumException;
 use TypeError;
 use function hash_equals,
-    sodium_crypto_sign_keypair,
-    sodium_crypto_sign_publickey_from_secretkey,
-    sodium_crypto_sign_secretkey,
     sodium_crypto_sign_seed_keypair;
 
 /**
  * Class AsymmetricSecretKey
  * @package ParagonIE\Paseto\Keys
  */
-class AsymmetricSecretKey implements SendingKey
+abstract class AsymmetricSecretKey implements SendingKey
 {
     protected bool $hasAssertedValid = false;
     protected string $key;
@@ -50,32 +40,15 @@ class AsymmetricSecretKey implements SendingKey
      * AsymmetricSecretKey constructor.
      *
      * @param string $keyData
-     * @param ProtocolInterface|null $protocol
+     * @param ProtocolInterface $protocol
      *
      * @throws Exception
      * @throws TypeError
      */
-    public function __construct(
+    protected function __construct(
         string $keyData,
-        ProtocolInterface $protocol = null
+        ProtocolInterface $protocol
     ) {
-        $protocol = $protocol ?? new Version4;
-
-        if (hash_equals($protocol::header(), Version4::HEADER)) {
-            $len = Binary::safeStrlen($keyData);
-            if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {
-                $keyData = Binary::safeSubstr($keyData, 0, 64);
-            } elseif ($len !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
-                if ($len !== SODIUM_CRYPTO_SIGN_SEEDBYTES) {
-                    throw new PasetoException(
-                        'Secret keys must be 32 or 64 bytes long; ' . $len . ' given.',
-                        ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
-                    );
-                }
-                $keypair = sodium_crypto_sign_seed_keypair($keyData);
-                $keyData = Binary::safeSubstr($keypair, 0, 64);
-            }
-        }
         $this->key = $keyData;
         $this->protocol = $protocol;
     }
@@ -154,28 +127,28 @@ class AsymmetricSecretKey implements SendingKey
      * Initialize a v3 secret key.
      *
      * @param string $keyMaterial
-     * @return self
+     * @return V3AsymmetricSecretKey
      *
      * @throws Exception
      * @throws TypeError
      */
-    public static function v3(string $keyMaterial): self
+    public static function v3(string $keyMaterial): V3AsymmetricSecretKey
     {
-        return new self($keyMaterial, new Version3());
+        return new V3AsymmetricSecretKey($keyMaterial, new Version3());
     }
 
     /**
      * Initialize a v4 secret key.
      *
      * @param string $keyMaterial
-     * @return self
+     * @return V4AsymmetricSecretKey
      *
      * @throws Exception
      * @throws TypeError
      */
-    public static function v4(string $keyMaterial): self
+    public static function v4(string $keyMaterial): V4AsymmetricSecretKey
     {
-        return new self($keyMaterial, new Version4());
+        return new V4AsymmetricSecretKey($keyMaterial, new Version4());
     }
 
     /**
@@ -191,17 +164,30 @@ class AsymmetricSecretKey implements SendingKey
     {
         $protocol = $protocol ?? new Version4;
         if (hash_equals($protocol::header(), Version3::HEADER)) {
-            return new self(
-                Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem()),
-                $protocol
-            );
+            return V3AsymmetricSecretKey::generate($protocol);
         }
-        return new self(
-            sodium_crypto_sign_secretkey(
-                sodium_crypto_sign_keypair()
-            ),
-            $protocol
-        );
+
+        return V4AsymmetricSecretKey::generate($protocol);
+    }
+
+    /**
+     * Initialize a public key.
+     *
+     * @param string $keyMaterial
+     * @return self
+     *
+     * @throws PasetoException
+     * @throws Exception
+     */
+    public static function create(string $keyMaterial, ProtocolInterface $protocol = null): self
+    {
+        $protocol = $protocol ?? new Version4();
+
+        if (hash_equals($protocol::header(), Version3::HEADER)) {
+            return new V3AsymmetricSecretKey($keyMaterial);
+        }
+
+        return new V4AsymmetricSecretKey($keyMaterial);
     }
 
     /**
@@ -211,21 +197,7 @@ class AsymmetricSecretKey implements SendingKey
      *
      * @throws TypeError
      */
-    public function encode(): string
-    {
-        // V3 secret keys -- coerce as just secret key bytes, no PEM
-        if ($this->protocol instanceof Version3 && Binary::safeStrlen($this->key) > 48) {
-            return Base64UrlSafe::encodeUnpadded(
-                Hex::decode(
-                    gmp_strval(
-                        SecretKey::importPem($this->key)->getSecret(),
-                        16
-                    )
-                )
-            );
-        }
-        return Base64UrlSafe::encodeUnpadded($this->key);
-    }
+    abstract public function encode(): string;
 
     /**
      * Return a PEM-encoded secret key
@@ -233,22 +205,7 @@ class AsymmetricSecretKey implements SendingKey
      * @return string
      * @throws PasetoException
      */
-    public function encodePem(): string
-    {
-        switch ($this->protocol::header()) {
-            case 'v3':
-                return $this->key;
-            case 'v4':
-                $encoded = Base64::encode(
-                    Hex::decode('302e020100300506032b657004220420') . $this->raw()
-                );
-                return "-----BEGIN EC PRIVATE KEY-----\n" .
-                    Util::dos2unix(chunk_split($encoded, 64)).
-                    "-----END EC PRIVATE KEY-----";
-            default:
-                throw new PasetoException("Unknown version");
-        }
-    }
+    abstract public function encodePem(): string;
 
     /**
      * Initialize a secret key from a base64url-encoded string.
@@ -262,20 +219,11 @@ class AsymmetricSecretKey implements SendingKey
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
-        $decoded = Base64UrlSafe::decodeNoPadding($encoded);
-
-        if ($version && hash_equals($version::header(), Version3::HEADER) && Binary::safeStrlen($decoded) === 48) {
-            return new self(
-                (new SecretKey(
-                    new ConstantTimeMath(),
-                    EccFactory::getNistCurves()->generator384(),
-                    \gmp_init(Hex::encode($decoded), 16)
-                ))->exportPem(),
-                $version
-            );
+        if ($version && hash_equals($version::header(), Version3::HEADER)) {
+            return V3AsymmetricSecretKey::fromEncodedString($encoded);
         }
 
-        return new self($decoded, $version);
+        return V4AsymmetricSecretKey::fromEncodedString($encoded);
     }
 
     /**
@@ -305,34 +253,7 @@ class AsymmetricSecretKey implements SendingKey
      * @throws Exception
      * @throws TypeError
      */
-    public function getPublicKey(): AsymmetricPublicKey
-    {
-        switch ($this->protocol::header()) {
-            case Version3::HEADER:
-                /** @var PublicKey $pk */
-                if (Binary::safeStrlen($this->key) === 48) {
-                    $pk = PublicKey::promote(
-                        (new SecretKey(
-                            new ConstantTimeMath(),
-                            EccFactory::getNistCurves()->generator384(),
-                            gmp_init(Hex::encode($this->key), 16)
-                        ))->getPublicKey()
-                    );
-                } else {
-                    /** @var PublicKey $pk */
-                    $pk = SecretKey::importPem($this->key)->getPublicKey();
-                }
-                return new AsymmetricPublicKey(
-                    PublicKey::importPem($pk->exportPem())->toString(), // Compressed point
-                    $this->protocol
-                );
-            default:
-                return new AsymmetricPublicKey(
-                    sodium_crypto_sign_publickey_from_secretkey($this->key),
-                    $this->protocol
-                );
-        }
-    }
+    abstract public function getPublicKey(): AsymmetricPublicKey;
 
     /**
      * Get the raw key contents.

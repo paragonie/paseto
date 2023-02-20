@@ -150,7 +150,7 @@ class KnownAnswerTest extends TestCase
         bool $public = false
     ): AsymmetricPublicKey|SymmetricKey {
         if ($public) {
-            return new AsymmetricPublicKey($key, $protocol);
+            return AsymmetricPublicKey::newVersionKey($key, $protocol);
         }
         return new SymmetricKey(Hex::decode($key), $protocol);
     }

@@ -50,7 +50,7 @@ class ParserTest extends TestCase
     public function testTypeSafety()
     {
         $keypair = sodium_crypto_sign_keypair();
-        $publicKey = new AsymmetricPublicKey(sodium_crypto_sign_publickey($keypair), new Version4());
+        $publicKey = AsymmetricPublicKey::newVersionKey(sodium_crypto_sign_publickey($keypair), new Version4());
 
         // Let's encrypt a bad oken using the Ed25519 public key
         $badKey = new SymmetricKey(sodium_crypto_sign_publickey($keypair), new Version4());
@@ -159,7 +159,7 @@ class ParserTest extends TestCase
         $V4builder = (Builder::getLocal($V4key, new Version4(), $V4token));
         // Switch to asymmetric-key crypto:
         $builder->setPurpose(Purpose::public())
-                ->setKey(new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version4()), true);
+                ->setKey(AsymmetricSecretKey::create('YELLOW SUBMARINE, BLACK WIZARDRY', new Version4()), true);
         $V4builder->setPurpose(Purpose::public())
                 ->setKey(new V4AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
@@ -393,7 +393,7 @@ class ParserTest extends TestCase
      */
     public function testTokenSignVerify(): void
     {
-        $secretKey = new AsymmetricSecretKey('YELLOW SUBMARINE, BLACK WIZARDRY', new Version4());
+        $secretKey = AsymmetricSecretKey::create('YELLOW SUBMARINE, BLACK WIZARDRY', new Version4());
         $publicKey = $secretKey->getPublicKey();
         $parser = new Parser(ProtocolCollection::default(), Purpose::public(), $publicKey);
         $tainted = 'v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9_LCndxFrGmFDZbUAgixuWRPZv7J67DA6AT69KfJU2APR8J-APE1RxlKrdFyumd2h_GjcU4tdNgHlgZpuKf3BCQ';

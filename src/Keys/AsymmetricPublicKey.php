@@ -2,12 +2,6 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys;
 
-use ParagonIE\ConstantTime\{
-    Base64,
-    Base64UrlSafe,
-    Binary,
-    Hex
-};
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
     Exception\InvalidVersionException,
@@ -16,8 +10,11 @@ use ParagonIE\Paseto\{
     ProtocolInterface,
     Util
 };
+use ParagonIE\Paseto\Keys\{
+    Version3\AsymmetricPublicKey as V3AsymmetricPublicKey,
+    Version4\AsymmetricPublicKey as V4AsymmetricPublicKey,
+};
 use FG\ASN1\Exception\ParserException;
-use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\Paseto\Protocol\{
     Version3,
     Version4
@@ -30,7 +27,7 @@ use function hash_equals;
  * Class AsymmetricPublicKey
  * @package ParagonIE\Paseto\Keys
  */
-class AsymmetricPublicKey implements ReceivingKey
+abstract class AsymmetricPublicKey implements ReceivingKey
 {
     protected string $key;
     protected ProtocolInterface $protocol;
@@ -39,35 +36,14 @@ class AsymmetricPublicKey implements ReceivingKey
      * AsymmetricPublicKey constructor.
      *
      * @param string $keyMaterial
-     * @param ProtocolInterface|null $protocol
+     * @param ProtocolInterface $protocol
      *
      * @throws Exception
      */
-    public function __construct(
+    protected function __construct(
         string $keyMaterial,
-        ProtocolInterface $protocol = null
+        ProtocolInterface $protocol
     ) {
-        $protocol = $protocol ?? new Version4;
-
-        if (hash_equals($protocol::header(), Version4::HEADER)) {
-            $len = Binary::safeStrlen($keyMaterial);
-            if ($len === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES << 1) {
-                // Try hex-decoding
-                $keyMaterial = Hex::decode($keyMaterial);
-            } else if ($len !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
-                throw new PasetoException(
-                    'Public keys must be 32 bytes long; ' . $len . ' given.',
-                    ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR
-                );
-            }
-        } elseif (hash_equals($protocol::header(), Version3::HEADER)) {
-            $len = Binary::safeStrlen($keyMaterial);
-            if ($len === 98) {
-                $keyMaterial = Version3::getPublicKeyPem($keyMaterial);
-            } elseif ($len === 49) {
-                $keyMaterial = Version3::getPublicKeyPem(Hex::encode($keyMaterial));
-            }
-        }
         $this->key = $keyMaterial;
         $this->protocol = $protocol;
     }
@@ -110,26 +86,50 @@ class AsymmetricPublicKey implements ReceivingKey
      * Initialize a v3 public key.
      *
      * @param string $keyMaterial
-     * @return self
+     * @return V3AsymmetricPublicKey
      *
      * @throws Exception
      */
-    public static function v3(string $keyMaterial): self
+    public static function v3(string $keyMaterial): V3AsymmetricPublicKey
     {
-        return new self($keyMaterial, new Version3());
+        return new V3AsymmetricPublicKey($keyMaterial, new Version3());
     }
 
     /**
      * Initialize a v4 public key.
      *
      * @param string $keyMaterial
-     * @return self
+     * @return V4AsymmetricPublicKey
      *
      * @throws Exception
      */
-    public static function v4(string $keyMaterial): self
+    public static function v4(string $keyMaterial): V4AsymmetricPublicKey
     {
-        return new self($keyMaterial, new Version4());
+        return new V4AsymmetricPublicKey($keyMaterial, new Version4());
+    }
+
+    /**
+     * Initialize a public key.
+     *
+     * @param string $keyMaterial
+     * @return self
+     *
+     * @throws PasetoException
+     * @throws Exception
+     */
+    public static function newVersionKey(string $keyMaterial, ProtocolInterface $protocol = null): self
+    {
+        $protocol = $protocol ?? new Version4();
+
+        if ($protocol instanceof Version3) {
+            return new V3AsymmetricPublicKey($keyMaterial);
+        }
+
+        if ($protocol instanceof Version4) {
+            return new V4AsymmetricPublicKey($keyMaterial);
+        }
+
+        throw new PasetoException("Unknown version");
     }
 
     /**
@@ -140,55 +140,14 @@ class AsymmetricPublicKey implements ReceivingKey
      * @throws TypeError
      * @throws PasetoException
      */
-    public function encode(): string
-    {
-        if (hash_equals($this->protocol::header(), Version3::HEADER)) {
-            if (Binary::safeStrlen($this->key) === 49) {
-                Base64UrlSafe::encodeUnpadded($this->key);
-            } elseif (Binary::safeStrlen($this->key) === 98) {
-                Base64UrlSafe::encodeUnpadded(Hex::decode($this->key));
-            }
-            try {
-                return Base64UrlSafe::encodeUnpadded(
-                    Hex::decode(
-                        Version3::getPublicKeyCompressed($this->key)
-                    )
-                );
-            } catch (ParserException $ex) {
-                throw new PasetoException("ASN.1 Parser Exception", 0, $ex);
-            }
-        }
-        return Base64UrlSafe::encodeUnpadded($this->key);
-    }
+    abstract public function encode(): string;
 
     /**
      * Return a PEM-encoded public key
      *
      * @return string
      */
-    public function encodePem(): string
-    {
-        switch ($this->protocol::header()) {
-            case 'v3':
-                if (Binary::safeStrlen($this->key) > 49) {
-                    return $this->key;
-                }
-                return Util::dos2unix(
-                    PublicKey::fromString($this->key, 'P384')
-                        ->exportPem()
-                );
-            case 'v4':
-                $encoded = Base64::encode(
-                    Hex::decode('302a300506032b6570032100') . $this->raw()
-                );
-                return "-----BEGIN PUBLIC KEY-----\n" .
-                    Util::dos2unix(chunk_split($encoded, 64)).
-                    "-----END PUBLIC KEY-----";
-            default:
-                throw new PasetoException("Unknown version");
-        }
-
-    }
+    abstract public function encodePem(): string;
 
     /**
      * Initialize a public key from a base64url-encoded string.
@@ -206,37 +165,17 @@ class AsymmetricPublicKey implements ReceivingKey
             $version = new Version4();
         }
         if (hash_equals($version::header(), Version3::HEADER)) {
-            $decodeString = Base64UrlSafe::decode($encoded);
-            $length = Binary::safeStrlen($encoded);
-            if ($length === 98) {
-                $decoded = Version3::getPublicKeyPem($decodeString);
-            } elseif ($length === 49) {
-                $decoded = Version3::getPublicKeyPem(Hex::encode($decodeString));
-            } else {
-                $decoded = $decodeString;
-            }
+            return V3AsymmetricPublicKey::fromEncodedString($encoded, $version);
         } else {
-            $decoded = Base64UrlSafe::decode($encoded);
+            return V4AsymmetricPublicKey::fromEncodedString($encoded, $version);
         }
-        return new self($decoded, $version);
     }
 
     /**
      * @return string
      * @throws ParserException
      */
-    public function toHexString(): string
-    {
-        if (hash_equals($this->protocol::header(), Version3::HEADER)) {
-            if (Binary::safeStrlen($this->key) === 98) {
-                return $this->key;
-            }
-            if (Binary::safeStrlen($this->key) !== 49) {
-                return Version3::getPublicKeyCompressed($this->key);
-            }
-        }
-        return Hex::encode($this->key);
-    }
+    abstract public function toHexString(): string;
 
     /**
      * Get the version of PASETO that this key is intended for.
