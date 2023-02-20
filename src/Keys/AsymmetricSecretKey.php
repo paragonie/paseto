@@ -176,10 +176,9 @@ abstract class AsymmetricSecretKey implements SendingKey
      * @param string $keyMaterial
      * @return self
      *
-     * @throws PasetoException
      * @throws Exception
      */
-    public static function create(string $keyMaterial, ProtocolInterface $protocol = null): self
+    public static function newVersionKey(string $keyMaterial, ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4();
 

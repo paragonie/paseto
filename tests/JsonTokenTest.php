@@ -61,7 +61,7 @@ class JsonTokenTest extends TestCase
 
         // Now let's switch gears to asymmetric crypto:
         $builder->setPurpose(Purpose::public())
-                ->setKey(AsymmetricSecretKey::create('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
+                ->setKey(AsymmetricSecretKey::newVersionKey('YELLOW SUBMARINE, BLACK WIZARDRY'), true);
         $this->assertSame(
             'v4.public.eyJkYXRhIjoidGhpcyBpcyBhIHNpZ25lZCBtZXNzYWdlIiwiZXhwIjoiMjAzOS0wMS0wMVQwMDowMDowMCswMDowMCJ9_LCndxFrGmFDZbUAgixuWRPZv7J67DA6AT69KfJU2APR8J-APE1RxlKrdFyumd2h_GjcU4tdNgHlgZpuKf3BCQ',
             (string) $builder,

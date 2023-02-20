@@ -114,22 +114,17 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      * @param string $keyMaterial
      * @return self
      *
-     * @throws PasetoException
      * @throws Exception
      */
     public static function newVersionKey(string $keyMaterial, ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4();
 
-        if ($protocol instanceof Version3) {
+        if (hash_equals($protocol::header(), Version3::HEADER)) {
             return new V3AsymmetricPublicKey($keyMaterial);
         }
 
-        if ($protocol instanceof Version4) {
-            return new V4AsymmetricPublicKey($keyMaterial);
-        }
-
-        throw new PasetoException("Unknown version");
+        return new V4AsymmetricPublicKey($keyMaterial);
     }
 
     /**
