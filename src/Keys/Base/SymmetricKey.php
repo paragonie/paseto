@@ -51,12 +51,12 @@ class SymmetricKey implements ReceivingKey, SendingKey
 
         switch ($this->protocol::class) {
             case Version3::class:
-                if (strlen($keyMaterial) !== Version3::SYMMETRIC_KEY_BYTES) {
+                if (Binary::safeStrlen($keyMaterial) !== Version3::SYMMETRIC_KEY_BYTES) {
                     throw new PasetoException("Invalid key length");
                 }
                 break;
             case Version4::class:
-                if (strlen($keyMaterial) !== Version4::SYMMETRIC_KEY_BYTES) {
+                if (Binary::safeStrlen($keyMaterial) !== Version4::SYMMETRIC_KEY_BYTES) {
                     throw new PasetoException("Invalid key length");
                 }
                 break;

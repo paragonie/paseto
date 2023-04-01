@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version3;
 
-use ParagonIE\Paseto\Keys\Base\SymmetricKey as BaseSymmetricKey;
+use ParagonIE\Paseto\Keys\SymmetricKey as BaseSymmetricKey;
 use ParagonIE\Paseto\Protocol\Version3;
 use ParagonIE\Paseto\ProtocolInterface;
 

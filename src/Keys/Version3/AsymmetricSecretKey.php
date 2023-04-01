@@ -10,7 +10,7 @@ use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\ECDSA\ConstantTimeMath;
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
-use ParagonIE\Paseto\Keys\Base\AsymmetricSecretKey as BaseSecretKey;
+use ParagonIE\Paseto\Keys\AsymmetricSecretKey as BaseSecretKey;
 use ParagonIE\Paseto\Protocol\Version3;
 use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Util;

@@ -9,7 +9,7 @@ use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Keys\Base\AsymmetricSecretKey as BaseSecretKey;
+use ParagonIE\Paseto\Keys\AsymmetricSecretKey as BaseSecretKey;
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Util;
