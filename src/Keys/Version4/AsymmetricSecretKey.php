@@ -25,12 +25,11 @@ class AsymmetricSecretKey extends BaseSecretKey
      * AsymmetricSecretKey constructor.
      *
      * @param string $keyData
-     * @param ProtocolInterface|null $protocol
      *
      * @throws Exception
      * @throws TypeError
      */
-    public function __construct(string $keyData, ProtocolInterface $protocol = null)
+    public function __construct(string $keyData)
     {
         $len = Binary::safeStrlen($keyData);
         if ($len === SODIUM_CRYPTO_SIGN_KEYPAIRBYTES) {

@@ -26,13 +26,14 @@ class AsymmetricSecretKey extends BaseSecretKey
      * AsymmetricSecretKey constructor.
      *
      * @param string $keyData
-     * @param ProtocolInterface|null $protocol
      *
      * @throws Exception
      * @throws TypeError
      */
-    public function __construct(string $keyData, ProtocolInterface $protocol = null)
-    {
+    public function __construct(
+        #[\SensitiveParameter]
+        string $keyData
+    ) {
         parent::__construct($keyData, new Version3());
     }
 
@@ -62,7 +63,7 @@ class AsymmetricSecretKey extends BaseSecretKey
 
     public function encodePem(): string
     {
-        return $this->key;
+        return Util::dos2unix($this->key);
     }
 
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self

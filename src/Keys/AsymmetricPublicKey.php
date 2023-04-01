@@ -112,6 +112,7 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      * Initialize a public key.
      *
      * @param string $keyMaterial
+     * @param ?ProtocolInterface $protocol
      * @return self
      *
      * @throws Exception

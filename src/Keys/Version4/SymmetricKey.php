@@ -16,11 +16,9 @@ class SymmetricKey extends BaseSymmetricKey
      * SymmetricKey constructor.
      *
      * @param string $keyMaterial
-     * @param ProtocolInterface|null $protocol
      */
     public function __construct(
-        string $keyMaterial,
-        ProtocolInterface $protocol = null
+        string $keyMaterial
     ) {
         return parent::__construct($keyMaterial, new Version4());
     }

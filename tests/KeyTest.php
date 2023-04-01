@@ -7,6 +7,7 @@ use ParagonIE\Paseto\Keys\{
     AsymmetricSecretKey
 };
 use ParagonIE\ConstantTime\Binary;
+use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Purpose;

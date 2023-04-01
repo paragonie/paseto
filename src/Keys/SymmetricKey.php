@@ -169,6 +169,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @return self
      *
      * @throws TypeError
+     * @throws PasetoException
      */
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {

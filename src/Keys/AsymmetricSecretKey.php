@@ -174,6 +174,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      * Initialize a public key.
      *
      * @param string $keyMaterial
+     * @param ?ProtocolInterface $protocol
      * @return self
      *
      * @throws Exception

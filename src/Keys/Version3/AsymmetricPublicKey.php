@@ -25,12 +25,11 @@ class AsymmetricPublicKey extends BasePublicKey
      * AsymmetricPublicKey constructor.
      *
      * @param string $keyData
-     * @param ProtocolInterface|null $protocol
      *
      * @throws Exception
      * @throws TypeError
      */
-    public function __construct(string $keyData, ProtocolInterface $protocol = null)
+    public function __construct(string $keyData)
     {
         $len = Binary::safeStrlen($keyData);
         if ($len === 98) {
