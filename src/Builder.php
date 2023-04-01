@@ -2,30 +2,25 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
+use Closure;
 use DateInterval;
-use ParagonIE\Paseto\Exception\{
-    EncodingException,
+use DateTime;
+use DateTimeInterface;
+use ParagonIE\Paseto\Exception\{EncodingException,
     ExceptionCode,
     InvalidKeyException,
     InvalidPurposeException,
     NotFoundException,
-    PasetoException
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricSecretKey,
-    SymmetricKey
-};
+    PasetoException};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricSecretKey, Base\SymmetricKey};
 use ParagonIE\Paseto\Parsing\NonExpiringSupport;
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
-use Closure;
-use DateTime;
-use DateTimeInterface;
 use Throwable;
-use function is_null,
-    is_string,
-    json_decode,
-    json_encode;
+use function is_null;
+use function is_string;
+use function json_decode;
+use function json_encode;
 
 /**
  * Class Builder

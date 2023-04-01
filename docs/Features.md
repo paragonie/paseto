@@ -53,8 +53,7 @@ This can be visualized as follows:
 
 ```php
 <?php
-use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Builder;use ParagonIE\Paseto\Keys\Base\SymmetricKey;
 
 $key = SymmetricKey::v4();
 $builder = Builder::getLocal($key);
@@ -77,8 +76,7 @@ as JSON strings).
 
 ```php
 <?php
-use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Builder;use ParagonIE\Paseto\Keys\Base\SymmetricKey;
 
 /** @var SymmetricKey $key */
 $builder = Builder::getLocal($key)
@@ -95,9 +93,7 @@ For example:
 
 ```php
 <?php
-use ParagonIE\Paseto\Parser;
-use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Rules\FooterJSON;
+use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Parser;use ParagonIE\Paseto\Rules\FooterJSON;
 
 /** @var SymmetricKey $key */
 $parser = Parser::getLocal($key)
@@ -121,8 +117,7 @@ You can set the implicit assertions in the Builder...
 
 ```php
 <?php
-use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Builder;use ParagonIE\Paseto\Keys\Base\SymmetricKey;
 
 /** @var SymmetricKey $key */
 $builder = Builder::getLocal($key)
@@ -136,9 +131,7 @@ $token = $builder->toString();
 
 ```php
 <?php
-use ParagonIE\Paseto\Parser;
-use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Rules\FooterJSON;
+use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Parser;
 
 /**
  * @var SymmetricKey $key

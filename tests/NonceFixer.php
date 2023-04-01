@@ -2,8 +2,8 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
+use ParagonIE\Paseto\Keys\Base\SymmetricKey;
 use ParagonIE\Paseto\ProtocolInterface;
-use ParagonIE\Paseto\Keys\SymmetricKey;
 
 abstract class NonceFixer {
     public static function buildUnitTestEncrypt(ProtocolInterface $protocol): \Closure {

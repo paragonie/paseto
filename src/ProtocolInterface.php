@@ -2,11 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    AsymmetricSecretKey,
-    SymmetricKey
-};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
 
 /**
  * Interface ProtocolInterface

@@ -5,11 +5,8 @@ namespace ParagonIE\Paseto\Tests;
 use Exception;
 use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\KeyInterface;
-use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Protocol\{
-    Version3,
-    Version4
-};
+use ParagonIE\Paseto\Keys\Base\SymmetricKey;
+use ParagonIE\Paseto\Protocol\{Version3, Version4};
 use PHPUnit\Framework\TestCase;
 use TypeError;
 

@@ -3,16 +3,8 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\{
-    Builder,
-    Exception\PasetoException,
-    JsonToken,
-    Purpose
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricSecretKey,
-    SymmetricKey
-};
+use ParagonIE\Paseto\{Builder, Exception\PasetoException, JsonToken, Purpose};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricSecretKey, Base\SymmetricKey};
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -2,40 +2,21 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
+use Exception;
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\{
-    Builder,
-    JsonToken,
-    Parser,
-    ProtocolCollection,
-    ProtocolInterface,
-    Purpose
-};
-use ParagonIE\Paseto\Exception\{
-    EncodingException,
+use ParagonIE\Paseto\{Builder, JsonToken, Parser, ProtocolCollection, ProtocolInterface, Purpose};
+use ParagonIE\Paseto\Exception\{EncodingException,
     InvalidKeyException,
     InvalidPurposeException,
     InvalidVersionException,
     PasetoException,
     RuleViolation,
-    SecurityException
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    AsymmetricSecretKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Keys\Version4\{
-    AsymmetricSecretKey as V4AsymmetricSecretKey,
-    SymmetricKey as V4SymmetricKey
-};
+    SecurityException};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Keys\Version4\{AsymmetricSecretKey as V4AsymmetricSecretKey, SymmetricKey as V4SymmetricKey};
 use ParagonIE\Paseto\Protocol\Version4;
-use ParagonIE\Paseto\Rules\{
-    FooterJSON,
-    NotExpired
-};
+use ParagonIE\Paseto\Rules\{FooterJSON, NotExpired};
 use PHPUnit\Framework\TestCase;
-use Exception;
 use TypeError;
 
 /**

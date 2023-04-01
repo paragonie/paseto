@@ -2,25 +2,14 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    AsymmetricSecretKey
-};
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\ConstantTime\Hex;
-use ParagonIE\EasyECC\ECDSA\SecretKey;
 use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\Exception\{
-    PasetoException,
-    SecurityException,
-};
+use ParagonIE\Paseto\Exception\{PasetoException, SecurityException,};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey};
 use ParagonIE\Paseto\Keys\Version4\SymmetricKey;
+use ParagonIE\Paseto\Protocol\{Version3, Version4};
+use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Util;
-use ParagonIE\Paseto\Protocol\{
-    Version3,
-    Version4
-};
 use PHPUnit\Framework\TestCase;
 
 class KeyTest extends TestCase

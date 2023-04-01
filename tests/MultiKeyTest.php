@@ -2,17 +2,9 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Tests;
 
+use Exception;
 use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Keys\{
-    AsymmetricSecretKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Protocol\{
-    Version3,
-    Version4
-};
-use ParagonIE\Paseto\{
-    Builder,
+use ParagonIE\Paseto\{Builder,
     Exception\InvalidKeyException,
     Exception\PasetoException,
     JsonToken,
@@ -22,10 +14,10 @@ use ParagonIE\Paseto\{
     ReceivingKey,
     ReceivingKeyRing,
     SendingKey,
-    SendingKeyRing
-};
+    SendingKeyRing};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricSecretKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Protocol\{Version3, Version4};
 use PHPUnit\Framework\TestCase;
-use Exception;
 use TypeError;
 
 /**

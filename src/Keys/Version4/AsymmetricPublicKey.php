@@ -2,16 +2,16 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version4;
 
+use Exception;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey as BasePublicKey;
+use ParagonIE\Paseto\Keys\Base\AsymmetricPublicKey as BasePublicKey;
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\ProtocolInterface;
-use Exception;
 use ParagonIE\Paseto\Util;
 use TypeError;
 
@@ -63,7 +63,7 @@ class AsymmetricPublicKey extends BasePublicKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
-        return new self($decoded, $version);
+        return new self($decoded);
     }
 
     public function toHexString(): string

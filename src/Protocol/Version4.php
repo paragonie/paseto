@@ -2,44 +2,23 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Protocol;
 
-use ParagonIE\ConstantTime\{
-    Base64UrlSafe,
-    Binary
-};
-use ParagonIE\Paseto\{
-    ProtocolInterface,
-    Util
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    AsymmetricSecretKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Keys\Version4\{
-    AsymmetricSecretKey as V4AsymmetricSecretKey,
-    SymmetricKey as V4SymmetricKey
-};
-use ParagonIE\Paseto\Exception\{
-    ExceptionCode,
-    InvalidVersionException,
-    PasetoException,
-    SecurityException
-};
-use ParagonIE\Paseto\Parsing\{
-    Header,
-    PasetoMessage
-};
 use Exception;
+use ParagonIE\ConstantTime\{Base64UrlSafe, Binary};
+use ParagonIE\Paseto\{ProtocolInterface, Util};
+use ParagonIE\Paseto\Exception\{ExceptionCode, InvalidVersionException, PasetoException, SecurityException};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Keys\Version4\{AsymmetricSecretKey as V4AsymmetricSecretKey, SymmetricKey as V4SymmetricKey};
+use ParagonIE\Paseto\Parsing\{Header, PasetoMessage};
 use SodiumException;
 use Throwable;
 use TypeError;
-use function hash_equals,
-    is_null,
-    is_string,
-    sodium_crypto_generichash,
-    sodium_crypto_stream_xchacha20_xor,
-    sodium_crypto_sign_detached,
-    sodium_crypto_sign_verify_detached;
+use function hash_equals;
+use function is_null;
+use function is_string;
+use function sodium_crypto_generichash;
+use function sodium_crypto_sign_detached;
+use function sodium_crypto_sign_verify_detached;
+use function sodium_crypto_stream_xchacha20_xor;
 
 /**
  * Class Version4

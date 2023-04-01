@@ -1,26 +1,27 @@
 <?php
 declare(strict_types=1);
-namespace ParagonIE\Paseto\Keys;
+namespace ParagonIE\Paseto\Keys\Base;
 
+use Exception;
 use ParagonIE\ConstantTime\{
     Base64UrlSafe,
     Binary
 };
-use ParagonIE\Paseto\{Exception\ExceptionCode,
+use ParagonIE\Paseto\{
+    Exception\ExceptionCode,
     Exception\InvalidVersionException,
     Exception\PasetoException,
-    ReceivingKey,
-    SendingKey,
-    ProtocolInterface,
     Protocol\Version3,
     Protocol\Version4,
-    Util};
-
-use Exception;
+    ProtocolInterface,
+    ReceivingKey,
+    SendingKey,
+    Util
+};
 use SodiumException;
 use TypeError;
-use function random_bytes,
-    sodium_crypto_generichash;
+use function random_bytes;
+use function sodium_crypto_generichash;
 
 /**
  * Class SymmetricKey

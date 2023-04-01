@@ -1,23 +1,13 @@
 <?php
 namespace ParagonIE\Paseto\Tests;
 
-use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Exception\{
-    InvalidVersionException,
-    PasetoException
-};
-use ParagonIE\Paseto\Keys\Version4\{
-    AsymmetricPublicKey,
-    AsymmetricSecretKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Protocol\{
-    Version3,
-    Version4
-};
-use PHPUnit\Framework\TestCase;
 use Error;
 use Exception;
+use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\{InvalidVersionException, PasetoException};
+use ParagonIE\Paseto\Keys\Version4\{AsymmetricPublicKey, AsymmetricSecretKey, SymmetricKey};
+use ParagonIE\Paseto\Protocol\{Version3, Version4};
+use PHPUnit\Framework\TestCase;
 use SodiumException;
 use TypeError;
 
@@ -34,8 +24,8 @@ class Version4Test extends TestCase
         $symmetric = Version4::generateSymmetricKey();
         $secret = Version4::generateAsymmetricSecretKey();
 
-        $this->assertInstanceOf('ParagonIE\Paseto\Keys\SymmetricKey', $symmetric);
-        $this->assertInstanceOf('ParagonIE\Paseto\Keys\AsymmetricSecretKey', $secret);
+        $this->assertInstanceOf('ParagonIE\Paseto\Keys\Base\SymmetricKey', $symmetric);
+        $this->assertInstanceOf('ParagonIE\Paseto\Keys\Base\AsymmetricSecretKey', $secret);
         $this->assertSame(Version4::getSymmetricKeyByteLength(), Binary::safeStrlen($symmetric->raw()));
         $this->assertGreaterThanOrEqual(48, Binary::safeStrlen($secret->raw())); // PEM encoded
 

@@ -2,52 +2,25 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Protocol;
 
-use FG\ASN1\Exception\ParserException as ASN1ParserException;
-use ParagonIE\ConstantTime\{
-    Base64UrlSafe,
-    Binary,
-    Hex
-};
-use ParagonIE\EasyECC\{
-    EasyECC,
-    Exception\InvalidPublicKeyException,
-    ECDSA\PublicKey,
-    ECDSA\SecretKey
-};
-use ParagonIE\Paseto\{
-    ProtocolInterface,
-    Util
-};
-use ParagonIE\Paseto\Exception\{
-    ExceptionCode,
-    InvalidVersionException,
-    PasetoException,
-    SecurityException
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    AsymmetricSecretKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Keys\Version3\{
-    AsymmetricSecretKey as V3AsymmetricSecretKey,
-    SymmetricKey as V3SymmetricKey
-};
-use ParagonIE\Paseto\Parsing\{
-    Header,
-    PasetoMessage
-};
 use Exception;
+use FG\ASN1\Exception\ParserException as ASN1ParserException;
+use ParagonIE\ConstantTime\{Base64UrlSafe, Binary, Hex};
+use ParagonIE\EasyECC\{EasyECC, ECDSA\PublicKey, ECDSA\SecretKey, Exception\InvalidPublicKeyException};
+use ParagonIE\Paseto\{ProtocolInterface, Util};
+use ParagonIE\Paseto\Exception\{ExceptionCode, InvalidVersionException, PasetoException, SecurityException};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Keys\Version3\{AsymmetricSecretKey as V3AsymmetricSecretKey, SymmetricKey as V3SymmetricKey};
+use ParagonIE\Paseto\Parsing\{Header, PasetoMessage};
 use SodiumException;
-use TypeError;
 use Throwable;
-use function hash_equals,
-    hash_hmac,
-    is_null,
-    is_string,
-    openssl_decrypt,
-    openssl_encrypt,
-    random_bytes;
+use TypeError;
+use function hash_equals;
+use function hash_hmac;
+use function is_null;
+use function is_string;
+use function openssl_decrypt;
+use function openssl_encrypt;
+use function random_bytes;
 
 /**
  * Class Version3

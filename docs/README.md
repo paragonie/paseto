@@ -14,10 +14,7 @@ type-safety by wrapping cryptographic keys inside of objects. For example:
 
 ```php
 <?php
-use ParagonIE\Paseto\Keys\{
-    AsymmetricSecretKey,
-    SymmetricKey    
-};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricSecretKey,Base\SymmetricKey};
 
 $privateKey = new AsymmetricSecretKey(sodium_crypto_sign_keypair());
 $publicKey = $privateKey->getPublicKey();
@@ -32,8 +29,7 @@ This will generate a `TypeError`:
 
 ```php
 <?php
-use ParagonIE\Paseto\Protocol\Version4;
-use ParagonIE\Paseto\Keys\SymmetricKey;
+use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Protocol\Version4;
 
 /**
  * We assume the same key $sharedKey was used from above.
@@ -50,10 +46,7 @@ to achieve tamper-resistant tokens:
 
 ```php
 <?php
-use ParagonIE\Paseto\Builder;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Protocol\Version4;
+use ParagonIE\Paseto\Builder;use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Protocol\Version4;use ParagonIE\Paseto\Purpose;
 
 /**
  * We assume the same key $sharedKey was used from above.
@@ -88,16 +81,7 @@ First, you need to define your `Parser` rules.
 
 ```php
 <?php
-use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\JsonToken;
-use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Parser;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\Rules\{
-    IssuedBy,
-    ValidAt
-};
-use ParagonIE\Paseto\ProtocolCollection;
+use ParagonIE\Paseto\Exception\PasetoException;use ParagonIE\Paseto\JsonToken;use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Parser;use ParagonIE\Paseto\ProtocolCollection;use ParagonIE\Paseto\Purpose;use ParagonIE\Paseto\Rules\{IssuedBy,ValidAt};
 
 /**
  * We assume the same key $sharedKey was used from above.
@@ -143,11 +127,7 @@ Here's an example:
 
 ```php
 <?php
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey;
-use ParagonIE\Paseto\Keys\SymmetricKey;
-use ParagonIE\Paseto\Protocol\Version4;
-use ParagonIE\Paseto\Purpose;
-use ParagonIE\Paseto\ReceivingKeyRing;
+use ParagonIE\Paseto\Keys\Base\AsymmetricPublicKey;use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Protocol\Version4;use ParagonIE\Paseto\Purpose;use ParagonIE\Paseto\ReceivingKeyRing;
 
 /**
  * @var SymmetricKey $localKey

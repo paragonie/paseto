@@ -2,24 +2,18 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
-use ParagonIE\Paseto\Keys\{
-    AsymmetricSecretKey,
-    AsymmetricPublicKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Keys\Version3\{
-    AsymmetricSecretKey as V3AsymmetricSecretKey,
-    AsymmetricPublicKey as V3AsymmetricPublicKey,
-    SymmetricKey as V3SymmetricKey
-};
-use ParagonIE\Paseto\Keys\Version4\{
-    AsymmetricSecretKey as V4AsymmetricSecretKey,
-    AsymmetricPublicKey as V4AsymmetricPublicKey,
-    SymmetricKey as V4SymmetricKey
-};
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
-use function get_class, hash_equals, in_array;
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Keys\Version3\{AsymmetricPublicKey as V3AsymmetricPublicKey,
+    AsymmetricSecretKey as V3AsymmetricSecretKey,
+    SymmetricKey as V3SymmetricKey};
+use ParagonIE\Paseto\Keys\Version4\{AsymmetricPublicKey as V4AsymmetricPublicKey,
+    AsymmetricSecretKey as V4AsymmetricSecretKey,
+    SymmetricKey as V4SymmetricKey};
+use function get_class;
+use function hash_equals;
+use function in_array;
 
 /**
  * Class Purpose

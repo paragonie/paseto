@@ -2,16 +2,16 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version3;
 
+use Exception;
 use FG\ASN1\Exception\ParserException;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Keys\AsymmetricPublicKey as BasePublicKey;
+use ParagonIE\Paseto\Keys\Base\AsymmetricPublicKey as BasePublicKey;
 use ParagonIE\Paseto\Protocol\Version3;
 use ParagonIE\Paseto\ProtocolInterface;
-use Exception;
 use ParagonIE\Paseto\Util;
 use TypeError;
 
@@ -82,7 +82,7 @@ class AsymmetricPublicKey extends BasePublicKey
             $decoded = $decodeString;
         }
 
-        return new self($decoded, $version);
+        return new self($decoded);
     }
 
     public function toHexString(): string

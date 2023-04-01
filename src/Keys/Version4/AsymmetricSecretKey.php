@@ -2,16 +2,16 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version4;
 
+use Exception;
 use ParagonIE\ConstantTime\Base64;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\PasetoException;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey as BaseSecretKey;
+use ParagonIE\Paseto\Keys\Base\AsymmetricSecretKey as BaseSecretKey;
 use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\ProtocolInterface;
-use Exception;
 use ParagonIE\Paseto\Util;
 use TypeError;
 
@@ -53,8 +53,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         return new self(
             sodium_crypto_sign_secretkey(
                 sodium_crypto_sign_keypair()
-            ),
-            $protocol
+            )
         );
     }
 
@@ -76,14 +75,13 @@ class AsymmetricSecretKey extends BaseSecretKey
     public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
-        return new self($decoded, $version);
+        return new self($decoded);
     }
 
     public function getPublicKey(): AsymmetricPublicKey
     {
         return new AsymmetricPublicKey(
-            sodium_crypto_sign_publickey_from_secretkey($this->key),
-            $this->protocol
+            sodium_crypto_sign_publickey_from_secretkey($this->key)
         );
     }
 }

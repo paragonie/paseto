@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version3;
 
+use Exception;
 use Mdanter\Ecc\EccFactory;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
@@ -9,10 +10,9 @@ use ParagonIE\ConstantTime\Hex;
 use ParagonIE\EasyECC\ECDSA\ConstantTimeMath;
 use ParagonIE\EasyECC\ECDSA\PublicKey;
 use ParagonIE\EasyECC\ECDSA\SecretKey;
-use ParagonIE\Paseto\Keys\AsymmetricSecretKey as BaseSecretKey;
+use ParagonIE\Paseto\Keys\Base\AsymmetricSecretKey as BaseSecretKey;
 use ParagonIE\Paseto\Protocol\Version3;
 use ParagonIE\Paseto\ProtocolInterface;
-use Exception;
 use ParagonIE\Paseto\Util;
 use TypeError;
 
@@ -40,8 +40,7 @@ class AsymmetricSecretKey extends BaseSecretKey
     public static function generate(ProtocolInterface $protocol = null): self
     {
         return new self(
-            Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem()),
-            $protocol
+            Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem())
         );
     }
 
@@ -76,12 +75,11 @@ class AsymmetricSecretKey extends BaseSecretKey
                     new ConstantTimeMath(),
                     EccFactory::getNistCurves()->generator384(),
                     \gmp_init(Hex::encode($decoded), 16)
-                ))->exportPem(),
-                $version
+                ))->exportPem()
             );
         }
 
-        return new self($decoded, $version);
+        return new self($decoded);
     }
 
     public function getPublicKey(): AsymmetricPublicKey
@@ -100,8 +98,7 @@ class AsymmetricSecretKey extends BaseSecretKey
             $pk = SecretKey::importPem($this->key)->getPublicKey();
         }
         return new AsymmetricPublicKey(
-            PublicKey::importPem($pk->exportPem())->toString(), // Compressed point
-            $this->protocol
+            PublicKey::importPem($pk->exportPem())->toString() // Compressed point
         );
     }
 }

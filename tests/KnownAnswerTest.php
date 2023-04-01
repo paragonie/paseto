@@ -4,14 +4,8 @@ namespace ParagonIE\Paseto\Tests;
 
 use Exception;
 use ParagonIE\ConstantTime\Hex;
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    SymmetricKey
-};
-use ParagonIE\Paseto\Protocol\{
-    Version3,
-    Version4
-};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Protocol\{Version3, Version4};
 use ParagonIE\Paseto\ProtocolInterface;
 use PHPUnit\Framework\TestCase;
 use SodiumException;

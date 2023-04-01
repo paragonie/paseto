@@ -3,8 +3,8 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
 use Exception;
-use ParagonIE\Paseto\Exception\{
-    EncodingException,
+use ParagonIE\ConstantTime\Binary;
+use ParagonIE\Paseto\Exception\{EncodingException,
     ExceptionCode,
     InvalidKeyException,
     InvalidPurposeException,
@@ -12,27 +12,19 @@ use ParagonIE\Paseto\Exception\{
     NotFoundException,
     PasetoException,
     RuleViolation,
-    SecurityException
-};
-use ParagonIE\Paseto\Keys\{
-    AsymmetricPublicKey,
-    SymmetricKey
-};
-use ParagonIE\ConstantTime\Binary;
-use ParagonIE\Paseto\Parsing\{
-    NonExpiringSupport,
-    PasetoMessage
-};
+    SecurityException};
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Parsing\{NonExpiringSupport, PasetoMessage};
 use ParagonIE\Paseto\Rules\NotExpired;
 use ParagonIE\Paseto\Traits\RegisteredClaims;
-use function get_class,
-    is_array,
-    is_null,
-    is_string,
-    json_encode,
-    json_decode;
-use TypeError;
 use Throwable;
+use TypeError;
+use function get_class;
+use function is_array;
+use function is_null;
+use function is_string;
+use function json_decode;
+use function json_encode;
 
 /**
  * Class Parser
