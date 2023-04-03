@@ -177,6 +177,8 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      */
     public static function importPem(string $pem, ProtocolInterface $protocol = null): self
     {
+        $protocol = $protocol ?? new Version4();
+
         if ($protocol instanceof Version3) {
             return V3AsymmetricPublicKey::importPem($pem);
         }
