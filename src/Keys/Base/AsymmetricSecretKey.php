@@ -42,7 +42,6 @@ abstract class AsymmetricSecretKey implements SendingKey
      * @param string $keyData
      * @param ProtocolInterface $protocol
      *
-     * @throws Exception
      * @throws TypeError
      */
     protected function __construct(
