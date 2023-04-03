@@ -100,7 +100,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         );
     }
 
-    public static function importPem(string $pem): self
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
     {
         return new self($pem);
     }

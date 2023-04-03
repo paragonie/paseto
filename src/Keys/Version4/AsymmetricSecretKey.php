@@ -94,7 +94,7 @@ class AsymmetricSecretKey extends BaseSecretKey
      *
      * @throws Exception
      */
-    public static function importPem(string $pem): self
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
     {
         $formattedKey = str_replace('-----BEGIN EC PRIVATE KEY-----', '', $pem);
         $formattedKey = str_replace('-----END EC PRIVATE KEY-----', '', $formattedKey);

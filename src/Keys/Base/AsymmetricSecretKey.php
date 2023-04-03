@@ -226,6 +226,24 @@ abstract class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * @param string $pem
+     * @param ProtocolInterface|null $protocol
+     * @return self
+     *
+     * @throws Exception
+     */
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    {
+        if ($protocol instanceof Version3) {
+            return V3AsymmetricSecretKey::importPem($pem);
+        }
+        if ($protocol instanceof Version4) {
+            return V4AsymmetricSecretKey::importPem($pem);
+        }
+        throw new InvalidVersionException('Unexpected protocol version');
+    }
+
+    /**
      * Get the version of PASETO that this key is intended for.
      *
      * @return ProtocolInterface
