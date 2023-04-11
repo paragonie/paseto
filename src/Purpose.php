@@ -4,13 +4,26 @@ namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Exception\ExceptionCode;
 use ParagonIE\Paseto\Exception\InvalidPurposeException;
-use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
-use ParagonIE\Paseto\Keys\Version3\{AsymmetricPublicKey as V3AsymmetricPublicKey,
+use ParagonIE\Paseto\Keys\{
+    AsymmetricPublicKey as LegacyAsymmetricPublicKey,
+    AsymmetricSecretKey as LegacyAsymmetricSecretKey,
+    SymmetricKey as LegacySymmetricKey
+};
+use ParagonIE\Paseto\Keys\Base\{
+    AsymmetricPublicKey,
+    AsymmetricSecretKey,
+    SymmetricKey
+};
+use ParagonIE\Paseto\Keys\Version3\{
+    AsymmetricPublicKey as V3AsymmetricPublicKey,
     AsymmetricSecretKey as V3AsymmetricSecretKey,
-    SymmetricKey as V3SymmetricKey};
-use ParagonIE\Paseto\Keys\Version4\{AsymmetricPublicKey as V4AsymmetricPublicKey,
+    SymmetricKey as V3SymmetricKey
+};
+use ParagonIE\Paseto\Keys\Version4\{
+    AsymmetricPublicKey as V4AsymmetricPublicKey,
     AsymmetricSecretKey as V4AsymmetricSecretKey,
-    SymmetricKey as V4SymmetricKey};
+    SymmetricKey as V4SymmetricKey
+};
 use function get_class;
 use function hash_equals;
 use function in_array;
@@ -45,10 +58,12 @@ final class Purpose
      * @const array<string, string>
      */
     const SENDING_KEY_MAP = [
+        LegacySymmetricKey::class => 'local',
         SymmetricKey::class => 'local',
         V3SymmetricKey::class => 'local',
         V4SymmetricKey::class => 'local',
         AsymmetricSecretKey::class => 'public',
+        LegacyAsymmetricSecretKey::class => 'public',
         V3AsymmetricSecretKey::class => 'public',
         V4AsymmetricSecretKey::class => 'public',
     ];
@@ -68,10 +83,12 @@ final class Purpose
      * @const array<string, string>
      */
     const RECEIVING_KEY_MAP = [
+        LegacySymmetricKey::class => 'local',
         SymmetricKey::class => 'local',
         V3SymmetricKey::class => 'local',
         V4SymmetricKey::class => 'local',
         AsymmetricPublicKey::class => 'public',
+        LegacyAsymmetricPublicKey::class => 'public',
         V3AsymmetricPublicKey::class => 'public',
         V4AsymmetricPublicKey::class => 'public',
     ];
@@ -147,11 +164,14 @@ final class Purpose
     public static function fromSendingKey(SendingKey $key): self
     {
         if (empty(self::$sendingKeyToPurpose)) {
-            /** @var array<string, string> */
             self::$sendingKeyToPurpose = self::SENDING_KEY_MAP;
         }
+        $keyClass = get_class($key);
+        if (!array_key_exists($keyClass, self::$sendingKeyToPurpose)) {
+            throw new InvalidPurposeException('Unknown key class:' . $keyClass);
+        }
 
-        return new self(self::$sendingKeyToPurpose[get_class($key)]);
+        return new self(self::$sendingKeyToPurpose[$keyClass]);
     }
 
     /**
@@ -165,8 +185,11 @@ final class Purpose
     public static function fromReceivingKey(ReceivingKey $key): self
     {
         if (empty(self::$receivingKeyToPurpose)) {
-            /** @var array<string, string> */
-            self::$sendingKeyToPurpose = self::RECEIVING_KEY_MAP;
+            self::$receivingKeyToPurpose = self::RECEIVING_KEY_MAP;
+        }
+        $keyClass = get_class($key);
+        if (!array_key_exists($keyClass, self::$receivingKeyToPurpose)) {
+            throw new InvalidPurposeException('Unknown key class:' . $keyClass);
         }
 
         return new self(self::$receivingKeyToPurpose[get_class($key)]);
