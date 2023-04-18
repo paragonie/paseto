@@ -42,7 +42,6 @@ abstract class AsymmetricSecretKey implements SendingKey
      * @param string $keyData
      * @param ProtocolInterface $protocol
      *
-     * @throws Exception
      * @throws TypeError
      */
     protected function __construct(
@@ -224,6 +223,26 @@ abstract class AsymmetricSecretKey implements SendingKey
         }
 
         return V4AsymmetricSecretKey::fromEncodedString($encoded);
+    }
+
+    /**
+     * @param string $pem
+     * @param ProtocolInterface|null $protocol
+     * @return self
+     *
+     * @throws Exception
+     */
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    {
+        $protocol = $protocol ?? new Version4();
+
+        if ($protocol instanceof Version3) {
+            return V3AsymmetricSecretKey::importPem($pem);
+        }
+        if ($protocol instanceof Version4) {
+            return V4AsymmetricSecretKey::importPem($pem);
+        }
+        throw new InvalidVersionException('Unexpected protocol version');
     }
 
     /**

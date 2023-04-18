@@ -177,4 +177,20 @@ class Version4Test extends TestCase
         } catch (InvalidVersionException $ex) {
         }
     }
+
+    /**
+     * @throws InvalidVersionException
+     * @throws Exception
+     * @throws TypeError
+     */
+    public function testEncodeDecode(): void
+    {
+        $privateKey = AsymmetricSecretKey::generate(new Version4());
+        $this->assertSame($privateKey->raw(), AsymmetricSecretKey::fromEncodedString($privateKey->encode())->raw());
+        $this->assertSame($privateKey->raw(), AsymmetricSecretKey::importPem($privateKey->encodePem())->raw());
+
+        $publicKey = $privateKey->getPublicKey();
+        $this->assertSame($publicKey->raw(), AsymmetricPublicKey::fromEncodedString($publicKey->encode())->raw());
+        $this->assertSame($publicKey->raw(), AsymmetricPublicKey::importPem($publicKey->encodePem())->raw());
+    }
 }

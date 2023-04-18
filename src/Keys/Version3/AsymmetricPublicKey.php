@@ -97,4 +97,16 @@ class AsymmetricPublicKey extends BasePublicKey
 
         return Hex::encode($this->key);
     }
+
+    /**
+     * @param string $pem
+     * @param ProtocolInterface|null $protocol
+     * @return self
+     *
+     * @throws Exception
+     */
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    {
+        return new self($pem);
+    }
 }

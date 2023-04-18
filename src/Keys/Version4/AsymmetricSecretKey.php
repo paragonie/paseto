@@ -14,6 +14,7 @@ use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Util;
 use TypeError;
+use function str_replace, strlen, strtok, substr;
 
 /**
  * Class AsymmetricSecretKey
@@ -21,6 +22,8 @@ use TypeError;
  */
 class AsymmetricSecretKey extends BaseSecretKey
 {
+    private const PEM_ENCODE_PREFIX = '302e020100300506032b657004220420';
+
     /**
      * AsymmetricSecretKey constructor.
      *
@@ -65,7 +68,7 @@ class AsymmetricSecretKey extends BaseSecretKey
     public function encodePem(): string
     {
         $encoded = Base64::encode(
-            Hex::decode('302e020100300506032b657004220420') . $this->raw()
+            Hex::decode(self::PEM_ENCODE_PREFIX) . $this->raw()
         );
         return "-----BEGIN EC PRIVATE KEY-----\n" .
             Util::dos2unix(chunk_split($encoded, 64)).
@@ -83,5 +86,21 @@ class AsymmetricSecretKey extends BaseSecretKey
         return new AsymmetricPublicKey(
             sodium_crypto_sign_publickey_from_secretkey($this->key)
         );
+    }
+
+    /**
+     * @param string $pem
+     * @return self
+     *
+     * @throws Exception
+     */
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    {
+        $formattedKey = str_replace('-----BEGIN EC PRIVATE KEY-----', '', $pem);
+        $formattedKey = str_replace('-----END EC PRIVATE KEY-----', '', $formattedKey);
+        $key = Base64::decode(strtok($formattedKey, "\n"));
+        $prefix = Hex::decode(self::PEM_ENCODE_PREFIX);
+
+        return new self(substr($key, strlen($prefix)));
     }
 }

@@ -167,6 +167,27 @@ abstract class AsymmetricPublicKey implements ReceivingKey
         }
     }
 
+
+    /**
+     * @param string $pem
+     * @param ProtocolInterface|null $protocol
+     * @return self
+     *
+     * @throws Exception
+     */
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    {
+        $protocol = $protocol ?? new Version4();
+
+        if ($protocol instanceof Version3) {
+            return V3AsymmetricPublicKey::importPem($pem);
+        }
+        if ($protocol instanceof Version4) {
+            return V4AsymmetricPublicKey::importPem($pem);
+        }
+        throw new InvalidVersionException('Unexpected protocol version');
+    }
+
     /**
      * @return string
      * @throws ParserException

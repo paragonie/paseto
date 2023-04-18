@@ -57,13 +57,22 @@ class KeyTest extends TestCase
     /**
      * @dataProvider pemProvider
      */
-    public function testExportPem(AsymmetricSecretKey $sk, string $skPem, string $pkPem): void
+    public function testExportImportPem(AsymmetricSecretKey $sk, string $skPem, string $pkPem): void
     {
         $this->assertSame($skPem, $sk->encodePem());
         $pk = $sk->getPublicKey();
         $this->assertSame(
             Util::dos2unix($pk->encodePem()),
             Util::dos2unix($pkPem)
+        );
+
+        $this->assertSame(
+            $sk->raw(),
+            AsymmetricSecretKey::importPem($sk->encodePem(), $sk->getProtocol())->raw(),
+        );
+        $this->assertSame(
+            $pk->raw(),
+            AsymmetricPublicKey::importPem($pk->encodePem(), $pk->getProtocol())->raw(),
         );
     }
 

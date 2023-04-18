@@ -22,7 +22,41 @@ $publicKey = $privateKey->getPublicKey();
 $sharedKey = new SymmetricKey(random_bytes(32));
 ```
 
-You can access the key's internal strings by invoking `$key->raw()`. 
+You can access the key's internal strings by invoking `$key->raw()`.
+
+## Storing asymmetric keys
+
+If you need to store the keys on your server, you can encode/decode the key.
+
+```php
+<?php
+use ParagonIE\Paseto\Keys\Base\{AsymmetricPublicKey, AsymmetricSecretKey};
+
+$privateKey = new AsymmetricSecretKey(sodium_crypto_sign_keypair());
+$publicKey = $privateKey->getPublicKey();
+
+$privateKeyEncoded = $privateKey->encode();
+$publicKeyEncoded = $publicKey->encode();
+
+$privateKeyDecoded = AsymmetricSecretKey::fromEncodedString($privateKeyEncoded);
+$publicKeyDecoded = AsymmetricPublicKey::fromEncodedString($publicKeyEncoded);
+```
+
+Or export as PEM format, and reimport from PEM.
+
+```php
+<?php
+use ParagonIE\Paseto\Keys\Base\{AsymmetricPublicKey, AsymmetricSecretKey};
+
+$privateKey = new AsymmetricSecretKey(sodium_crypto_sign_keypair());
+$publicKey = $privateKey->getPublicKey();
+
+$privateKeyEncoded = $privateKey->encodePem();
+$publicKeyEncoded = $publicKey->encodePem();
+
+$privateKeyDecoded = AsymmetricSecretKey::importPem($privateKeyEncoded);
+$publicKeyDecoded = AsymmetricPublicKey::importPem($publicKeyEncoded);
+```
 
 No version of the protocol will let you misuse a key by accident.
 This will generate a `TypeError`:

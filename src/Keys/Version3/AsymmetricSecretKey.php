@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version3;
 
-use Exception;
 use Mdanter\Ecc\EccFactory;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
@@ -27,7 +26,6 @@ class AsymmetricSecretKey extends BaseSecretKey
      *
      * @param string $keyData
      *
-     * @throws Exception
      * @throws TypeError
      */
     public function __construct(
@@ -100,5 +98,10 @@ class AsymmetricSecretKey extends BaseSecretKey
         return new AsymmetricPublicKey(
             PublicKey::importPem($pk->exportPem())->toString() // Compressed point
         );
+    }
+
+    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    {
+        return new self($pem);
     }
 }
