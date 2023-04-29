@@ -281,7 +281,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      */
     public function raw(): string
     {
-        return $this->key;
+        return Util::dos2unix($this->key);
     }
 
     /**
