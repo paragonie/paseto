@@ -871,7 +871,7 @@ class Builder extends PasetoBase
      * @return string
      * @throws PasetoException
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }

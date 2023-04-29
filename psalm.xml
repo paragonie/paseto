@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
+<!-- We are a library. "Unused" code isn't an issue. -->
 <psalm
     name="Paseto Static Analysis"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
     useDocblockTypes="true"
 >
     <projectFiles>

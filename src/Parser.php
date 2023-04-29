@@ -47,7 +47,7 @@ class Parser extends PasetoBase
     /** @var ?int $maxClaimCount */
     protected ?int $maxClaimCount = null;
 
-    /** @var ?int $maxClaimDepth */
+    /** @var ?int<1, 2147483647> $maxClaimDepth */
     protected ?int $maxClaimDepth = null;
 
     /** @var ?int $maxJsonLength */
@@ -536,7 +536,7 @@ class Parser extends PasetoBase
     /**
      * Limit the maximum depth of the decoded JSON payload containign the claims.
      *
-     * @param int|null $maximum
+     * @param ?int<1, 2147483647> $maximum
      * @return self
      */
     public function setMaxClaimDepth(?int $maximum = null): self

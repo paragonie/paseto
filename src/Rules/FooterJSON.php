@@ -9,6 +9,7 @@ use ParagonIE\Paseto\{
     Util,
     ValidationRuleInterface
 };
+use RangeException;
 use function is_array,
     json_decode,
     json_last_error_msg;
@@ -19,7 +20,7 @@ use function is_array,
  */
 class FooterJSON implements ValidationRuleInterface
 {
-    /** @var int $maxDepth */
+    /** @var int<1, 2147483647> $maxDepth */
     protected int $maxDepth;
 
     /** @var int $maxKeys */
@@ -43,6 +44,9 @@ class FooterJSON implements ValidationRuleInterface
         int $maxLength = 8192,
         int $maxKeys = 512
     ) {
+        if ($maxDepth < 1 || $maxDepth > 0x7FFF_FFFF) {
+            throw new RangeException('Max depth parameter is too large.');
+        }
         $this->maxDepth = $maxDepth;
         $this->maxKeys = $maxKeys;
         $this->maxLength = $maxLength;
@@ -105,7 +109,7 @@ class FooterJSON implements ValidationRuleInterface
     /**
      * Set the maximum permitted depth for the JSON payload in the footer.
      *
-     * @param int $maxDepth
+     * @param int<1, 2147483647> $maxDepth
      * @return self
      */
     public function setMaxDepth(int $maxDepth): self

@@ -27,6 +27,7 @@ class AsymmetricSecretKey extends BaseSecretKey
      * @param string $keyData
      *
      * @throws TypeError
+     * @psalm-suppress UndefinedAttributeClass
      */
     public function __construct(
         #[\SensitiveParameter]
