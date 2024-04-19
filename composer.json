@@ -30,7 +30,7 @@
     "paragonie/sodium_compat": "^1|^2"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9|^10",
+    "phpunit/phpunit": "^9",
     "vimeo/psalm": "^4|^5"
   },
   "scripts": {

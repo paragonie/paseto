@@ -19,7 +19,7 @@ class ExceptionHelpfulTest extends TestCase
         throw new PasetoException('Test', $code);
     }
 
-    public function codeProvider(): array
+    public static function codeProvider(): array
     {
         return [
             [ExceptionCode::BAD_VERSION],
