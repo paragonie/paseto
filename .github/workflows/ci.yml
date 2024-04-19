@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         operating-system: ['ubuntu-latest']
-        php-versions: ['8.1']
+        php-versions: ['8.1', '8.2', '8.3', '8.4']
         phpunit-versions: ['latest']
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
