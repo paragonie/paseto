@@ -100,6 +100,7 @@ class FooterJSON implements ValidationRuleInterface
 
         /** @var array|bool|null $decoded */
         $decoded = json_decode($json, true, $this->maxDepth);
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (!$decoded) {
             $this->rejectReason = json_last_error_msg();
         }
