@@ -19,6 +19,6 @@ class SymmetricKey extends BaseSymmetricKey
     public function __construct(
         string $keyMaterial
     ) {
-        return parent::__construct($keyMaterial, new Version4());
+        parent::__construct($keyMaterial, new Version4());
     }
 }

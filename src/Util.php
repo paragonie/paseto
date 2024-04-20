@@ -55,12 +55,14 @@ abstract class Util
 
         $previous = '';
         $depth = 1;
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         while (!empty($stripped) && $stripped !== $previous) {
             $previous = $stripped;
             // Remove pairs of tokens
             $stripped = str_replace(['[]', '{}'], [], $stripped);
             ++$depth;
         }
+        /** @psalm-suppress RiskyTruthyFalsyComparison */
         if (!empty($stripped)) {
             throw new EncodingException(
                 'Invalid JSON string provided',
