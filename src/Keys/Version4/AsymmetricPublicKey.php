@@ -63,7 +63,10 @@ class AsymmetricPublicKey extends BasePublicKey
             "-----END PUBLIC KEY-----";
     }
 
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(
+        string $encoded,
+        ?ProtocolInterface $version = null,
+    ): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
         return new self($decoded);
@@ -81,7 +84,7 @@ class AsymmetricPublicKey extends BasePublicKey
      *
      * @throws Exception
      */
-    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         $formattedKey = str_replace('-----BEGIN PUBLIC KEY-----', '', $pem);
         $formattedKey = str_replace('-----END PUBLIC KEY-----', '', $formattedKey);

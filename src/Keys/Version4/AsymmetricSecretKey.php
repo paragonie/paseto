@@ -51,7 +51,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         parent::__construct($keyData, new Version4());
     }
 
-    public static function generate(ProtocolInterface $protocol = null): self
+    public static function generate(?ProtocolInterface $protocol = null): self
     {
         return new self(
             sodium_crypto_sign_secretkey(
@@ -75,7 +75,10 @@ class AsymmetricSecretKey extends BaseSecretKey
             "-----END EC PRIVATE KEY-----";
     }
 
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(
+        string $encoded,
+        ?ProtocolInterface $version = null,
+    ): self
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
         return new self($decoded);
@@ -94,7 +97,7 @@ class AsymmetricSecretKey extends BaseSecretKey
      *
      * @throws Exception
      */
-    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         $formattedKey = str_replace('-----BEGIN EC PRIVATE KEY-----', '', $pem);
         $formattedKey = str_replace('-----END EC PRIVATE KEY-----', '', $formattedKey);

@@ -22,15 +22,17 @@ class NotExpired implements ValidationRuleInterface
 
     /**
      * NotExpired constructor.
+     * 
      * @param DateTimeInterface|null $now Allows "now" to be overwritten for unit testing
      */
-    public function __construct(DateTimeInterface $now = null)
+    public function __construct(?DateTimeInterface $now = null)
     {
         if (!$now) {
             $now = new DateTime();
         }
         $this->now = $now;
     }
+
     /**
      * @return string
      */

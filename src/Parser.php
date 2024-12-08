@@ -70,9 +70,9 @@ class Parser extends PasetoBase
      * @throws PasetoException
      */
     public function __construct(
-        ProtocolCollection $allowedVersions = null,
-        Purpose $purpose = null,
-        ReceivingKey $key = null,
+        ?ProtocolCollection $allowedVersions = null,
+        ?Purpose $purpose = null,
+        ?ReceivingKey $key = null,
         array $parserRules = []
     ) {
         $this->allowedVersions = $allowedVersions ?? ProtocolCollection::default();
@@ -138,7 +138,7 @@ class Parser extends PasetoBase
      */
     public static function getLocal(
         SymmetricKey $key,
-        ProtocolCollection $allowedVersions = null
+        ?ProtocolCollection $allowedVersions = null
     ): self {
         return new self(
             $allowedVersions ?? ProtocolCollection::default(),
@@ -159,7 +159,7 @@ class Parser extends PasetoBase
      */
     public static function getLocalWithKeyRing(
         ReceivingKeyRing   $key,
-        ProtocolCollection $allowedVersions = null
+        ?ProtocolCollection $allowedVersions = null
     ): self {
         return new self(
             $allowedVersions ?? ProtocolCollection::default(),
@@ -180,7 +180,7 @@ class Parser extends PasetoBase
      */
     public static function getPublic(
         AsymmetricPublicKey $key,
-        ProtocolCollection $allowedVersions = null
+        ?ProtocolCollection $allowedVersions = null
     ): self {
         return new self(
             $allowedVersions ?? ProtocolCollection::default(),
@@ -201,7 +201,7 @@ class Parser extends PasetoBase
      */
     public static function getPublicWithKeyRing(
         ReceivingKeyRing   $key,
-        ProtocolCollection $allowedVersions = null
+        ?ProtocolCollection $allowedVersions = null
     ): self {
         return new self(
             $allowedVersions ?? ProtocolCollection::default(),

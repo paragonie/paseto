@@ -159,7 +159,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      * @throws Exception
      * @throws TypeError
      */
-    public static function generate(ProtocolInterface $protocol = null): self
+    public static function generate(?ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
         if (hash_equals($protocol::header(), Version3::HEADER)) {
@@ -178,7 +178,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      *
      * @throws Exception
      */
-    public static function newVersionKey(string $keyMaterial, ProtocolInterface $protocol = null): self
+    public static function newVersionKey(string $keyMaterial, ?ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4();
 
@@ -216,7 +216,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      * @throws Exception
      * @throws TypeError
      */
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(string $encoded, ?ProtocolInterface $version = null): self
     {
         if ($version && hash_equals($version::header(), Version3::HEADER)) {
             return V3AsymmetricSecretKey::fromEncodedString($encoded);
@@ -232,7 +232,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      *
      * @throws Exception
      */
-    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4();
 

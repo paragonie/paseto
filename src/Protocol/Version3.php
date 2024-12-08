@@ -179,7 +179,7 @@ class Version3 implements ProtocolInterface
     public static function decrypt(
         string $data,
         SymmetricKey $key,
-        string $footer = null,
+        ?string $footer = null,
         string $implicit = ''
     ): string {
         /*
@@ -292,7 +292,7 @@ class Version3 implements ProtocolInterface
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
-        string $footer = null,
+        ?string $footer = null,
         string $implicit = ''
     ): string {
         /*

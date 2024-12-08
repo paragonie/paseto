@@ -23,7 +23,7 @@ class AsymmetricSecretKey extends BaseAsymmetricSecretKey
 {
     public function __construct(
         string $keyData,
-        ProtocolInterface $protocol = null
+        ?ProtocolInterface $protocol = null
     ) {
         if (is_null($protocol)) {
             $protocol = new Version4();

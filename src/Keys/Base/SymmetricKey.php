@@ -45,7 +45,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      */
     public function __construct(
         string $keyMaterial,
-        ProtocolInterface $protocol = null
+        ?ProtocolInterface $protocol = null
     ) {
         $this->protocol = $protocol ?? new Version4;
 
@@ -81,7 +81,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * @throws Exception
      */
-    public static function generate(ProtocolInterface $protocol = null): self
+    public static function generate(?ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4;
         $length = $protocol::getSymmetricKeyByteLength();
@@ -172,7 +172,10 @@ class SymmetricKey implements ReceivingKey, SendingKey
      * @throws TypeError
      * @throws PasetoException
      */
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(
+        string $encoded,
+        ?ProtocolInterface $version = null,
+    ): self
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
         return new self($decoded, $version);
