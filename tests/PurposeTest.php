@@ -62,13 +62,13 @@ class PurposeTest extends TestCase
         $this->sk3 = V3AsymmetricSecretKey::generate();
         $this->pk3 = $this->sk3->getPublicKey();
         $this->k3 = V3SymmetricKey::generate();
-        
+
         $this->sk4 = V4AsymmetricSecretKey::generate();
         $this->pk4 = $this->sk4->getPublicKey();
         $this->k4 = V4SymmetricKey::generate();
     }
 
-    public function receivingKeyProvider(): array
+    public static function receivingKeyProvider(): array
     {
         if (!$this->setUpAtRuntime) {
             $this->setUp();
@@ -82,7 +82,7 @@ class PurposeTest extends TestCase
         ];
     }
 
-    public function sendingKeyProvider(): array
+    public static function sendingKeyProvider(): array
     {
         if (!$this->setUpAtRuntime) {
             $this->setUp();
@@ -97,13 +97,12 @@ class PurposeTest extends TestCase
     }
 
     /**
-     * @dataProvider receivingKeyProvider
-     *
      * @param ReceivingKey $key
      * @param string $expected
      * @return void
      * @throws InvalidPurposeException
      */
+    #[DataProvider('receivingKeyProvider')]
     public function testReceivingMapping(ReceivingKey $key, string $expected): void
     {
         $purpose = Purpose::fromReceivingKey($key);
@@ -111,13 +110,12 @@ class PurposeTest extends TestCase
     }
 
     /**
-     * @dataProvider sendingKeyProvider
-     *
      * @param SendingKey $key
      * @param string $expected
      * @return void
      * @throws InvalidPurposeException
      */
+    #[DataProvider('sendingKeyProvider')]
     public function testSendingMapping(SendingKey $key, string $expected): void
     {
         $purpose = Purpose::fromSendingKey($key);
