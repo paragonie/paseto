@@ -101,10 +101,13 @@ class AsymmetricSecretKey extends BaseSecretKey
     {
         $formattedKey = str_replace('-----BEGIN EC PRIVATE KEY-----', '', $pem);
         $formattedKey = str_replace('-----END EC PRIVATE KEY-----', '', $formattedKey);
-        if (PHP_VERSION_ID >= 80400) {
-            if (!is_string($formattedKey)) {
-                throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
-            }
+
+        /**
+         * @psalm-suppress DocblockTypeContradiction
+         * PHP 8.4 updated the docblock return for str_replace, which makes this check required
+         */
+        if (!is_string($formattedKey)) {
+            throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
         }
 
         $tokenizedKey = strtok($formattedKey, "\n");
