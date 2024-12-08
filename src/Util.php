@@ -46,9 +46,15 @@ abstract class Util
 
         // Remove whitespace:
         $stripped = preg_replace('/\s+/', '', $stripped);
+        if ($stripped === null) {
+            throw new EncodingException('Invalid JSON string provided', ExceptionCode::INVALID_JSON);
+        }
 
         // Strip everything out of quotes:
         $stripped = preg_replace('#"[^"]+"([:,}\]])#', '$1', $stripped);
+        if ($stripped === null) {
+            throw new EncodingException('Invalid JSON string provided', ExceptionCode::INVALID_JSON);
+        }
 
         // Remove everything that isn't a map or list definition
         $stripped = preg_replace('#[^\[\]{}]#', '', $stripped);
@@ -80,7 +86,12 @@ abstract class Util
      */
     public static function countJsonKeys(string $json): int
     {
-        return preg_match_all('#[^\\\]":#', $json);
+        $keyCount = preg_match_all('#[^\\\]":#', $json);
+        if ($keyCount === false) {
+            throw new EncodingException('Invalid JSON string provided', ExceptionCode::INVALID_JSON);
+        }
+
+        return $keyCount;
     }
 
     /**

@@ -7,9 +7,10 @@ use Throwable;
 
 /**
  * Class PasetoException
+ * 
  * @package ParagonIE\Paseto\Exception
  */
-class PasetoException extends \Exception
+class PasetoException extends Exception
 {
     /**
      * @param string $message

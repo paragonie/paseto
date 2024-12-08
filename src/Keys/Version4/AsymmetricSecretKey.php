@@ -101,6 +101,7 @@ class AsymmetricSecretKey extends BaseSecretKey
     {
         $formattedKey = str_replace('-----BEGIN EC PRIVATE KEY-----', '', $pem);
         $formattedKey = str_replace('-----END EC PRIVATE KEY-----', '', $formattedKey);
+        assert(is_string($formattedKey));
         $key = Base64::decode(strtok($formattedKey, "\n"));
         $prefix = Hex::decode(self::PEM_ENCODE_PREFIX);
 

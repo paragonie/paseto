@@ -88,6 +88,7 @@ class AsymmetricPublicKey extends BasePublicKey
     {
         $formattedKey = str_replace('-----BEGIN PUBLIC KEY-----', '', $pem);
         $formattedKey = str_replace('-----END PUBLIC KEY-----', '', $formattedKey);
+        assert(is_string($formattedKey));
         $key = Base64::decode(strtok($formattedKey, "\n"));
         $prefix = Hex::decode(self::PEM_ENCODE_PREFIX);
 

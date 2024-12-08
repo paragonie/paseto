@@ -615,6 +615,7 @@ class Builder extends PasetoBase
                 ->format(DateTime::ATOM);
         }
         $claims = json_encode($claimsArray, JSON_FORCE_OBJECT);
+        assert(is_string($claims));
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
 
