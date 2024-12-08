@@ -88,14 +88,16 @@ class AsymmetricPublicKey extends BasePublicKey
     {
         $formattedKey = str_replace('-----BEGIN PUBLIC KEY-----', '', $pem);
         $formattedKey = str_replace('-----END PUBLIC KEY-----', '', $formattedKey);
-        if (!is_string($formattedKey)) {
-            throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
+        if (PHP_VERSION_ID >= 80400) {
+            if (!is_string($formattedKey)) {
+                throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
+            }
         }
 
-        $tokenizedKey = strtok($formattedKey, "\n") ?: throw new PasetoException(
-            'Invalid PEM format',
-            ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR,
-        );
+        $tokenizedKey = strtok($formattedKey, "\n");
+        if ($tokenizedKey === false) {
+            throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
+        }
 
         $key = Base64::decode($tokenizedKey);
         $prefix = Hex::decode(self::PEM_ENCODE_PREFIX);
