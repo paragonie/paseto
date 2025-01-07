@@ -26,6 +26,7 @@ use ParagonIE\Paseto\{
     SendingKey
 };
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Exception;
 
 class PurposeTest extends TestCase
