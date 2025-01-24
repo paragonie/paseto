@@ -88,7 +88,7 @@ class MultiKeyTest extends TestCase
         list($sk, $keyring) = $this->getReceivingKeyring($v);
         // Let's make sure we're not in a weird state
         if ($v::header() === Version4::header()) {
-            $this->assertSame(SODIUM_CRYPTO_SIGN_SECRETKEYBYTES, $sk->raw(), 'Incorrect secret key size');
+            $this->assertSame(SODIUM_CRYPTO_SIGN_SECRETKEYBYTES, strlen($sk->raw()), 'Incorrect secret key size');
         }
 
         // These need to pass the type checks
