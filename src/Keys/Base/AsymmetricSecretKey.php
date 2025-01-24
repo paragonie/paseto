@@ -285,6 +285,14 @@ abstract class AsymmetricSecretKey implements SendingKey
     }
 
     /**
+     * @return void
+     */
+    public function assertValidLength(): void
+    {
+        $this->protocol->assertSecretKeyLengthValid(strlen($this->key));
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()

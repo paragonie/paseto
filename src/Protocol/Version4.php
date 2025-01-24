@@ -5,7 +5,11 @@ namespace ParagonIE\Paseto\Protocol;
 use Exception;
 use ParagonIE\ConstantTime\{Base64UrlSafe, Binary};
 use ParagonIE\Paseto\{ProtocolInterface, Util};
-use ParagonIE\Paseto\Exception\{ExceptionCode, InvalidVersionException, PasetoException, SecurityException};
+use ParagonIE\Paseto\Exception\{ExceptionCode,
+    InvalidKeyException,
+    InvalidVersionException,
+    PasetoException,
+    SecurityException};
 use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
 use ParagonIE\Paseto\Keys\Version4\{AsymmetricSecretKey as V4AsymmetricSecretKey, SymmetricKey as V4SymmetricKey};
 use ParagonIE\Paseto\Parsing\{Header, PasetoMessage};
@@ -506,5 +510,19 @@ class Version4 implements ProtocolInterface
         }
 
         return $plaintext;
+    }
+
+    /**
+     * @param int $length
+     * @return void
+     * @throws InvalidKeyException
+     */
+    public function assertSecretKeyLengthValid(int $length): void
+    {
+        if ($length !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
+            throw new InvalidKeyException(
+                "Secret keys must be 64 bytes (256 bits) long; got " . $length . " bytes instead."
+            );
+        }
     }
 }

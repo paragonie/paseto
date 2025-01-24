@@ -93,6 +93,7 @@ class Builder extends PasetoBase
                 ExceptionCode::PURPOSE_WRONG_FOR_KEY
             );
         }
+        $key->assertValidLength();
         return $key;
     }
 

@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto;
 
 use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
+use ParagonIE\Paseto\Exception\InvalidKeyException;
 
 /**
  * Interface ProtocolInterface
@@ -22,6 +23,12 @@ interface ProtocolInterface
      * @return string
      */
     public static function header(): string;
+
+    /**
+     * @return void
+     * @throws InvalidKeyException
+     */
+    public function assertSecretKeyLengthValid(int $length): void;
 
     /**
      * Does this protocol support implicit assertions?

@@ -4,10 +4,25 @@ namespace ParagonIE\Paseto\Protocol;
 
 use Exception;
 use FG\ASN1\Exception\ParserException as ASN1ParserException;
-use ParagonIE\ConstantTime\{Base64UrlSafe, Binary, Hex};
-use ParagonIE\EasyECC\{EasyECC, ECDSA\PublicKey, ECDSA\SecretKey, Exception\InvalidPublicKeyException};
+use ParagonIE\ConstantTime\{
+    Base64UrlSafe,
+    Binary,
+    Hex
+};
+use ParagonIE\EasyECC\{
+    EasyECC,
+    ECDSA\PublicKey,
+    ECDSA\SecretKey,
+    Exception\InvalidPublicKeyException
+};
 use ParagonIE\Paseto\{ProtocolInterface, Util};
-use ParagonIE\Paseto\Exception\{ExceptionCode, InvalidVersionException, PasetoException, SecurityException};
+use ParagonIE\Paseto\Exception\{
+    ExceptionCode,
+    InvalidKeyException,
+    InvalidVersionException,
+    PasetoException,
+    SecurityException
+};
 use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
 use ParagonIE\Paseto\Keys\Version3\{AsymmetricSecretKey as V3AsymmetricSecretKey, SymmetricKey as V3SymmetricKey};
 use ParagonIE\Paseto\Parsing\{Header, PasetoMessage};
@@ -21,6 +36,7 @@ use function is_string;
 use function openssl_decrypt;
 use function openssl_encrypt;
 use function random_bytes;
+use const Sodium\CRYPTO_SIGN_SECRETKEYBYTES;
 
 /**
  * Class Version3
@@ -559,5 +575,19 @@ class Version3 implements ProtocolInterface
     public static function getPublicKeyCompressed(string $pemEncoded): string
     {
         return PublicKey::importPem($pemEncoded)->toString();
+    }
+
+    /**
+     * @param int $length
+     * @return void
+     * @throws InvalidKeyException
+     */
+    public function assertSecretKeyLengthValid(int $length): void
+    {
+        if ($length < 48) {
+            throw new InvalidKeyException(
+                "Secret keys must be at least 48 bytes (384 bits) long; got " . $length . " bytes instead."
+            );
+        }
     }
 }
