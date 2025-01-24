@@ -2,9 +2,9 @@
 
 If you're not already familiar with PASETO, you can learn more about its features
 [here](Features.md). If you were using an older version of PASETO, the
-[migration guide](Migration.md) is worth a read. 
+[migration guide](Migration.md) is worth a read.
 
-Most of the supporting documentation has been moved to the 
+Most of the supporting documentation has been moved to the
 [PASETO specification](https://github.com/paseto-standard/paseto-spec) repository.
 
 ## How to use the PHP library
@@ -69,7 +69,7 @@ use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Protocol\Versio
  * We assume the same key $sharedKey was used from above.
  * @var SymmetricKey $sharedKey
  */
- 
+
 $token = Version4::sign('some arbitrary data', $sharedKey);
 ```
 
@@ -129,7 +129,7 @@ $parser = Parser::getLocal($sharedKey, ProtocolCollection::v4())
     ->addRule(new IssuedBy('issuer defined during creation'));
 
 // This is the same as:
-$parser = (new Parser())
+$parser = new Parser
     ->setKey($sharedKey)
     // Adding rules to be checked against the token
     ->addRule(new ValidAt)
@@ -168,13 +168,13 @@ use ParagonIE\Paseto\Keys\Base\AsymmetricPublicKey;use ParagonIE\Paseto\Keys\Bas
  * @var AsymmetricPublicKey $pk1
  * @var AsymmetricPublicKey $pk2
  */
-$keyring = (new ReceivingKeyRing())
+$keyring = new ReceivingKeyRing
     ->setVersion(new Version4)
     ->setPurpose(Purpose::public())
     ->addKey('gandalf0', $pk1)
     ->addKey('legolas1', $pk2);
 
-$otherKeyring = (new ReceivingKeyRing())
+$otherKeyring = new ReceivingKeyRing
     ->setVersion(new Version4)
     ->setPurpose(Purpose::local())
     ->addKey('boromir2', $localKey);
