@@ -24,6 +24,7 @@ use function array_pop,
     preg_match_all,
     sodium_memzero,
     str_replace;
+use ParagonIE_Sodium_Core_Util as SodiumUtil;
 
 /**
  * Class Util
@@ -171,6 +172,46 @@ abstract class Util
             return implode('.', array_slice($pieces, 0, 3));
         }
         return $payload;
+    }
+
+    /**
+     * Strip all newlines (CR, LF) characters from a string.
+     *
+     * @param string $input
+     * @return string
+     */
+    public static function stripNewlines(string $input): string
+    {
+        $bytes = SodiumUtil::stringToIntArray($input);
+        $length = count($bytes);
+
+        // First value is a dummy value, to overwrite it in constant-time
+        $return = array_fill(0, $length + 1, 0);
+        // Output index:
+        $j = 1;
+
+        // Now let's strip:
+        for ($i = 0; $i < $length; ++$i) {
+            $char = ($bytes[$i]);
+
+            // Determine if we're stripping this character or not?
+            $isCR = ((($char ^ 0x0d) - 1) >> 8) & 1;
+            $isLF = ((($char ^ 0x0a) - 1) >> 8) & 1;
+            $isNewline = $isCR | $isLF;
+
+            // Set destination index: 0 if $isNewLine, $j otherwise
+            $swap = -$isNewline;
+
+            // if ($isNewLine), $dest === 0, else $dest === $j
+            $dest = (~$swap & $j) ^ $swap;
+
+            // Now let's overwrite the index (0 or $j) with $char:
+            $return[$dest] = $char;
+
+            // We only advance $j if we didn't encounter a newline:
+            $j += 1 - $isNewline;
+        }
+        return SodiumUtil::intArrayToString(array_slice($return, 1, $j - 1));
     }
 
     /**

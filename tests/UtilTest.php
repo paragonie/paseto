@@ -8,6 +8,7 @@ use ParagonIE\ConstantTime\{
 };
 use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Util;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -121,6 +122,23 @@ class UtilTest extends TestCase
             )),
             'Ensure that faked padding results in different prefixes'
         );
+    }
+
+    public static function newlineProvider(): array
+    {
+        return [
+            ["abc\ndef", 'abcdef'],
+            ["abc\r\ndef", 'abcdef'],
+            ["abc \r\ndef", 'abc def'],
+            ["\n", ''],
+            ["\r\n", ''],
+        ];
+    }
+
+    #[DataProvider('newlineProvider')]
+    public function testStripNewliens(string $input, string $output): void
+    {
+        $this->assertSame($output, Util::stripNewlines($input));
     }
 
     /**
