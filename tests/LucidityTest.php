@@ -7,6 +7,7 @@ use ParagonIE\Paseto\Exception\PasetoException;
 use ParagonIE\Paseto\KeyInterface;
 use ParagonIE\Paseto\Keys\Base\SymmetricKey;
 use ParagonIE\Paseto\Protocol\{Version3, Version4};
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -16,7 +17,7 @@ class LucidityTest extends TestCase
      * @return array[]
      * @throws Exception
      */
-    public function luciditySymmetric(): array
+    public static function luciditySymmetric(): array
     {
         $v4_lk = Version4::generateSymmetricKey();
         $v4_sk = Version4::generateAsymmetricSecretKey();
@@ -45,10 +46,10 @@ class LucidityTest extends TestCase
      * @param KeyInterface $validKey
      * @param KeyInterface $invalidKey
      *
-     * @dataProvider luciditySymmetric
      * @throws Exception
      * @throws PasetoException
      */
+    #[DataProvider('luciditySymmetric')]
     public function testLocalLucidity(
         $protocol,
         KeyInterface $validKey,

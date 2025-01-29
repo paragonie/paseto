@@ -50,9 +50,9 @@ class Builder extends PasetoBase
      * @throws PasetoException
      */
     public function __construct(
-        JsonToken $baseToken = null,
-        ProtocolInterface $protocol = null,
-        SendingKey $key = null
+        ?JsonToken $baseToken = null,
+        ?ProtocolInterface $protocol = null,
+        ?SendingKey $key = null
     ) {
         if (!$baseToken) {
             $baseToken = new JsonToken();
@@ -176,8 +176,8 @@ class Builder extends PasetoBase
      */
     public static function getLocal(
         SymmetricKey $key,
-        ProtocolInterface $version = null,
-        JsonToken $baseToken = null
+        ?ProtocolInterface $version = null,
+        ?JsonToken $baseToken = null
     ): self {
         if (!$version) {
             $version = $key->getProtocol();
@@ -202,8 +202,8 @@ class Builder extends PasetoBase
      */
     public static function getLocalWithKeyRing(
         SendingKeyRing    $key,
-        ProtocolInterface $version = null,
-        JsonToken         $baseToken = null
+        ?ProtocolInterface $version = null,
+        ?JsonToken         $baseToken = null
     ): self {
         if (!$version) {
             $version = $key->getProtocol();
@@ -228,8 +228,8 @@ class Builder extends PasetoBase
      */
     public static function getPublic(
         AsymmetricSecretKey $key,
-        ProtocolInterface $version = null,
-        JsonToken $baseToken = null
+        ?ProtocolInterface $version = null,
+        ?JsonToken $baseToken = null
     ): self {
         if (!$version) {
             $version = $key->getProtocol();
@@ -254,8 +254,8 @@ class Builder extends PasetoBase
      */
     public static function getPublicWithKeyRing(
         SendingKeyRing    $key,
-        ProtocolInterface $version = null,
-        JsonToken         $baseToken = null
+        ?ProtocolInterface $version = null,
+        ?JsonToken         $baseToken = null
     ): self {
         if (!$version) {
             $version = $key->getProtocol();
@@ -308,7 +308,7 @@ class Builder extends PasetoBase
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setExpiration(DateTimeInterface $time = null): self
+    public function setExpiration(?DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -348,7 +348,7 @@ class Builder extends PasetoBase
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setIssuedAt(DateTimeInterface $time = null): self
+    public function setIssuedAt(?DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -384,7 +384,7 @@ class Builder extends PasetoBase
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setNotBefore(DateTimeInterface $time = null): self
+    public function setNotBefore(?DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -569,7 +569,7 @@ class Builder extends PasetoBase
      *
      * @return self
      */
-    public function setVersion(ProtocolInterface $version = null): self
+    public function setVersion(?ProtocolInterface $version = null): self
     {
         if (!$version) {
             $version = new Version4();
@@ -615,6 +615,7 @@ class Builder extends PasetoBase
                 ->format(DateTime::ATOM);
         }
         $claims = json_encode($claimsArray, JSON_FORCE_OBJECT);
+        assert(is_string($claims));
         $protocol = $this->version;
         ProtocolCollection::throwIfUnsupported($protocol);
 
@@ -716,7 +717,7 @@ class Builder extends PasetoBase
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withExpiration(DateTimeInterface $time = null): self
+    public function withExpiration(?DateTimeInterface $time = null): self
     {
         return (clone $this)->setExpiration($time);
     }
@@ -765,7 +766,7 @@ class Builder extends PasetoBase
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withIssuedAt(DateTimeInterface $time = null): self
+    public function withIssuedAt(?DateTimeInterface $time = null): self
     {
         return (clone $this)->setIssuedAt($time);
     }
@@ -798,7 +799,7 @@ class Builder extends PasetoBase
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withNotBefore(DateTimeInterface $time = null): self
+    public function withNotBefore(?DateTimeInterface $time = null): self
     {
         return (clone $this)->setNotBefore($time);
     }

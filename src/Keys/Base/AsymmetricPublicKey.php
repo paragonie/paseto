@@ -117,7 +117,10 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      *
      * @throws Exception
      */
-    public static function newVersionKey(string $keyMaterial, ProtocolInterface $protocol = null): self
+    public static function newVersionKey(
+        string $keyMaterial,
+        ?ProtocolInterface $protocol = null,
+    ): self
     {
         $protocol = $protocol ?? new Version4();
 
@@ -155,7 +158,10 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      * @throws Exception
      * @throws TypeError
      */
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(
+        string $encoded,
+        ?ProtocolInterface $version = null,
+    ): self
     {
         if (!$version) {
             $version = new Version4();
@@ -175,7 +181,7 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      *
      * @throws Exception
      */
-    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         $protocol = $protocol ?? new Version4();
 

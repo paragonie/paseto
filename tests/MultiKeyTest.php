@@ -17,6 +17,7 @@ use ParagonIE\Paseto\{Builder,
     SendingKeyRing};
 use ParagonIE\Paseto\Keys\{Base\AsymmetricSecretKey, Base\SymmetricKey};
 use ParagonIE\Paseto\Protocol\{Version3, Version4};
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -85,6 +86,10 @@ class MultiKeyTest extends TestCase
          * @var ReceivingKeyRing $keyring
          */
         list($sk, $keyring) = $this->getReceivingKeyring($v);
+        // Let's make sure we're not in a weird state
+        if ($v::header() === Version4::header()) {
+            $this->assertSame(SODIUM_CRYPTO_SIGN_SECRETKEYBYTES, strlen($sk->raw()), 'Incorrect secret key size');
+        }
 
         // These need to pass the type checks
         $localKey = $keyring->fetchKey('gandalf0');
@@ -233,7 +238,7 @@ class MultiKeyTest extends TestCase
      * @return array[]
      * @throws Exception
      */
-    public function typeCheckData(): array
+    public static function typeCheckData(): array
     {
         $v3_lk = Version3::generateSymmetricKey();
         $v3_sk = Version3::generateAsymmetricSecretKey();
@@ -472,8 +477,6 @@ class MultiKeyTest extends TestCase
     }
 
     /**
-     * @dataProvider typeCheckData
-     *
      * @param SendingKeyRing|ReceivingKeyRing $keyring
      * @param SendingKey|ReceivingKey $key
      * @param bool $expectFail
@@ -481,6 +484,7 @@ class MultiKeyTest extends TestCase
      * @psalm-suppress PossiblyInvalidArgument
      * @throws PasetoException
      */
+    #[DataProvider('typeCheckData')]
     public function testTypeChecks(
         SendingKeyRing|ReceivingKeyRing$keyring,
         SendingKey|ReceivingKey $key,

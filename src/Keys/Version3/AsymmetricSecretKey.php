@@ -36,7 +36,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         parent::__construct($keyData, new Version3());
     }
 
-    public static function generate(ProtocolInterface $protocol = null): self
+    public static function generate(?ProtocolInterface $protocol = null): self
     {
         return new self(
             Util::dos2unix(SecretKey::generate(Version3::CURVE)->exportPem())
@@ -64,7 +64,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         return Util::dos2unix($this->key);
     }
 
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(string $encoded, ?ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
 
@@ -101,7 +101,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         );
     }
 
-    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         return new self($pem);
     }

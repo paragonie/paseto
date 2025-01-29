@@ -197,7 +197,7 @@ class JsonToken
     {
         return array_key_exists($claim, $this->claims);
     }
-    
+
     /**
      * Set a claim to an arbitrary value.
      *
@@ -241,7 +241,7 @@ class JsonToken
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setExpiration(DateTimeInterface $time = null): self
+    public function setExpiration(?DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -287,7 +287,7 @@ class JsonToken
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setIssuedAt(DateTimeInterface $time = null): self
+    public function setIssuedAt(?DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -326,7 +326,7 @@ class JsonToken
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function setNotBefore(DateTimeInterface $time = null): self
+    public function setNotBefore(?DateTimeInterface $time = null): self
     {
         if (!$time) {
             $time = new DateTime('NOW');
@@ -387,7 +387,7 @@ class JsonToken
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withExpiration(DateTimeInterface $time = null): self
+    public function withExpiration(?DateTimeInterface $time = null): self
     {
         return (clone $this)->setExpiration($time);
     }
@@ -422,7 +422,7 @@ class JsonToken
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withIssuedAt(DateTimeInterface $time = null): self
+    public function withIssuedAt(?DateTimeInterface $time = null): self
     {
         return (clone $this)->setIssuedAt($time);
     }
@@ -455,7 +455,7 @@ class JsonToken
      * @param DateTimeInterface|null $time
      * @return self
      */
-    public function withNotBefore(DateTimeInterface $time = null): self
+    public function withNotBefore(?DateTimeInterface $time = null): self
     {
         return (clone $this)->setNotBefore($time);
     }

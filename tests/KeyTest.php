@@ -5,16 +5,18 @@ namespace ParagonIE\Paseto\Tests;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\Builder;
 use ParagonIE\Paseto\Exception\{PasetoException, SecurityException,};
-use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey};
 use ParagonIE\Paseto\Keys\Version4\SymmetricKey;
+use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey};
 use ParagonIE\Paseto\Protocol\{Version3, Version4};
 use ParagonIE\Paseto\Purpose;
 use ParagonIE\Paseto\Util;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class KeyTest extends TestCase
 {
-    public function pemProvider(): array
+    /** @return array<int, array<int, string>> */
+    public static function pemProvider(): array
     {
         return [
             [
@@ -54,9 +56,7 @@ class KeyTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider pemProvider
-     */
+    #[DataProvider('pemProvider')]
     public function testExportImportPem(AsymmetricSecretKey $sk, string $skPem, string $pkPem): void
     {
         $this->assertSame($skPem, $sk->encodePem());

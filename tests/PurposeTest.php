@@ -26,84 +26,82 @@ use ParagonIE\Paseto\{
     SendingKey
 };
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Exception;
 
 class PurposeTest extends TestCase
 {
-    protected bool $setUpAtRuntime = false;
-    protected AsymmetricSecretKey $bsk;
-    protected AsymmetricPublicKey $bpk;
-    protected SymmetricKey $bk;
-    protected AsymmetricSecretKey $lsk;
-    protected AsymmetricPublicKey $lpk;
-    protected SymmetricKey $lk;
-    protected AsymmetricSecretKey $sk3;
-    protected AsymmetricPublicKey $pk3;
-    protected SymmetricKey $k3;
-    protected AsymmetricSecretKey $sk4;
-    protected AsymmetricPublicKey $pk4;
-    protected SymmetricKey $k4;
+    protected static AsymmetricSecretKey $bsk;
+    protected static AsymmetricPublicKey $bpk;
+    protected static SymmetricKey $bk;
+    protected static AsymmetricSecretKey $lsk;
+    protected static AsymmetricPublicKey $lpk;
+    protected static SymmetricKey $lk;
+    protected static AsymmetricSecretKey $sk3;
+    protected static AsymmetricPublicKey $pk3;
+    protected static SymmetricKey $k3;
+    protected static AsymmetricSecretKey $sk4;
+    protected static AsymmetricPublicKey $pk4;
+    protected static SymmetricKey $k4;
 
     /**
-     * @return void
-     *
      * @throws Exception
      */
-    public function setUp(): void
+    protected static function setupKeys(): void
     {
-        $this->bsk = AsymmetricSecretKey::generate();
-        $this->bpk = $this->bsk->getPublicKey();
-        $this->bk = SymmetricKey::generate();
+        self::$bsk = AsymmetricSecretKey::generate();
+        self::$bpk = self::$bsk->getPublicKey();
+        self::$bk = SymmetricKey::generate();
 
-        $this->lsk = LegacyAsymmetricSecretKey::generate();
-        $this->lpk = $this->lsk->getPublicKey();
-        $this->lk = LegacySymmetricKey::generate();
+        self::$lsk = LegacyAsymmetricSecretKey::generate();
+        self::$lpk = self::$lsk->getPublicKey();
+        self::$lk = LegacySymmetricKey::generate();
 
-        $this->sk3 = V3AsymmetricSecretKey::generate();
-        $this->pk3 = $this->sk3->getPublicKey();
-        $this->k3 = V3SymmetricKey::generate();
-        
-        $this->sk4 = V4AsymmetricSecretKey::generate();
-        $this->pk4 = $this->sk4->getPublicKey();
-        $this->k4 = V4SymmetricKey::generate();
+        self::$sk3 = V3AsymmetricSecretKey::generate();
+        self::$pk3 = self::$sk3->getPublicKey();
+        self::$k3 = V3SymmetricKey::generate();
+
+        self::$sk4 = V4AsymmetricSecretKey::generate();
+        self::$pk4 = self::$sk4->getPublicKey();
+        self::$k4 = V4SymmetricKey::generate();
     }
 
-    public function receivingKeyProvider(): array
+    /**
+     * @return array<array<AsymmetricPublicKey|SymmetricKey|string>>
+     */
+    public static function receivingKeyProvider(): array
     {
-        if (!$this->setUpAtRuntime) {
-            $this->setUp();
-        }
-        return [
-            [$this->bk, 'local'],
-            [$this->lpk, 'public'],
-            [$this->pk3, 'public'],
-            [$this->pk4, 'public'],
-            [$this->lk, 'local']
-        ];
-    }
+        self::setupKeys();
 
-    public function sendingKeyProvider(): array
-    {
-        if (!$this->setUpAtRuntime) {
-            $this->setUp();
-        }
         return [
-            [$this->bk, 'local'],
-            [$this->lsk, 'public'],
-            [$this->sk3, 'public'],
-            [$this->sk4, 'public'],
-            [$this->lk, 'local']
+            [self::$bk, 'local'],
+            [self::$lpk, 'public'],
+            [self::$pk3, 'public'],
+            [self::$pk4, 'public'],
+            [self::$lk, 'local']
         ];
     }
 
     /**
-     * @dataProvider receivingKeyProvider
-     *
-     * @param ReceivingKey $key
-     * @param string $expected
-     * @return void
+     * @return array<array<AsymmetricSecretKey|SymmetricKey|string>>
+     */
+    public static function sendingKeyProvider(): array
+    {
+        self::setupKeys();
+
+        return [
+            [self::$bk, 'local'],
+            [self::$lsk, 'public'],
+            [self::$sk3, 'public'],
+            [self::$sk4, 'public'],
+            [self::$lk, 'local']
+        ];
+    }
+
+    /**
      * @throws InvalidPurposeException
      */
+    #[DataProvider('receivingKeyProvider')]
     public function testReceivingMapping(ReceivingKey $key, string $expected): void
     {
         $purpose = Purpose::fromReceivingKey($key);
@@ -111,13 +109,9 @@ class PurposeTest extends TestCase
     }
 
     /**
-     * @dataProvider sendingKeyProvider
-     *
-     * @param SendingKey $key
-     * @param string $expected
-     * @return void
      * @throws InvalidPurposeException
      */
+    #[DataProvider('sendingKeyProvider')]
     public function testSendingMapping(SendingKey $key, string $expected): void
     {
         $purpose = Purpose::fromSendingKey($key);

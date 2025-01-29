@@ -22,9 +22,10 @@ class ValidAt implements ValidationRuleInterface
 
     /**
      * ValidAt constructor.
+     * 
      * @param DateTimeInterface|null $now
      */
-    public function __construct(DateTimeInterface $now = null)
+    public function __construct(?DateTimeInterface $now = null)
     {
         if (!$now) {
             $now = new DateTime();

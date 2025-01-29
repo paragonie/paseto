@@ -63,7 +63,10 @@ class AsymmetricPublicKey extends BasePublicKey
             "-----END PUBLIC KEY-----";
     }
 
-    public static function fromEncodedString(string $encoded, ProtocolInterface $version = null): self
+    public static function fromEncodedString(
+        string $encoded,
+        ?ProtocolInterface $version = null,
+    ): self
     {
         $decoded = Base64UrlSafe::decode($encoded);
         return new self($decoded);
@@ -81,11 +84,25 @@ class AsymmetricPublicKey extends BasePublicKey
      *
      * @throws Exception
      */
-    public static function importPem(string $pem, ProtocolInterface $protocol = null): self
+    public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         $formattedKey = str_replace('-----BEGIN PUBLIC KEY-----', '', $pem);
         $formattedKey = str_replace('-----END PUBLIC KEY-----', '', $formattedKey);
-        $key = Base64::decode(strtok($formattedKey, "\n"));
+
+        /**
+         * @psalm-suppress DocblockTypeContradiction
+         * PHP 8.4 updated the docblock return for str_replace, which makes this check required
+         */
+        if (!is_string($formattedKey)) {
+            throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
+        }
+
+        $tokenizedKey = strtok($formattedKey, "\n");
+        if ($tokenizedKey === false) {
+            throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
+        }
+
+        $key = Base64::decode($tokenizedKey);
         $prefix = Hex::decode(self::PEM_ENCODE_PREFIX);
 
         return new self(substr($key, strlen($prefix)));

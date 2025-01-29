@@ -42,7 +42,7 @@ the fact that the header is always authenticated, and the suffix exists in the h
 
 ## Specifying Version and Purpose
 
-In PASETO, the Version and Purpose are a part of the cryptographic material's identity 
+In PASETO, the Version and Purpose are a part of the cryptographic material's identity
 (not just its raw bytes). That means that each key can be used with at most one of the
 8 combinations of version and purpose.
 
@@ -65,7 +65,7 @@ PASETO tokens typically have this format:
 
     [version].[purpose].[data]
 
-However, it's possible to append optional data to the end of a PASETO, which will also be 
+However, it's possible to append optional data to the end of a PASETO, which will also be
 authenticated. This yields the following format:
 
     [version].[purpose].[data].[footer]
@@ -98,7 +98,7 @@ use ParagonIE\Paseto\Keys\Base\SymmetricKey;use ParagonIE\Paseto\Parser;use Para
 /** @var SymmetricKey $key */
 $parser = Parser::getLocal($key)
     ->addRule(
-        (new FooterJSON())
+        new FooterJSON
             ->setMaxLength(1024) // Maximum length of JSON payload in footer
             ->setMaxKeys(16)     // Maximum number of object keys
             ->setMaxDepth(3)     // Recursive depth to JSON structure
@@ -117,7 +117,8 @@ You can set the implicit assertions in the Builder...
 
 ```php
 <?php
-use ParagonIE\Paseto\Builder;use ParagonIE\Paseto\Keys\Base\SymmetricKey;
+use ParagonIE\Paseto\Builder;
+use ParagonIE\Paseto\Keys\Base\SymmetricKey;
 
 /** @var SymmetricKey $key */
 $builder = Builder::getLocal($key)
