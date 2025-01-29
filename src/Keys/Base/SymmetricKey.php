@@ -38,9 +38,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * SymmetricKey constructor.
      *
-     * @param string $keyMaterial
-     * @param ProtocolInterface|null $protocol
-     *
      * @throws PasetoException
      */
     public function __construct(
@@ -76,19 +73,16 @@ class SymmetricKey implements ReceivingKey, SendingKey
     }
 
     /**
-     * @param ProtocolInterface|null $protocol
-     * @return SymmetricKey
-     *
-     * @throws Exception
+     * @throws PasetoException
      */
-    public static function generate(?ProtocolInterface $protocol = null): self
+    public static function generate(?ProtocolInterface $protocol = null): static
     {
         $protocol = $protocol ?? new Version4;
         $length = $protocol::getSymmetricKeyByteLength();
         if ($length < 32) {
             throw new PasetoException("Invalid key length");
         }
-        return new self(
+        return new static(
             random_bytes($length),
             $protocol
         );
@@ -97,12 +91,9 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * This used to initialize a v1 symmetric key, but it was deprecated then removed.
      *
-     * @param string $keyMaterial
-     * @return self
-     *
      * @throws InvalidVersionException
      */
-    public static function v1(string $keyMaterial): self
+    public static function v1(string $keyMaterial): static
     {
         throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
@@ -110,12 +101,9 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * This used to initialize a v2 symmetric key, but it was deprecated then removed.
      *
-     * @param string $keyMaterial
-     * @return self
-     *
      * @throws InvalidVersionException
      */
-    public static function v2(string $keyMaterial): self
+    public static function v2(string $keyMaterial): static
     {
         throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
@@ -123,37 +111,27 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * Initialize a v3 symmetric key.
      *
-     * @param string $keyMaterial
-     *
-     * @return self
-     *
      * @throws Exception
      * @throws TypeError
      */
-    public static function v3(string $keyMaterial): self
+    public static function v3(string $keyMaterial): static
     {
-        return new self($keyMaterial, new Version3());
+        return new static($keyMaterial, new Version3());
     }
 
     /**
      * Initialize a v4 symmetric key.
      *
-     * @param string $keyMaterial
-     *
-     * @return self
-     *
      * @throws Exception
      * @throws TypeError
      */
-    public static function v4(string $keyMaterial): self
+    public static function v4(string $keyMaterial): static
     {
-        return new self($keyMaterial, new Version4());
+        return new static($keyMaterial, new Version4());
     }
 
     /**
      * Return a base64url-encoded representation of this symmetric key.
-     *
-     * @return string
      *
      * @throws TypeError
      */
@@ -165,20 +143,16 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * Initialize a symmetric key from a base64url-encoded string.
      *
-     * @param string $encoded
-     * @param ProtocolInterface|null $version
-     * @return self
-     *
      * @throws TypeError
      * @throws PasetoException
      */
     public static function fromEncodedString(
         string $encoded,
         ?ProtocolInterface $version = null,
-    ): self
+    ): static
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
-        return new self($decoded, $version);
+        return new static($decoded, $version);
     }
 
     /**
@@ -191,10 +165,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
         return $this->protocol;
     }
 
-    /**
-     * @param ProtocolInterface $protocol
-     * @return bool
-     */
     public function isForVersion(ProtocolInterface $protocol): bool
     {
         return $this->protocol instanceof $protocol;
@@ -202,8 +172,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
 
     /**
      * Get the raw key contents.
-     *
-     * @return string
      */
     public function raw(): string
     {
@@ -216,7 +184,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * Used in version 3
      *
-     * @param string $salt
      * @return array<int, string>
      *
      * @throws TypeError
@@ -247,7 +214,6 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * Used in version 4
      *
-     * @param string $salt
      * @return array<int, string>
      *
      * @throws SodiumException

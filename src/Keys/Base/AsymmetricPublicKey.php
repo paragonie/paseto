@@ -59,12 +59,9 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     /**
      * This used to initialize a v1 public key, but it was deprecated then removed.
      *
-     * @param string $keyMaterial
-     * @return self
-     *
      * @throws InvalidVersionException
      */
-    public static function v1(string $keyMaterial): self
+    public static function v1(string $keyMaterial): static
     {
         throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
@@ -72,21 +69,15 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     /**
      * This used to initialize a v2 public key, but it was deprecated then removed.
      *
-     * @param string $keyMaterial
-     * @return self
-     *
      * @throws InvalidVersionException
      */
-    public static function v2(string $keyMaterial): self
+    public static function v2(string $keyMaterial): static
     {
         throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
      * Initialize a v3 public key.
-     *
-     * @param string $keyMaterial
-     * @return V3AsymmetricPublicKey
      *
      * @throws Exception
      */
@@ -98,9 +89,6 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     /**
      * Initialize a v4 public key.
      *
-     * @param string $keyMaterial
-     * @return V4AsymmetricPublicKey
-     *
      * @throws Exception
      */
     public static function v4(string $keyMaterial): V4AsymmetricPublicKey
@@ -110,10 +98,6 @@ abstract class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * Initialize a public key.
-     *
-     * @param string $keyMaterial
-     * @param ?ProtocolInterface $protocol
-     * @return self
      *
      * @throws Exception
      */
@@ -134,8 +118,6 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     /**
      * Returns the base64url-encoded public key.
      *
-     * @return string
-     *
      * @throws TypeError
      * @throws PasetoException
      */
@@ -143,17 +125,11 @@ abstract class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * Return a PEM-encoded public key
-     *
-     * @return string
      */
     abstract public function encodePem(): string;
 
     /**
      * Initialize a public key from a base64url-encoded string.
-     *
-     * @param string $encoded
-     * @param ProtocolInterface|null $version
-     * @return self
      *
      * @throws Exception
      * @throws TypeError
@@ -175,10 +151,6 @@ abstract class AsymmetricPublicKey implements ReceivingKey
 
 
     /**
-     * @param string $pem
-     * @param ProtocolInterface|null $protocol
-     * @return self
-     *
      * @throws Exception
      */
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
@@ -195,25 +167,18 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
-     * @return string
      * @throws ParserException
      */
     abstract public function toHexString(): string;
 
     /**
      * Get the version of PASETO that this key is intended for.
-     *
-     * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
     }
 
-    /**
-     * @param ProtocolInterface $protocol
-     * @return bool
-     */
     public function isForVersion(ProtocolInterface $protocol): bool
     {
         return $this->protocol instanceof $protocol;
@@ -221,8 +186,6 @@ abstract class AsymmetricPublicKey implements ReceivingKey
 
     /**
      * Get the raw key contents.
-     *
-     * @return string
      */
     public function raw(): string
     {
@@ -230,7 +193,7 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     }
 
     /**
-     * @return array
+     * @return array<>
      */
     public function __debugInfo()
     {

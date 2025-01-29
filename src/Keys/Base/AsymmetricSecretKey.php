@@ -100,12 +100,9 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * This used to initialize a v1 secret key, but it was deprecated then removed.
      *
-     * @param string $keyMaterial
-     * @return self
-     *
      * @throws InvalidVersionException
      */
-    public static function v1(string $keyMaterial): self
+    public static function v1(string $keyMaterial): static
     {
         throw new InvalidVersionException("Version 1 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
@@ -113,20 +110,14 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * This used to initialize a v2 secret key, but it was deprecated then removed.
      *
-     * @param string $keyMaterial
-     * @return self
-     *
      * @throws InvalidVersionException
      */
-    public static function v2(string $keyMaterial): self
+    public static function v2(string $keyMaterial): static
     {throw new InvalidVersionException("Version 2 was removed", ExceptionCode::OBSOLETE_PROTOCOL);
     }
 
     /**
      * Initialize a v3 secret key.
-     *
-     * @param string $keyMaterial
-     * @return V3AsymmetricSecretKey
      *
      * @throws Exception
      * @throws TypeError
@@ -139,9 +130,6 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * Initialize a v4 secret key.
      *
-     * @param string $keyMaterial
-     * @return V4AsymmetricSecretKey
-     *
      * @throws Exception
      * @throws TypeError
      */
@@ -152,9 +140,6 @@ abstract class AsymmetricSecretKey implements SendingKey
 
     /**
      * Generate a secret key.
-     *
-     * @param ProtocolInterface|null $protocol
-     * @return self
      *
      * @throws Exception
      * @throws TypeError
@@ -172,10 +157,6 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * Initialize a public key.
      *
-     * @param string $keyMaterial
-     * @param ?ProtocolInterface $protocol
-     * @return self
-     *
      * @throws Exception
      */
     public static function newVersionKey(string $keyMaterial, ?ProtocolInterface $protocol = null): self
@@ -192,8 +173,6 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * Return a base64url-encoded representation of this secret key.
      *
-     * @return string
-     *
      * @throws TypeError
      */
     abstract public function encode(): string;
@@ -201,17 +180,12 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * Return a PEM-encoded secret key
      *
-     * @return string
      * @throws PasetoException
      */
     abstract public function encodePem(): string;
 
     /**
      * Initialize a secret key from a base64url-encoded string.
-     *
-     * @param string $encoded
-     * @param ProtocolInterface|null $version
-     * @return self
      *
      * @throws Exception
      * @throws TypeError
@@ -226,11 +200,7 @@ abstract class AsymmetricSecretKey implements SendingKey
     }
 
     /**
-     * @param string $pem
-     * @param ProtocolInterface|null $protocol
-     * @return self
-     *
-     * @throws Exception
+     * @throws InvalidVersionException
      */
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
@@ -247,18 +217,12 @@ abstract class AsymmetricSecretKey implements SendingKey
 
     /**
      * Get the version of PASETO that this key is intended for.
-     *
-     * @return ProtocolInterface
      */
     public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
     }
 
-    /**
-     * @param ProtocolInterface $protocol
-     * @return bool
-     */
     public function isForVersion(ProtocolInterface $protocol): bool
     {
         return $this->protocol instanceof $protocol;
@@ -267,8 +231,6 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * Get the public key that corresponds to this secret key.
      *
-     * @return AsymmetricPublicKey
-     *
      * @throws Exception
      * @throws TypeError
      */
@@ -276,8 +238,6 @@ abstract class AsymmetricSecretKey implements SendingKey
 
     /**
      * Get the raw key contents.
-     *
-     * @return string
      */
     public function raw(): string
     {
@@ -285,7 +245,7 @@ abstract class AsymmetricSecretKey implements SendingKey
     }
 
     /**
-     * @return array
+     * @return array<>
      */
     public function __debugInfo()
     {

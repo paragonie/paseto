@@ -14,9 +14,6 @@ class SymmetricKey extends BaseSymmetricKey
 {
     /**
      * SymmetricKey.php constructor.
-     *
-     * @param string $keyMaterial
-     * @param ProtocolInterface|null $protocol
      */
     public function __construct(
         string $keyMaterial

@@ -24,8 +24,6 @@ class AsymmetricSecretKey extends BaseSecretKey
     /**
      * AsymmetricSecretKey constructor.
      *
-     * @param string $keyData
-     *
      * @throws TypeError
      * @psalm-suppress UndefinedAttributeClass
      */

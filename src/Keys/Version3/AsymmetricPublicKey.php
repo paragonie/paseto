@@ -102,10 +102,6 @@ class AsymmetricPublicKey extends BasePublicKey
     }
 
     /**
-     * @param string $pem
-     * @param ProtocolInterface|null $protocol
-     * @return self
-     *
      * @throws Exception
      */
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self

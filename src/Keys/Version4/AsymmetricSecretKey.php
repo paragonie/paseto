@@ -27,8 +27,6 @@ class AsymmetricSecretKey extends BaseSecretKey
     /**
      * AsymmetricSecretKey constructor.
      *
-     * @param string $keyData
-     *
      * @throws Exception
      * @throws TypeError
      */
@@ -92,9 +90,6 @@ class AsymmetricSecretKey extends BaseSecretKey
     }
 
     /**
-     * @param string $pem
-     * @return self
-     *
      * @throws Exception
      */
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
