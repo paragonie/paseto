@@ -27,8 +27,6 @@ class AsymmetricPublicKey extends BasePublicKey
     /**
      * AsymmetricPublicKey constructor.
      *
-     * @param string $keyData
-     *
      * @throws Exception
      * @throws TypeError
      */
@@ -78,10 +76,6 @@ class AsymmetricPublicKey extends BasePublicKey
     }
 
     /**
-     * @param string $pem
-     * @param ProtocolInterface|null $protocol
-     * @return self
-     *
      * @throws Exception
      */
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self

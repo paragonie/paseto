@@ -13,8 +13,6 @@ class SymmetricKey extends BaseSymmetricKey
 {
     /**
      * SymmetricKey.php constructor.
-     *
-     * @param string $keyMaterial
      */
     public function __construct(
         string $keyMaterial
