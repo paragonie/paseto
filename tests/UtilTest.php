@@ -124,29 +124,21 @@ class UtilTest extends TestCase
         );
     }
 
-    public static function strtokProvider(): array
+    public static function newlineProvider(): array
     {
-        $r = Base64UrlSafe::encodeUnpadded(random_bytes(32));
         return [
-            ['Paragon Initiative Enterprises', ' ', 'Paragon'],
-            ['Initiative Enterprises', ' ', 'Initiative'],
-            ['Enterprises', ' ', 'Enterprises'],
-            ['', ' ', false],
-            [
-                $r . "\n" . Base64UrlSafe::encodeUnpadded(random_bytes(16)),
-                "\n",
-                $r
-            ],
+            ["abc\ndef", 'abcdef'],
+            ["abc\r\ndef", 'abcdef'],
+            ["abc \r\ndef", 'abc def'],
+            ["\n", ''],
+            ["\r\n", ''],
         ];
     }
 
-    #[DataProvider('strtokProvider')]
-    public function testStopAtDelimiter(string $input, string $delim, string|false $output): void
+    #[DataProvider('newlineProvider')]
+    public function testStripNewliens(string $input, string $output): void
     {
-        $result = Util::stopAtDelimiter($input, $delim);
-        $this->assertSame($output, $result, 'Expected result was not returned');
-        $built_in = strtok($input, $delim);
-        $this->assertSame($built_in, $result, 'Regression with built-in strtok() behavior');
+        $this->assertSame($output, Util::stripNewlines($input));
     }
 
     /**

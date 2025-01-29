@@ -88,8 +88,6 @@ class AsymmetricPublicKey extends BasePublicKey
     {
         $formattedKey = str_replace('-----BEGIN PUBLIC KEY-----', '', $pem);
         $formattedKey = str_replace('-----END PUBLIC KEY-----', '', $formattedKey);
-        $formattedKey = str_replace(["\r", "\n"], '', $formattedKey);
-
         /**
          * @psalm-suppress DocblockTypeContradiction
          * PHP 8.4 updated the docblock return for str_replace, which makes this check required
@@ -97,13 +95,8 @@ class AsymmetricPublicKey extends BasePublicKey
         if (!is_string($formattedKey)) {
             throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
         }
-
-        $tokenizedKey = Util::stopAtDelimiter($formattedKey, "\n");
-        if ($tokenizedKey === false) {
-            throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
-        }
-
-        $key = Base64::decode($tokenizedKey);
+        $formattedKey = Util::stripNewlines($formattedKey);
+        $key = Base64::decode($formattedKey);
         $prefix = Hex::decode(self::PEM_ENCODE_PREFIX);
 
         return new self(substr($key, strlen($prefix)));
