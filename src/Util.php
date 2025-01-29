@@ -196,8 +196,12 @@ abstract class Util
         // We want to work with bytes:
         $bytes = SodiumUtil::stringToIntArray($input);
         $d = SodiumUtil::stringToIntArray($delim);
-        $max = $inLength - $dLen;
+
+        // This will be set to -1 once a value has been found:
         $found = 0;
+
+        // The maximum bounds for the loop:
+        $max = $inLength - $dLen;
 
         // Iterate over all of $bytes, compare window,
         for ($i = 0; $i < $max; ++$i) {

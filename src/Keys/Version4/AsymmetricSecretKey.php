@@ -101,6 +101,7 @@ class AsymmetricSecretKey extends BaseSecretKey
     {
         $formattedKey = str_replace('-----BEGIN EC PRIVATE KEY-----', '', $pem);
         $formattedKey = str_replace('-----END EC PRIVATE KEY-----', '', $formattedKey);
+        $formattedKey = str_replace(["\r", "\n"], '', $formattedKey);
 
         /**
          * @psalm-suppress DocblockTypeContradiction

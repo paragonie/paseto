@@ -88,6 +88,7 @@ class AsymmetricPublicKey extends BasePublicKey
     {
         $formattedKey = str_replace('-----BEGIN PUBLIC KEY-----', '', $pem);
         $formattedKey = str_replace('-----END PUBLIC KEY-----', '', $formattedKey);
+        $formattedKey = str_replace(["\r", "\n"], '', $formattedKey);
 
         /**
          * @psalm-suppress DocblockTypeContradiction
