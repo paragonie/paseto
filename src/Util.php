@@ -24,6 +24,7 @@ use function array_pop,
     preg_match_all,
     sodium_memzero,
     str_replace;
+use ParagonIE_Sodium_Core_Util as SodiumUtil;
 
 /**
  * Class Util
@@ -171,6 +172,56 @@ abstract class Util
             return implode('.', array_slice($pieces, 0, 3));
         }
         return $payload;
+    }
+
+    /**
+     * Return a substring of $input that terminates before the first instance of $delim.
+     *
+     * Unlike the built-in C function, our algorithm is constant-time.
+     *
+     * @param string $input
+     * @param string $delim
+     * @return string|false
+     */
+    public static function stopAtDelimiter(string $input, string $delim): string|false
+    {
+        $inLength = SodiumUtil::strlen($input);
+        $dLen = SodiumUtil::strlen($delim);
+        if ($inLength < $dLen) {
+            return false;
+        }
+
+        // Final value for this string
+        $terminate = 0;
+        // We want to work with bytes:
+        $bytes = SodiumUtil::stringToIntArray($input);
+        $d = SodiumUtil::stringToIntArray($delim);
+        $max = $inLength - $dLen;
+        $found = 0;
+
+        // Iterate over all of $bytes, compare window,
+        for ($i = 0; $i < $max; ++$i) {
+            $cmp = 0;
+            for ($j = 0; $j < $dLen; ++$j) {
+                $cmp |= ($bytes[$i + $j] ^ $d[$j]);
+            }
+            // 1 if $cmp === 0, 0x00 otherwise
+            $result = (($cmp - 1) >> 8) & 1;
+            /*
+             * $found === 0
+             *    $terminate = $terminate
+             * $result === 1, $found === 0
+             *   $terminate = $i
+             * $result === 0, $found === 0
+             *   $terminate = $terminate
+             */
+            $terminate = ($terminate & $found) ^ (~$found & (((-$result) & $i)));
+            $found |= -$result;
+        }
+        $terminate = ($terminate & $found) ^ (($inLength) & ~$found);
+        return SodiumUtil::intArrayToString(
+            array_slice($bytes, 0, $terminate)
+        );
     }
 
     /**

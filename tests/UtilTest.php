@@ -8,6 +8,7 @@ use ParagonIE\ConstantTime\{
 };
 use ParagonIE\Paseto\Exception\EncodingException;
 use ParagonIE\Paseto\Util;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -121,6 +122,31 @@ class UtilTest extends TestCase
             )),
             'Ensure that faked padding results in different prefixes'
         );
+    }
+
+    public static function strtokProvider(): array
+    {
+        $r = Base64UrlSafe::encodeUnpadded(random_bytes(32));
+        return [
+            ['Paragon Initiative Enterprises', ' ', 'Paragon'],
+            ['Initiative Enterprises', ' ', 'Initiative'],
+            ['Enterprises', ' ', 'Enterprises'],
+            ['', ' ', false],
+            [
+                $r . "\n" . Base64UrlSafe::encodeUnpadded(random_bytes(16)),
+                "\n",
+                $r
+            ],
+        ];
+    }
+
+    #[DataProvider('strtokProvider')]
+    public function testStopAtDelimiter(string $input, string $delim, string|false $output): void
+    {
+        $result = Util::stopAtDelimiter($input, $delim);
+        $this->assertSame($output, $result, 'Expected result was not returned');
+        $built_in = strtok($input, $delim);
+        $this->assertSame($built_in, $result, 'Regression with built-in strtok() behavior');
     }
 
     /**

@@ -14,7 +14,7 @@ use ParagonIE\Paseto\Protocol\Version4;
 use ParagonIE\Paseto\ProtocolInterface;
 use ParagonIE\Paseto\Util;
 use TypeError;
-use function str_replace, strlen, strtok, substr;
+use function str_replace, strlen, substr;
 
 /**
  * Class AsymmetricSecretKey
@@ -110,7 +110,7 @@ class AsymmetricSecretKey extends BaseSecretKey
             throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
         }
 
-        $tokenizedKey = strtok($formattedKey, "\n");
+        $tokenizedKey = Util::stopAtDelimiter($formattedKey, "\n");
         if ($tokenizedKey === false) {
             throw new PasetoException('Invalid PEM format', ExceptionCode::UNSPECIFIED_CRYPTOGRAPHIC_ERROR);
         }
