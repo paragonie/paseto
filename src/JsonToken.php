@@ -21,6 +21,7 @@ use function array_key_exists,
 /**
  * Class JsonToken
  * @package ParagonIE\Paseto
+ * @api
  */
 class JsonToken
 {

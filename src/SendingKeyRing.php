@@ -7,6 +7,9 @@ use ParagonIE\Paseto\Exception\{InvalidKeyException, PasetoException};
 use ParagonIE\Paseto\Keys\{Base\AsymmetricSecretKey, Base\SymmetricKey};
 use ParagonIE\Paseto\Traits\MultiKeyTrait;
 
+/**
+ * @api
+ */
 class SendingKeyRing implements KeyRingInterface, SendingKey
 {
     use MultiKeyTrait;

@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Base;
 
 use Exception;
+use Override;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
     Exception\ExceptionCode,
@@ -250,6 +251,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      *
      * @return ProtocolInterface
      */
+    #[Override]
     public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
@@ -279,6 +281,7 @@ abstract class AsymmetricSecretKey implements SendingKey
      *
      * @return string
      */
+    #[Override]
     public function raw(): string
     {
         return Util::dos2unix($this->key);
@@ -287,6 +290,7 @@ abstract class AsymmetricSecretKey implements SendingKey
     /**
      * @return array
      */
+    #[Override]
     public function __debugInfo()
     {
         return [];

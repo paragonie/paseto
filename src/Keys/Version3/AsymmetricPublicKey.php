@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Keys\Version3;
 
 use Exception;
 use FG\ASN1\Exception\ParserException;
+use Override;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
@@ -18,6 +19,7 @@ use TypeError;
 /**
  * Class AsymmetricPublicKey
  * @package ParagonIE\Paseto\Keys\Version3
+ * @api
  */
 class AsymmetricPublicKey extends BasePublicKey
 {
@@ -41,6 +43,7 @@ class AsymmetricPublicKey extends BasePublicKey
         parent::__construct($keyData, new Version3());
     }
 
+    #[Override]
     public function encode(): string
     {
         if (Binary::safeStrlen($this->key) === 49) {
@@ -59,6 +62,7 @@ class AsymmetricPublicKey extends BasePublicKey
         }
     }
 
+    #[Override]
     public function encodePem(): string
     {
         if (Binary::safeStrlen($this->key) > 49) {
@@ -70,11 +74,11 @@ class AsymmetricPublicKey extends BasePublicKey
         );
     }
 
+    #[Override]
     public static function fromEncodedString(
         string $encoded,
         ?ProtocolInterface $version = null,
-    ): self
-    {
+    ): self {
         $decodeString = Base64UrlSafe::decode($encoded);
         $length = Binary::safeStrlen($encoded);
         if ($length === 98) {
@@ -88,6 +92,7 @@ class AsymmetricPublicKey extends BasePublicKey
         return new self($decoded);
     }
 
+    #[Override]
     public function toHexString(): string
     {
         if (Binary::safeStrlen($this->key) === 98) {
@@ -108,6 +113,7 @@ class AsymmetricPublicKey extends BasePublicKey
      *
      * @throws Exception
      */
+    #[Override]
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         return new self($pem);

@@ -6,6 +6,7 @@ use Exception;
 use FG\ASN1\Exception\ParserException as ASN1ParserException;
 use ParagonIE\ConstantTime\{Base64UrlSafe, Binary, Hex};
 use ParagonIE\EasyECC\{EasyECC, ECDSA\PublicKey, ECDSA\SecretKey, Exception\InvalidPublicKeyException};
+use Override;
 use ParagonIE\Paseto\{ProtocolInterface, Util};
 use ParagonIE\Paseto\Exception\{ExceptionCode, InvalidVersionException, PasetoException, SecurityException};
 use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
@@ -25,6 +26,7 @@ use function random_bytes;
 /**
  * Class Version3
  * @package ParagonIE\Paseto\Protocol
+ * @api
  */
 class Version3 implements ProtocolInterface
 {
@@ -50,6 +52,7 @@ class Version3 implements ProtocolInterface
     /**
      * @return int
      */
+    #[Override]
     public static function getSymmetricKeyByteLength(): int
     {
         return (int) static::SYMMETRIC_KEY_BYTES;
@@ -63,6 +66,7 @@ class Version3 implements ProtocolInterface
      * @throws Exception
      * @throws TypeError
      */
+    #[Override]
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
         return V3AsymmetricSecretKey::generate(new self());
@@ -76,6 +80,7 @@ class Version3 implements ProtocolInterface
      * @throws Exception
      * @throws TypeError
      */
+    #[Override]
     public static function generateSymmetricKey(): SymmetricKey
     {
         return V3SymmetricKey::generate(new self());
@@ -86,6 +91,7 @@ class Version3 implements ProtocolInterface
      *
      * @return string
      */
+    #[Override]
     public static function header(): string
     {
         return (string) static::HEADER;
@@ -97,6 +103,7 @@ class Version3 implements ProtocolInterface
      *
      * @return bool
      */
+    #[Override]
     public static function supportsImplicitAssertions(): bool
     {
         return true;
@@ -113,6 +120,7 @@ class Version3 implements ProtocolInterface
      *
      * @throws PasetoException
      */
+    #[Override]
     public static function encrypt(
         string $data,
         SymmetricKey $key,
@@ -176,6 +184,7 @@ class Version3 implements ProtocolInterface
      * @throws PasetoException
      * @throws TypeError
      */
+    #[Override]
     public static function decrypt(
         string $data,
         SymmetricKey $key,
@@ -226,6 +235,7 @@ class Version3 implements ProtocolInterface
      * @throws SodiumException
      * @throws TypeError
      */
+    #[Override]
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
@@ -289,6 +299,7 @@ class Version3 implements ProtocolInterface
      * @throws SodiumException
      * @throws InvalidPublicKeyException
      */
+    #[Override]
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,

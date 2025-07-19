@@ -6,6 +6,7 @@ use ParagonIE\Paseto\{
     JsonToken,
     ValidationRuleInterface
 };
+use Override;
 use ParagonIE\Paseto\Exception\PasetoException;
 use Exception;
 use DateTime;
@@ -14,6 +15,7 @@ use DateTimeInterface;
 /**
  * Class NotExpired
  * @package ParagonIE\Paseto\Rules
+ * @api
  */
 class NotExpired implements ValidationRuleInterface
 {
@@ -36,6 +38,7 @@ class NotExpired implements ValidationRuleInterface
     /**
      * @return string
      */
+    #[Override]
     public function getFailureMessage(): string
     {
         return $this->failure;
@@ -50,6 +53,7 @@ class NotExpired implements ValidationRuleInterface
      *
      * @throws Exception
      */
+    #[Override]
     public function isValid(JsonToken $token): bool
     {
         try {

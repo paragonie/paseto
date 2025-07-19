@@ -29,6 +29,7 @@ use function json_encode;
 /**
  * Class Parser
  * @package ParagonIE\Paseto
+ * @api
  */
 class Parser extends PasetoBase
 {

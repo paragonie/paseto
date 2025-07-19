@@ -8,6 +8,9 @@ use ParagonIE\Paseto\Exception\{
 };
 use ParagonIE\Paseto\Traits\MultiKeyTrait;
 
+/**
+ * @api
+ */
 class ReceivingKeyRing implements KeyRingInterface, ReceivingKey
 {
     use MultiKeyTrait;

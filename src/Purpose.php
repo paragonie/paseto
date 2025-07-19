@@ -31,6 +31,7 @@ use function in_array;
 /**
  * Class Purpose
  * @package ParagonIE\Paseto
+ * @api
  */
 final class Purpose
 {

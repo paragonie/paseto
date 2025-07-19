@@ -29,6 +29,7 @@ use ParagonIE_Sodium_Core_Util as SodiumUtil;
 /**
  * Class Util
  * @package ParagonIE\Paseto
+ * @api
  */
 abstract class Util
 {

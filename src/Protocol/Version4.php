@@ -4,6 +4,7 @@ namespace ParagonIE\Paseto\Protocol;
 
 use Exception;
 use ParagonIE\ConstantTime\{Base64UrlSafe, Binary};
+use Override;
 use ParagonIE\Paseto\{ProtocolInterface, Util};
 use ParagonIE\Paseto\Exception\{ExceptionCode, InvalidVersionException, PasetoException, SecurityException};
 use ParagonIE\Paseto\Keys\{Base\AsymmetricPublicKey, Base\AsymmetricSecretKey, Base\SymmetricKey};
@@ -23,6 +24,7 @@ use function sodium_crypto_stream_xchacha20_xor;
 /**
  * Class Version4
  * @package ParagonIE\Paseto\Protocol
+ * @api
  */
 class Version4 implements ProtocolInterface
 {
@@ -43,6 +45,7 @@ class Version4 implements ProtocolInterface
     /**
      * @return int
      */
+    #[Override]
     public static function getSymmetricKeyByteLength(): int
     {
         return (int) static::SYMMETRIC_KEY_BYTES;
@@ -56,6 +59,7 @@ class Version4 implements ProtocolInterface
      * @throws Exception
      * @throws TypeError
      */
+    #[Override]
     public static function generateAsymmetricSecretKey(): AsymmetricSecretKey
     {
         return V4AsymmetricSecretKey::generate(new self());
@@ -69,6 +73,7 @@ class Version4 implements ProtocolInterface
      * @throws Exception
      * @throws TypeError
      */
+    #[Override]
     public static function generateSymmetricKey(): SymmetricKey
     {
         return V4SymmetricKey::generate(new self());
@@ -79,6 +84,7 @@ class Version4 implements ProtocolInterface
      *
      * @return string
      */
+    #[Override]
     public static function header(): string
     {
         return (string) static::HEADER;
@@ -90,6 +96,7 @@ class Version4 implements ProtocolInterface
      *
      * @return bool
      */
+    #[Override]
     public static function supportsImplicitAssertions(): bool
     {
         return true;
@@ -106,6 +113,7 @@ class Version4 implements ProtocolInterface
      *
      * @throws PasetoException
      */
+    #[Override]
     public static function encrypt(
         string $data,
         SymmetricKey $key,
@@ -170,6 +178,7 @@ class Version4 implements ProtocolInterface
      * @throws SodiumException
      * @throws TypeError
      */
+    #[Override]
     public static function decrypt(
         string $data,
         SymmetricKey $key,
@@ -219,6 +228,7 @@ class Version4 implements ProtocolInterface
      * @throws SecurityException
      * @throws SodiumException
      */
+    #[Override]
     public static function sign(
         string $data,
         AsymmetricSecretKey $key,
@@ -271,6 +281,7 @@ class Version4 implements ProtocolInterface
      * @throws SodiumException
      * @throws TypeError
      */
+    #[Override]
     public static function verify(
         string $signMsg,
         AsymmetricPublicKey $key,
