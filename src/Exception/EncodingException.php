@@ -5,6 +5,7 @@ namespace ParagonIE\Paseto\Exception;
 /**
  * Class EncodingException
  * @package ParagonIE\Paseto\Exception
+ * @api
  */
 class EncodingException extends PasetoException
 {

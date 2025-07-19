@@ -5,6 +5,7 @@ namespace ParagonIE\Paseto\Exception;
 /**
  * Class InvalidKeyException
  * @package ParagonIE\Paseto\Exception
+ * @api
  */
 class InvalidKeyException extends PasetoException
 {

@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace ParagonIE\Paseto\Keys\Version3;
 
 use Mdanter\Ecc\EccFactory;
+use Override;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\ConstantTime\Hex;
@@ -18,6 +19,7 @@ use TypeError;
 /**
  * Class AsymmetricSecretKey
  * @package ParagonIE\Paseto\Keys\Version3
+ * @api
  */
 class AsymmetricSecretKey extends BaseSecretKey
 {
@@ -36,6 +38,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         parent::__construct($keyData, new Version3());
     }
 
+    #[Override]
     public static function generate(?ProtocolInterface $protocol = null): self
     {
         return new self(
@@ -43,6 +46,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         );
     }
 
+    #[Override]
     public function encode(): string
     {
         if (Binary::safeStrlen($this->key) > 48) {
@@ -59,11 +63,13 @@ class AsymmetricSecretKey extends BaseSecretKey
         return Base64UrlSafe::encodeUnpadded($this->key);
     }
 
+    #[Override]
     public function encodePem(): string
     {
         return Util::dos2unix($this->key);
     }
 
+    #[Override]
     public static function fromEncodedString(string $encoded, ?ProtocolInterface $version = null): self
     {
         $decoded = Base64UrlSafe::decodeNoPadding($encoded);
@@ -81,6 +87,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         return new self($decoded);
     }
 
+    #[Override]
     public function getPublicKey(): AsymmetricPublicKey
     {
         /** @var PublicKey $pk */
@@ -101,6 +108,7 @@ class AsymmetricSecretKey extends BaseSecretKey
         );
     }
 
+    #[Override]
     public static function importPem(string $pem, ?ProtocolInterface $protocol = null): self
     {
         return new self($pem);

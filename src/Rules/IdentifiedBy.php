@@ -6,12 +6,14 @@ use ParagonIE\Paseto\{
     JsonToken,
     ValidationRuleInterface
 };
+use Override;
 use ParagonIE\Paseto\Exception\PasetoException;
 use function hash_equals;
 
 /**
  * Class IdentifiedBy
  * @package ParagonIE\Paseto\Rules
+ * @api
  */
 class IdentifiedBy implements ValidationRuleInterface
 {
@@ -30,6 +32,7 @@ class IdentifiedBy implements ValidationRuleInterface
     /**
      * @return string
      */
+    #[Override]
     public function getFailureMessage(): string
     {
         return $this->failure;
@@ -41,6 +44,7 @@ class IdentifiedBy implements ValidationRuleInterface
      * @param JsonToken $token
      * @return bool
      */
+    #[Override]
     public function isValid(JsonToken $token): bool
     {
         try {

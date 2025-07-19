@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace ParagonIE\Paseto\Rules;
 
+use Override;
 use ParagonIE\ConstantTime\Binary;
 use ParagonIE\Paseto\{
     Exception\EncodingException,
@@ -17,6 +18,7 @@ use function is_array,
 /**
  * Class FooterJSON
  * @package ParagonIE\Paseto\Rules
+ * @api
  */
 class FooterJSON implements ValidationRuleInterface
 {
@@ -57,6 +59,7 @@ class FooterJSON implements ValidationRuleInterface
      *
      * @return string
      */
+    #[Override]
     public function getFailureMessage(): string
     {
         if ($this->rejectReason) {
@@ -73,6 +76,7 @@ class FooterJSON implements ValidationRuleInterface
      *
      * @throws EncodingException
      */
+    #[Override]
     public function isValid(JsonToken $token): bool
     {
         $json = $token->getFooter();

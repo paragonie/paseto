@@ -10,6 +10,7 @@ use ParagonIE\Paseto\Keys\Base\{
     AsymmetricPublicKey,
     AsymmetricSecretKey as BaseAsymmetricSecretKey
 };
+use Override;
 use ParagonIE\Paseto\Keys\Version3\AsymmetricSecretKey as V3AsymmetricSecretKey;
 use ParagonIE\Paseto\Keys\Version4\AsymmetricSecretKey as V4AsymmetricSecretKey;
 use ParagonIE\Paseto\Protocol\{
@@ -37,6 +38,7 @@ class AsymmetricSecretKey extends BaseAsymmetricSecretKey
      * @throws Exception
      * @throws InvalidVersionException
      */
+    #[Override]
     public function encode(): string
     {
         if ($this->protocol instanceof Version3) {
@@ -54,6 +56,7 @@ class AsymmetricSecretKey extends BaseAsymmetricSecretKey
      * @throws InvalidVersionException
      * @throws PasetoException
      */
+    #[Override]
     public function encodePem(): string
     {
         if ($this->protocol instanceof Version3) {
@@ -71,6 +74,7 @@ class AsymmetricSecretKey extends BaseAsymmetricSecretKey
      * @throws \Exception
      * @throws InvalidVersionException
      */
+    #[Override]
     public function getPublicKey(): AsymmetricPublicKey
     {
         if ($this->protocol instanceof Version3) {

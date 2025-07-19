@@ -12,6 +12,7 @@ use ParagonIE\Paseto\{
     ReceivingKey,
     Util
 };
+use Override;
 use ParagonIE\Paseto\Keys\{
     Version3\AsymmetricPublicKey as V3AsymmetricPublicKey,
     Version4\AsymmetricPublicKey as V4AsymmetricPublicKey
@@ -205,6 +206,7 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      *
      * @return ProtocolInterface
      */
+    #[Override]
     public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
@@ -224,6 +226,7 @@ abstract class AsymmetricPublicKey implements ReceivingKey
      *
      * @return string
      */
+    #[Override]
     public function raw(): string
     {
         return $this->key;
@@ -232,6 +235,7 @@ abstract class AsymmetricPublicKey implements ReceivingKey
     /**
      * @return array
      */
+    #[Override]
     public function __debugInfo()
     {
         return [];

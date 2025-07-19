@@ -7,6 +7,7 @@ use ParagonIE\Paseto\Exception\{
     InvalidVersionException,
     PasetoException
 };
+use Override;
 use ParagonIE\Paseto\Keys\Base\AsymmetricPublicKey as BaseAsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version3\AsymmetricPublicKey as V3AsymmetricPublicKey;
 use ParagonIE\Paseto\Keys\Version4\AsymmetricPublicKey as V4AsymmetricPublicKey;
@@ -32,6 +33,7 @@ class AsymmetricPublicKey extends BaseAsymmetricPublicKey
      * @throws InvalidVersionException
      * @throws PasetoException
      */
+    #[Override]
     public function encode(): string
     {
         if ($this->protocol instanceof Version3) {
@@ -48,6 +50,7 @@ class AsymmetricPublicKey extends BaseAsymmetricPublicKey
      * @throws Exception
      * @throws InvalidVersionException
      */
+    #[Override]
     public function encodePem(): string
     {
         if ($this->protocol instanceof Version3) {
@@ -65,6 +68,7 @@ class AsymmetricPublicKey extends BaseAsymmetricPublicKey
      * @throws InvalidVersionException
      * @throws ParserException
      */
+    #[Override]
     public function toHexString(): string
     {
         if ($this->protocol instanceof Version3) {

@@ -18,6 +18,7 @@ use ParagonIE\Paseto\{
     SendingKey,
     Util
 };
+use Override;
 use SodiumException;
 use TypeError;
 use function random_bytes;
@@ -186,6 +187,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * @return ProtocolInterface
      */
+    #[Override]
     public function getProtocol(): ProtocolInterface
     {
         return $this->protocol;
@@ -205,6 +207,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
      *
      * @return string
      */
+    #[Override]
     public function raw(): string
     {
         return $this->key;
@@ -271,6 +274,7 @@ class SymmetricKey implements ReceivingKey, SendingKey
     /**
      * @return array
      */
+    #[Override]
     public function __debugInfo()
     {
         return [];
